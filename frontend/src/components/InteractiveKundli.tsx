@@ -27,6 +27,21 @@ interface InteractiveKundliProps {
   onHouseClick?: (house: number, sign: string, planets: PlanetData[]) => void;
   compact?: boolean; // Hide North/South toggle, always show North Indian
   hideCombust?: boolean; // Lal Kitab context — combustion is Vedic-only, don't render "^"
+  /**
+   * P1.1 Modified Analytical Tewa — per-planet LK state colour override.
+   * When supplied, each planet label is rendered in the state's hexColour
+   * instead of the default PLANET_COLORS map. Tooltip shows state label.
+   * Map key is planet name (e.g. "Sun", "Mars"). Map value is { hexColour,
+   * state, labelEn, labelHi } — the shape emitted by planet-state.ts.
+   */
+  planetStates?: Record<string, {
+    hexColour: string;
+    state: string;
+    labelEn: string;
+    labelHi: string;
+    descEn?: string;
+    descHi?: string;
+  }>;
 }
 
 type ChartStyle = 'north' | 'south';
@@ -607,6 +622,15 @@ interface PlanetBadgeProps {
   hideTooltip: () => void;
   onPlanetClick?: (p: PlanetData) => void;
   hideCombust?: boolean;
+  // P1.1 — optional LK state override for colour + tooltip
+  stateTag?: {
+    hexColour: string;
+    state: string;
+    labelEn: string;
+    labelHi: string;
+    descEn?: string;
+    descHi?: string;
+  };
 }
 
 function PlanetBadge({
@@ -619,16 +643,26 @@ function PlanetBadge({
   hideTooltip,
   onPlanetClick,
   hideCombust,
+  stateTag,
 }: PlanetBadgeProps) {
   const { language: lang } = useTranslation();
-  const color = getPlanetColor(p.planet);
+  // P1.1 — when a non-normal LK state is supplied, override the planet
+  // colour with the state hex. Keeps the default PLANET_COLORS map for
+  // charts that don't pass state data.
+  const defaultColor = getPlanetColor(p.planet);
+  const useStateColor = !!stateTag && stateTag.state !== 'normal';
+  const color = useStateColor ? stateTag!.hexColour : defaultColor;
   const isHovered = hoveredPlanet === p.planet;
   const label = getPlanetLabel(p, lang, hideCombust);
+  // Accessible aria-label extended with state info when present.
+  const stateLabel = useStateColor
+    ? ` — ${lang === 'hi' ? stateTag!.labelHi : stateTag!.labelEn}`
+    : '';
 
   return (
     <g
       role="img"
-      aria-label={p.planet}
+      aria-label={`${p.planet}${stateLabel}`}
       style={{ cursor: 'pointer' }}
       onMouseEnter={(e) => {
         e.stopPropagation();
@@ -645,6 +679,20 @@ function PlanetBadge({
         onPlanetClick?.(p);
       }}
     >
+      {/* P1.1 — faint outer ring when a non-normal LK state is active,
+          so the state is glanceable even before hover. */}
+      {useStateColor && (
+        <circle
+          cx={px}
+          cy={py}
+          r={15}
+          fill="none"
+          stroke={color}
+          strokeWidth={1.5}
+          strokeDasharray="2 2"
+          opacity={0.6}
+        />
+      )}
       <circle
         cx={px}
         cy={py}
@@ -672,7 +720,7 @@ function PlanetBadge({
 }
 
 
-export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact, hideCombust }: InteractiveKundliProps) {
+export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact, hideCombust, planetStates }: InteractiveKundliProps) {
   const { t, language } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
@@ -914,6 +962,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                     hideTooltip={hideTooltip}
                     onPlanetClick={onPlanetClick}
                     hideCombust={hideCombust}
+                    stateTag={planetStates?.[p.planet]}
                   />
                 );
               })}

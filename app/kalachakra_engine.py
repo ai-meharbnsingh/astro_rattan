@@ -27,6 +27,186 @@ from typing import Any, Dict, List, Optional
 # CONSTANTS
 # ============================================================
 
+# ── Kalachakra Dasha Phala — Phaladeepika Adhyaya 22 ────────
+# Classical interpretation texts for each rashi dasha period.
+_KALACHAKRA_PHALA: Dict[str, Dict[str, str]] = {
+    "Aries": {
+        "phala_en": (
+            "Valor, physical strength, conflicts and victories; "
+            "prone to accidents and wounds during this period."
+        ),
+        "phala_hi": (
+            "साहस, शारीरिक बल, संघर्ष और विजय; "
+            "इस काल में दुर्घटना व घाव की संभावना।"
+        ),
+        "nature": "Mixed",
+    },
+    "Taurus": {
+        "phala_en": (
+            "Financial stability, acquisition of wealth, comforts, "
+            "sensual pleasures and family happiness."
+        ),
+        "phala_hi": (
+            "आर्थिक स्थिरता, धन-प्राप्ति, सुख-सुविधा, "
+            "ऐन्द्रिय आनंद एवं परिवार-सुख।"
+        ),
+        "nature": "Favorable",
+    },
+    "Gemini": {
+        "phala_en": (
+            "Intellectual achievements, writing, communication, "
+            "siblings' welfare; some mental anxiety."
+        ),
+        "phala_hi": (
+            "बौद्धिक उपलब्धि, लेखन-वाणी, बंधुजनों की उन्नति; "
+            "मानसिक चिंता का कुछ भार।"
+        ),
+        "nature": "Mixed",
+    },
+    "Cancer": {
+        "phala_en": (
+            "Home comforts, mother's blessings, vehicles, landed property; "
+            "emotional sensitivity heightened."
+        ),
+        "phala_hi": (
+            "गृह-सुख, माता का आशीर्वाद, वाहन व भूमि; "
+            "भावनात्मक संवेदनशीलता बढ़ती है।"
+        ),
+        "nature": "Favorable",
+    },
+    "Leo": {
+        "phala_en": (
+            "Government favor, authority, fame and recognition; "
+            "ego conflicts and stomach ailments possible."
+        ),
+        "phala_hi": (
+            "राज-कृपा, अधिकार, यश व पहचान; "
+            "अहंकार-संघर्ष एवं उदर-विकार की संभावना।"
+        ),
+        "nature": "Favorable",
+    },
+    "Virgo": {
+        "phala_en": (
+            "Service, health focus, analytical success; "
+            "enemies may increase; digestive issues."
+        ),
+        "phala_hi": (
+            "सेवा, स्वास्थ्य, विश्लेषण में सफलता; "
+            "शत्रु बढ़ सकते हैं; पाचन-दोष।"
+        ),
+        "nature": "Mixed",
+    },
+    "Libra": {
+        "phala_en": (
+            "Business partnerships, marriage, travel, justice; "
+            "legal disputes possible."
+        ),
+        "phala_hi": (
+            "व्यापार, विवाह, यात्रा, न्याय; "
+            "न्यायिक विवाद की संभावना।"
+        ),
+        "nature": "Favorable",
+    },
+    "Scorpio": {
+        "phala_en": (
+            "Hidden matters, occult knowledge, inheritance; "
+            "danger, accidents, debt or illness."
+        ),
+        "phala_hi": (
+            "गुप्त विषय, रहस्य-विद्या, विरासत; "
+            "खतरा, दुर्घटना, ऋण या रोग।"
+        ),
+        "nature": "Difficult",
+    },
+    "Sagittarius": {
+        "phala_en": (
+            "Fortune, higher learning, religious merit, "
+            "father's blessings, long journeys."
+        ),
+        "phala_hi": (
+            "भाग्य-वृद्धि, उच्च शिक्षा, धर्म-कर्म, "
+            "पिता का आशीर्वाद, दूर-यात्रा।"
+        ),
+        "nature": "Favorable",
+    },
+    "Capricorn": {
+        "phala_en": (
+            "Hard work, discipline, delays in success; "
+            "career advancement through sustained effort."
+        ),
+        "phala_hi": (
+            "कठोर परिश्रम, अनुशासन, सफलता में विलंब; "
+            "निरंतर प्रयास से पेशे में उन्नति।"
+        ),
+        "nature": "Mixed",
+    },
+    "Aquarius": {
+        "phala_en": (
+            "Social work, community involvement, gains through networking; "
+            "unexpected events."
+        ),
+        "phala_hi": (
+            "समाज-सेवा, सामुदायिक कार्य, नेटवर्किंग से लाभ; "
+            "अप्रत्याशित घटनाएँ।"
+        ),
+        "nature": "Mixed",
+    },
+    "Pisces": {
+        "phala_en": (
+            "Spiritual growth, liberation tendencies, foreign travel, "
+            "expenses and losses; moksha-oriented."
+        ),
+        "phala_hi": (
+            "आध्यात्मिक उन्नति, मोक्ष की प्रवृत्ति, विदेश-यात्रा, "
+            "व्यय व हानि; मोक्ष-मार्ग।"
+        ),
+        "nature": "Spiritual",
+    },
+}
+
+_DEHA_JEEVA_NOTE: Dict[str, Dict[str, str]] = {
+    "Deha": {
+        "en": (
+            "As a Deha period, the effects manifest primarily in the "
+            "physical body and worldly circumstances."
+        ),
+        "hi": (
+            "देह-काल होने से फल मुख्यतः शरीर व "
+            "लौकिक परिस्थितियों में प्रकट होता है।"
+        ),
+    },
+    "Jeeva": {
+        "en": (
+            "As a Jeeva period, the effects manifest primarily in the "
+            "mind, inner life, and spiritual experience."
+        ),
+        "hi": (
+            "जीव-काल होने से फल मुख्यतः मन, "
+            "अंतर्जगत् व आध्यात्मिक अनुभव में प्रकट होता है।"
+        ),
+    },
+}
+
+_SLOKA_REF_KC = "Phaladeepika Adh. 22"
+
+
+def _enrich_period(period: Dict[str, Any]) -> Dict[str, Any]:
+    """Add phala fields to a Kalachakra dasha period dict."""
+    sign = period.get("sign", "")
+    dj_type = period.get("type", "Deha")
+    phala = _KALACHAKRA_PHALA.get(sign, {})
+    note = _DEHA_JEEVA_NOTE.get(dj_type, _DEHA_JEEVA_NOTE["Deha"])
+    return {
+        **period,
+        "phala_en": phala.get("phala_en", ""),
+        "phala_hi": phala.get("phala_hi", ""),
+        "nature": phala.get("nature", ""),
+        "deha_jeeva_note_en": note["en"],
+        "deha_jeeva_note_hi": note["hi"],
+        "sloka_ref": _SLOKA_REF_KC,
+    }
+
+
 ZODIAC: List[str] = [
     "Aries", "Taurus", "Gemini", "Cancer",
     "Leo", "Virgo", "Libra", "Scorpio",
@@ -330,13 +510,13 @@ def calculate_kalachakra_dasha(
 
             end_dt = _add_years(current_start, effective_years)
 
-            mahadasha_periods.append({
+            mahadasha_periods.append(_enrich_period({
                 "sign": sign,
                 "duration_years": round(effective_years, 4),
                 "start": current_start.strftime("%Y-%m-%d"),
                 "end": end_dt.strftime("%Y-%m-%d"),
                 "type": half_types[i],
-            })
+            }))
 
             current_start = end_dt
 
@@ -349,24 +529,24 @@ def calculate_kalachakra_dasha(
         p_start = _parse_date(period["start"])
         p_end = _parse_date(period["end"])
         if p_start <= now <= p_end:
-            current_dasha = {
+            current_dasha = _enrich_period({
                 "sign": period["sign"],
                 "type": period["type"],
                 "start": period["start"],
                 "end": period["end"],
-            }
+            })
             break
 
     # Fallback: if now is beyond all computed periods, use the last one
     if current_dasha is None and mahadasha_periods:
         last = mahadasha_periods[-1]
         if now > _parse_date(last["end"]):
-            current_dasha = {
+            current_dasha = _enrich_period({
                 "sign": last["sign"],
                 "type": last["type"],
                 "start": last["start"],
                 "end": last["end"],
-            }
+            })
 
     # ── 8. Assemble result ──────────────────────────────────────
     return {

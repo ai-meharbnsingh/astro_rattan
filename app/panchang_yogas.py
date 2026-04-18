@@ -477,6 +477,7 @@ def calculate_all_special_yogas(
     weekday: int,
     tithi_index: int,
     nakshatra_name: str,
+    include_extended: bool = False,
 ) -> Dict[str, Dict[str, Any]]:
     """Calculate all special yogas at once.
 
@@ -487,16 +488,20 @@ def calculate_all_special_yogas(
 
     Returns:
         dict with keys: sarvartha_siddhi, amrit_siddhi,
-        dwipushkar, tripushkar, ganda_moola, ravi_yoga,
-        siddhi_yoga, tithi_vara_dosha
+        dwipushkar, tripushkar, ganda_moola.
+
+        If include_extended=True, also includes: ravi_yoga,
+        siddhi_yoga, tithi_vara_dosha.
     """
-    return {
+    result: Dict[str, Dict[str, Any]] = {
         "sarvartha_siddhi": calculate_sarvartha_siddhi(weekday, tithi_index, nakshatra_name),
         "amrit_siddhi": calculate_amrit_siddhi(weekday, nakshatra_name),
         "dwipushkar": calculate_dwipushkar(weekday, tithi_index, nakshatra_name),
         "tripushkar": calculate_tripushkar(weekday, tithi_index, nakshatra_name),
         "ganda_moola": calculate_ganda_moola(nakshatra_name),
-        "ravi_yoga": calculate_ravi_yoga(weekday, nakshatra_name),
-        "siddhi_yoga": calculate_siddhi_yoga(weekday, tithi_index),
-        "tithi_vara_dosha": calculate_tithi_vara_dosha(weekday, tithi_index),
     }
+    if include_extended:
+        result["ravi_yoga"] = calculate_ravi_yoga(weekday, nakshatra_name)
+        result["siddhi_yoga"] = calculate_siddhi_yoga(weekday, tithi_index)
+        result["tithi_vara_dosha"] = calculate_tithi_vara_dosha(weekday, tithi_index)
+    return result

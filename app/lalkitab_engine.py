@@ -932,12 +932,12 @@ def get_planet_strength_detailed(
         elif house in (1, 4, 5, 7, 9, 10):
             house_modifier = +0.10
 
-    # Combustion is a Vedic/Parashari concept — NOT used in Lal Kitab 1952.
-    # We keep the `is_combust` parameter for callers that still pass it
-    # (e.g. future Vedic overlay modules) but do NOT penalise LK strength
-    # and do NOT add "combust" to the LK afflictions list.
+    # Combustion (Asta) — penalize strength and surface as affliction.
+    # Kept intentionally simple for reliability: fixed penalty.
     combust_modifier = 0.0
-    _ = is_combust  # intentionally ignored in LK context (vedic_overlay)
+    if is_combust and planet not in ("Sun", "Moon"):
+        combust_modifier = -0.2
+        afflictions.append("combust")
 
     # Retrograde — Lal Kitab treats as "confused planet"
     # (Sun/Moon never retrograde; Rahu/Ketu are always retrograde by nature)

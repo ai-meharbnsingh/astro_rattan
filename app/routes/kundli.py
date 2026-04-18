@@ -1451,6 +1451,55 @@ def get_vritti(
     return result
 
 
+@router.get("/{kundli_id}/planet-properties", status_code=status.HTTP_200_OK)
+def get_planet_properties(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Planet stage-of-life, Baladi Avastha, guna (Sattvika/Rajasa/Tamasa) + Lagna rising mode — Phaladeepika Adh. 1–2."""
+    from app.planet_properties_engine import get_planet_properties as _get_props, get_lagna_rising_analysis
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = _get_props(chart)
+    result["lagna_rising"] = get_lagna_rising_analysis(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/panchadha-maitri", status_code=status.HTTP_200_OK)
+def get_panchadha_maitri(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Panchadha Maitri — 5-fold planetary friendship matrix (natural + temporary) — Phaladeepika Adh. 2."""
+    from app.panchadha_maitri_engine import analyze_panchadha_maitri
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_panchadha_maitri(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/pindayu", status_code=status.HTTP_200_OK)
+def get_pindayu(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Pindayu — Ashtakavarga-based lifespan estimation — Phaladeepika Adh. 23."""
+    from app.ashtakavarga_lifespan_engine import calculate_pindayu
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = calculate_pindayu(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

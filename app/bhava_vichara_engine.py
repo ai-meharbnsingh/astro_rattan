@@ -322,6 +322,193 @@ def _analyze_karaka_as_lagna(
 # Per-bhava assessment
 # ───────────────────────────────────────────────────────────────
 
+def _sign_of_house(h: int, asc_sign: str) -> str:
+    """Return the sign occupying house h from ascendant (whole-sign)."""
+    if asc_sign not in ZODIAC or not (1 <= h <= 12):
+        return ""
+    return ZODIAC[(ZODIAC.index(asc_sign) + h - 1) % 12]
+
+
+def _house_transit_triggers(
+    house: int,
+    chart: Dict[str, Any],
+    destruction_risk: bool,
+    flourishing: bool,
+) -> List[Dict[str, Any]]:
+    """
+    Compute transit-based timing triggers for a given house.
+
+    For destruction_risk houses:
+      1. Saturn transiting the house sign → activates destruction (most potent)
+      2. Saturn transiting the house lord's natal sign → activates lord weakness
+      3. Mars transiting the house sign → sudden affliction (if malefic natal affliction)
+      4. Rahu/Ketu transiting through house sign → destabilises
+
+    For flourishing houses:
+      1. Jupiter transiting the house sign → amplifies flourishing
+      2. Venus transiting Kendra/Trikona house sign → enhances
+
+    Classical basis: Phaladeepika Adh. 15-16 + Adh. 26 transit principles.
+    """
+    asc = _asc_sign(chart)
+    house_sign = _sign_of_house(house, asc)
+    if not house_sign:
+        return []
+
+    lord = _house_lord(house, chart)
+    lord_natal_sign = _planet_sign(lord, chart) if lord else ""
+
+    triggers: List[Dict[str, Any]] = []
+    sloka = "Phaladeepika Adh. 15-16"
+
+    topic_en = BHAVA_TOPIC_EN.get(house, f"house {house} themes")
+    topic_hi = BHAVA_TOPIC_HI.get(house, f"भाव {house} विषय")
+
+    if destruction_risk:
+        # 1. Saturn transiting house sign (most potent)
+        triggers.append({
+            "planet": "Saturn",
+            "trigger_sign": house_sign,
+            "trigger_condition_en": (
+                f"When Saturn transits {house_sign} (sign of the {house}th house from Lagna), "
+                f"the natal destruction indicators for {topic_en} are most powerfully activated."
+            ),
+            "trigger_condition_hi": (
+                f"जब शनि {house_sign} ({house}वें भाव की राशि) में गोचर करे, "
+                f"तब {topic_hi} के जन्मकालीन नाश-संकेत सर्वाधिक प्रबल रूप से सक्रिय होते हैं।"
+            ),
+            "expected_effect_en": (
+                f"Challenges and disruptions related to {topic_en} are likely during this period. "
+                "Careful, disciplined action and spiritual support are recommended."
+            ),
+            "expected_effect_hi": (
+                f"इस काल में {topic_hi} से संबंधित चुनौतियां एवं व्यवधान संभव हैं। "
+                "सावधान, अनुशासित कर्म एवं आध्यात्मिक सहायता अनुशंसित है।"
+            ),
+            "sloka_ref": sloka,
+        })
+
+        # 2. Saturn transiting house lord's natal sign → lord weakness activation
+        if lord_natal_sign:
+            triggers.append({
+                "planet": "Saturn",
+                "trigger_sign": lord_natal_sign,
+                "trigger_condition_en": (
+                    f"When Saturn transits {lord_natal_sign} (natal position of lord {lord}), "
+                    f"the lord's weakness is intensified, further straining {topic_en}."
+                ),
+                "trigger_condition_hi": (
+                    f"जब शनि {lord_natal_sign} (भावेश {lord} की जन्मकालीन स्थिति) में गोचर करे, "
+                    f"भावेश की दुर्बलता तीव्र होती है और {topic_hi} पर दबाव बढ़ता है।"
+                ),
+                "expected_effect_en": (
+                    f"The significations of {topic_en} face additional strain. "
+                    "Remedies for the lord planet are especially beneficial at this time."
+                ),
+                "expected_effect_hi": (
+                    f"{topic_hi} के फल पर अतिरिक्त दबाव पड़ता है। "
+                    "इस समय भावेश ग्रह के उपाय विशेष रूप से लाभकारी हैं।"
+                ),
+                "sloka_ref": sloka,
+            })
+
+        # 3. Mars transiting house sign → sudden affliction
+        triggers.append({
+            "planet": "Mars",
+            "trigger_sign": house_sign,
+            "trigger_condition_en": (
+                f"When Mars transits {house_sign} (the {house}th house sign), "
+                f"sudden or acute challenges to {topic_en} may manifest."
+            ),
+            "trigger_condition_hi": (
+                f"जब मंगल {house_sign} ({house}वें भाव की राशि) में गोचर करे, "
+                f"तब {topic_hi} पर अचानक या तीव्र चुनौतियां प्रकट हो सकती हैं।"
+            ),
+            "expected_effect_en": (
+                f"Sudden disruptions to {topic_en} are possible. "
+                "Stay alert, avoid impulsive decisions, and maintain protective routines."
+            ),
+            "expected_effect_hi": (
+                f"{topic_hi} में अचानक व्यवधान संभव हैं। "
+                "सतर्क रहें, आवेगी निर्णयों से बचें और सुरक्षात्मक दिनचर्या बनाए रखें।"
+            ),
+            "sloka_ref": sloka,
+        })
+
+        # 4. Rahu/Ketu transiting through house sign (6-month window) → destabilises
+        triggers.append({
+            "planet": "Rahu/Ketu",
+            "trigger_sign": house_sign,
+            "trigger_condition_en": (
+                f"When Rahu or Ketu transits through {house_sign} (approx. 18-month window), "
+                f"the natal affliction of {topic_en} is destabilised and unpredictable."
+            ),
+            "trigger_condition_hi": (
+                f"जब राहु या केतु {house_sign} (लगभग 18-माह की विंडो) से गुज़रे, "
+                f"तब {topic_hi} की जन्मकालीन पीड़ा अस्थिर एवं अप्रत्याशित हो जाती है।"
+            ),
+            "expected_effect_en": (
+                f"Unexpected upheavals in {topic_en} domain. "
+                "Mindfulness, grounding practices, and flexibility are key during this window."
+            ),
+            "expected_effect_hi": (
+                f"{topic_hi} के क्षेत्र में अप्रत्याशित उथल-पुथल। "
+                "इस विंडो में सचेतनता, स्थिरता की साधनाएं एवं लचीलापन महत्वपूर्ण हैं।"
+            ),
+            "sloka_ref": sloka,
+        })
+
+    if flourishing:
+        # 1. Jupiter transiting the house sign → amplifies flourishing
+        triggers.append({
+            "planet": "Jupiter",
+            "trigger_sign": house_sign,
+            "trigger_condition_en": (
+                f"When Jupiter transits {house_sign} (the {house}th house sign), "
+                f"the natal flourishing potential of {topic_en} is amplified."
+            ),
+            "trigger_condition_hi": (
+                f"जब बृहस्पति {house_sign} ({house}वें भाव की राशि) में गोचर करे, "
+                f"तब {topic_hi} की जन्मकालीन समृद्धि-क्षमता प्रवर्धित होती है।"
+            ),
+            "expected_effect_en": (
+                f"Expansion, growth, and good fortune in {topic_en} are likely. "
+                "Initiatives and investments in this domain tend to yield positive results."
+            ),
+            "expected_effect_hi": (
+                f"{topic_hi} में विस्तार, विकास एवं सौभाग्य की संभावना है। "
+                "इस क्षेत्र में उद्यम एवं निवेश सकारात्मक परिणाम देते हैं।"
+            ),
+            "sloka_ref": sloka,
+        })
+
+        # 2. Venus transiting Kendra/Trikona house sign → enhances
+        if house in (KENDRAS | TRIKONAS):
+            triggers.append({
+                "planet": "Venus",
+                "trigger_sign": house_sign,
+                "trigger_condition_en": (
+                    f"When Venus transits {house_sign} (Kendra/Trikona {house}th house), "
+                    f"harmony, beauty, and enjoyment in {topic_en} are especially enhanced."
+                ),
+                "trigger_condition_hi": (
+                    f"जब शुक्र {house_sign} (केंद्र/त्रिकोण {house}वें भाव) में गोचर करे, "
+                    f"तब {topic_hi} में सौहार्द, सौंदर्य एवं आनंद विशेष रूप से बढ़ता है।"
+                ),
+                "expected_effect_en": (
+                    f"Favourable outcomes, pleasures, and harmonious experiences "
+                    f"in {topic_en} are supported during this transit."
+                ),
+                "expected_effect_hi": (
+                    f"इस गोचर के दौरान {topic_hi} में अनुकूल परिणाम, "
+                    "सुख एवं सौहार्दपूर्ण अनुभव प्राप्त होते हैं।"
+                ),
+                "sloka_ref": sloka,
+            })
+
+    return triggers
+
+
 def _occupants(house: int, chart: Dict[str, Any]) -> List[str]:
     out: List[str] = []
     for p, pdata in _planets(chart).items():
@@ -469,6 +656,16 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
         karaka, BHAVA_TOPIC_EN[house], BHAVA_TOPIC_HI[house], chart
     )
 
+    # ── Transit timing triggers ───────────────────────────────
+    transit_triggers = _house_transit_triggers(house, chart, destruction_risk, flourishing)
+
+    timing_note_en = (
+        "These natal-chart placements show risk. Transit timing activates them."
+    )
+    timing_note_hi = (
+        "ये जन्म-कुंडली की स्थितियां जोखिम दर्शाती हैं। गोचर का समय उन्हें सक्रिय करता है।"
+    )
+
     return {
         "house": house,
         "name_en": BHAVA_NAMES_EN[house],
@@ -482,6 +679,9 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
         "reasons_hi": reasons_hi,
         "karaka_as_lagna_analysis_en": k_en,
         "karaka_as_lagna_analysis_hi": k_hi,
+        "transit_triggers": transit_triggers,
+        "timing_note_en": timing_note_en,
+        "timing_note_hi": timing_note_hi,
         "sloka_ref": f"Phaladeepika Adh. 15 (bhava {house})",
     }
 

@@ -846,6 +846,366 @@ def analyze_antardasha_phala(
     }
 
 
+# ============================================================
+# FEATURE #29 — Sookshma (4th) + Prana (5th) Dasha Subdivisions
+# Phaladeepika Adhyaya 21
+# ============================================================
+
+# Classical planetary themes for Prana-level interpretation
+_PRANA_THEMES_EN = {
+    "Sun":     "authority, vitality, and government matters",
+    "Moon":    "emotional sensitivity, mind, and nurturing themes",
+    "Mars":    "energy, courage, and conflict resolution",
+    "Rahu":    "ambition, foreign matters, and sudden shifts",
+    "Jupiter": "wisdom, expansion, and spiritual growth",
+    "Saturn":  "discipline, delays, and karmic lessons",
+    "Mercury": "communication, intellect, and commerce",
+    "Ketu":    "detachment, spiritual insight, and past karma",
+    "Venus":   "creative and relational themes",
+}
+
+_PRANA_THEMES_HI = {
+    "Sun":     "सत्ता, जीवन-शक्ति एवं राजकीय विषय",
+    "Moon":    "भावनात्मक संवेदनशीलता, मन एवं पोषण",
+    "Mars":    "ऊर्जा, साहस एवं संघर्ष-समाधान",
+    "Rahu":    "महत्त्वाकांक्षा, विदेश-संबंध एवं आकस्मिक परिवर्तन",
+    "Jupiter": "ज्ञान, विस्तार एवं आध्यात्मिक विकास",
+    "Saturn":  "अनुशासन, विलम्ब एवं कार्मिक पाठ",
+    "Mercury": "संचार, बुद्धि एवं वाणिज्य",
+    "Ketu":    "विरक्ति, आध्यात्मिक अंतर्दृष्टि एवं पूर्व-कर्म",
+    "Venus":   "सृजनात्मक व संबंध-सम्बन्धी विषय",
+}
+
+
+def _build_sookshma_periods(
+    pratyantar_planet: str,
+    pratyantar_duration_days: float,
+    pratyantar_start: datetime,
+    now: datetime,
+) -> list:
+    """
+    Build Sookshma Dasha periods (4th level) within a Pratyantar Dasha.
+
+    Each Sookshma duration = (pratyantar_duration_days × planet_years) / 120.
+
+    Args:
+        pratyantar_planet: The Pratyantar lord (sequence starts from this planet).
+        pratyantar_duration_days: Total duration of the Pratyantar in days.
+        pratyantar_start: Start datetime of the Pratyantar.
+        now: Reference datetime for is_current flag.
+
+    Returns:
+        List of 9 dicts: {planet, duration_days, start, end, is_current}
+    """
+    sookshma_seq = _get_dasha_sequence(pratyantar_planet)
+    sookshma_periods = []
+    sk_start = pratyantar_start
+
+    for sk_planet in sookshma_seq:
+        sk_years = DASHA_YEARS[sk_planet]
+        # Sookshma duration = (pratyantar_duration_days × planet_years) / 120
+        sk_duration_days = (pratyantar_duration_days * sk_years) / VIMSHOTTARI_TOTAL
+        sk_end = sk_start + timedelta(days=sk_duration_days)
+
+        is_current = (sk_start <= now <= sk_end)
+
+        sookshma_periods.append({
+            "planet": sk_planet,
+            "duration_days": sk_duration_days,
+            "start": sk_start.strftime("%Y-%m-%d"),
+            "end": sk_end.strftime("%Y-%m-%d"),
+            "is_current": is_current,
+        })
+        sk_start = sk_end
+
+    return sookshma_periods
+
+
+def _build_prana_periods(
+    sookshma_planet: str,
+    sookshma_duration_days: float,
+    sookshma_start: datetime,
+    now: datetime,
+) -> list:
+    """
+    Build Prana Dasha periods (5th level) within a Sookshma Dasha.
+
+    Each Prana duration = (sookshma_duration_days × planet_years) / 120.
+    Prana periods are very short (hours to a few days).
+
+    Args:
+        sookshma_planet: The Sookshma lord (sequence starts from this planet).
+        sookshma_duration_days: Total duration of the Sookshma in days.
+        sookshma_start: Start datetime of the Sookshma.
+        now: Reference datetime for is_current flag.
+
+    Returns:
+        List of 9 dicts: {planet, duration_days, start, end, is_current}
+    """
+    prana_seq = _get_dasha_sequence(sookshma_planet)
+    prana_periods = []
+    pr_start = sookshma_start
+
+    for pr_planet in prana_seq:
+        pr_years = DASHA_YEARS[pr_planet]
+        # Prana duration = (sookshma_duration_days × planet_years) / 120
+        pr_duration_days = (sookshma_duration_days * pr_years) / VIMSHOTTARI_TOTAL
+        pr_end = pr_start + timedelta(days=pr_duration_days)
+
+        is_current = (pr_start <= now <= pr_end)
+
+        prana_periods.append({
+            "planet": pr_planet,
+            "duration_days": pr_duration_days,
+            "start": pr_start.strftime("%Y-%m-%d"),
+            "end": pr_end.strftime("%Y-%m-%d"),
+            "is_current": is_current,
+        })
+        pr_start = pr_end
+
+    return prana_periods
+
+
+def calculate_sookshma_prana(
+    birth_nakshatra: str,
+    birth_date: str,
+    moon_longitude: float = None,
+    target_date: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Calculate the current Sookshma (4th) and Prana (5th) Dasha subdivisions.
+
+    Computes the full dasha chain up to the current/target date and returns
+    only the CURRENT period at each of the 5 levels (MD → AD → PAD → SK → PR).
+
+    Args:
+        birth_nakshatra: One of 27 nakshatras (e.g. "Ashwini")
+        birth_date: Birth date as "YYYY-MM-DD"
+        moon_longitude: Moon's sidereal longitude in degrees (0-360). Optional.
+        target_date: Optional "YYYY-MM-DD" — if given, find period at that date
+                     instead of today.
+
+    Returns:
+        {
+            current_mahadasha: {planet, start, end},
+            current_antardasha: {planet, start, end},
+            current_pratyantar: {planet, start, end},
+            current_sookshma: {planet, start, end, duration_days},
+            current_prana: {planet, start, end, duration_days},
+            interpretation_en: str,
+            interpretation_hi: str,
+            sloka_ref: "Phaladeepika Adh. 21",
+        }
+    """
+    if birth_nakshatra not in NAKSHATRA_LORD:
+        return {
+            "error": f"Unknown nakshatra: {birth_nakshatra}",
+            "current_mahadasha": None,
+            "current_antardasha": None,
+            "current_pratyantar": None,
+            "current_sookshma": None,
+            "current_prana": None,
+        }
+
+    # Determine the reference datetime
+    if target_date:
+        try:
+            now = datetime.strptime(target_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        except ValueError:
+            now = datetime.now(timezone.utc)
+    else:
+        now = datetime.now(timezone.utc)
+
+    starting_lord = NAKSHATRA_LORD[birth_nakshatra]
+    sequence = _get_dasha_sequence(starting_lord)
+    birth_dt = _parse_date(birth_date).replace(tzinfo=timezone.utc)
+
+    balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
+
+    # ── Level 1: Mahadasha ──────────────────────────────────────
+    mahadasha_record = None
+    current_start = birth_dt
+    full_seq = sequence * 4  # covers ~480 years
+
+    for i, planet in enumerate(full_seq):
+        full_years = DASHA_YEARS[planet]
+        effective_years = full_years * balance if i == 0 else full_years
+        end_dt = current_start + timedelta(days=effective_years * 365.25)
+
+        if current_start <= now <= end_dt:
+            mahadasha_record = {
+                "planet": planet,
+                "start": current_start.strftime("%Y-%m-%d"),
+                "end": end_dt.strftime("%Y-%m-%d"),
+                "_start_dt": current_start,
+                "_years": effective_years,
+            }
+            break
+        current_start = end_dt
+
+    if mahadasha_record is None:
+        return {
+            "error": "target_date outside computed mahadasha chain",
+            "current_mahadasha": None,
+            "current_antardasha": None,
+            "current_pratyantar": None,
+            "current_sookshma": None,
+            "current_prana": None,
+        }
+
+    md_planet = mahadasha_record["planet"]
+    md_start = mahadasha_record["_start_dt"]
+    md_years = mahadasha_record["_years"]
+
+    # ── Level 2: Antardasha ──────────────────────────────────────
+    antardasha_record = None
+    ad_seq = _get_dasha_sequence(md_planet)
+    ad_start = md_start
+
+    for ad_planet in ad_seq:
+        ad_years = DASHA_YEARS[ad_planet]
+        ad_duration_days = (md_years * ad_years / VIMSHOTTARI_TOTAL) * 365.25
+        ad_end = ad_start + timedelta(days=ad_duration_days)
+
+        if ad_start <= now <= ad_end:
+            antardasha_record = {
+                "planet": ad_planet,
+                "start": ad_start.strftime("%Y-%m-%d"),
+                "end": ad_end.strftime("%Y-%m-%d"),
+                "_start_dt": ad_start,
+                "_duration_days": ad_duration_days,
+            }
+            break
+        ad_start = ad_end
+
+    if antardasha_record is None:
+        return {
+            "error": "Could not find current antardasha",
+            "current_mahadasha": {k: v for k, v in mahadasha_record.items() if not k.startswith("_")},
+            "current_antardasha": None,
+            "current_pratyantar": None,
+            "current_sookshma": None,
+            "current_prana": None,
+        }
+
+    ad_planet = antardasha_record["planet"]
+    ad_start_dt = antardasha_record["_start_dt"]
+    ad_duration_days = antardasha_record["_duration_days"]
+
+    # ── Level 3: Pratyantar ──────────────────────────────────────
+    pratyantar_record = None
+    pt_seq = _get_dasha_sequence(ad_planet)
+    pt_start = ad_start_dt
+
+    for pt_planet in pt_seq:
+        pt_years = DASHA_YEARS[pt_planet]
+        pt_duration_days = (ad_duration_days * pt_years) / VIMSHOTTARI_TOTAL
+        pt_end = pt_start + timedelta(days=pt_duration_days)
+
+        if pt_start <= now <= pt_end:
+            pratyantar_record = {
+                "planet": pt_planet,
+                "start": pt_start.strftime("%Y-%m-%d"),
+                "end": pt_end.strftime("%Y-%m-%d"),
+                "_start_dt": pt_start,
+                "_duration_days": pt_duration_days,
+            }
+            break
+        pt_start = pt_end
+
+    if pratyantar_record is None:
+        return {
+            "error": "Could not find current pratyantar",
+            "current_mahadasha": {k: v for k, v in mahadasha_record.items() if not k.startswith("_")},
+            "current_antardasha": {k: v for k, v in antardasha_record.items() if not k.startswith("_")},
+            "current_pratyantar": None,
+            "current_sookshma": None,
+            "current_prana": None,
+        }
+
+    pt_planet = pratyantar_record["planet"]
+    pt_start_dt = pratyantar_record["_start_dt"]
+    pt_duration_days = pratyantar_record["_duration_days"]
+
+    # ── Level 4: Sookshma ────────────────────────────────────────
+    sookshma_periods = _build_sookshma_periods(pt_planet, pt_duration_days, pt_start_dt, now)
+    sookshma_record = None
+    for sk in sookshma_periods:
+        if sk["is_current"]:
+            sookshma_record = sk
+            break
+    # Fallback to last sookshma if none matched (edge case at exact boundary)
+    if sookshma_record is None and sookshma_periods:
+        sookshma_record = sookshma_periods[-1]
+
+    sk_planet = sookshma_record["planet"]
+    sk_start_dt = datetime.strptime(sookshma_record["start"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    sk_duration_days = sookshma_record["duration_days"]
+
+    # ── Level 5: Prana ───────────────────────────────────────────
+    prana_periods = _build_prana_periods(sk_planet, sk_duration_days, sk_start_dt, now)
+    prana_record = None
+    for pr in prana_periods:
+        if pr["is_current"]:
+            prana_record = pr
+            break
+    # Fallback to last prana if none matched
+    if prana_record is None and prana_periods:
+        prana_record = prana_periods[-1]
+
+    pr_planet = prana_record["planet"]
+
+    # ── Build interpretation ─────────────────────────────────────
+    theme_en = _PRANA_THEMES_EN.get(pr_planet, "subtle influences")
+    theme_hi = _PRANA_THEMES_HI.get(pr_planet, "सूक्ष्म प्रभाव")
+
+    interpretation_en = (
+        f"Currently in {md_planet} MD > {ad_planet} AD > {pt_planet} PAD > "
+        f"{sk_planet} SK > {pr_planet} Prana. "
+        f"The Prana lord {pr_planet} brings {theme_en} "
+        f"to this brief but potent window."
+    )
+    interpretation_hi = (
+        f"वर्तमान में {md_planet} महादशा > {ad_planet} अंतर्दशा > "
+        f"{pt_planet} प्रत्यंतर > {sk_planet} सूक्ष्म > {pr_planet} प्राण दशा। "
+        f"प्राण-स्वामी {pr_planet} इस अल्पकालिक किन्तु प्रभावशाली काल में "
+        f"{theme_hi} लाते हैं।"
+    )
+
+    return {
+        "current_mahadasha": {
+            "planet": md_planet,
+            "start": mahadasha_record["start"],
+            "end": mahadasha_record["end"],
+        },
+        "current_antardasha": {
+            "planet": ad_planet,
+            "start": antardasha_record["start"],
+            "end": antardasha_record["end"],
+        },
+        "current_pratyantar": {
+            "planet": pt_planet,
+            "start": pratyantar_record["start"],
+            "end": pratyantar_record["end"],
+        },
+        "current_sookshma": {
+            "planet": sk_planet,
+            "start": sookshma_record["start"],
+            "end": sookshma_record["end"],
+            "duration_days": sk_duration_days,
+        },
+        "current_prana": {
+            "planet": pr_planet,
+            "start": prana_record["start"],
+            "end": prana_record["end"],
+            "duration_days": prana_record["duration_days"],
+        },
+        "interpretation_en": interpretation_en,
+        "interpretation_hi": interpretation_hi,
+        "sloka_ref": "Phaladeepika Adh. 21",
+    }
+
+
 def get_current_dasha_phala(
     chart_data: dict, birth_date: str, as_of_date: Optional[str] = None
 ) -> Dict[str, Any]:

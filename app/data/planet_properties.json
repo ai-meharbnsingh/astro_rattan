@@ -1,0 +1,226 @@
+{
+  "stage_of_life": {
+    "Sun": {
+      "stage": "Youth",
+      "stage_hi": "युवा",
+      "description_en": "The Sun is in its prime — full of vitality, authority, and ambition. It bestows courage, leadership, and the drive to stand apart. Like a king in his golden years of reign, the Sun radiates confidence and commands respect.",
+      "description_hi": "सूर्य यौवनावस्था में है — ओज, अधिकार और महत्त्वाकांक्षा से परिपूर्ण। यह साहस, नेतृत्व और विशिष्ट पहचान देता है। राजा के शासन के स्वर्णिम वर्षों की भाँति सूर्य तेज और सम्मान प्रदान करता है।"
+    },
+    "Moon": {
+      "stage": "Child",
+      "stage_hi": "बाल",
+      "description_en": "The Moon is tender and child-like — emotionally open, dependent on nurturing, and sensitive to environment. Its waxing and waning phases mirror the fluctuating mind. It thrives on care, comfort, and maternal bonds.",
+      "description_hi": "चन्द्रमा कोमल और बाल-स्वभावी है — भावनात्मक रूप से खुला, पोषण पर निर्भर और वातावरण के प्रति संवेदनशील। इसकी बढ़ती-घटती कलाएँ मन की चंचलता का दर्पण हैं। यह देखभाल, सुविधा और मातृ-बन्धन में पल्लवित होता है।"
+    },
+    "Mars": {
+      "stage": "Youth",
+      "stage_hi": "युवा",
+      "description_en": "Mars is vigorous, aggressive, and action-driven — a warrior in full strength. In its youthful prime, Mars conquers obstacles through sheer force and daring. It represents peak physical energy, boldness, and competitive spirit.",
+      "description_hi": "मंगल ओजस्वी, आक्रामक और कर्म-प्रवण है — पूर्ण शक्ति में एक योद्धा। अपनी युवा शक्ति में, मंगल विशुद्ध बल और साहस से बाधाओं को जीतता है। यह चरम शारीरिक ऊर्जा, दुस्साहस और प्रतिस्पर्धी भावना का प्रतीक है।"
+    },
+    "Mercury": {
+      "stage": "Child",
+      "stage_hi": "बाल",
+      "description_en": "Mercury is playful, curious, and eternally learning — the eternal student. Like a child delighting in words, numbers, and clever puzzles, Mercury thrives in an environment of exploration and communication. It is quick, adaptable, and never fully grown.",
+      "description_hi": "बुध चंचल, जिज्ञासु और नित्य सीखने वाला है — शाश्वत विद्यार्थी। शब्दों, अंकों और चतुर पहेलियों में प्रसन्न होने वाले बालक की भाँति, बुध अन्वेषण और संचार के वातावरण में फलता-फूलता है। यह त्वरित, अनुकूलनशील और सदा अपरिपक्व है।"
+    },
+    "Jupiter": {
+      "stage": "Mature",
+      "stage_hi": "वृद्ध",
+      "description_en": "Jupiter is the elder sage — wise, experienced, and deeply advisory. It has lived through many cycles and emerges as the teacher, guide, and upholder of dharma. Its counsel carries the weight of accumulated knowledge and spiritual understanding.",
+      "description_hi": "गुरु वरिष्ठ ऋषि है — ज्ञानी, अनुभवी और परामर्शदाता। यह अनेक चक्रों से गुज़रकर शिक्षक, मार्गदर्शक और धर्म के रक्षक के रूप में प्रकट होता है। इसका परामर्श संचित ज्ञान और आध्यात्मिक समझ के भार से युक्त है।"
+    },
+    "Venus": {
+      "stage": "Youth",
+      "stage_hi": "युवा",
+      "description_en": "Venus is in full bloom — pleasure-seeking, charming, and magnetic. At the height of its youthful allure, Venus indulges in beauty, refinement, and sensory delight. It is the poet in prime, the lover at the peak of passion.",
+      "description_hi": "शुक्र पूर्ण यौवन में है — सुख-प्रिय, आकर्षक और चुम्बकीय। अपने यौवन के शीर्ष पर, शुक्र सौन्दर्य, परिष्कार और इन्द्रिय-सुख में लीन रहता है। यह उत्कर्ष के कवि और तीव्र प्रेम के शिखर पर प्रेमी है।"
+    },
+    "Saturn": {
+      "stage": "Old",
+      "stage_hi": "वृद्ध",
+      "description_en": "Saturn is the ancient elder — slow, austere, and immovably patient. Having seen everything, it governs through discipline, deprivation, and endurance. Its wisdom is hard-won through suffering, and its rewards come only after long perseverance.",
+      "description_hi": "शनि प्राचीन वृद्ध है — धीमा, तपस्वी और अटल धैर्यवान। सब कुछ देख चुकने के बाद, यह अनुशासन, वंचना और सहनशीलता से शासन करता है। इसकी बुद्धि कठिन कष्टों से अर्जित है और इसके पुरस्कार दीर्घ परिश्रम के बाद ही मिलते हैं।"
+    },
+    "Rahu": {
+      "stage": "Old",
+      "stage_hi": "वृद्ध",
+      "description_en": "Rahu carries the weight of aeons — an ancient shadow force of karmic compulsion. Its age is immeasurable; it operates from the accumulated desires of countless lifetimes, driving the soul toward experiences it is karmically bound to complete.",
+      "description_hi": "राहु युगों का भार वहन करता है — कर्म-प्रेरणा की एक प्राचीन छाया-शक्ति। इसकी आयु अपरिमेय है; यह अनगिनत जन्मों की संचित कामनाओं से संचालित होता है, आत्मा को उन अनुभवों की ओर ले जाता है जिन्हें वह कर्मतः पूर्ण करने के लिए बाध्य है।"
+    },
+    "Ketu": {
+      "stage": "Old",
+      "stage_hi": "वृद्ध",
+      "description_en": "Ketu is the oldest of forces — spiritual renunciation born of exhaustion with worldly cycles. It embodies past-life karma that has already been experienced, leaving detachment in its wake. Where Rahu craves, Ketu releases.",
+      "description_hi": "केतु सर्वाधिक प्राचीन शक्ति है — सांसारिक चक्रों से थककर उत्पन्न आध्यात्मिक वैराग्य। यह उस पिछले जन्म के कर्म का प्रतिनिधित्व करता है जो पहले से अनुभव हो चुका है और अपने पीछे विरक्ति छोड़ जाता है। जहाँ राहु लालसा करता है, वहाँ केतु छोड़ देता है।"
+    }
+  },
+  "gunas": {
+    "Sun": {
+      "guna": "Sattvika",
+      "guna_hi": "सात्विक",
+      "description_en": "The Sun embodies pure Sattva — the quality of clarity, truth, and divine light. It governs the soul (Atmakaraka), righteousness, and the self-luminous nature of consciousness. A Sattvika planet uplifts the mind toward the higher self.",
+      "description_hi": "सूर्य शुद्ध सत्त्व का प्रतीक है — स्पष्टता, सत्य और दिव्य प्रकाश का गुण। यह आत्मा (आत्मकारक), धर्म और चेतना की स्वयंप्रकाशी प्रकृति को नियंत्रित करता है। एक सात्विक ग्रह मन को उच्चतर आत्मा की ओर उठाता है।"
+    },
+    "Moon": {
+      "guna": "Sattvika",
+      "guna_hi": "सात्विक",
+      "description_en": "The Moon carries Sattva through its nurturing, reflective, and devotional nature. As the mind's significator, it inclines toward purity, care, and spiritual receptivity. A strong Sattvika Moon produces a calm, compassionate, and intuitive mind.",
+      "description_hi": "चन्द्रमा अपनी पोषणकारी, चिन्तनशील और भक्तिपूर्ण प्रकृति के माध्यम से सत्त्व धारण करता है। मन के कारक के रूप में, यह शुद्धता, देखभाल और आध्यात्मिक ग्रहणशीलता की ओर झुकता है। एक बलशाली सात्विक चन्द्रमा शान्त, करुणामय और अन्तर्ज्ञानी मन उत्पन्न करता है।"
+    },
+    "Mars": {
+      "guna": "Rajasa",
+      "guna_hi": "राजसिक",
+      "description_en": "Mars is quintessentially Rajasic — active, passionate, and driven by desire for achievement and dominance. Its energy is kinetic, ambitious, and competitive. Rajasic planets fuel worldly action, intensity, and the will to conquer.",
+      "description_hi": "मंगल स्वाभाविक रूप से राजसिक है — सक्रिय, आवेगी और उपलब्धि तथा प्रभुत्व की कामना से प्रेरित। इसकी ऊर्जा गतिज, महत्त्वाकांक्षी और प्रतिस्पर्धी है। राजसिक ग्रह सांसारिक कार्य, तीव्रता और विजय की इच्छाशक्ति को ईंधन देते हैं।"
+    },
+    "Mercury": {
+      "guna": "Rajasa",
+      "guna_hi": "राजसिक",
+      "description_en": "Mercury's Rajasic quality manifests as mental restlessness, commercial drive, and the constant pursuit of new information. It stimulates intellect in service of worldly goals — trade, rhetoric, and calculation. Its energy is ever-moving and acquisitive.",
+      "description_hi": "बुध की राजसिक विशेषता मानसिक बेचैनी, व्यापारिक प्रवृत्ति और नई सूचना की निरन्तर खोज के रूप में प्रकट होती है। यह सांसारिक लक्ष्यों — व्यापार, वाक्-कुशलता और गणना — की सेवा में बुद्धि को प्रेरित करता है। इसकी ऊर्जा सदा गतिशील और संग्रहशील है।"
+    },
+    "Jupiter": {
+      "guna": "Sattvika",
+      "guna_hi": "सात्विक",
+      "description_en": "Jupiter is the highest expression of Sattva among all planets — the Guru, the bestower of wisdom, dharma, and divine grace. It elevates the soul toward truth, righteousness, and expansive spiritual understanding. Its blessings are pure and uplifting.",
+      "description_hi": "गुरु समस्त ग्रहों में सत्त्व की सर्वोच्च अभिव्यक्ति है — गुरु, ज्ञान, धर्म और दैवीय अनुग्रह का दाता। यह आत्मा को सत्य, धर्म और विस्तृत आध्यात्मिक समझ की ओर उठाता है। इसके आशीर्वाद शुद्ध और उत्थानकारी हैं।"
+    },
+    "Venus": {
+      "guna": "Rajasa",
+      "guna_hi": "राजसिक",
+      "description_en": "Venus is Rajasic in its pursuit of pleasure, beauty, and sensory refinement. It channels Rajas into the arts, romance, and material comfort. The Rajasic quality of Venus drives desire for beauty, luxury, and harmonious relationships.",
+      "description_hi": "शुक्र सुख, सौन्दर्य और इन्द्रिय-परिष्कार की खोज में राजसिक है। यह रज को कला, प्रेम और भौतिक सुविधा में प्रवाहित करता है। शुक्र की राजसिक विशेषता सौन्दर्य, विलासिता और सुमधुर सम्बन्धों की इच्छा को प्रेरित करती है।"
+    },
+    "Saturn": {
+      "guna": "Tamasa",
+      "guna_hi": "तामसिक",
+      "description_en": "Saturn carries the heaviness of Tamas — inertia, restriction, darkness, and the weight of karma. It does not seek pleasure or illumination but endurance through limitation. Tamas here is not evil but the necessary force of gravity, aging, and karmic reckoning.",
+      "description_hi": "शनि तमस का भार वहन करता है — जड़ता, बाधा, अन्धकार और कर्म का बोझ। यह सुख या प्रकाश नहीं खोजता, बल्कि सीमाओं के माध्यम से सहनशक्ति चाहता है। यहाँ तमस बुरा नहीं बल्कि गुरुत्वाकर्षण, वार्धक्य और कर्म-लेखे की आवश्यक शक्ति है।"
+    },
+    "Rahu": {
+      "guna": "Tamasa",
+      "guna_hi": "तामसिक",
+      "description_en": "Rahu is profoundly Tamasic — its shadowy, illusory nature breeds obsession, confusion, and material entanglement. It darkens clarity and amplifies worldly desire without satiation. Rahu's Tamas manifests as delusion, craving, and a veil over spiritual perception.",
+      "description_hi": "राहु गहन रूप से तामसिक है — इसकी छायामय, भ्रामक प्रकृति जुनून, भ्रम और भौतिक उलझन को जन्म देती है। यह स्पष्टता को धुंधला करता है और बिना तृप्ति के सांसारिक इच्छा को बढ़ाता है। राहु का तमस भ्रम, लालसा और आध्यात्मिक दृष्टि पर परदे के रूप में प्रकट होता है।"
+    },
+    "Ketu": {
+      "guna": "Sattvika",
+      "guna_hi": "सात्विक",
+      "description_en": "Despite its outward mystery, Ketu is ultimately Sattvika — oriented toward liberation (moksha), renunciation, and dissolution of ego. It cuts through illusion (like a flame) and points the soul toward spiritual freedom, even if the path is disorienting.",
+      "description_hi": "अपनी बाह्य रहस्यमयता के बावजूद, केतु अन्ततः सात्विक है — मोक्ष, वैराग्य और अहंकार के विसर्जन की ओर उन्मुख। यह (ज्योति की भाँति) भ्रम को काटता है और आत्मा को आध्यात्मिक स्वतन्त्रता की ओर इंगित करता है, भले ही मार्ग भटकाने वाला हो।"
+    }
+  },
+  "baladi_avastha_stages": {
+    "Bala": {
+      "name_hi": "बाल",
+      "strength_fraction": 0.25,
+      "description_en": "Infant stage — the planet is weak and untested, like a newborn. Its significations give only faint, diluted results. It lacks the maturity to fully deliver its promises; positive results are partial and negative results are softened.",
+      "description_hi": "शिशु अवस्था — ग्रह दुर्बल और अपरीक्षित है, नवजात शिशु की भाँति। इसके कारकत्व मात्र क्षीण, तनु फल देते हैं। इसमें अपने वचनों को पूर्णतः पूरा करने की परिपक्वता का अभाव है; सकारात्मक परिणाम आंशिक और नकारात्मक परिणाम मृदु होते हैं।"
+    },
+    "Kumara": {
+      "name_hi": "कुमार",
+      "strength_fraction": 0.50,
+      "description_en": "Adolescent stage — the planet has some strength but remains developing. It delivers moderate results — neither full nor negligible. Like a teenager finding their way, the planet has potential not yet fully realised.",
+      "description_hi": "किशोर अवस्था — ग्रह में कुछ शक्ति है परन्तु अभी भी विकासशील है। यह मध्यम परिणाम देता है — न पूर्ण न नगण्य। अपना मार्ग खोजते किशोर की भाँति, ग्रह में क्षमता है जो अभी पूरी तरह साकार नहीं हुई।"
+    },
+    "Yuva": {
+      "name_hi": "युवा",
+      "strength_fraction": 1.00,
+      "description_en": "Prime youth stage — the planet is at its most powerful and effective. It delivers full, unobstructed results of its significations. Benefics give their best blessings; malefics cause their strongest effects. This is the peak of planetary potency.",
+      "description_hi": "युवा शक्ति-काल — ग्रह अपनी सर्वाधिक शक्तिशाली और प्रभावी अवस्था में है। यह अपने कारकत्वों के पूर्ण, अबाधित परिणाम देता है। शुभ ग्रह अपने सर्वोत्तम आशीर्वाद देते हैं; पाप ग्रह अपने तीव्रतम प्रभाव डालते हैं। यह ग्रह-सामर्थ्य का चरम है।"
+    },
+    "Vriddha": {
+      "name_hi": "वृद्ध",
+      "strength_fraction": 0.50,
+      "description_en": "Old age stage — the planet's strength is declining. Like an elder past their prime, it still has wisdom and experience but diminished power to act. Results are reduced; the planet can no longer fully execute its promises.",
+      "description_hi": "वृद्धावस्था — ग्रह की शक्ति घट रही है। अपने यौवन को पार कर चुके वृद्ध की भाँति, इसमें अभी भी ज्ञान और अनुभव है परन्तु कर्म करने की शक्ति कम हो गई है। परिणाम कम हो जाते हैं; ग्रह अब अपने वचनों को पूर्णतः क्रियान्वित करने में असमर्थ है।"
+    },
+    "Mrita": {
+      "name_hi": "मृत",
+      "strength_fraction": 0.10,
+      "description_en": "Dead stage — the planet is almost entirely spent. Like a flame about to extinguish, it gives only trace results. Its significations are largely dormant; the native may not experience the planet's benefits or feel its malefic effects are hollow and devoid of lasting consequence.",
+      "description_hi": "मृत अवस्था — ग्रह लगभग पूर्णतः क्षीण हो चुका है। बुझने वाली ज्योति की भाँति, यह मात्र अवशेष फल देता है। इसके कारकत्व बहुलांश सुप्त हैं; जातक ग्रह के लाभों का अनुभव नहीं कर सकता या उसके पाप प्रभाव खोखले और स्थायी परिणाम-रहित प्रतीत होते हैं।"
+    }
+  },
+  "rising_signs": {
+    "Aries": {
+      "mode": "Prusthodaya",
+      "mode_hi": "पृष्ठोदय",
+      "effect_en": "Aries rises back-first (Prusthodaya) — the native's prominence builds gradually and reaches its peak in the latter half of life. Early years may involve struggle and obscurity; the true rise comes with maturity and experience.",
+      "effect_hi": "मेष पृष्ठोदय से उदय होता है — जातक की प्रतिष्ठा धीरे-धीरे बढ़ती है और जीवन के उत्तरार्ध में शीर्ष पर पहुँचती है। प्रारम्भिक वर्षों में संघर्ष और अस्पष्टता हो सकती है; वास्तविक उत्थान परिपक्वता और अनुभव के साथ आता है।"
+    },
+    "Taurus": {
+      "mode": "Prusthodaya",
+      "mode_hi": "पृष्ठोदय",
+      "effect_en": "Taurus is Prusthodaya — slow and steady, strength builds with age. The native is like a tree that takes years to bear fruit; early life is foundational rather than spectacular. Wealth, stability, and recognition accumulate steadily over time.",
+      "effect_hi": "वृषभ पृष्ठोदय है — धीमा और स्थिर, शक्ति आयु के साथ बढ़ती है। जातक उस वृक्ष की भाँति है जो फल देने में वर्ष लगाता है; प्रारम्भिक जीवन शानदार नहीं बल्कि आधारभूत होता है। धन, स्थिरता और मान्यता समय के साथ धीरे-धीरे संचित होते हैं।"
+    },
+    "Gemini": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Gemini rises head-first (Shirodaya) — the native rises early in life through intelligence, communication, and quick adaptability. Success comes front-loaded; the native shines in youth through wit, versatility, and networking.",
+      "effect_hi": "मिथुन शीर्षोदय से उदय होता है — जातक बुद्धि, संचार और शीघ्र अनुकूलनशीलता के माध्यम से जीवन में जल्दी उभरता है। सफलता आगे आती है; जातक चातुर्य, बहुमुखीता और नेटवर्किंग के माध्यम से यौवन में चमकता है।"
+    },
+    "Cancer": {
+      "mode": "Prusthodaya",
+      "mode_hi": "पृष्ठोदय",
+      "effect_en": "Cancer is Prusthodaya — the native faces early emotional struggles and dependency, but grows into strength in later years. Like the crab that carries its home, the native builds a foundation over time and emerges with greater security and fulfilment in life's second half.",
+      "effect_hi": "कर्क पृष्ठोदय है — जातक प्रारम्भिक भावनात्मक संघर्षों और निर्भरता का सामना करता है, परन्तु बाद के वर्षों में शक्ति प्राप्त करता है। केकड़े की भाँति जो अपना घर अपने साथ ले जाता है, जातक समय के साथ आधार बनाता है और जीवन के दूसरे भाग में अधिक सुरक्षा और सन्तुष्टि के साथ उभरता है।"
+    },
+    "Leo": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Leo is strongly Shirodaya — the native rises with authority, ambition, and force of personality from an early age. Like the lion that leads from the front, Leo ascendants make their mark in the first half of life through confidence, leadership, and a natural command of attention.",
+      "effect_hi": "सिंह दृढ़तापूर्वक शीर्षोदय है — जातक प्रारम्भिक आयु से ही अधिकार, महत्त्वाकांक्षा और व्यक्तित्व की शक्ति के साथ उभरता है। उस सिंह की भाँति जो आगे से नेतृत्व करता है, सिंह लग्नवाले आत्मविश्वास, नेतृत्व और ध्यान आकर्षण की स्वाभाविक शक्ति से जीवन के पूर्वार्ध में अपनी छाप छोड़ते हैं।"
+    },
+    "Virgo": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Virgo is Shirodaya — the intellectual rise comes in the first half of life through precision, analysis, and diligent service. The native gains recognition through skill, discipline, and practical mastery. Early career achievements often define the life trajectory.",
+      "effect_hi": "कन्या शीर्षोदय है — बौद्धिक उत्थान सटीकता, विश्लेषण और परिश्रमी सेवा के माध्यम से जीवन के पूर्वार्ध में आता है। जातक कौशल, अनुशासन और व्यावहारिक दक्षता के माध्यम से पहचान प्राप्त करता है। प्रारम्भिक करियर की उपलब्धियाँ प्रायः जीवन की दिशा निर्धारित करती हैं।"
+    },
+    "Libra": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Libra is Shirodaya — the native rises through partnerships, diplomacy, and charisma in the first half of life. Social grace and an innate sense of balance open doors early. The native shines in collaborative endeavours and rises through harmonious alliances.",
+      "effect_hi": "तुला शीर्षोदय है — जातक जीवन के पूर्वार्ध में साझेदारी, कूटनीति और आकर्षण के माध्यम से उभरता है। सामाजिक सौम्यता और सन्तुलन की जन्मजात भावना जल्दी द्वार खोलती है। जातक सहयोगी प्रयासों में चमकता है और सुमधुर गठबन्धनों के माध्यम से उठता है।"
+    },
+    "Scorpio": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Scorpio is Shirodaya — intense early drive and transformative experiences characterise the first half of life. The native confronts and overcomes profound challenges early, emerging transformed. The head-first rise here is through crisis, depth, and psychological mastery.",
+      "effect_hi": "वृश्चिक शीर्षोदय है — तीव्र प्रारम्भिक प्रेरणा और परिवर्तनकारी अनुभव जीवन के पूर्वार्ध की विशेषता हैं। जातक प्रारम्भ में गहन चुनौतियों का सामना करता और उन पर विजय पाता है, रूपान्तरित होकर उभरता है। यहाँ शीर्षोदय संकट, गहराई और मनोवैज्ञानिक दक्षता के माध्यम से है।"
+    },
+    "Sagittarius": {
+      "mode": "Prusthodaya",
+      "mode_hi": "पृष्ठोदय",
+      "effect_en": "Sagittarius is Prusthodaya — wisdom, fortune, and the fullest expression of dharma come in the second half of life. Early years are restless with searching; maturity brings philosophical depth, long-distance gains, and the recognition of the guru or teacher within.",
+      "effect_hi": "धनु पृष्ठोदय है — ज्ञान, भाग्य और धर्म की पूर्णतम अभिव्यक्ति जीवन के उत्तरार्ध में आती है। प्रारम्भिक वर्ष खोज में बेचैन होते हैं; परिपक्वता दार्शनिक गहराई, दूरस्थ लाभ और आन्तरिक गुरु की पहचान लाती है।"
+    },
+    "Capricorn": {
+      "mode": "Prusthodaya",
+      "mode_hi": "पृष्ठोदय",
+      "effect_en": "Capricorn is the quintessential Prusthodaya — the slow grind, the late bloomer. Rewards come through decades of disciplined effort. Early life is often marked by hardship, limitation, and responsibility; the second half brings the fruits of relentless perseverance.",
+      "effect_hi": "मकर प्रतिनिधिक पृष्ठोदय है — धीमा संघर्ष, देर से खिलने वाला। पुरस्कार दशकों के अनुशासित परिश्रम से आते हैं। प्रारम्भिक जीवन प्रायः कठिनाई, सीमा और जिम्मेदारी से चिह्नित होता है; दूसरा भाग अथक परिश्रम के फल लाता है।"
+    },
+    "Aquarius": {
+      "mode": "Shirodaya",
+      "mode_hi": "शीर्षोदय",
+      "effect_en": "Aquarius is Shirodaya — ahead of its time, rising in the first half of life through innovation, community, and humanitarian vision. The native often excels early in fields that others will only understand later. A pioneering, forward-looking Lagna.",
+      "effect_hi": "कुम्भ शीर्षोदय है — अपने समय से आगे, नवाचार, समुदाय और मानवतावादी दृष्टि के माध्यम से जीवन के पूर्वार्ध में उभरता है। जातक प्रायः उन क्षेत्रों में जल्दी उत्कृष्ट होता है जिन्हें अन्य बाद में ही समझेंगे। एक अग्रणी, दूरदर्शी लग्न।"
+    },
+    "Pisces": {
+      "mode": "Ubhaodaya",
+      "mode_hi": "उभयोदय",
+      "effect_en": "Pisces is Ubhaodaya — the dual-rising sign, combining the qualities of both Shirodaya and Prusthodaya. The native experiences gains in both halves of life, spiritual and material, though often in alternating cycles. A balanced, mystical Lagna with expansive potential throughout life.",
+      "effect_hi": "मीन उभयोदय है — द्विगामी लग्न, जो शीर्षोदय और पृष्ठोदय दोनों के गुणों को सम्मिलित करता है। जातक जीवन के दोनों भागों में लाभ अनुभव करता है, आध्यात्मिक और भौतिक, यद्यपि अक्सर बारी-बारी से। जीवन भर विस्तृत सम्भावना वाला एक सन्तुलित, रहस्यमय लग्न।"
+    }
+  },
+  "sloka_refs": {
+    "stage_of_life": "Phaladeepika Adh. 2 (graha svabhava)",
+    "gunas": "Phaladeepika Adh. 2 (sattva/rajas/tamas)",
+    "baladi_avastha": "Phaladeepika Adh. 2 (graha avastha)",
+    "rising_signs": "Phaladeepika Adh. 1-2 (shirodaya/prusthodaya)"
+  }
+}

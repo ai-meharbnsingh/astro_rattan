@@ -385,6 +385,243 @@ def _karmic_transitions_narrative(overall: str) -> Dict[str, str]:
     }
 
 
+def _sign_of_house_nidhana(h: int, asc_sign: str) -> str:
+    """Return the sign occupying house h from ascendant (whole-sign)."""
+    if asc_sign not in ZODIAC or not (1 <= h <= 12):
+        return ""
+    return ZODIAC[(ZODIAC.index(asc_sign) + h - 1) % 12]
+
+
+def _transit_timing_section(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Returns transit-timing indicators for longevity/karmic transitions.
+    Classical: maraka activation via Saturn/Jupiter/Mars transits through
+    key houses (Phaladeepika Adh. 17 + Adh. 26 transit principles).
+
+    Returns:
+    {
+        "indicators": [
+            {
+                "planet_transit": "Saturn",
+                "target_sign": "Scorpio",
+                "target_house": 8,
+                "significance_en": "...",
+                "significance_hi": "...",
+                "watch_period_en": "When Saturn transits Scorpio (8th house)...",
+                "watch_period_hi": "...",
+                "intensity": "high"  # high / moderate / low
+            },
+            ...
+        ],
+        "summary_en": "...",
+        "summary_hi": "...",
+        "sloka_ref": "Phaladeepika Adh. 17"
+    }
+    """
+    asc = _asc_sign(chart_data)
+
+    indicators: List[Dict[str, Any]] = []
+
+    # ── 8th house sign ─────────────────────────────────────────
+    eighth_sign = _sign_of_house_nidhana(8, asc) if asc else ""
+    second_sign = _sign_of_house_nidhana(2, asc) if asc else ""
+    seventh_sign = _sign_of_house_nidhana(7, asc) if asc else ""
+
+    # Maraka lords
+    maraka_2nd = _lord_of(2, chart_data)
+    maraka_7th = _lord_of(7, chart_data)
+
+    # Where do maraka lords sit natally?
+    maraka_2nd_sign = _planet_sign(maraka_2nd, chart_data) if maraka_2nd else ""
+    maraka_7th_sign = _planet_sign(maraka_7th, chart_data) if maraka_7th else ""
+
+    moon_natal_house = _planet_house("Moon", chart_data)
+    moon_natal_sign = _planet_sign("Moon", chart_data)
+
+    # 1. Saturn transiting 8th house sign → highest intensity
+    if eighth_sign:
+        indicators.append({
+            "planet_transit": "Saturn",
+            "target_sign": eighth_sign,
+            "target_house": 8,
+            "significance_en": (
+                f"Saturn transiting {eighth_sign} activates the 8th house — the primary longevity bhava. "
+                "Classical texts describe this as the most significant karmic review period."
+            ),
+            "significance_hi": (
+                f"शनि का {eighth_sign} में गोचर अष्टम भाव (प्राथमिक आयु-भाव) को सक्रिय करता है। "
+                "शास्त्र इसे सर्वाधिक महत्वपूर्ण कर्म-समीक्षा काल मानते हैं।"
+            ),
+            "watch_period_en": (
+                f"When Saturn transits {eighth_sign} (8th house from your ascendant), "
+                "a deep karmic review period is activated. This is a time for spiritual deepening, "
+                "not to be feared but to be embraced with awareness."
+            ),
+            "watch_period_hi": (
+                f"जब शनि {eighth_sign} (लग्न से अष्टम भाव) में गोचर करे, "
+                "तब गहरी कर्म-समीक्षा का काल सक्रिय होता है। यह आध्यात्मिक गहनता का समय है, "
+                "भय का नहीं — इसे सचेतन रूप से अपनाएं।"
+            ),
+            "intensity": "high",
+        })
+
+    # 2. Saturn transiting natal 2nd house sign → maraka (2nd house) activation
+    if second_sign:
+        indicators.append({
+            "planet_transit": "Saturn",
+            "target_sign": second_sign,
+            "target_house": 2,
+            "significance_en": (
+                f"Saturn transiting {second_sign} activates the 2nd-house maraka theme. "
+                "Classical rules treat this as a period requiring mindful resource stewardship."
+            ),
+            "significance_hi": (
+                f"शनि का {second_sign} में गोचर द्वितीय भाव के मारक-विषय को सक्रिय करता है। "
+                "शास्त्र इसे संसाधनों के सावधान प्रबंधन का काल मानते हैं।"
+            ),
+            "watch_period_en": (
+                f"When Saturn transits {second_sign} (your natal 2nd house sign), "
+                "themes of wealth, speech, and family transitions come into focus. "
+                "Disciplined action and spiritual practice are recommended."
+            ),
+            "watch_period_hi": (
+                f"जब शनि {second_sign} (जन्मकालीन द्वितीय भाव की राशि) में गोचर करे, "
+                "धन, वाणी एवं पारिवारिक संक्रमण के विषय सक्रिय होते हैं। "
+                "अनुशासित कर्म एवं आध्यात्मिक साधना अनुशंसित है।"
+            ),
+            "intensity": "high",
+        })
+
+    # 3. Saturn transiting natal 7th house sign → maraka (7th house) activation
+    if seventh_sign:
+        indicators.append({
+            "planet_transit": "Saturn",
+            "target_sign": seventh_sign,
+            "target_house": 7,
+            "significance_en": (
+                f"Saturn transiting {seventh_sign} activates the 7th-house maraka theme. "
+                "Partnership and relationship transitions become karmically prominent."
+            ),
+            "significance_hi": (
+                f"शनि का {seventh_sign} में गोचर सप्तम भाव के मारक-विषय को जागृत करता है। "
+                "साझेदारी एवं संबंध-संक्रमण कर्म की दृष्टि से महत्वपूर्ण हो जाते हैं।"
+            ),
+            "watch_period_en": (
+                f"When Saturn transits {seventh_sign} (your natal 7th house sign), "
+                "key relationship transitions and life-partnership themes are activated. "
+                "This is a period for honest self-review and compassionate decision-making."
+            ),
+            "watch_period_hi": (
+                f"जब शनि {seventh_sign} (जन्मकालीन सप्तम भाव की राशि) में गोचर करे, "
+                "महत्वपूर्ण संबंध-संक्रमण एवं जीवन-साझेदारी के विषय सक्रिय होते हैं। "
+                "यह ईमानदार आत्म-समीक्षा एवं करुणापूर्ण निर्णय का काल है।"
+            ),
+            "intensity": "high",
+        })
+
+    # 4. Jupiter transiting 8th house sign → spiritual support (moderate, supportive)
+    if eighth_sign:
+        indicators.append({
+            "planet_transit": "Jupiter",
+            "target_sign": eighth_sign,
+            "target_house": 8,
+            "significance_en": (
+                f"Jupiter transiting {eighth_sign} brings spiritual guidance and wisdom "
+                "during the 8th-house transformative period. A protective and illuminating transit."
+            ),
+            "significance_hi": (
+                f"बृहस्पति का {eighth_sign} में गोचर अष्टम भाव के रूपांतरण-काल में "
+                "आध्यात्मिक मार्गदर्शन एवं ज्ञान लाता है। यह एक सुरक्षात्मक एवं प्रकाशमान गोचर है।"
+            ),
+            "watch_period_en": (
+                f"When Jupiter transits {eighth_sign} (8th house), spiritual awareness deepens "
+                "and the transformative energies of this bhava are guided by wisdom and grace."
+            ),
+            "watch_period_hi": (
+                f"जब बृहस्पति {eighth_sign} (अष्टम भाव) में गोचर करे, "
+                "आध्यात्मिक जागरूकता गहरी होती है और इस भाव की रूपांतरणकारी ऊर्जाएं "
+                "ज्ञान एवं अनुग्रह द्वारा निर्देशित होती हैं।"
+            ),
+            "intensity": "moderate",
+        })
+
+    # 5. Mars transiting natal 8th house sign → sudden challenges (moderate)
+    if eighth_sign:
+        indicators.append({
+            "planet_transit": "Mars",
+            "target_sign": eighth_sign,
+            "target_house": 8,
+            "significance_en": (
+                f"Mars transiting {eighth_sign} can bring sudden health or vitality challenges. "
+                "Increased care, rest, and avoidance of unnecessary risks is advised."
+            ),
+            "significance_hi": (
+                f"मंगल का {eighth_sign} में गोचर अचानक स्वास्थ्य या जीवन-शक्ति की चुनौतियां ला सकता है। "
+                "अधिक सावधानी, विश्राम एवं अनावश्यक जोखिम से बचने की सलाह है।"
+            ),
+            "watch_period_en": (
+                f"When Mars transits {eighth_sign} (natal 8th house sign), "
+                "a period of heightened sensitivity begins. Avoid reckless activity; "
+                "prioritise health routines and grounding practices."
+            ),
+            "watch_period_hi": (
+                f"जब मंगल {eighth_sign} (जन्मकालीन अष्टम भाव की राशि) में गोचर करे, "
+                "बढ़ी संवेदनशीलता का काल प्रारम्भ होता है। लापरवाह गतिविधि से बचें; "
+                "स्वास्थ्य-दिनचर्या एवं स्थिरता की साधनाओं को प्राथमिकता दें।"
+            ),
+            "intensity": "moderate",
+        })
+
+    # 6. Moon transiting natal maraka house each month → recurring monthly sensitivity (low)
+    maraka_moon_sign = second_sign  # default to 2nd house sign for Moon sensitivity
+    if maraka_moon_sign:
+        indicators.append({
+            "planet_transit": "Moon",
+            "target_sign": maraka_moon_sign,
+            "target_house": 2,
+            "significance_en": (
+                f"Each month when the Moon transits {maraka_moon_sign} (natal 2nd house), "
+                "a brief but recurring sensitivity window opens around karmic/health themes."
+            ),
+            "significance_hi": (
+                f"प्रत्येक माह जब चंद्रमा {maraka_moon_sign} (जन्मकालीन द्वितीय भाव) में गोचर करे, "
+                "कर्म/स्वास्थ्य विषयों पर एक संक्षिप्त किंतु आवर्ती संवेदनशीलता-विंडो खुलती है।"
+            ),
+            "watch_period_en": (
+                f"Monthly sensitivity: when the Moon transits {maraka_moon_sign}, "
+                "pay attention to body signals, emotional states, and karmic patterns. "
+                "This is a low-intensity but recurring check-in."
+            ),
+            "watch_period_hi": (
+                f"मासिक संवेदनशीलता: जब चंद्रमा {maraka_moon_sign} में गोचर करे, "
+                "शारीरिक संकेतों, भावनात्मक अवस्थाओं एवं कर्म-पैटर्न पर ध्यान दें। "
+                "यह कम-तीव्रता वाली किंतु आवर्ती जांच है।"
+            ),
+            "intensity": "low",
+        })
+
+    # Summary
+    summary_en = (
+        "These transit indicators show WHEN natal longevity themes are activated by moving planets. "
+        "High-intensity windows call for heightened spiritual practice; moderate periods ask for mindful "
+        "awareness; low-intensity windows are gentle monthly reminders. "
+        "No specific date predictions are intended — these are karmic timing windows, not prophecies."
+    )
+    summary_hi = (
+        "ये गोचर-संकेतक दर्शाते हैं कि भ्रमणशील ग्रह जन्मकालीन आयु-विषयों को कब सक्रिय करते हैं। "
+        "उच्च-तीव्रता विंडो में आध्यात्मिक साधना बढ़ाएं; मध्यम काल में सचेत जागरूकता रखें; "
+        "निम्न-तीव्रता विंडो मासिक स्मरण हैं। "
+        "कोई विशिष्ट तिथि-भविष्यवाणी अभिप्रेत नहीं — ये कर्म-काल के संकेत हैं, भविष्यवाणी नहीं।"
+    )
+
+    return {
+        "indicators": indicators,
+        "summary_en": summary_en,
+        "summary_hi": summary_hi,
+        "sloka_ref": "Phaladeepika Adh. 17",
+    }
+
+
 def _life_chapters(overall: str) -> Dict[str, List[str]]:
     if overall == "strong":
         en = [
@@ -440,6 +677,7 @@ def analyze_longevity_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     overall = _overall_strength(marakas, eighth, saturn)
     karmic = _karmic_transitions_narrative(overall)
     chapters = _life_chapters(overall)
+    transit_timing = _transit_timing_section(chart_data)
 
     return {
         "overall_longevity_strength": overall,
@@ -450,5 +688,6 @@ def analyze_longevity_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "karmic_transitions_hi": karmic["karmic_transitions_hi"],
         "life_chapters_en": chapters["life_chapters_en"],
         "life_chapters_hi": chapters["life_chapters_hi"],
+        "transit_timing_indicators": transit_timing,
         "sloka_ref": "Phaladeepika Adh. 17",
     }

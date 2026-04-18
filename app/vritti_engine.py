@@ -63,6 +63,102 @@ _OWN_SIGNS: Dict[str, set] = {
     "Saturn": {"Capricorn", "Aquarius"},
 }
 
+# ── Geographic regions ruled by each planet — Phaladeepika Adh. 5 ──────
+_PLANET_REGIONS: Dict[str, Dict[str, str]] = {
+    "Sun": {
+        "regions_en": (
+            "Eastern kingdoms, desert regions, mountainous terrain, "
+            "places of authority and governance"
+        ),
+        "regions_hi": (
+            "पूर्वी राज्य, मरुस्थल, पर्वतीय प्रदेश, "
+            "सत्ता व शासन के स्थान"
+        ),
+    },
+    "Moon": {
+        "regions_en": (
+            "Coastal regions, river valleys, islands, "
+            "places near water, fertile agricultural land"
+        ),
+        "regions_hi": (
+            "तटीय क्षेत्र, नदी घाटियाँ, द्वीप, "
+            "जलाशयों के निकट, उपजाऊ भूमि"
+        ),
+    },
+    "Mars": {
+        "regions_en": (
+            "Southern regions, arid deserts, battlefields, "
+            "mineral-rich land, places of fire and heat"
+        ),
+        "regions_hi": (
+            "दक्षिणी क्षेत्र, शुष्क मरुभूमि, रणभूमि, "
+            "खनिज-समृद्ध भू-भाग, अग्नि-क्षेत्र"
+        ),
+    },
+    "Mercury": {
+        "regions_en": (
+            "Trading cities, crossroads, market places, "
+            "educational centers, northern regions"
+        ),
+        "regions_hi": (
+            "व्यापारिक नगर, चौराहे, बाजार, "
+            "शिक्षा केंद्र, उत्तरी क्षेत्र"
+        ),
+    },
+    "Jupiter": {
+        "regions_en": (
+            "Northern and northeastern regions, places of learning and religion, "
+            "prosperous kingdoms"
+        ),
+        "regions_hi": (
+            "उत्तर व उत्तर-पूर्वी क्षेत्र, विद्या-धर्म के स्थान, "
+            "समृद्ध राज्य"
+        ),
+    },
+    "Venus": {
+        "regions_en": (
+            "Western regions, lush fertile lands, "
+            "places of beauty and pleasure, artistic centers"
+        ),
+        "regions_hi": (
+            "पश्चिमी क्षेत्र, हरे-भरे उपजाऊ प्रदेश, "
+            "सौंदर्य व विलास के स्थान"
+        ),
+    },
+    "Saturn": {
+        "regions_en": (
+            "Western and southwestern regions, barren lands, mines, "
+            "forests, cold and desolate places"
+        ),
+        "regions_hi": (
+            "पश्चिम व दक्षिण-पश्चिमी क्षेत्र, बंजर भूमि, खदानें, "
+            "वन, शीत व निर्जन स्थान"
+        ),
+    },
+    "Rahu": {
+        "regions_en": (
+            "Foreign lands, remote and unknown territories, "
+            "border regions, underground places"
+        ),
+        "regions_hi": (
+            "विदेश, अज्ञात व दूरस्थ भू-भाग, "
+            "सीमावर्ती क्षेत्र, भूमिगत स्थान"
+        ),
+    },
+    "Ketu": {
+        "regions_en": (
+            "Forests, ashrams, pilgrimage sites, "
+            "ancient sacred sites, isolated mountainous regions"
+        ),
+        "regions_hi": (
+            "वन, आश्रम, तीर्थस्थल, "
+            "प्राचीन पवित्र स्थान, एकांत पर्वतीय प्रदेश"
+        ),
+    },
+}
+
+_SLOKA_REF_GEO = "Phaladeepika Adh. 5"
+
 _KENDRAS = {1, 4, 7, 10}
 _TRIKONAS = {1, 5, 9}
 _DUSTHANAS = {6, 8, 12}
@@ -290,7 +386,85 @@ def _empty_result() -> Dict[str, Any]:
         "avoid_fields_en": [],
         "avoid_fields_hi": [],
         "sloka_ref": "Phaladeepika Adh. 5",
+        "geographic_affinities": [],
+        "favorable_regions_en": "",
+        "favorable_regions_hi": "",
     }
+
+
+# ─────────────────────────────────────────────────────────────
+# Geographic affinities helper
+# ─────────────────────────────────────────────────────────────
+
+def _build_geographic_affinities(
+    chart_data: Dict[str, Any],
+    tenth_lord: str,
+    strongest_vocation_planet: str,
+) -> tuple:
+    """
+    Build the geographic_affinities list and the overall favorable_regions text.
+
+    Returns (affinities_list, favorable_regions_en, favorable_regions_hi).
+    """
+    affinities: List[Dict[str, Any]] = []
+    planets_present = chart_data.get("planets") or {}
+
+    for planet in _PLANET_ORDER:
+        if planet not in planets_present:
+            continue
+        regions = _PLANET_REGIONS.get(planet, {})
+        if not regions:
+            continue
+
+        house = _planet_house(chart_data, planet)
+        if planet == tenth_lord:
+            sig_en = (
+                f"As the 10th lord, these regions are especially favorable "
+                f"for career success."
+            )
+            sig_hi = (
+                f"दशम भावेश होने से ये क्षेत्र जीविका-सफलता के लिए "
+                f"विशेष अनुकूल हैं।"
+            )
+        elif house > 0:
+            sig_en = (
+                f"Present in house {house} — regions where your "
+                f"{planet} energy manifests."
+            )
+            sig_hi = (
+                f"भाव {house} में स्थित — ये क्षेत्र आपके "
+                f"{planet} की ऊर्जा को प्रकट करते हैं।"
+            )
+        else:
+            sig_en = f"Regions associated with {planet}'s natural significations."
+            sig_hi = f"{planet} के स्वाभाविक कारकत्व से जुड़े क्षेत्र।"
+
+        affinities.append({
+            "planet": planet,
+            "regions_en": regions["regions_en"],
+            "regions_hi": regions["regions_hi"],
+            "significance_en": sig_en,
+            "significance_hi": sig_hi,
+            "sloka_ref": _SLOKA_REF_GEO,
+        })
+
+    # Overall favorable regions summary — based on the strongest vocation planet
+    fav_planet = strongest_vocation_planet or tenth_lord
+    fav_regions = _PLANET_REGIONS.get(fav_planet, {})
+    if fav_planet and fav_regions:
+        favorable_regions_en = (
+            f"Based on your chart, {fav_planet}'s regions are most favorable: "
+            f"{fav_regions['regions_en']}."
+        )
+        favorable_regions_hi = (
+            f"आपकी कुंडली के अनुसार {fav_planet} के क्षेत्र सर्वाधिक अनुकूल हैं: "
+            f"{fav_regions['regions_hi']}।"
+        )
+    else:
+        favorable_regions_en = ""
+        favorable_regions_hi = ""
+
+    return affinities, favorable_regions_en, favorable_regions_hi
 
 
 # ─────────────────────────────────────────────────────────────
@@ -415,6 +589,16 @@ def analyze_vritti(chart_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     result["recommended_fields_hi"] = rec_hi
     result["avoid_fields_en"] = avoid_en_set[:10]
     result["avoid_fields_hi"] = avoid_hi_set[:10]
+
+    # ── Geographic affinities ────────────────────────────────
+    # The strongest vocation planet (navamsa lord / vocation_key) drives
+    # the primary favorable regions recommendation.
+    geo_affinities, fav_en, fav_hi = _build_geographic_affinities(
+        chart_data, tenth_lord, vocation_key
+    )
+    result["geographic_affinities"] = geo_affinities
+    result["favorable_regions_en"] = fav_en
+    result["favorable_regions_hi"] = fav_hi
 
     result["sloka_ref"] = "Phaladeepika Adh. 5"
     return result

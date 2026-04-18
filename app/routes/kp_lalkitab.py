@@ -1137,6 +1137,12 @@ def get_lalkitab_advanced(
     sleeping_info = calculate_sleeping_status(formatted_positions)
     kayam_planets = calculate_kayam_grah(formatted_positions, lk_aspects)
 
+    # P1.1 — Modified Analytical Tewa needs Andhe Grah detection on every
+    # chart (not just remedies). Wire the blind-planet detector into the
+    # /advanced endpoint so the Tewa tab can colour-code planets by state.
+    from app.lalkitab_andhe_grah import detect_andhe_grah
+    andhe_info = detect_andhe_grah(formatted_positions, chart_data=chart_data)
+
     return {
         "masnui_planets": calculate_masnui_planets(formatted_positions),
         "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
@@ -1147,7 +1153,9 @@ def get_lalkitab_advanced(
         "prohibitions": get_prohibitions(formatted_positions),
         "aspects": lk_aspects,
         "sleeping": sleeping_info,
-        "kayam": kayam_planets
+        "kayam": kayam_planets,
+        # P1.1 — per-planet blind-planet state for Analytical Tewa colour coding
+        "andhe": andhe_info,
     }
 
 

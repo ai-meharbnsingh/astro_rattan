@@ -679,3 +679,333 @@ def analyze_ashtakvarga_phala(chart_data: dict) -> dict:
         "overall_score": overall_score,
         "sloka_ref": "Phaladeepika Adh. 24",
     }
+
+
+# ════════════════════════════════════════════════════════════════════
+# HORASARA (PRITHUYASAS) — SUPPLEMENTARY ASHTAKAVARGA PHALA RULES
+# Secondary source to Phaladeepika Adh. 24; adds qualitative bindu
+# classification for SAV signs and per-planet BAV transit readings.
+# ════════════════════════════════════════════════════════════════════
+
+# SAV bindu → (effect_level, english_effect, hindi_effect)
+_SAV_BINDU_LEVELS: List[tuple] = [
+    # (max_inclusive, effect_level, effect_en, effect_hi)
+    (0,  "Very Difficult", "Complete destruction of house significations; severe suffering in that life area",
+         "भाव के संकेतों का पूर्ण नाश; उस क्षेत्र में गंभीर पीड़ा"),
+    (2,  "Difficult",      "Near-total affliction; major obstacles and losses in that area",
+         "लगभग पूर्ण पीड़ा; उस क्षेत्र में बड़ी बाधाएँ एवं हानि"),
+    (4,  "Challenging",    "Significant challenges; native must work very hard to maintain minimal results",
+         "महत्वपूर्ण चुनौतियाँ; न्यूनतम परिणामों के लिए अत्यधिक परिश्रम आवश्यक"),
+    (6,  "Mixed",          "Moderate results; mixed period of gains and losses",
+         "सामान्य परिणाम; लाभ-हानि का मिश्रित काल"),
+    (8,  "Favorable",      "Good results; steady progress, some unexpected gains",
+         "अच्छे परिणाम; स्थिर प्रगति, कुछ अप्रत्याशित लाभ"),
+    (10, "Very Favorable", "Excellent results; prosperity, recognition, achievements",
+         "उत्तम परिणाम; समृद्धि, मान्यता, उपलब्धियाँ"),
+    (12, "Exceptional",    "Outstanding success, windfall gains, rare fortune",
+         "असाधारण सफलता, अप्रत्याशित लाभ, दुर्लभ भाग्य"),
+    # anything > 12 falls into the last bucket via the lookup helper
+]
+
+# BAV transit levels: (planet, level, low_range_max, medium_range_max)
+# Low: 0-2, Medium: 3-4, High: 5-8
+_BAV_PLANET_LEVELS: Dict[str, Dict[str, Dict[str, str]]] = {
+    "Sun": {
+        "Low":    {"en": "Loss of vitality, father-related troubles, authority challenges",
+                   "hi": "जीवन-शक्ति की हानि, पितृ-पीड़ा, अधिकार में बाधाएँ"},
+        "Medium": {"en": "Ordinary results, some effort needed",
+                   "hi": "सामान्य परिणाम, कुछ प्रयास अपेक्षित"},
+        "High":   {"en": "Success in government matters, career advancement, health",
+                   "hi": "सरकारी कार्यों में सफलता, कैरियर उन्नति, स्वास्थ्य लाभ"},
+    },
+    "Moon": {
+        "Low":    {"en": "Mental disturbances, mother's health, emotional instability",
+                   "hi": "मानसिक अशांति, माता का स्वास्थ्य, भावनात्मक अस्थिरता"},
+        "Medium": {"en": "Average; mixed emotional state",
+                   "hi": "सामान्य; मिश्रित भावनात्मक अवस्था"},
+        "High":   {"en": "Mental peace, domestic happiness, travel",
+                   "hi": "मानसिक शांति, गृह-सुख, यात्रा"},
+    },
+    "Mars": {
+        "Low":    {"en": "Accidents, wounds, conflicts, enemies overpower",
+                   "hi": "दुर्घटनाएँ, घाव, संघर्ष, शत्रु प्रबल"},
+        "Medium": {"en": "Moderate energy, some friction",
+                   "hi": "मध्यम ऊर्जा, कुछ घर्षण"},
+        "High":   {"en": "Courage, victory over enemies, physical strength",
+                   "hi": "साहस, शत्रु-विजय, शारीरिक बल"},
+    },
+    "Mercury": {
+        "Low":    {"en": "Communication failures, business losses, sibling issues",
+                   "hi": "संचार विफलताएँ, व्यापार हानि, सहोदर-पीड़ा"},
+        "Medium": {"en": "Routine intellectual work",
+                   "hi": "सामान्य बौद्धिक कार्य"},
+        "High":   {"en": "Eloquence, business success, scholarship",
+                   "hi": "वाक्पटुता, व्यापार सफलता, विद्वत्ता"},
+    },
+    "Jupiter": {
+        "Low":    {"en": "Lack of wisdom guidance, financial difficulties",
+                   "hi": "ज्ञान-मार्गदर्शन का अभाव, आर्थिक कठिनाइयाँ"},
+        "Medium": {"en": "Some gains, moderate fortune",
+                   "hi": "कुछ लाभ, मध्यम भाग्य"},
+        "High":   {"en": "Spiritual growth, wealth, children's welfare, guru blessings",
+                   "hi": "आध्यात्मिक विकास, धन, संतान-कल्याण, गुरु-कृपा"},
+    },
+    "Venus": {
+        "Low":    {"en": "Relationship troubles, artistic blocks, health issues",
+                   "hi": "संबंध-पीड़ा, कलात्मक अवरोध, स्वास्थ्य समस्याएँ"},
+        "Medium": {"en": "Average comforts",
+                   "hi": "सामान्य सुख-सुविधा"},
+        "High":   {"en": "Marital happiness, arts, luxury, sensual pleasures",
+                   "hi": "वैवाहिक सुख, कला, विलासिता, इंद्रिय-सुख"},
+    },
+    "Saturn": {
+        "Low":    {"en": "Hard labor with little reward, chronic health, obstructions",
+                   "hi": "अल्प पुरस्कार के लिए कठिन परिश्रम, दीर्घकालीन स्वास्थ्य, बाधाएँ"},
+        "Medium": {"en": "Slow but steady results",
+                   "hi": "धीमे परंतु स्थिर परिणाम"},
+        "High":   {"en": "Disciplined success, land, longevity gains",
+                   "hi": "अनुशासित सफलता, भूमि-लाभ, दीर्घायु"},
+    },
+}
+
+# Natural BAV threshold per planet (already in _PLANET_TRANSIT_THRESHOLD,
+# mirrored here for self-contained reference inside this function block).
+_HORASARA_NATURAL_THRESHOLD: Dict[str, int] = {
+    "Sun": 4, "Moon": 4, "Mars": 3, "Mercury": 5,
+    "Jupiter": 5, "Venus": 5, "Saturn": 3,
+}
+
+
+def _sav_bindu_classify(bindus: int) -> tuple:
+    """Return (effect_level, effect_en, effect_hi) for a SAV bindu count."""
+    for max_val, level, en, hi in _SAV_BINDU_LEVELS:
+        if bindus <= max_val:
+            return level, en, hi
+    # > 12 treated as Exceptional
+    last = _SAV_BINDU_LEVELS[-1]
+    return last[1], last[2], last[3]
+
+
+def _bav_bindu_level(bindus: int) -> str:
+    """Map a BAV bindu count to Low / Medium / High."""
+    if bindus <= 2:
+        return "Low"
+    if bindus <= 4:
+        return "Medium"
+    return "High"
+
+
+def analyze_horasara_phala(chart_data: dict) -> dict:
+    """Horasara (Prithuyasas) supplementary Ashtakavarga phala rules.
+
+    Supplements Phaladeepika Adh. 24 with qualitative bindu classification
+    drawn from Horasara Ch. 1-5, covering:
+      - SAV sign readings (12 signs, Horasara bindu table)
+      - Planet BAV transit readings (7 planets, Low/Medium/High effects)
+      - 3 special rules: total SAV check, house group comparison,
+        transit alignment with natural threshold
+
+    Args:
+        chart_data: dict with keys 'ascendant' (dict with 'sign') and
+                    'planets' (dict of planet-name → dict with 'sign').
+
+    Returns:
+        dict with sav_sign_readings, planet_transit_readings, special_rules,
+        and sloka_ref.  Returns an empty skeleton on invalid/incomplete input.
+    """
+    _SLOKA_REF = "Horasara (Prithuyasas) Ch. 1–5, Phaladeepika Adh. 24"
+
+    empty_skeleton: Dict[str, Any] = {
+        "sav_sign_readings": [],
+        "planet_transit_readings": [],
+        "special_rules": {},
+        "sloka_ref": _SLOKA_REF,
+    }
+
+    if not isinstance(chart_data, dict):
+        return empty_skeleton
+
+    planets = chart_data.get("planets") or {}
+    asc = chart_data.get("ascendant") or {}
+    ascendant_sign: str = asc.get("sign") if isinstance(asc, dict) else None  # type: ignore[assignment]
+
+    # Build planet_signs for calculate_ashtakvarga
+    planet_signs: Dict[str, str] = {}
+    for p_name, info in planets.items():
+        if isinstance(info, dict) and info.get("sign") in _SIGN_NAMES:
+            planet_signs[p_name] = info["sign"]
+    if ascendant_sign in _SIGN_NAMES:
+        planet_signs["Ascendant"] = ascendant_sign
+
+    required = {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
+    if not required.issubset(planet_signs.keys()) or not ascendant_sign:
+        return empty_skeleton
+
+    try:
+        av = calculate_ashtakvarga(planet_signs)
+    except Exception:
+        return empty_skeleton
+
+    sav: Dict[str, int] = av.get("sarvashtakvarga", {}) or {}
+    planet_bindus: Dict[str, Dict[str, int]] = av.get("planet_bindus", {}) or {}
+
+    # ── 1. SAV sign readings (12 signs) ─────────────────────────
+    sav_sign_readings: List[Dict[str, Any]] = []
+    for h in range(1, 13):
+        sign = _sign_of_house(h, ascendant_sign)
+        sav_count = int(sav.get(sign, 0))
+        effect_level, effect_en, effect_hi = _sav_bindu_classify(sav_count)
+        sign_hi = _SIGN_HI.get(sign, sign)
+        house_sig_en = _HOUSE_SIG_EN.get(h, "")
+
+        interp_en = (
+            f"{sign} ({_ordinal(h)} house) has {sav_count} bindus — "
+            f"{effect_en} in matters of {house_sig_en}."
+        )
+        interp_hi = (
+            f"{sign_hi} ({h}वाँ भाव) में {sav_count} बिंदु — "
+            f"{effect_hi} ({_HOUSE_SIG_HI.get(h, '')})।"
+        )
+
+        sav_sign_readings.append({
+            "sign": sign,
+            "house": h,
+            "sav_bindus": sav_count,
+            "effect_level": effect_level,
+            "interpretation_en": interp_en,
+            "interpretation_hi": interp_hi,
+            "sloka_ref": _SLOKA_REF,
+        })
+
+    # ── 2. Planet BAV transit readings (7 planets) ───────────────
+    planet_transit_readings: List[Dict[str, Any]] = []
+    for planet in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"):
+        transit_sign = planet_signs.get(planet, "Aries")
+        own_table = planet_bindus.get(planet, {}) or {}
+        bav_count = int(own_table.get(transit_sign, 0))
+        level = _bav_bindu_level(bav_count)
+        planet_level_data = _BAV_PLANET_LEVELS.get(planet, {}).get(level, {})
+        effect_text_en = planet_level_data.get("en", "")
+        effect_text_hi = planet_level_data.get("hi", "")
+
+        p_hi = _PLANET_HI.get(planet, planet)
+        s_hi = _SIGN_HI.get(transit_sign, transit_sign)
+
+        interp_en = (
+            f"{planet}'s transit through {transit_sign} ({bav_count} bindus) — "
+            f"{effect_text_en} during this transit."
+        )
+        interp_hi = (
+            f"{p_hi} का गोचर {s_hi} ({bav_count} बिंदु) — "
+            f"{effect_text_hi}।"
+        )
+
+        planet_transit_readings.append({
+            "planet": planet,
+            "transit_sign": transit_sign,
+            "bav_bindus": bav_count,
+            "effect_level": level,
+            "interpretation_en": interp_en,
+            "interpretation_hi": interp_hi,
+            "sloka_ref": _SLOKA_REF,
+        })
+
+    # ── 3. Special rules ─────────────────────────────────────────
+    # Rule 1: Total SAV check
+    total_sav = sum(int(sav.get(s, 0)) for s in _SIGN_NAMES)
+    if total_sav < 337:
+        total_sav_en = (
+            f"Total SAV of {total_sav} bindus — below the average threshold of 337, "
+            f"indicating more obstacles than average in life."
+        )
+        total_sav_hi = (
+            f"कुल SAV {total_sav} बिंदु — 337 की औसत सीमा से कम, "
+            f"जीवन में औसत से अधिक बाधाओं का संकेत।"
+        )
+    elif total_sav == 337:
+        total_sav_en = (
+            f"Total SAV of {total_sav} bindus — at the average level, indicating balanced "
+            f"life experiences with neither exceptional fortune nor severe obstacles."
+        )
+        total_sav_hi = (
+            f"कुल SAV {total_sav} बिंदु — औसत स्तर पर, संतुलित जीवन अनुभव का संकेत।"
+        )
+    else:
+        total_sav_en = (
+            f"Total SAV of {total_sav} bindus — above the average threshold of 337, "
+            f"indicating a generally fortunate life with fewer obstacles than average."
+        )
+        total_sav_hi = (
+            f"कुल SAV {total_sav} बिंदु — 337 की औसत सीमा से अधिक, "
+            f"औसत से कम बाधाओं के साथ भाग्यशाली जीवन का संकेत।"
+        )
+
+    # Rule 2: House group comparison
+    def _sum_house_group(houses: List[int]) -> int:
+        return sum(int(sav.get(_sign_of_house(h, ascendant_sign), 0)) for h in houses)
+
+    kendra_total = _sum_house_group([1, 4, 7, 10])
+    trikona_total = _sum_house_group([5, 9])
+    dusthana_total_h = _sum_house_group([6, 8, 12])
+
+    group_totals = {
+        "Kendra": kendra_total,
+        "Trikona": trikona_total,
+        "Dusthana": dusthana_total_h,
+    }
+    dominant_group = max(group_totals, key=lambda g: group_totals[g])
+
+    _group_interp_en = {
+        "Kendra": (
+            f"Kendra houses (1+4+7+10) have the highest SAV total ({kendra_total}) — "
+            f"career, relationships, and domestic matters are the primary life arena."
+        ),
+        "Trikona": (
+            f"Trikona houses (5+9) have the highest SAV total ({trikona_total}) — "
+            f"fortune, dharma, children, and higher purpose are the primary life themes."
+        ),
+        "Dusthana": (
+            f"Dusthana houses (6+8+12) have the highest SAV total ({dusthana_total_h}) — "
+            f"life energy concentrates on overcoming obstacles, hidden matters, and transformation."
+        ),
+    }
+    _group_interp_hi = {
+        "Kendra": (
+            f"केंद्र भाव (1+4+7+10) का सर्वोच्च SAV योग ({kendra_total}) — "
+            f"कैरियर, संबंध एवं गृह-जीवन प्राथमिक जीवन-क्षेत्र।"
+        ),
+        "Trikona": (
+            f"त्रिकोण भाव (5+9) का सर्वोच्च SAV योग ({trikona_total}) — "
+            f"भाग्य, धर्म, संतान एवं उच्च उद्देश्य प्रमुख जीवन-विषय।"
+        ),
+        "Dusthana": (
+            f"दुःस्थान भाव (6+8+12) का सर्वोच्च SAV योग ({dusthana_total_h}) — "
+            f"जीवन-ऊर्जा बाधाओं, गुप्त विषयों एवं परिवर्तन पर केंद्रित।"
+        ),
+    }
+
+    special_rules: Dict[str, Any] = {
+        "total_sav": total_sav,
+        "total_sav_assessment_en": total_sav_en,
+        "total_sav_assessment_hi": total_sav_hi,
+        "kendra_total": kendra_total,
+        "trikona_total": trikona_total,
+        "dusthana_total": dusthana_total_h,
+        "dominant_group": dominant_group,
+        "group_interpretation_en": _group_interp_en[dominant_group],
+        "group_interpretation_hi": _group_interp_hi[dominant_group],
+    }
+
+    return {
+        "sav_sign_readings": sav_sign_readings,
+        "planet_transit_readings": planet_transit_readings,
+        "special_rules": special_rules,
+        "sloka_ref": _SLOKA_REF,
+    }
+
+
+def _ordinal(n: int) -> str:
+    """Return English ordinal string for house number (1st, 2nd, … 12th)."""
+    _suffixes = {1: "st", 2: "nd", 3: "rd"}
+    suffix = _suffixes.get(n if n <= 3 else 0, "th")
+    return f"{n}{suffix}"

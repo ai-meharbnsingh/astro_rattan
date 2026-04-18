@@ -9,7 +9,7 @@ from fastapi import APIRouter, Query, status
 
 from app.panchang_engine import calculate_panchang
 from app.muhurat_rules import get_all_activities
-from app.muhurat_finder import find_muhurat_dates
+from app.muhurat_finder import find_muhurat_dates, find_travel_muhurat
 
 router = APIRouter(tags=["muhurat"])
 
@@ -165,3 +165,30 @@ def muhurat_finder(
         birth_nakshatra=birth_nakshatra,
     )
 
+
+@router.get("/api/muhurat/travel", status_code=status.HTTP_200_OK)
+def travel_muhurat(
+    direction: str = Query(..., description="Travel direction: East, West, North, South, NE, NW, SE, SW"),
+    month: int = Query(default=None),
+    year: int = Query(default=None),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+    limit: int = Query(default=15, ge=1, le=31),
+):
+    """Find auspicious travel dates for a specific direction."""
+    from fastapi import HTTPException
+    if not (-90.0 <= latitude <= 90.0) or not (-180.0 <= longitude <= 180.0):
+        raise HTTPException(status_code=400, detail="Invalid latitude/longitude range")
+    today = date.today()
+    target_month = month or today.month
+    target_year = year or today.year
+    if not (1 <= target_month <= 12):
+        return {"error": f"Invalid month: {target_month}", "dates": []}
+    return find_travel_muhurat(
+        direction=direction,
+        month=target_month,
+        year=target_year,
+        latitude=latitude,
+        longitude=longitude,
+        limit=limit,
+    )

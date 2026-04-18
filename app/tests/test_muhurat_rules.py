@@ -11,7 +11,8 @@ ALL_ACTIVITIES = list(MUHURAT_ACTIVITIES.keys())
 
 class TestActivityMetadata:
     def test_nine_activities(self):
-        assert len(MUHURAT_ACTIVITIES) == 9
+        # P1 extends activities beyond the original 9.
+        assert len(MUHURAT_ACTIVITIES) >= 9
 
     def test_all_have_hindi_name(self):
         for key, info in MUHURAT_ACTIVITIES.items():
@@ -63,7 +64,7 @@ class TestHelpers:
 
     def test_get_all_activities(self):
         activities = get_all_activities()
-        assert len(activities) == 9
+        assert len(activities) == len(MUHURAT_ACTIVITIES)
         assert all("key" in a for a in activities)
 
 
