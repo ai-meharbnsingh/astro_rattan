@@ -125,7 +125,7 @@ export default function AstrologerDashboard() {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'activity' | 'consultations'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'activity' | 'consultations' | 'settings' | 'feedback'>('overview');
   const [overview, setOverview] = useState<Overview | null>(null);
   const [activity, setActivity] = useState<ActivityEvent[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
@@ -134,6 +134,10 @@ export default function AstrologerDashboard() {
   const [loading, setLoading] = useState(false);
   const [clientSearch, setClientSearch] = useState('');
   const [consultationFilter, setConsultationFilter] = useState<string>('');
+
+  // Sprint I modal state — re-declare here (was silently dropped in a prior merge)
+  const [showNewClient, setShowNewClient] = useState(false);
+  const [quickViewClientId, setQuickViewClientId] = useState<string | null>(null);
 
   // ── Permission guard ──
   const isAllowed = user?.role === 'astrologer' || user?.role === 'admin';
