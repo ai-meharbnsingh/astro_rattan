@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { pickLang } from './safe-render';
+import { severityPill } from './severity-styles';
 import { Loader2, ArrowRight, Sparkles } from 'lucide-react';
 
 interface SacrificeResult {
@@ -19,11 +20,6 @@ interface Props { kundliId?: string; language: string; }
 const PLANET_DOT: Record<string, string> = {
   Sun:'bg-orange-500', Moon:'bg-blue-300', Mars:'bg-red-500', Mercury:'bg-green-500',
   Jupiter:'bg-yellow-500', Venus:'bg-pink-400', Saturn:'bg-gray-500', Rahu:'bg-purple-600', Ketu:'bg-amber-700',
-};
-const SEVERITY_STYLE: Record<string, string> = {
-  high: 'bg-red-100 text-red-700 border-red-200',
-  medium: 'bg-orange-100 text-orange-700 border-orange-200',
-  low: 'bg-yellow-100 text-yellow-700 border-yellow-200',
 };
 
 export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
@@ -100,7 +96,7 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
 
       {/* Sacrifice Chain Visual + Cards */}
       {data.results.map((result, i) => (
-        <div key={result.rule_id} className={`border rounded-xl p-4 ${SEVERITY_STYLE[result.severity] || 'border-border bg-card'}`}>
+        <div key={result.rule_id} className={`border rounded-xl p-4 ${severityPill(result.severity)}`}>
           {/* Chain visual */}
           <div className="flex items-center gap-3 mb-3">
             <div className="flex items-center gap-2">
@@ -118,8 +114,8 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
                 {result.victim === 'siblings' ? (hi ? 'भाई-बहन' : 'Siblings') : (result.victim || (hi ? 'अज्ञात' : 'Unknown'))}
               </span>
             </div>
-            <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-semibold ${SEVERITY_STYLE[result.severity]}`}>
-              {result.severity.toUpperCase()}
+            <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-semibold ${severityPill(result.severity)}`}>
+              {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
             </span>
           </div>
 

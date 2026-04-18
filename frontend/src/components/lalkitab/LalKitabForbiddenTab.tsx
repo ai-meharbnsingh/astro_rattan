@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { pickLang } from '@/components/lalkitab/safe-render';
+import { severityBorder, severityPill } from './severity-styles';
 import { Loader2, AlertTriangle, ShieldAlert, Ban } from 'lucide-react';
 
 interface ForbiddenRule {
@@ -18,16 +19,12 @@ const PLANET_DOT: Record<string, string> = {
   Sun:'bg-orange-500', Moon:'bg-blue-300', Mars:'bg-red-500', Mercury:'bg-green-500',
   Jupiter:'bg-yellow-500', Venus:'bg-pink-400', Saturn:'bg-gray-500', Rahu:'bg-purple-600', Ketu:'bg-amber-700',
 };
-const SEVERITY_STYLE: Record<string, string> = {
-  critical: 'border-red-400 bg-red-50',
-  high: 'border-orange-300 bg-orange-50',
-  moderate: 'border-yellow-300 bg-yellow-50',
-};
-const SEVERITY_BADGE: Record<string, string> = {
-  critical: 'bg-red-100 text-red-700',
-  high: 'bg-orange-100 text-orange-700',
-  moderate: 'bg-yellow-100 text-yellow-700',
-};
+
+// Helper to map 'critical' → 'destructive' for consistency with severity-styles
+function mapSeverity(severity: string): string {
+  return severity === 'critical' ? 'destructive' : severity;
+}
+
 const CATEGORY_ICON: Record<string, string> = {
   construction: '🏗️', charity: '🤲', household: '🏠', spiritual: '🕯️',
   property: '🏘️', remedies: '💊', behavior: '🧠', timing: '⏰', gifts: '🎁',
@@ -133,7 +130,7 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
 
       {/* Rules list */}
       {data.rules.map((rule, i) => (
-        <div key={i} className={`border rounded-xl p-4 ${SEVERITY_STYLE[rule.severity] || 'border-border bg-card'}`}>
+        <div key={i} className={`border rounded-xl p-4 ${severityBorder(mapSeverity(rule.severity))}`}>
           {/* Rule header */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -145,7 +142,7 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
               <span className="text-sm">{CATEGORY_ICON[rule.category] || '⚠️'}</span>
               <span className="text-xs text-muted-foreground capitalize">{rule.category}</span>
             </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${SEVERITY_BADGE[rule.severity]}`}>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${severityPill(mapSeverity(rule.severity))}`}>
               {rule.severity.toUpperCase()}
             </span>
           </div>
