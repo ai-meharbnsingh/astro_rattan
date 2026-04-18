@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles, Eye, Activity } from 'lucide-react';
+import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles, Eye, Activity, AlertTriangle, Star, TrendingUp, CheckCircle2, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -65,6 +65,84 @@ interface DashaGochara {
   antardasha_lord?: string;
 }
 
+// Feature 1: Saturn Transit Death Indicator
+interface SaturnTransitDeathIndicator {
+  current_saturn_house_from_moon: number;
+  is_8th_from_moon: boolean;
+  saturn_8th_lord_transit: boolean;
+  eighth_lord: string;
+  eighth_lord_sign: string;
+  moon_house: number;
+  saturn_house: number;
+  interpretation_en: string;
+  interpretation_hi: string;
+  severity: 'high' | 'moderate' | 'low';
+  sloka_ref: string;
+}
+
+// Feature 2: Moon Transit at Death
+interface MoonDeathTransit {
+  janma_nakshatra: string;
+  watch_for_en: string;
+  watch_for_hi: string;
+  note_en: string;
+  note_hi: string;
+  sloka_ref: string;
+}
+
+// Feature 3: Classical Demise Timing
+interface DemiseTimingClassical {
+  likely_month_indicator: {
+    sign: string;
+    month_name_en: string;
+    month_name_hi: string;
+    planet: string;
+    reason_en: string;
+    reason_hi: string;
+  };
+  likely_lagna_at_death: {
+    sign: string;
+    reason_en: string;
+    reason_hi: string;
+  };
+  disclaimer_en: string;
+  disclaimer_hi: string;
+  sloka_ref: string;
+}
+
+// Feature 4: Dasha + Gochara + Lagna Score
+interface DashaGochaScoreSignal {
+  signal_en: string;
+  signal_hi: string;
+  points: number;
+  triggered: boolean;
+}
+
+interface DashaGochaLagnaScore {
+  total: number;
+  signals: DashaGochaScoreSignal[];
+  verdict_en: string;
+  verdict_hi: string;
+  disclaimer_en: string;
+  sloka_ref: string;
+}
+
+// Feature 6: Lucky Time Estimate
+interface LuckyPeriod {
+  period_type: 'dasha' | 'transit';
+  description_en: string;
+  description_hi: string;
+  approximate_age_range: string;
+  quality: 'excellent' | 'good' | 'neutral' | 'challenging';
+}
+
+interface LuckyTimeEstimate {
+  peak_periods: LuckyPeriod[];
+  current_period_quality: 'excellent' | 'good' | 'neutral' | 'challenging';
+  current_mahadasha: string;
+  sloka_ref: string;
+}
+
 interface ApiResponse {
   kundli_id?: string;
   person_name?: string;
@@ -78,6 +156,12 @@ interface ApiResponse {
   life_chapters_hi: string[];
   transit_timing_indicators?: TransitTimingSection;
   dasha_gochara_timing?: DashaGochara;
+  // New features
+  saturn_transit_death_indicator?: SaturnTransitDeathIndicator;
+  moon_death_transit?: MoonDeathTransit;
+  demise_timing_classical?: DemiseTimingClassical;
+  dasha_gochara_lagna_score?: DashaGochaLagnaScore;
+  lucky_time_estimate?: LuckyTimeEstimate;
   sloka_ref: string;
 }
 
@@ -368,6 +452,280 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ? 'यह विश्लेषण शास्त्रीय दृष्टिकोण है — कोई विशिष्ट आयु-भविष्यवाणी नहीं।'
               : 'This is classical philosophical framing — no specific age or date prediction is made.'}
           </p>
+        </section>
+      )}
+
+      {/* ── Feature 4: Combined Death Risk Score ─────────────────── */}
+      {data.dasha_gochara_lagna_score && (
+        <section className="rounded-xl border-2 border-orange-200 bg-orange-50 p-5">
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <h3 className="font-semibold text-orange-900 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              {isHi ? 'मृत्यु-काल बहु-संकेत अंक (अ. 17)' : 'Combined Death Risk Score (Adh. 17)'}
+            </h3>
+            {/* Score gauge */}
+            <div className="flex flex-col items-center shrink-0">
+              <div className={`w-14 h-14 rounded-full border-4 flex items-center justify-center font-bold text-xl ${
+                data.dasha_gochara_lagna_score.total >= 6
+                  ? 'border-red-500 bg-red-100 text-red-800'
+                  : data.dasha_gochara_lagna_score.total >= 3
+                  ? 'border-orange-500 bg-orange-100 text-orange-800'
+                  : 'border-green-500 bg-green-100 text-green-800'
+              }`}>
+                {data.dasha_gochara_lagna_score.total}
+              </div>
+              <span className="text-[9px] text-muted-foreground mt-0.5">/ 8</span>
+            </div>
+          </div>
+          {/* Disclaimer banner — prominent */}
+          <div className="flex items-start gap-2 rounded-lg bg-orange-100 border border-orange-300 px-3 py-2 mb-3">
+            <Info className="w-4 h-4 text-orange-700 shrink-0 mt-0.5" />
+            <p className="text-xs text-orange-800 leading-relaxed">
+              {data.dasha_gochara_lagna_score.disclaimer_en}
+            </p>
+          </div>
+          {/* Verdict */}
+          <p className="text-sm text-orange-900/90 leading-relaxed mb-3">
+            {isHi ? data.dasha_gochara_lagna_score.verdict_hi : data.dasha_gochara_lagna_score.verdict_en}
+          </p>
+          {/* Signal checklist */}
+          <div className="space-y-2">
+            {data.dasha_gochara_lagna_score.signals.map((sig, i) => (
+              <div key={i} className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${
+                sig.triggered ? 'bg-orange-100 border border-orange-200' : 'bg-white/70 border border-orange-100'
+              }`}>
+                {sig.triggered
+                  ? <CheckCircle2 className="w-4 h-4 text-orange-700 shrink-0 mt-0.5" />
+                  : <XCircle className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
+                }
+                <div className="flex-1">
+                  <span className={`leading-relaxed ${sig.triggered ? 'text-orange-900 font-medium' : 'text-gray-500'}`}>
+                    {isHi ? sig.signal_hi : sig.signal_en}
+                  </span>
+                </div>
+                <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded ml-2 ${
+                  sig.triggered ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-500'
+                }`}>
+                  +{sig.points}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 mt-3 text-[10px] text-orange-400 italic">
+            <BookOpen className="w-3 h-3" />
+            <span>{data.dasha_gochara_lagna_score.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* ── Feature 1: Saturn Transit Death Indicator ─────────────── */}
+      {data.saturn_transit_death_indicator && (
+        <section>
+          <h3 className="text-base font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
+            <Clock3 className="w-5 h-5" />
+            {isHi ? 'शनि गोचर निधन-संकेत (अ. 17)' : 'Saturn Transit Death Indicator (Adh. 17)'}
+          </h3>
+          {(() => {
+            const s = data.saturn_transit_death_indicator!;
+            const sStyle = INTENSITY_STYLE[s.severity] || INTENSITY_STYLE.moderate;
+            return (
+              <div className={`rounded-xl border-2 p-4 ${sStyle.card}`}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="text-sm font-medium text-foreground">
+                    {isHi ? `शनि: भाव ${s.saturn_house} | चंद्र से: भाव ${s.current_saturn_house_from_moon}` : `Saturn: House ${s.saturn_house} | From Moon: House ${s.current_saturn_house_from_moon}`}
+                  </div>
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${sStyle.badge}`}>
+                    {isHi ? sStyle.labelHi : sStyle.label}
+                  </span>
+                </div>
+                <div className="flex gap-3 text-xs text-muted-foreground mb-2">
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${s.is_8th_from_moon ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
+                    {isHi ? `चंद्र से 8वें में: ${s.is_8th_from_moon ? 'हाँ' : 'नहीं'}` : `8th from Moon: ${s.is_8th_from_moon ? 'Yes' : 'No'}`}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${s.saturn_8th_lord_transit ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}`}>
+                    {isHi ? `8वें स्वामी राशि में: ${s.saturn_8th_lord_transit ? 'हाँ' : 'नहीं'}` : `8th lord sign: ${s.saturn_8th_lord_transit ? 'Yes' : 'No'}`}
+                  </span>
+                </div>
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  {isHi ? s.interpretation_hi : s.interpretation_en}
+                </p>
+                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-muted-foreground italic">
+                  <BookOpen className="w-3 h-3" /><span>{s.sloka_ref}</span>
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+      )}
+
+      {/* ── Feature 2 & 3: Classical Death Timing Indicators ─────── */}
+      {(data.moon_death_transit?.janma_nakshatra || data.demise_timing_classical) && (
+        <section>
+          <h3 className="text-base font-semibold text-sacred-gold-dark mb-1 flex items-center gap-2">
+            <MoonIcon className="w-5 h-5" />
+            {isHi ? 'शास्त्रीय निधन-काल संकेत (अ. 17)' : 'Classical Death Timing Indicators (Adh. 17)'}
+          </h3>
+          {/* Strong disclaimer */}
+          <div className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 mb-3 flex items-start gap-2">
+            <Info className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-800 leading-relaxed italic">
+              {data.demise_timing_classical
+                ? (isHi ? data.demise_timing_classical.disclaimer_hi : data.demise_timing_classical.disclaimer_en)
+                : 'These are philosophical classical indicators — NOT death predictions.'}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Feature 2: Moon transit at death */}
+            {data.moon_death_transit?.janma_nakshatra && (
+              <div className="rounded-xl border-2 border-indigo-200 bg-indigo-50 p-4">
+                <h4 className="font-semibold text-indigo-900 text-sm mb-2 flex items-center gap-1.5">
+                  <MoonIcon className="w-4 h-4" />
+                  {isHi ? 'जन्म नक्षत्र संवेदनशीलता' : 'Janma Nakshatra Sensitivity'}
+                </h4>
+                <p className="text-xs text-indigo-700 font-medium mb-2">
+                  {isHi ? 'जन्म नक्षत्र:' : 'Janma Nakshatra:'} <strong>{data.moon_death_transit.janma_nakshatra}</strong>
+                </p>
+                <p className="text-xs text-indigo-900/80 leading-relaxed mb-2">
+                  {isHi ? data.moon_death_transit.watch_for_hi : data.moon_death_transit.watch_for_en}
+                </p>
+                <div className="rounded-lg bg-white/70 border border-indigo-100 px-2 py-2 text-xs text-indigo-700 leading-relaxed">
+                  {isHi ? data.moon_death_transit.note_hi : data.moon_death_transit.note_en}
+                </div>
+                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-indigo-400 italic">
+                  <BookOpen className="w-3 h-3" /><span>{data.moon_death_transit.sloka_ref}</span>
+                </div>
+              </div>
+            )}
+            {/* Feature 3: Month & Lagna of Demise */}
+            {data.demise_timing_classical && (
+              <div className="rounded-xl border-2 border-purple-200 bg-purple-50 p-4">
+                <h4 className="font-semibold text-purple-900 text-sm mb-2">
+                  {isHi ? 'निधन माह एवं लग्न अनुमान' : 'Demise Month & Lagna Estimate'}
+                </h4>
+                <div className="space-y-2 text-xs">
+                  <div className="flex gap-2">
+                    <span className="text-purple-600 font-medium shrink-0">
+                      {isHi ? 'संकेतक माह:' : 'Indicated Month:'}
+                    </span>
+                    <span className="text-purple-900 font-semibold">
+                      {isHi
+                        ? data.demise_timing_classical.likely_month_indicator.month_name_hi
+                        : data.demise_timing_classical.likely_month_indicator.month_name_en}
+                      {data.demise_timing_classical.likely_month_indicator.sign && (
+                        <span className="font-normal text-purple-600 ml-1">
+                          ({data.demise_timing_classical.likely_month_indicator.sign})
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="text-purple-600 font-medium shrink-0">
+                      {isHi ? 'संकेतक लग्न:' : 'Indicated Lagna:'}
+                    </span>
+                    <span className="text-purple-900 font-semibold">
+                      {data.demise_timing_classical.likely_lagna_at_death.sign || '—'}
+                    </span>
+                  </div>
+                  <p className="text-purple-800/70 leading-relaxed mt-1">
+                    {isHi
+                      ? data.demise_timing_classical.likely_month_indicator.reason_hi
+                      : data.demise_timing_classical.likely_month_indicator.reason_en}
+                  </p>
+                  <p className="text-purple-800/70 leading-relaxed">
+                    {isHi
+                      ? data.demise_timing_classical.likely_lagna_at_death.reason_hi
+                      : data.demise_timing_classical.likely_lagna_at_death.reason_en}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 mt-2 text-[10px] text-purple-400 italic">
+                  <BookOpen className="w-3 h-3" /><span>{data.demise_timing_classical.sloka_ref}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── Feature 6: Peak Lucky Periods (Adhyaya 13) ────────────── */}
+      {data.lucky_time_estimate && data.lucky_time_estimate.peak_periods.length > 0 && (
+        <section>
+          <h3 className="text-base font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            {isHi ? 'सर्वोत्तम भाग्य काल (अ. 13)' : 'Peak Lucky Periods (Adh. 13)'}
+          </h3>
+          {/* Current period quality */}
+          <div className={`rounded-lg border px-3 py-2 mb-3 flex items-center gap-2 text-sm ${
+            data.lucky_time_estimate.current_period_quality === 'excellent'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+              : data.lucky_time_estimate.current_period_quality === 'good'
+              ? 'bg-blue-50 border-blue-300 text-blue-800'
+              : data.lucky_time_estimate.current_period_quality === 'challenging'
+              ? 'bg-amber-50 border-amber-300 text-amber-800'
+              : 'bg-gray-50 border-gray-200 text-gray-700'
+          }`}>
+            <Star className="w-4 h-4 shrink-0" />
+            <span className="font-medium">
+              {isHi ? 'वर्तमान काल:' : 'Current period:'} {data.lucky_time_estimate.current_mahadasha} Mahadasha
+            </span>
+            <span className={`ml-auto text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+              data.lucky_time_estimate.current_period_quality === 'excellent' ? 'bg-emerald-600 text-white'
+              : data.lucky_time_estimate.current_period_quality === 'good' ? 'bg-blue-600 text-white'
+              : data.lucky_time_estimate.current_period_quality === 'challenging' ? 'bg-amber-600 text-white'
+              : 'bg-gray-400 text-white'
+            }`}>
+              {data.lucky_time_estimate.current_period_quality}
+            </span>
+          </div>
+          {/* Peak periods timeline */}
+          <div className="space-y-3">
+            {data.lucky_time_estimate.peak_periods.map((period, i) => (
+              <div key={i} className={`flex gap-3 rounded-xl border-2 p-4 ${
+                period.quality === 'excellent'
+                  ? 'border-emerald-300 bg-emerald-50'
+                  : period.quality === 'good'
+                  ? 'border-blue-200 bg-blue-50'
+                  : 'border-gray-200 bg-gray-50'
+              }`}>
+                {/* Timeline dot */}
+                <div className="flex flex-col items-center">
+                  <div className={`w-3 h-3 rounded-full shrink-0 mt-1 ${
+                    period.quality === 'excellent' ? 'bg-emerald-500'
+                    : period.quality === 'good' ? 'bg-blue-500'
+                    : 'bg-gray-400'
+                  }`} />
+                  {i < (data.lucky_time_estimate?.peak_periods.length ?? 0) - 1 && (
+                    <div className="w-px flex-1 bg-gray-200 mt-1" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      period.period_type === 'dasha' ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {period.period_type}
+                    </span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      period.quality === 'excellent' ? 'bg-emerald-600 text-white'
+                      : period.quality === 'good' ? 'bg-blue-600 text-white'
+                      : 'bg-gray-400 text-white'
+                    }`}>
+                      {period.quality}
+                    </span>
+                  </div>
+                  <p className="text-xs text-foreground/85 leading-relaxed mb-1">
+                    {isHi ? period.description_hi : period.description_en}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground italic">
+                    {period.approximate_age_range}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 mt-3 text-[10px] text-muted-foreground italic">
+            <BookOpen className="w-3 h-3" />
+            <span>{data.lucky_time_estimate.sloka_ref}</span>
+          </div>
         </section>
       )}
 

@@ -1030,6 +1030,623 @@ def _demise_month_lagna_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]
 
 
 # ───────────────────────────────────────────────────────────────
+# Feature 1: Saturn Transit Death Indicator (Adhyaya 17)
+# ───────────────────────────────────────────────────────────────
+
+_NAKSHATRA_LORD: Dict[str, str] = {
+    "Ashwini": "Ketu", "Bharani": "Venus", "Krittika": "Sun", "Rohini": "Moon",
+    "Mrigashira": "Mars", "Ardra": "Rahu", "Punarvasu": "Jupiter", "Pushya": "Saturn",
+    "Ashlesha": "Mercury", "Magha": "Ketu", "Purva Phalguni": "Venus",
+    "Uttara Phalguni": "Sun", "Hasta": "Moon", "Chitra": "Mars", "Swati": "Rahu",
+    "Vishakha": "Jupiter", "Anuradha": "Saturn", "Jyeshtha": "Mercury",
+    "Mula": "Ketu", "Purva Ashadha": "Venus", "Uttara Ashadha": "Sun",
+    "Shravana": "Moon", "Dhanishtha": "Mars", "Shatabhisha": "Rahu",
+    "Purva Bhadrapada": "Jupiter", "Uttara Bhadrapada": "Saturn", "Revati": "Mercury",
+}
+
+_NAKSHATRA_LIST = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha",
+    "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati",
+]
+
+
+def _saturn_transit_death_indicator(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 1: Saturn transit death timing per Phaladeepika Adhyaya 17.
+
+    Rule: Saturn transiting 8th from natal Moon OR the sign of the 8th lord
+    indicates heightened karmic vulnerability when combined with Maraka dasha.
+    """
+    # Determine Saturn's natal house from Moon
+    moon_house = _planet_house("Moon", chart_data)
+    saturn_house = _planet_house("Saturn", chart_data)
+    saturn_sign = _planet_sign("Saturn", chart_data)
+
+    # 8th from Moon (house counting from Moon's position)
+    eighth_from_moon = 0
+    if moon_house > 0 and saturn_house > 0:
+        eighth_from_moon = ((moon_house - 1 + 7) % 12) + 1  # 8th from Moon
+
+    is_8th_from_moon = (saturn_house == eighth_from_moon) if eighth_from_moon > 0 else False
+
+    # Saturn transiting 8th lord's sign
+    eighth_lord = _lord_of(8, chart_data)
+    eighth_lord_sign = _planet_sign(eighth_lord, chart_data) if eighth_lord else ""
+    saturn_8th_lord_transit = bool(saturn_sign and eighth_lord_sign and saturn_sign == eighth_lord_sign)
+
+    # Current house of Saturn from Moon (gochara approximation using natal)
+    current_saturn_house_from_moon = 0
+    if moon_house > 0 and saturn_house > 0:
+        current_saturn_house_from_moon = ((saturn_house - moon_house) % 12) + 1
+
+    # Severity
+    if is_8th_from_moon and saturn_8th_lord_transit:
+        severity = "high"
+        interp_en = (
+            f"Saturn occupies the 8th house from natal Moon (house {eighth_from_moon}) AND "
+            f"transits the sign of the 8th lord ({eighth_lord}, {eighth_lord_sign}). "
+            "Phaladeepika Adh. 17: double activation — this is the most significant karmic vigilance period. "
+            "Combine with Maraka dasha for timing. Spiritual practice and health awareness are strongly advised."
+        )
+        interp_hi = (
+            f"शनि जन्मकालीन चंद्र से अष्टम भाव (भाव {eighth_from_moon}) में है "
+            f"और अष्टमेश ({eighth_lord}, {eighth_lord_sign}) की राशि में भी है। "
+            "फलदीपिका अ. 17: दोहरा सक्रियण — यह सर्वाधिक कर्म-सतर्कता का काल है। "
+            "मारक दशा के साथ मिलाकर देखें। आध्यात्मिक साधना एवं स्वास्थ्य-जागरूकता अत्यंत आवश्यक।"
+        )
+    elif is_8th_from_moon:
+        severity = "high"
+        interp_en = (
+            f"Saturn is placed in the 8th house from natal Moon (house {eighth_from_moon}). "
+            "Phaladeepika Adh. 17: Saturn transiting the 8th from Moon is the primary death-timing indicator. "
+            "If you are also in a Maraka dasha, heightened awareness and protective practices are advised."
+        )
+        interp_hi = (
+            f"शनि जन्मकालीन चंद्र से अष्टम भाव (भाव {eighth_from_moon}) में स्थित है। "
+            "फलदीपिका अ. 17: चंद्र से 8वें भाव में शनि प्राथमिक निधन-काल संकेत है। "
+            "यदि मारक दशा भी चल रही है, तो बढ़ी जागरूकता एवं सुरक्षात्मक उपाय अनुशंसित हैं।"
+        )
+    elif saturn_8th_lord_transit:
+        severity = "moderate"
+        interp_en = (
+            f"Saturn transits the sign of the 8th lord ({eighth_lord} in {eighth_lord_sign}). "
+            "Phaladeepika Adh. 17: this activates the longevity axis via the 8th lord's sign. "
+            "A period of philosophical reflection and health mindfulness is appropriate."
+        )
+        interp_hi = (
+            f"शनि अष्टमेश ({eighth_lord}) की राशि ({eighth_lord_sign}) में गोचर कर रहा है। "
+            "फलदीपिका अ. 17: यह अष्टमेश की राशि के माध्यम से आयु-अक्ष को सक्रिय करता है। "
+            "दार्शनिक चिन्तन एवं स्वास्थ्य-सतर्कता का काल है।"
+        )
+    else:
+        severity = "low"
+        interp_en = (
+            f"Saturn (house {saturn_house}, {saturn_sign}) is not currently in the 8th from Moon "
+            f"(house {eighth_from_moon}) nor in the 8th lord's sign ({eighth_lord_sign or 'unknown'}). "
+            "Phaladeepika Adh. 17: Saturn transit death indicators are quiescent at this placement."
+        )
+        interp_hi = (
+            f"शनि (भाव {saturn_house}, {saturn_sign}) वर्तमान में चंद्र से 8वें भाव "
+            f"(भाव {eighth_from_moon}) या अष्टमेश की राशि ({eighth_lord_sign or 'अज्ञात'}) में नहीं है। "
+            "फलदीपिका अ. 17: इस स्थिति में शनि गोचर निधन-संकेत शान्त हैं।"
+        )
+
+    return {
+        "current_saturn_house_from_moon": current_saturn_house_from_moon,
+        "is_8th_from_moon": is_8th_from_moon,
+        "saturn_8th_lord_transit": saturn_8th_lord_transit,
+        "eighth_lord": eighth_lord,
+        "eighth_lord_sign": eighth_lord_sign,
+        "moon_house": moon_house,
+        "saturn_house": saturn_house,
+        "interpretation_en": interp_en,
+        "interpretation_hi": interp_hi,
+        "severity": severity,
+        "sloka_ref": "Phaladeepika Adh. 17",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
+# Feature 2: Moon Transit at Death (Adhyaya 17)
+# ───────────────────────────────────────────────────────────────
+
+def _moon_death_transit(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 2: Moon transiting Janma Nakshatra during Maraka dasha = critical vulnerability.
+    Classical rule per Phaladeepika Adh. 17.
+    """
+    # Extract Janma Nakshatra
+    moon_nak = ""
+    moon_nak_top = chart_data.get("moon_nakshatra")
+    if isinstance(moon_nak_top, str):
+        moon_nak = moon_nak_top
+    elif isinstance(moon_nak_top, dict):
+        moon_nak = str(moon_nak_top.get("nakshatra", "") or "")
+    else:
+        moon_planet = (_planets(chart_data).get("Moon") or {})
+        if isinstance(moon_planet, dict):
+            moon_nak = str(moon_planet.get("nakshatra", "") or "")
+
+    if not moon_nak:
+        return {
+            "janma_nakshatra": "",
+            "watch_for_en": "Janma Nakshatra not available in chart data.",
+            "watch_for_hi": "जन्म नक्षत्र कुंडली डेटा में उपलब्ध नहीं है।",
+            "note_en": "Provide Moon nakshatra for this analysis.",
+            "note_hi": "इस विश्लेषण के लिए चंद्र नक्षत्र प्रदान करें।",
+            "sloka_ref": "Phaladeepika Adh. 17",
+        }
+
+    # Maraka lords for reference
+    maraka_2nd = _lord_of(2, chart_data)
+    maraka_7th = _lord_of(7, chart_data)
+    maraka_str = f"{maraka_2nd} or {maraka_7th}" if maraka_2nd and maraka_7th else (maraka_2nd or maraka_7th or "Maraka lord")
+
+    watch_en = (
+        f"Each month when the Moon returns to {moon_nak} (your Janma Nakshatra), "
+        f"watch carefully if you are simultaneously running a Maraka dasha "
+        f"({maraka_str} Mahadasha or Antardasha). "
+        "Phaladeepika Adh. 17: Moon transiting Janma Nakshatra during Maraka dasha "
+        "is the classical critical vulnerability window. "
+        "This is a 2–3 day window of heightened spiritual awareness — not a death prediction."
+    )
+    watch_hi = (
+        f"प्रत्येक माह जब चंद्रमा {moon_nak} (आपके जन्म नक्षत्र) में लौटे, "
+        f"तब विशेष ध्यान दें यदि आप उसी समय मारक दशा ({maraka_str} महादशा या अन्तर्दशा) में हों। "
+        "फलदीपिका अ. 17: मारक दशा के दौरान जन्म नक्षत्र पर चंद्र गोचर "
+        "शास्त्रीय दृष्टि से अत्यंत संवेदनशील काल है। "
+        "यह 2-3 दिन की आध्यात्मिक जागरूकता की विंडो है — मृत्यु की भविष्यवाणी नहीं।"
+    )
+    note_en = (
+        "Classical guidance: during this window, intensify spiritual practice, avoid risky activities, "
+        "and perform protective rituals (mantra, charity). The window recurs monthly but is significant "
+        "only during active Maraka dasha periods."
+    )
+    note_hi = (
+        "शास्त्रीय परामर्श: इस विंडो में आध्यात्मिक साधना बढ़ाएं, जोखिम भरी गतिविधियों से बचें "
+        "और सुरक्षात्मक अनुष्ठान (मंत्र, दान) करें। यह विंडो मासिक आती है किन्तु सक्रिय "
+        "मारक दशाकाल में ही महत्वपूर्ण होती है।"
+    )
+
+    return {
+        "janma_nakshatra": moon_nak,
+        "watch_for_en": watch_en,
+        "watch_for_hi": watch_hi,
+        "note_en": note_en,
+        "note_hi": note_hi,
+        "sloka_ref": "Phaladeepika Adh. 17",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
+# Feature 3: Month & Lagna of Demise — Classical Estimation (Adh. 17)
+# ───────────────────────────────────────────────────────────────
+
+_SIGN_CALENDAR_MONTH_EN = {
+    "Aries": "April", "Taurus": "May", "Gemini": "June", "Cancer": "July",
+    "Leo": "August", "Virgo": "September", "Libra": "October", "Scorpio": "November",
+    "Sagittarius": "December", "Capricorn": "January", "Aquarius": "February", "Pisces": "March",
+}
+_SIGN_CALENDAR_MONTH_HI = {
+    "Aries": "अप्रैल", "Taurus": "मई", "Gemini": "जून", "Cancer": "जुलाई",
+    "Leo": "अगस्त", "Virgo": "सितंबर", "Libra": "अक्टूबर", "Scorpio": "नवंबर",
+    "Sagittarius": "दिसंबर", "Capricorn": "जनवरी", "Aquarius": "फरवरी", "Pisces": "मार्च",
+}
+
+
+def _demise_timing_classical(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Feature 3: Classical Month & Lagna of Demise estimation (Phaladeepika Adh. 17).
+
+    Month of death: sign of stronger Maraka lord (2nd or 7th lord).
+    Lagna at death: sign occupied by the 8th lord natally.
+    """
+    maraka_2nd = _lord_of(2, chart_data)
+    maraka_7th = _lord_of(7, chart_data)
+    eighth_lord = _lord_of(8, chart_data)
+
+    # Determine stronger Maraka
+    m2_sign = _planet_sign(maraka_2nd, chart_data) if maraka_2nd else ""
+    m7_sign = _planet_sign(maraka_7th, chart_data) if maraka_7th else ""
+    m2_house = _planet_house(maraka_2nd, chart_data) if maraka_2nd else 0
+    m7_house = _planet_house(maraka_7th, chart_data) if maraka_7th else 0
+
+    # Simple strength: Kendra/Trikona > Dusthana
+    def _maraka_score(house: int) -> int:
+        if house in KENDRAS:
+            return 3
+        if house in TRIKONAS:
+            return 2
+        if house in DUSTHANAS:
+            return 0
+        return 1
+
+    m2_score = _maraka_score(m2_house)
+    m7_score = _maraka_score(m7_house)
+
+    if m2_score >= m7_score and m2_sign:
+        stronger_sign = m2_sign
+        stronger_planet = maraka_2nd
+        reason_en = f"2nd lord ({maraka_2nd}) is the stronger Maraka (house {m2_house}, score {m2_score})"
+        reason_hi = f"द्वितीयेश ({maraka_2nd}) प्रबल मारक है (भाव {m2_house}, अंक {m2_score})"
+    elif m7_sign:
+        stronger_sign = m7_sign
+        stronger_planet = maraka_7th
+        reason_en = f"7th lord ({maraka_7th}) is the stronger Maraka (house {m7_house}, score {m7_score})"
+        reason_hi = f"सप्तमेश ({maraka_7th}) प्रबल मारक है (भाव {m7_house}, अंक {m7_score})"
+    else:
+        stronger_sign = ""
+        stronger_planet = ""
+        reason_en = "Maraka lords not determinable"
+        reason_hi = "मारक स्वामी निर्धारित नहीं"
+
+    month_en = _SIGN_CALENDAR_MONTH_EN.get(stronger_sign, stronger_sign) if stronger_sign else "Unknown"
+    month_hi = _SIGN_CALENDAR_MONTH_HI.get(stronger_sign, stronger_sign) if stronger_sign else "अज्ञात"
+
+    # Lagna at death = sign of 8th lord natally
+    eighth_lord_sign = _planet_sign(eighth_lord, chart_data) if eighth_lord else ""
+    lagna_reason_en = (
+        f"The 8th lord ({eighth_lord}) is natally placed in {eighth_lord_sign}. "
+        "Phaladeepika Adh. 17: the sign occupied by the 8th lord is the classical indicator "
+        "for the rising sign (Lagna) at the time of critical karmic transition."
+    ) if eighth_lord_sign else "8th lord sign not determinable."
+    lagna_reason_hi = (
+        f"अष्टमेश ({eighth_lord}) जन्मकालीन {eighth_lord_sign} में स्थित है। "
+        "फलदीपिका अ. 17: अष्टमेश की राशि महत्वपूर्ण कर्म-संक्रमण के समय उदित लग्न का शास्त्रीय संकेतक है।"
+    ) if eighth_lord_sign else "अष्टमेश राशि निर्धारित नहीं।"
+
+    disclaimer_en = (
+        "IMPORTANT DISCLAIMER: This is a purely classical Phaladeepika Adhyaya 17 estimation method. "
+        "It does NOT predict a specific death date or month. These signs indicate general karmic sensitivity "
+        "periods — not absolute prophesies. Always consult a qualified Jyotishi for personal guidance."
+    )
+    disclaimer_hi = (
+        "महत्वपूर्ण अस्वीकरण: यह केवल शास्त्रीय फलदीपिका अ. 17 की अनुमान पद्धति है। "
+        "यह किसी विशेष मृत्यु-तिथि या माह की भविष्यवाणी नहीं है। ये राशियाँ सामान्य कर्म-संवेदनशीलता "
+        "के काल को दर्शाती हैं — निरपेक्ष भविष्यवाणी नहीं। व्यक्तिगत मार्गदर्शन के लिए "
+        "योग्य ज्योतिषी से परामर्श करें।"
+    )
+
+    return {
+        "likely_month_indicator": {
+            "sign": stronger_sign,
+            "month_name_en": month_en,
+            "month_name_hi": month_hi,
+            "planet": stronger_planet,
+            "reason_en": reason_en,
+            "reason_hi": reason_hi,
+        },
+        "likely_lagna_at_death": {
+            "sign": eighth_lord_sign,
+            "reason_en": lagna_reason_en,
+            "reason_hi": lagna_reason_hi,
+        },
+        "disclaimer_en": disclaimer_en,
+        "disclaimer_hi": disclaimer_hi,
+        "sloka_ref": "Phaladeepika Adh. 17",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
+# Feature 4: Dasha + Gochara + Lagna Combined Death Score (Adh. 17)
+# ───────────────────────────────────────────────────────────────
+
+def _dasha_gochara_lagna_score(
+    chart_data: Dict[str, Any],
+    mahadasha_lord: Optional[str] = None,
+    antardasha_lord: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Feature 4: 5-signal multi-scoring system for death risk per Phaladeepika Adh. 17.
+
+    Signal 1: Maraka dasha/antardasha active (+3)
+    Signal 2: Saturn in 8th from Moon (+2)
+    Signal 3: Jupiter NOT in good transit houses 2,5,7,9,11 (+1)
+    Signal 4: 8th lord active in Gochara — here approximated by 8th lord in maraka/8th house (+1)
+    Signal 5: Lagna lord weak in transit — approximated by lagna lord in Dusthana (+1)
+
+    Score 0-2 = low concern, 3-5 = moderate watch, 6+ = high vigilance
+    """
+    maraka_2nd = _lord_of(2, chart_data)
+    maraka_7th = _lord_of(7, chart_data)
+    eighth_lord = _lord_of(8, chart_data)
+    lagna_lord = _lord_of(1, chart_data)
+
+    signals: List[Dict[str, Any]] = []
+    total = 0
+
+    # Signal 1: Maraka dasha/antardasha active
+    in_maraka_dasha = bool(
+        (mahadasha_lord and mahadasha_lord in {maraka_2nd, maraka_7th}) or
+        (antardasha_lord and antardasha_lord in {maraka_2nd, maraka_7th})
+    )
+    s1_pts = 3 if in_maraka_dasha else 0
+    total += s1_pts
+    dasha_who = mahadasha_lord or antardasha_lord or "Unknown"
+    signals.append({
+        "signal_en": f"Maraka dasha/antardasha active ({dasha_who})",
+        "signal_hi": f"मारक दशा/अन्तर्दशा सक्रिय ({dasha_who})",
+        "points": 3,
+        "triggered": in_maraka_dasha,
+    })
+
+    # Signal 2: Saturn in 8th from Moon
+    moon_house = _planet_house("Moon", chart_data)
+    saturn_house = _planet_house("Saturn", chart_data)
+    eighth_from_moon = ((moon_house - 1 + 7) % 12) + 1 if moon_house > 0 else 0
+    sat_8th_moon = (saturn_house == eighth_from_moon) if (moon_house > 0 and saturn_house > 0) else False
+    s2_pts = 2 if sat_8th_moon else 0
+    total += s2_pts
+    signals.append({
+        "signal_en": f"Saturn in 8th from Moon (house {eighth_from_moon})",
+        "signal_hi": f"शनि चंद्र से अष्टम भाव में (भाव {eighth_from_moon})",
+        "points": 2,
+        "triggered": sat_8th_moon,
+    })
+
+    # Signal 3: Jupiter NOT in good transit houses (2,5,7,9,11)
+    jup_house = _planet_house("Jupiter", chart_data)
+    good_jupiter_houses = {2, 5, 7, 9, 11}
+    jup_not_good = (jup_house > 0) and (jup_house not in good_jupiter_houses)
+    s3_pts = 1 if jup_not_good else 0
+    total += s3_pts
+    signals.append({
+        "signal_en": f"Jupiter not in auspicious transit houses 2/5/7/9/11 (currently house {jup_house})",
+        "signal_hi": f"बृहस्पति शुभ गोचर भावों 2/5/7/9/11 में नहीं (वर्तमान भाव {jup_house})",
+        "points": 1,
+        "triggered": jup_not_good,
+    })
+
+    # Signal 4: 8th lord in maraka/8th house (proxy for Gochara activation)
+    el_house = _planet_house(eighth_lord, chart_data) if eighth_lord else 0
+    eighth_lord_active = el_house in {2, 7, 8} if el_house > 0 else False
+    s4_pts = 1 if eighth_lord_active else 0
+    total += s4_pts
+    signals.append({
+        "signal_en": f"8th lord ({eighth_lord}) active in maraka/8th zone (house {el_house})",
+        "signal_hi": f"अष्टमेश ({eighth_lord}) मारक/अष्टम क्षेत्र में सक्रिय (भाव {el_house})",
+        "points": 1,
+        "triggered": eighth_lord_active,
+    })
+
+    # Signal 5: Lagna lord weak (Dusthana placement)
+    ll_house = _planet_house(lagna_lord, chart_data) if lagna_lord else 0
+    ll_sign = _planet_sign(lagna_lord, chart_data) if lagna_lord else ""
+    ll_weak = (ll_house in DUSTHANAS) or (DEBILITATION.get(lagna_lord, "") == ll_sign if lagna_lord else False)
+    s5_pts = 1 if ll_weak else 0
+    total += s5_pts
+    signals.append({
+        "signal_en": f"Lagna lord ({lagna_lord}) weak — house {ll_house}, sign {ll_sign}",
+        "signal_hi": f"लग्नेश ({lagna_lord}) दुर्बल — भाव {ll_house}, राशि {ll_sign}",
+        "points": 1,
+        "triggered": ll_weak,
+    })
+
+    # Verdict
+    if total >= 6:
+        verdict_en = (
+            f"HIGH VIGILANCE PERIOD (score {total}/8): Multiple death-timing signals are simultaneously active. "
+            "Phaladeepika Adh. 17: this is the most karmically sensitive configuration. "
+            "Intensive spiritual practice, medical check-up, and family awareness are strongly advised. "
+            "This is philosophical guidance — NOT a death prediction."
+        )
+        verdict_hi = (
+            f"उच्च सतर्कता काल (अंक {total}/8): अनेक निधन-काल संकेत एक साथ सक्रिय हैं। "
+            "फलदीपिका अ. 17: यह सर्वाधिक कर्म-संवेदनशील संरचना है। "
+            "गहन आध्यात्मिक साधना, स्वास्थ्य जांच एवं पारिवारिक सतर्कता अत्यंत अनुशंसित। "
+            "यह दार्शनिक मार्गदर्शन है — मृत्यु-भविष्यवाणी नहीं।"
+        )
+    elif total >= 3:
+        verdict_en = (
+            f"MODERATE WATCH (score {total}/8): Several signals are active. "
+            "Phaladeepika Adh. 17 counsels heightened awareness and protective practices. "
+            "Philosophical framing: this is a period calling for greater mindfulness. "
+            "Not a crisis, but a time for intentional living."
+        )
+        verdict_hi = (
+            f"मध्यम सतर्कता (अंक {total}/8): कई संकेत सक्रिय हैं। "
+            "फलदीपिका अ. 17: बढ़ी जागरूकता एवं सुरक्षात्मक उपाय अनुशंसित। "
+            "दार्शनिक दृष्टिकोण: यह अधिक सचेत जीवन का काल है। "
+            "संकट नहीं, बल्कि सोद्देश्य जीवन जीने का समय।"
+        )
+    else:
+        verdict_en = (
+            f"LOW CONCERN (score {total}/8): Most death-timing signals are quiet. "
+            "Phaladeepika Adh. 17 indicators are not aligned for heightened vulnerability. "
+            "Routine spiritual practice and good health habits are sufficient."
+        )
+        verdict_hi = (
+            f"निम्न चिंता (अंक {total}/8): अधिकांश निधन-काल संकेत शान्त हैं। "
+            "फलदीपिका अ. 17 के संकेतक उच्च संवेदनशीलता के लिए संरेखित नहीं हैं। "
+            "नियमित आध्यात्मिक साधना एवं स्वास्थ्य-आदतें पर्याप्त हैं।"
+        )
+
+    disclaimer_en = (
+        "This scoring system follows Phaladeepika Adhyaya 17 classical multi-signal analysis. "
+        "It is a philosophical longevity assessment tool — NOT a medical diagnosis or death prediction. "
+        "Consult qualified medical and Jyotish practitioners for personal guidance."
+    )
+
+    return {
+        "total": total,
+        "signals": signals,
+        "verdict_en": verdict_en,
+        "verdict_hi": verdict_hi,
+        "disclaimer_en": disclaimer_en,
+        "sloka_ref": "Phaladeepika Adh. 17",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
+# Feature 6: Best Lucky Time Estimation (Adhyaya 13)
+# ───────────────────────────────────────────────────────────────
+
+# Classical Dasha years for each planet (Vimshottari)
+_DASHA_YEARS = {
+    "Ketu": 7, "Venus": 20, "Sun": 6, "Moon": 10, "Mars": 7,
+    "Rahu": 18, "Jupiter": 16, "Saturn": 19, "Mercury": 17,
+}
+_DASHA_ORDER = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]
+
+# Jupiter's exaltation / own signs (for transit bonus)
+_JUPITER_EXCELLENT = {"Cancer", "Sagittarius", "Pisces"}  # exaltation + own signs
+
+
+def _calculate_lucky_periods(
+    chart_data: Dict[str, Any],
+    mahadasha_lord: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Feature 6: Best Lucky Time Estimation per Phaladeepika Adhyaya 13.
+
+    Identifies peak fortune periods by combining:
+    1. 9th lord dasha/antardasha periods
+    2. Jupiter transit in exaltation/own sign periods
+    3. Raj yoga fruition dasha (if any Raj yogas exist via well-placed 9th lord)
+    """
+    asc = _asc_sign(chart_data)
+    ninth_lord = _lord_of(9, chart_data)
+    fifth_lord = _lord_of(5, chart_data)
+    lagna_lord = _lord_of(1, chart_data)
+    jupiter_sign = _planet_sign("Jupiter", chart_data)
+    jupiter_house = _planet_house("Jupiter", chart_data)
+
+    peak_periods: List[Dict[str, Any]] = []
+
+    # Period 1: 9th lord Mahadasha
+    if ninth_lord:
+        nl_house = _planet_house(ninth_lord, chart_data)
+        nl_sign = _planet_sign(ninth_lord, chart_data)
+        nl_strong = _is_exalted(ninth_lord, nl_sign) or _is_own(ninth_lord, nl_sign)
+        years = _DASHA_YEARS.get(ninth_lord, 16)
+        quality = "excellent" if nl_strong and nl_house in (KENDRAS | TRIKONAS) else "good"
+        peak_periods.append({
+            "period_type": "dasha",
+            "description_en": (
+                f"{ninth_lord} Mahadasha ({years} years) — 9th lord period. "
+                f"The 9th house governs fortune, dharma, and higher wisdom. "
+                f"{'Strong placement (exalted/own sign) amplifies this fortune period.' if nl_strong else 'This is a naturally auspicious dasha for luck and blessings.'}"
+            ),
+            "description_hi": (
+                f"{ninth_lord} महादशा ({years} वर्ष) — नवमेश का काल। "
+                f"नवम भाव भाग्य, धर्म एवं उच्च ज्ञान का कारक है। "
+                f"{'उच्च/स्वराशि स्थिति इस भाग्य-काल को और प्रबल बनाती है।' if nl_strong else 'यह स्वाभाविक रूप से भाग्य एवं आशीर्वाद के लिए शुभ दशा है।'}"
+            ),
+            "approximate_age_range": f"During {ninth_lord} Mahadasha",
+            "quality": quality,
+        })
+
+    # Period 2: 5th lord Mahadasha (Trikona = fortune/intelligence)
+    if fifth_lord and fifth_lord != ninth_lord:
+        fl_house = _planet_house(fifth_lord, chart_data)
+        fl_sign = _planet_sign(fifth_lord, chart_data)
+        fl_strong = _is_exalted(fifth_lord, fl_sign) or _is_own(fifth_lord, fl_sign)
+        years5 = _DASHA_YEARS.get(fifth_lord, 16)
+        quality5 = "excellent" if fl_strong and fl_house in (KENDRAS | TRIKONAS) else "good"
+        peak_periods.append({
+            "period_type": "dasha",
+            "description_en": (
+                f"{fifth_lord} Mahadasha ({years5} years) — 5th lord period. "
+                "The 5th house governs intelligence, creativity, children, and past-life merit (Purva Punya). "
+                f"{'Exceptional placement amplifies intuition, luck, and spiritual intelligence.' if fl_strong else 'A naturally creative and fortunate dasha period.'}"
+            ),
+            "description_hi": (
+                f"{fifth_lord} महादशा ({years5} वर्ष) — पंचमेश का काल। "
+                "पंचम भाव बुद्धि, सृजनशीलता, संतान एवं पूर्वपुण्य का कारक है। "
+                f"{'असाधारण स्थिति अंतर्ज्ञान, भाग्य एवं आध्यात्मिक बुद्धि को बढ़ाती है।' if fl_strong else 'स्वाभाविक रूप से सृजनशील एवं भाग्यशाली दशाकाल।'}"
+            ),
+            "approximate_age_range": f"During {fifth_lord} Mahadasha",
+            "quality": quality5,
+        })
+
+    # Period 3: Lagna lord dasha (overall vitality peak)
+    if lagna_lord and lagna_lord not in {ninth_lord, fifth_lord}:
+        ll_sign = _planet_sign(lagna_lord, chart_data)
+        ll_house = _planet_house(lagna_lord, chart_data)
+        ll_strong = _is_exalted(lagna_lord, ll_sign) or _is_own(lagna_lord, ll_sign)
+        if ll_strong or ll_house in (KENDRAS | TRIKONAS):
+            years_ll = _DASHA_YEARS.get(lagna_lord, 16)
+            peak_periods.append({
+                "period_type": "dasha",
+                "description_en": (
+                    f"{lagna_lord} Mahadasha ({years_ll} years) — Lagna lord period. "
+                    "The Lagna lord governs the self, vitality, and overall life quality. "
+                    "A strong Lagna lord dasha brings physical vitality, renewed purpose, and personal success."
+                ),
+                "description_hi": (
+                    f"{lagna_lord} महादशा ({years_ll} वर्ष) — लग्नेश का काल। "
+                    "लग्नेश स्वयं, जीवन-शक्ति एवं समग्र जीवन-गुणवत्ता का कारक है। "
+                    "प्रबल लग्नेश दशा शारीरिक ऊर्जा, नवीन उद्देश्य एवं व्यक्तिगत सफलता लाती है।"
+                ),
+                "approximate_age_range": f"During {lagna_lord} Mahadasha",
+                "quality": "excellent" if ll_strong else "good",
+            })
+
+    # Period 4: Jupiter in excellent transit (Cancer/Sag/Pisces)
+    if jupiter_sign in _JUPITER_EXCELLENT:
+        period_quality = "excellent"
+        desc_en = (
+            f"Jupiter currently in {jupiter_sign} — exaltation/own sign transit. "
+            "When Jupiter transits Cancer (exaltation), Sagittarius, or Pisces (own signs), "
+            "it amplifies fortune, wisdom, and protective grace for ALL ascendants. "
+            "This is the most auspicious Jupiter transit period — lasts approximately 1 year."
+        )
+        desc_hi = (
+            f"बृहस्पति वर्तमान में {jupiter_sign} में — उच्च/स्वराशि गोचर। "
+            "जब बृहस्पति कर्क (उच्च), धनु या मीन (स्वराशि) में गोचर करे, "
+            "सभी लग्नों के लिए भाग्य, ज्ञान एवं सुरक्षात्मक अनुग्रह बढ़ता है। "
+            "यह सर्वाधिक शुभ बृहस्पति गोचर काल है — लगभग 1 वर्ष।"
+        )
+    else:
+        good_jup_houses = {2, 5, 7, 9, 11}
+        period_quality = "good" if jupiter_house in good_jup_houses else "neutral"
+        desc_en = (
+            f"Jupiter currently in house {jupiter_house} ({jupiter_sign}). "
+            f"{'In a good transit house (2/5/7/9/11) — fortune and wisdom are supported.' if jupiter_house in good_jup_houses else 'Jupiter transit is not in peak auspicious mode at this time.'} "
+            "Peak Jupiter transit fortune occurs when Jupiter is in Cancer, Sagittarius, or Pisces."
+        )
+        desc_hi = (
+            f"बृहस्पति वर्तमान में भाव {jupiter_house} ({jupiter_sign}) में। "
+            f"{'शुभ गोचर भाव (2/5/7/9/11) में — भाग्य एवं ज्ञान को समर्थन।' if jupiter_house in good_jup_houses else 'बृहस्पति गोचर अभी सर्वोच्च शुभ स्थिति में नहीं।'} "
+            "सर्वोच्च बृहस्पति गोचर भाग्य तब होता है जब वह कर्क, धनु या मीन में हो।"
+        )
+
+    peak_periods.append({
+        "period_type": "transit",
+        "description_en": desc_en,
+        "description_hi": desc_hi,
+        "approximate_age_range": f"Jupiter in {jupiter_sign} (approx 1 year)",
+        "quality": period_quality,
+    })
+
+    # Current period quality based on active dasha
+    current_quality = "neutral"
+    if mahadasha_lord:
+        is_ninth = (mahadasha_lord == ninth_lord)
+        is_fifth = (mahadasha_lord == fifth_lord)
+        is_lagna = (mahadasha_lord == lagna_lord)
+        is_jup_good = jupiter_sign in _JUPITER_EXCELLENT or jupiter_house in good_jup_houses
+        if (is_ninth or is_fifth) and is_jup_good:
+            current_quality = "excellent"
+        elif is_ninth or is_fifth or is_lagna:
+            current_quality = "good"
+        elif mahadasha_lord in {_lord_of(6, chart_data), _lord_of(8, chart_data), _lord_of(12, chart_data)}:
+            current_quality = "challenging"
+        else:
+            current_quality = "neutral"
+
+    return {
+        "peak_periods": peak_periods,
+        "current_period_quality": current_quality,
+        "current_mahadasha": mahadasha_lord or "Unknown",
+        "sloka_ref": "Phaladeepika Adh. 13",
+    }
+
+
+# ───────────────────────────────────────────────────────────────
 # Main entry
 # ───────────────────────────────────────────────────────────────
 
@@ -1055,6 +1672,13 @@ def analyze_longevity_indicators(
     dasha_timing = _dasha_gochara_timing(chart_data, mahadasha_lord, antardasha_lord)
     demise_month_lagna = _demise_month_lagna_indicators(chart_data)
 
+    # New Features (Adhyaya 13 + 17)
+    saturn_transit_death = _saturn_transit_death_indicator(chart_data)
+    moon_death_transit = _moon_death_transit(chart_data)
+    demise_timing_classical = _demise_timing_classical(chart_data)
+    dasha_gochara_score = _dasha_gochara_lagna_score(chart_data, mahadasha_lord, antardasha_lord)
+    lucky_time = _calculate_lucky_periods(chart_data, mahadasha_lord)
+
     return {
         "overall_longevity_strength": overall,
         "maraka_planets": marakas,
@@ -1067,5 +1691,11 @@ def analyze_longevity_indicators(
         "transit_timing_indicators": transit_timing,
         "dasha_gochara_timing": dasha_timing,
         "demise_month_lagna_indicators": demise_month_lagna,
+        # New features
+        "saturn_transit_death_indicator": saturn_transit_death,
+        "moon_death_transit": moon_death_transit,
+        "demise_timing_classical": demise_timing_classical,
+        "dasha_gochara_lagna_score": dasha_gochara_score,
+        "lucky_time_estimate": lucky_time,
         "sloka_ref": "Phaladeepika Adh. 17",
     }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, HeartPulse, AlertTriangle, ShieldCheck, BookOpen, CheckCircle2, ChevronDown, ChevronUp, Sun, Moon, Compass } from 'lucide-react';
+import { Loader2, HeartPulse, AlertTriangle, ShieldCheck, BookOpen, CheckCircle2, ChevronDown, ChevronUp, Sun, Moon, Compass, Scale, Info } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -41,6 +41,18 @@ interface MethodResult {
   notes?: string[];
 }
 
+interface LifespanResolution {
+  pindayu_years: number;
+  nisargayu_years: number;
+  amsayu_years: number;
+  method_used: 'majority' | 'average' | 'weighted';
+  final_estimate_years: number;
+  confidence: 'high' | 'moderate' | 'low';
+  resolution_reason_en: string;
+  resolution_reason_hi: string;
+  sloka_ref: string;
+}
+
 interface LifespanPayload {
   pindayu: MethodResult;
   nisargayu: MethodResult;
@@ -50,6 +62,7 @@ interface LifespanPayload {
   selection_reason_hi: string;
   final_years: number;
   classification: 'Alpayu' | 'Madhyayu' | 'Dirghayu' | 'Purnayu';
+  lifespan_resolution?: LifespanResolution;
   sloka_ref: string;
 }
 
@@ -312,6 +325,91 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
             );
           })}
         </div>
+      )}
+
+      {/* Feature 5: Lifespan Resolution — Adhyaya 13 */}
+      {lifespan?.lifespan_resolution && (
+        <section className="rounded-xl border-2 border-sacred-gold/40 bg-sacred-gold/5 p-5">
+          <h3 className="font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
+            <Scale className="w-5 h-5" />
+            {isHi ? 'आयुर्दाय विरोधाभास निराकरण (अ. 13)' : 'Lifespan Conflict Resolution (Adh. 13)'}
+          </h3>
+          {/* Three-system comparison table */}
+          <div className="overflow-x-auto mb-4">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-sacred-gold/20">
+                  <th className="text-left py-1 pr-4 text-muted-foreground font-medium text-xs uppercase tracking-wide">
+                    {isHi ? 'विधि' : 'Method'}
+                  </th>
+                  <th className="text-right py-1 px-3 text-muted-foreground font-medium text-xs uppercase tracking-wide">
+                    {isHi ? 'वर्ष' : 'Years'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-sacred-gold/10">
+                  <td className="py-1.5 pr-4 font-medium text-foreground flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-amber-500" /> {isHi ? 'पिण्डायु' : 'Pindayu'}
+                  </td>
+                  <td className="py-1.5 px-3 text-right font-semibold text-foreground">
+                    {lifespan.lifespan_resolution.pindayu_years.toFixed(1)}
+                  </td>
+                </tr>
+                <tr className="border-t border-sacred-gold/10">
+                  <td className="py-1.5 pr-4 font-medium text-foreground">
+                    <span className="flex items-center gap-1.5"><Moon className="w-3.5 h-3.5 text-indigo-500" /> {isHi ? 'निसर्गायु' : 'Nisargayu'}</span>
+                  </td>
+                  <td className="py-1.5 px-3 text-right font-semibold text-foreground">
+                    {lifespan.lifespan_resolution.nisargayu_years.toFixed(1)}
+                  </td>
+                </tr>
+                <tr className="border-t border-sacred-gold/10">
+                  <td className="py-1.5 pr-4 font-medium text-foreground">
+                    <span className="flex items-center gap-1.5"><Compass className="w-3.5 h-3.5 text-emerald-500" /> {isHi ? 'अंशायु' : 'Amsayu'}</span>
+                  </td>
+                  <td className="py-1.5 px-3 text-right font-semibold text-foreground">
+                    {lifespan.lifespan_resolution.amsayu_years.toFixed(1)}
+                  </td>
+                </tr>
+                <tr className="border-t-2 border-sacred-gold/40 bg-sacred-gold/10">
+                  <td className="py-2 pr-4 font-bold text-sacred-gold-dark">
+                    {isHi ? 'अंतिम अनुमान' : 'Final Estimate'}
+                    <span className="ml-2 text-[10px] font-normal text-muted-foreground uppercase tracking-wide">
+                      ({lifespan.lifespan_resolution.method_used})
+                    </span>
+                  </td>
+                  <td className="py-2 px-3 text-right font-bold text-sacred-gold-dark text-lg">
+                    {lifespan.lifespan_resolution.final_estimate_years.toFixed(1)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* Confidence badge */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
+              lifespan.lifespan_resolution.confidence === 'high'
+                ? 'bg-emerald-600 text-white'
+                : lifespan.lifespan_resolution.confidence === 'moderate'
+                ? 'bg-amber-500 text-white'
+                : 'bg-orange-600 text-white'
+            }`}>
+              {isHi
+                ? lifespan.lifespan_resolution.confidence === 'high' ? 'उच्च विश्वास' : lifespan.lifespan_resolution.confidence === 'moderate' ? 'मध्यम विश्वास' : 'निम्न विश्वास'
+                : `${lifespan.lifespan_resolution.confidence.charAt(0).toUpperCase() + lifespan.lifespan_resolution.confidence.slice(1)} Confidence`
+              }
+            </span>
+          </div>
+          {/* Resolution reason */}
+          <p className="text-xs text-foreground/80 leading-relaxed">
+            {isHi ? lifespan.lifespan_resolution.resolution_reason_hi : lifespan.lifespan_resolution.resolution_reason_en}
+          </p>
+          <div className="flex items-center gap-1.5 mt-3 text-[10px] text-muted-foreground italic">
+            <BookOpen className="w-3 h-3" />
+            <span>{lifespan.lifespan_resolution.sloka_ref}</span>
+          </div>
+        </section>
       )}
 
       {/* Ashtakavarga Pindayu */}

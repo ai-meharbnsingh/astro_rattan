@@ -1116,6 +1116,59 @@ def resolve_ayu_conflict(
     }
 
 
+def _build_lifespan_resolution(
+    pi_years: float,
+    ni_years: float,
+    am_years: float,
+    conflict: Dict[str, Any],
+    final_years: float,
+    chart_data: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Feature 5: Lifespan Conflict Resolution summary per Phaladeepika Adhyaya 13.
+
+    Returns a clean, frontend-ready resolution block including:
+    - all 3 raw estimates
+    - method used (majority/average/weighted)
+    - final estimate
+    - confidence label
+    - bilingual resolution reason
+    """
+    conflict_type = conflict.get("conflict_type", "none")
+
+    # Determine method_used label
+    if conflict_type == "none":
+        method_used = "majority"  # all agree = unanimous = treat as majority
+        confidence = "high"
+    elif conflict_type == "majority":
+        method_used = "majority"
+        confidence = "moderate"
+    else:
+        # Full conflict — check if weighted or average
+        res_method = conflict.get("resolution_method", "")
+        if "Lagna lord" in res_method:
+            method_used = "weighted"
+            confidence = "low"
+        else:
+            method_used = "average"
+            confidence = "low"
+
+    resolution_reason_en = conflict.get("resolution_en", "")
+    resolution_reason_hi = conflict.get("resolution_hi", "")
+
+    return {
+        "pindayu_years": round(pi_years, 1),
+        "nisargayu_years": round(ni_years, 1),
+        "amsayu_years": round(am_years, 1),
+        "method_used": method_used,
+        "final_estimate_years": round(final_years, 1),
+        "confidence": confidence,
+        "resolution_reason_en": resolution_reason_en,
+        "resolution_reason_hi": resolution_reason_hi,
+        "sloka_ref": "Phaladeepika Adh. 13",
+    }
+
+
 def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Full three-method Ayurdaya with selector.
@@ -1165,6 +1218,16 @@ def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         chart_data=chart_data,
     )
 
+    # Feature 5: Lifespan Resolution — formatted summary per Adhyaya 13
+    lifespan_resolution = _build_lifespan_resolution(
+        pi_years=pi["after_haranas"],
+        ni_years=ni["after_haranas"],
+        am_years=am["after_haranas"],
+        conflict=ayu_conflict,
+        final_years=final,
+        chart_data=chart_data,
+    )
+
     return {
         "pindayu": pi,
         "nisargayu": ni,
@@ -1175,5 +1238,6 @@ def calculate_lifespan(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "final_years": final,
         "classification": classification,
         "ayu_conflict_resolution": ayu_conflict,
+        "lifespan_resolution": lifespan_resolution,
         "sloka_ref": "Phaladeepika Adh. 22 sloka 27",
     }
