@@ -130,9 +130,11 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               const yogas = grouped[cat];
               if (!yogas || yogas.length === 0) return null;
               const sample = yogas[0];
-              const catLabel = hi
-                ? (sample.category_label_hi || sample.category_label_en || cat)
-                : (sample.category_label_en || cat);
+              const catLabel = cat === '__other__'
+                ? (hi ? 'अन्य संयोग' : 'Other Combinations')
+                : hi
+                  ? (sample.category_label_hi || sample.category_label_en || cat)
+                  : (sample.category_label_en || cat);
               const catStyle = CATEGORY_STYLE[cat] || 'bg-slate-100 text-slate-700';
 
               return (
