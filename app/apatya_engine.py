@@ -916,17 +916,41 @@ def _detect_child_loss_yogas_complete(chart: Dict[str, Any]) -> Dict[str, Any]:
             "severity": "high",
         })
 
-    # C) Rahu in 5th + no benefic aspect on 5th
+    # C) Rahu in 5th + no benefic protection (aspect OR presence)
+    # Skip if Saturn also in 5th — condition E handles the combined Saturn+Rahu yoga
+    benefic_in_5 = any(p in BENEFICS for p in occupants_5)
     benefic_aspect_on_5 = any(_aspects_house(b, 5, planets) for b in BENEFICS if b in planets)
-    if "Rahu" in occupants_5 and not benefic_aspect_on_5:
-        yogas.append({
-            "key": "rahu_5th_no_benefic",
-            "name_en": "Rahu in 5th — No Benefic Protection",
-            "name_hi": "पंचम में राहु, शुभ-ग्रह दृष्टि का अभाव",
-            "description_en": "Rahu occupies the 5th house without any benefic aspect — child loss yoga present. Remedies strongly advised.",
-            "description_hi": "राहु पंचम भाव में है, कोई शुभ-ग्रह दृष्टि नहीं — संतान-हानि योग। उपाय अत्यावश्यक।",
-            "severity": "moderate_high",
-        })
+    benefic_protected = benefic_in_5 or benefic_aspect_on_5
+    sat_also_in_5 = "Saturn" in occupants_5
+    if "Rahu" in occupants_5 and not sat_also_in_5:
+        if benefic_protected:
+            benefics_present = [p for p in occupants_5 if p in BENEFICS]
+            benefics_aspecting = [b for b in BENEFICS if b in planets and b not in occupants_5 and _aspects_house(b, 5, planets)]
+            all_benefics = benefics_present + benefics_aspecting
+            yogas.append({
+                "key": "rahu_5th_mitigated",
+                "name_en": "Rahu in 5th (Mitigated by Benefic)",
+                "name_hi": "पंचम में राहु (शुभ-ग्रह से शमन)",
+                "description_en": (
+                    f"Rahu in 5th house — child grief possible, but benefic(s) "
+                    f"{', '.join(all_benefics)} {'in the same house' if benefics_present else 'aspecting the 5th'} "
+                    f"reduce severity. Care and remedies advised."
+                ),
+                "description_hi": (
+                    f"राहु पंचम भाव में — संतान-पीड़ा संभव, किन्तु शुभ-ग्रह "
+                    f"{', '.join(all_benefics)} की उपस्थिति/दृष्टि गंभीरता घटाती है। सावधानी एवं उपाय।"
+                ),
+                "severity": "moderate",
+            })
+        else:
+            yogas.append({
+                "key": "rahu_5th_no_benefic",
+                "name_en": "Rahu in 5th — No Benefic Protection",
+                "name_hi": "पंचम में राहु, शुभ-ग्रह का अभाव",
+                "description_en": "Rahu in 5th house with no benefic present or aspecting — child loss yoga. Remedies strongly advised.",
+                "description_hi": "राहु पंचम भाव में, कोई शुभ-ग्रह न स्थित न दृष्ट — संतान-हानि योग। उपाय अत्यावश्यक।",
+                "severity": "moderate_high",
+            })
 
     # D) 5th lord in dusthana aspected by Mars
     if info5["placement"] in DUSTHANAS and info5["lord"] and _aspects_house("Mars", info5["placement"], planets):
@@ -940,8 +964,7 @@ def _detect_child_loss_yogas_complete(chart: Dict[str, Any]) -> Dict[str, Any]:
         })
 
     # E) Saturn + Rahu both in 5th (combined affliction)
-    # Severity balancer: benefic in same house reduces High → Moderate
-    benefic_in_5 = any(p in BENEFICS for p in occupants_5)
+    # benefic_in_5 already computed in condition C above
     if "Saturn" in occupants_5 and "Rahu" in occupants_5:
         if benefic_in_5:
             benefics_present = [p for p in occupants_5 if p in BENEFICS]
@@ -1397,7 +1420,7 @@ def estimate_child_count(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         score += 0.5
         factors.append(f"Jupiter in own/exalted ({ju_sign}) +0.5 (Sloka 10 bonus)")
 
-    # Score → count
+    # Score → count (classical bucket mapping)
     if score >= 3.0:
         point = 4
     elif score >= 2.0:
@@ -1408,6 +1431,15 @@ def estimate_child_count(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         point = 1
     else:
         point = 0
+
+    # Malefic cap: Saturn+Rahu in 5th classically reduce count (karmic obstruction).
+    # Strong malefic presence overrides the raw score — cap point at 2 (range 1–2).
+    in5_set = set(_planets_in_house(planets, 5))
+    heavy_malefics_in_5 = in5_set & {"Saturn", "Rahu", "Ketu"}
+    if len(heavy_malefics_in_5) >= 2 and point > 2:
+        point = 2
+    elif heavy_malefics_in_5 and point > 3:
+        point = 3
 
     low = max(0, point - 1)
     high = point + 1 if point > 0 else 0
@@ -1430,13 +1462,15 @@ def estimate_child_count(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "the 5th house and those conjunct the 5th lord. Each is weighted by "
             "its sign relationship — own/exalted=1.0, friendly=0.75, neutral=0.5, "
             "inimical=0.25, debilitated=0. Jupiter in own/exalted adds 0.5 bonus "
-            "(Sloka 10). Score is mapped to a child count range."
+            "(Sloka 10). Score maps to count; heavy malefics (2+ of Saturn/Rahu/Ketu) "
+            "in 5th cap the count at 1–2 per classical karmic-obstruction principle."
         ),
         "method_hi": (
             "फलदीपिका अध्याय 12, श्लोक 13: पंचम भाव के ग्रह एवं पंचमेश के साथ "
             "स्थित ग्रहों को उनकी राशि-सम्बन्ध से भारित करके संतान-संख्या का निर्धारण। "
             "स्वगृह/उच्च=1.0, मित्र=0.75, सम=0.5, शत्रु=0.25, नीच=0। "
-            "गुरु स्वगृह/उच्च हो तो 0.5 अतिरिक्त (श्लोक 10)।"
+            "गुरु स्वगृह/उच्च हो तो 0.5 अतिरिक्त (श्लोक 10)। "
+            "पंचम में 2+ भारी पाप-ग्रह (शनि/राहु/केतु) हों तो अधिकतम 1–2 संतान।"
         ),
         "supporting_factors": factors,
         "sloka_ref": "Phaladeepika Adh. 12 sloka 13",
