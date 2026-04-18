@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { Loader2, Plus, CheckCircle2, XCircle, RotateCcw, Trash2, Calendar, X } from 'lucide-react';
+import { Loader2, Plus, CheckCircle2, XCircle, RotateCcw, Trash2, Calendar, X, AlertTriangle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -216,10 +216,34 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
 
   useEffect(() => { load(); }, [load]);
 
+  // P0.5 — restart-alert banner surfaced when the backend auto-breaks
+  // the 43-day chain because of a gap since last check-in (LK 4.10).
+  const [restartAlert, setRestartAlert] = useState<{
+    en: string;
+    hi: string;
+    lk_ref?: string;
+    broken_reason?: string;
+  } | null>(null);
+
   const checkin = async (trackerId: string, missed = false) => {
     setActionId(trackerId);
+    setRestartAlert(null);
     try {
-      await api.post(`/api/lalkitab/remedy-tracker/${trackerId}/checkin`, { missed });
+      const res: any = await api.post(
+        `/api/lalkitab/remedy-tracker/${trackerId}/checkin`,
+        { missed },
+      );
+      // P0.5 — if the server broke the chain (auto-gap OR self-reported),
+      // it returns a `restart_alert` bilingual payload. Surface it so the
+      // user sees WHY the chain reset and what LK canon says about it.
+      if (res?.status === 'broken' && res?.restart_alert) {
+        setRestartAlert({
+          en: res.restart_alert.en,
+          hi: res.restart_alert.hi,
+          lk_ref: res.lk_ref,
+          broken_reason: res.broken_reason,
+        });
+      }
       load();
     } catch (err) {
       console.error('Failed to check in remedy:', err);
@@ -261,6 +285,35 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
       {loadError && (
         <div className="p-3 mb-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
           {hi ? 'डेटा लोड करने में त्रुटि' : 'Failed to load data'}: {loadError}
+        </div>
+      )}
+
+      {/* P0.5 — 43-day chain restart alert (LK 4.10).
+          Shown when the backend auto-breaks the chain because of a gap
+          since the last check-in, OR when the user self-reports a miss. */}
+      {restartAlert && (
+        <div className="p-4 mb-3 rounded-xl border-2 border-red-400/60 bg-red-50 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-red-800 mb-1 uppercase tracking-wide">
+              {hi ? '43-दिन की श्रृंखला टूटी (लाल किताब 4.10)' : '43-Day Chain Broken (LK 4.10)'}
+            </p>
+            <p className="text-sm text-red-900 leading-relaxed">
+              {hi ? restartAlert.hi : restartAlert.en}
+            </p>
+            {restartAlert.broken_reason && (
+              <p className="text-[11px] text-red-700/70 mt-1.5 font-mono">
+                reason: {restartAlert.broken_reason}
+              </p>
+            )}
+          </div>
+          <button
+            onClick={() => setRestartAlert(null)}
+            className="text-red-600 hover:text-red-800 text-sm px-2"
+            aria-label={hi ? 'बंद करें' : 'Dismiss'}
+          >
+            ×
+          </button>
         </div>
       )}
       {/* Header */}

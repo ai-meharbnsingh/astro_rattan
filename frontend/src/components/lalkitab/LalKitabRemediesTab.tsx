@@ -3,7 +3,9 @@ import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import SourceBadge from './SourceBadge';
 import { pickLang } from '@/components/lalkitab/safe-render';
-import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck, Calendar, Compass, Palette, Gem } from 'lucide-react';
+import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck, Calendar, Compass, Palette, Gem, Wand2 } from 'lucide-react';
+// P2.4 — Remedy Wizard (intent → ranked remedies)
+import LalKitabRemedyWizardModal from './LalKitabRemedyWizardModal';
 
 interface Props {
   kundliId: string;
@@ -396,6 +398,8 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
   const [validatedLoading, setValidatedLoading] = useState(false);
   const [master, setMaster] = useState<any[]>([]);
   const [masterLoading, setMasterLoading] = useState(false);
+  // P2.4 — Remedy Wizard modal
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     if (!kundliId) return;
@@ -432,6 +436,34 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* P2.4 — Remedy Wizard CTA: "Don't know where to start?" */}
+      <div className="rounded-xl border-2 border-sacred-gold/40 bg-gradient-to-br from-sacred-gold/10 to-amber-500/5 p-4 flex items-center gap-4 flex-wrap">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-sacred-gold-dark flex items-center gap-2 mb-1">
+            <Wand2 className="w-4 h-4" />
+            {isHi ? 'किस उपाय से शुरू करें?' : "Don't know which remedy to start with?"}
+          </p>
+          <p className="text-xs text-foreground/70">
+            {isHi
+              ? 'अपनी मंशा बताएँ — विज़र्ड आपकी कुंडली के अनुसार शीर्ष 3 उपाय सुझाएगा।'
+              : 'Tell us your intent — the wizard will rank the top 3 remedies for your chart.'}
+          </p>
+        </div>
+        <button
+          onClick={() => setWizardOpen(true)}
+          className="px-4 py-2 rounded-lg bg-sacred-gold text-white font-semibold text-sm hover:bg-sacred-gold-dark transition-colors flex items-center gap-1.5 shadow-sm"
+        >
+          <Wand2 className="w-4 h-4" />
+          {isHi ? 'विज़र्ड खोलें' : 'Open Wizard'}
+        </button>
+      </div>
+      <LalKitabRemedyWizardModal
+        kundliId={kundliId}
+        isHi={isHi}
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+      />
+
       {/* Header */}
       <div className="rounded-xl border border-sacred-gold/20 bg-card p-5">
         <div className="flex items-center gap-2 mb-1 flex-wrap">

@@ -2191,10 +2191,18 @@ def checkin_remedy_tracker(
 ):
     """
     Mark today as completed for a tracker.
+
+    P0.5 — LK 4.10 enforcement: if there's a gap between the last check-in
+    and today (≥2 days elapsed since last check-in), the chain is
+    automatically broken per Lal Kitab 1952 canon ("the 43-day bond
+    requires continuity; a single missed day voids the entire cycle").
+    The user cannot override this — the restart is mandatory.
+
     If 'missed' is True in payload, status becomes 'broken' and completed_days resets.
     """
-    from datetime import date as _date_cls
-    today = str(_date_cls.today())
+    from datetime import date as _date_cls, timedelta as _timedelta
+    today_obj = _date_cls.today()
+    today = str(today_obj)
     row = db.execute(
         "SELECT * FROM remedy_trackers WHERE id = %s AND user_id = %s",
         (tracker_id, user["sub"]),
@@ -2209,13 +2217,79 @@ def checkin_remedy_tracker(
         check_ins = []
     missed = payload.get("missed", False)
     if missed:
-        # Missed day = reset to broken
+        # Explicit self-reported miss — same reset path as auto-detect.
         db.execute(
             "UPDATE remedy_trackers SET status='broken', completed_days=0, check_ins='[]', updated_at=NOW() WHERE id=%s",
             (tracker_id,),
         )
         db.commit()
-        return {"status": "broken", "message": "Remedy chain broken — reset to day 0. Start again with fresh resolve."}
+        return {
+            "status": "broken",
+            "completed_days": 0,
+            "target_days": row["target_days"],
+            "progress_pct": 0,
+            "days_remaining": row["target_days"],
+            "broken_reason": "self_reported_miss",
+            "restart_alert": {
+                "en": (
+                    "43-day chain broken. Per LK 4.10, the remedy must be restarted from day 1 "
+                    "with fresh resolve — partial credit is not permitted in Lal Kitab canon."
+                ),
+                "hi": (
+                    "43-दिन की श्रृंखला टूट गई। लाल किताब 4.10 के अनुसार उपाय को दिन 1 से नए "
+                    "संकल्प के साथ पुनः आरंभ करना होगा — आंशिक प्रगति लाल किताब में मान्य नहीं।"
+                ),
+            },
+            "lk_ref": "4.10",
+        }
+
+    # ── P0.5 auto-gap detection ──
+    # Compute the gap (in days) between the most recent check-in and today.
+    # Any gap >= 2 days (i.e. user skipped at least one full day) triggers
+    # the automatic reset. A gap of 0 (checking in again the same day) or
+    # 1 (checked in yesterday) is valid continuity.
+    auto_break = False
+    auto_break_reason = None
+    if check_ins:
+        try:
+            last_str = sorted(check_ins)[-1]
+            last_obj = _date_cls.fromisoformat(last_str)
+            gap_days = (today_obj - last_obj).days
+            if gap_days >= 2:
+                auto_break = True
+                auto_break_reason = f"gap_{gap_days}_days"
+        except (ValueError, TypeError):
+            # Corrupt check_in entry — don't penalise the user.
+            pass
+
+    if auto_break:
+        db.execute(
+            "UPDATE remedy_trackers SET status='broken', completed_days=0, check_ins='[]', updated_at=NOW() WHERE id=%s",
+            (tracker_id,),
+        )
+        db.commit()
+        return {
+            "status": "broken",
+            "completed_days": 0,
+            "target_days": row["target_days"],
+            "progress_pct": 0,
+            "days_remaining": row["target_days"],
+            "broken_reason": auto_break_reason,
+            "restart_alert": {
+                "en": (
+                    f"Chain automatically broken — a gap was detected since your last check-in. "
+                    f"Per LK 4.10, the 43-day remedy requires unbroken continuity. "
+                    f"Restart from day 1 whenever you are ready; the progress counter has been reset."
+                ),
+                "hi": (
+                    f"श्रृंखला स्वचालित रूप से टूटी — पिछले चेक-इन के बाद अंतराल पाया गया। "
+                    f"लाल किताब 4.10 के अनुसार 43-दिन का उपाय बिना रुकावट होना चाहिए। "
+                    f"जब तैयार हों दिन 1 से पुनः आरंभ करें; प्रगति रीसेट कर दी गई है।"
+                ),
+            },
+            "lk_ref": "4.10",
+        }
+
     if today not in check_ins:
         check_ins.append(today)
     completed = len(check_ins)
@@ -2231,6 +2305,94 @@ def checkin_remedy_tracker(
         "target_days": row["target_days"],
         "progress_pct": round(completed / row["target_days"] * 100),
         "days_remaining": max(0, row["target_days"] - completed),
+    }
+
+
+@router.get("/api/lalkitab/remedy-tracker/{tracker_id}/risk")
+def remedy_tracker_risk(
+    tracker_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    P0.5 — Passive risk check. Returns a "warning" / "at_risk" / "safe" signal
+    based on how long it's been since the last check-in, so the UI can show
+    an escalating alert BEFORE the chain is auto-broken.
+
+      safe     — checked in today or yesterday (≤ 1 day gap)
+      warning  — not checked in today; chain still intact
+      at_risk  — already a gap; one more missed day triggers auto-break
+      broken   — chain is already broken (auto or manual)
+    """
+    from datetime import date as _date_cls
+    today_obj = _date_cls.today()
+    row = db.execute(
+        "SELECT * FROM remedy_trackers WHERE id = %s AND user_id = %s",
+        (tracker_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Tracker not found")
+
+    if row["status"] == "broken":
+        return {
+            "risk": "broken",
+            "gap_days": None,
+            "message_en": "Chain already broken — restart to resume tracking.",
+            "message_hi": "श्रृंखला टूट चुकी है — ट्रैकिंग फिर से शुरू करें।",
+            "lk_ref": "4.10",
+        }
+    if row["status"] == "completed":
+        return {
+            "risk": "safe",
+            "gap_days": 0,
+            "message_en": "43-day cycle complete — no further check-ins required.",
+            "message_hi": "43-दिन का चक्र पूर्ण — अब चेक-इन की आवश्यकता नहीं।",
+            "lk_ref": "4.10",
+        }
+
+    try:
+        check_ins = json.loads(row["check_ins"]) if row["check_ins"] else []
+    except Exception:
+        check_ins = []
+
+    if not check_ins:
+        return {
+            "risk": "warning",
+            "gap_days": None,
+            "message_en": "No check-ins yet — start today to begin the 43-day chain.",
+            "message_hi": "अभी तक चेक-इन नहीं — 43-दिन की श्रृंखला आज से आरंभ करें।",
+            "lk_ref": "4.10",
+        }
+
+    try:
+        last_obj = _date_cls.fromisoformat(sorted(check_ins)[-1])
+        gap = (today_obj - last_obj).days
+    except (ValueError, TypeError):
+        gap = 0
+
+    if gap == 0:
+        risk, en, hi = "safe", "Checked in today — chain intact.", "आज चेक-इन हो चुका है — श्रृंखला बनी हुई है।"
+    elif gap == 1:
+        risk, en, hi = (
+            "warning",
+            "You haven't checked in today. Check in before midnight to keep the 43-day chain alive.",
+            "आज चेक-इन नहीं हुआ। श्रृंखला बनाए रखने के लिए आधी रात से पहले चेक-इन करें।",
+        )
+    else:
+        # gap ≥ 2 — this is actually already broken; the next checkin call
+        # will auto-reset. Flag it here so the UI can warn immediately.
+        risk, en, hi = (
+            "at_risk",
+            f"{gap} days since last check-in — the next check-in will auto-reset the chain per LK 4.10.",
+            f"पिछले चेक-इन के बाद {gap} दिन बीत गए — अगला चेक-इन लाल किताब 4.10 के अनुसार श्रृंखला को रीसेट कर देगा।",
+        )
+
+    return {
+        "risk": risk,
+        "gap_days": gap,
+        "message_en": en,
+        "message_hi": hi,
+        "lk_ref": "4.10",
     }
 
 
