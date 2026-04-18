@@ -177,7 +177,7 @@ export default function HouseNumerology({ birthDate }: Props) {
             </Badge>
           </div>
 
-          {/* Main Prediction */
+          {/* Main Prediction */}
           <Card className="bg-card border-0 shadow-soft-lg">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-sacred-gold/20">
