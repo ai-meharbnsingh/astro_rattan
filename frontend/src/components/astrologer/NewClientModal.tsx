@@ -235,9 +235,14 @@ export default function NewClientModal({ isHi, onClose, onCreated }: Props) {
 
           {/* Auto-generate toggles */}
           <section>
-            <h3 className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider mb-1">
               {isHi ? 'स्वचालित कुंडली निर्माण' : 'Auto-Generate Charts'}
             </h3>
+            <p className="text-[11px] text-muted-foreground mb-3">
+              {isHi
+                ? 'सबमिट पर प्रत्येक प्रकार की एक कुंडली बनेगी। दोबारा चलाने पर पुरानी कुंडली अपडेट होगी — डुप्लिकेट नहीं।'
+                : 'One chart per type is created on submit. Re-running updates the existing chart — no duplicates.'}
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <ToggleCard
                 checked={form.generate_vedic}

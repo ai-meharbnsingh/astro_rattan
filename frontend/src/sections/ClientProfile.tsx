@@ -292,21 +292,55 @@ export default function ClientProfile() {
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-        <Button onClick={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
-          className="bg-sacred-gold-dark text-background hover:bg-gray-50 h-14 rounded-lg uppercase tracking-wider text-sm">
-          <Star className="w-4 h-4 mr-2" /> {t('client.newKundli')}
-        </Button>
-        <Button onClick={() => navigate('/lal-kitab', { state: birthState })}
-          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-lg uppercase tracking-wider text-sm">
-          <BookOpen className="w-4 h-4 mr-2" /> {t('nav.lalKitab')}
-        </Button>
-        <Button onClick={() => navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date } })}
-          variant="outline" className="border-sacred-gold text-sacred-gold-dark h-14 rounded-lg uppercase tracking-wider text-sm">
-          <Hash className="w-4 h-4 mr-2" /> {t('nav.numerology')}
-        </Button>
-      </div>
+      {/* Chart access — astrologers get direct-load buttons when a kundli
+          of that type already exists, instead of a form (per Sprint I).
+          Falls through to the form route only when no chart exists yet. */}
+      {(() => {
+        const vedicK = kundlis.find((k) => !k.chart_type || k.chart_type === 'vedic');
+        const lkK = kundlis.find((k) => k.chart_type === 'lalkitab');
+        const numK = kundlis.find((k) => k.chart_type === 'numerology');
+        const ChartBtn = ({ exists, label, icon: Icon, onOpen, onGenerate }: {
+          exists: boolean; label: string; icon: any; onOpen: () => void; onGenerate: () => void;
+        }) => (
+          <Button
+            onClick={exists ? onOpen : onGenerate}
+            variant={exists ? 'default' : 'outline'}
+            className={`h-14 rounded-lg uppercase tracking-wider text-sm ${
+              exists
+                ? 'bg-sacred-gold-dark text-background hover:bg-sacred-gold'
+                : 'border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold/10'
+            }`}
+          >
+            <Icon className="w-4 h-4 mr-2" />
+            {exists ? `${t('common.view') || 'View'} ${label}` : `${t('common.generate') || 'Generate'} ${label}`}
+          </Button>
+        );
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+            <ChartBtn
+              exists={!!vedicK}
+              label={isAstrologer ? 'Vedic Kundli' : t('client.newKundli')}
+              icon={Star}
+              onOpen={() => vedicK && navigate('/kundli', { state: { loadKundliId: vedicK.id } })}
+              onGenerate={() => navigate('/kundli', { state: { ...birthState, chartType: 'vedic' } })}
+            />
+            <ChartBtn
+              exists={!!lkK}
+              label="Lal Kitab"
+              icon={BookOpen}
+              onOpen={() => lkK && navigate('/lal-kitab', { state: { ...birthState, loadKundliId: lkK.id } })}
+              onGenerate={() => navigate('/lal-kitab', { state: birthState })}
+            />
+            <ChartBtn
+              exists={!!numK}
+              label="Numerology"
+              icon={Hash}
+              onOpen={() => numK && navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date, loadKundliId: numK.id } })}
+              onGenerate={() => navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date } })}
+            />
+          </div>
+        );
+      })()}
 
       {/* Charts */}
       <div className="mb-4 flex items-center justify-between">
@@ -536,35 +570,87 @@ export default function ClientProfile() {
         </>
       )}
 
-      {/* Notes */}
-      {notes.length > 0 && (
-        <>
-          <div className="mb-4 mt-8 flex items-center gap-2">
+      {/* Notes — always visible on client profile, grouped by day so
+          astrologers can scan every note they've ever added for this
+          client regardless of chart context. */}
+      <div className="mt-8">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <StickyNote className="w-4 h-4 text-sacred-gold-dark" />
-            <Heading as={2} variant={6} className="uppercase tracking-wider">{t('notes.header')} ({notes.length})</Heading>
+            <Heading as={2} variant={6} className="uppercase tracking-wider">
+              {t('notes.header')} ({notes.length})
+            </Heading>
           </div>
-          <div className="space-y-2">
-            {notes.map(note => (
-              <div key={note.id} className="border-l-2 border-sacred-gold pl-4 py-2">
-                <p className="text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm text-foreground">
-                    {note.created_at ? formatDateTime(note.created_at) : ''}
-                  </span>
-                  <span className="text-sm px-1.5 py-0.5 bg-sacred-gold-dark text-white rounded">
-                    {{
-                      vedic: t('notes.chartType.vedic'),
-                      lalkitab: t('notes.chartType.lalkitab'),
-                      numerology: t('notes.chartType.numerology'),
-                      general: t('notes.chartType.general')
-                    }[note.chart_type] || note.chart_type}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <p className="text-xs text-muted-foreground">
+            {t('notes.subtitle') || 'All notes across every chart · date-wise'}
+          </p>
+        </div>
+
+        {notes.length === 0 ? (
+          <div className="text-center py-10 border border-dashed border-sacred-gold/30 rounded-lg">
+            <StickyNote className="w-8 h-8 text-sacred-gold/40 mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">
+              {t('notes.empty') || 'No notes yet. Notes added from Kundli / Lal Kitab / Numerology pages will appear here.'}
+            </p>
           </div>
-        </>
-      )}
+        ) : (() => {
+          // Group by YYYY-MM-DD — most-recent day first.
+          const groups: Record<string, typeof notes> = {};
+          for (const n of notes) {
+            const key = n.created_at ? n.created_at.slice(0, 10) : 'unknown';
+            (groups[key] ??= []).push(n);
+          }
+          const dayKeys = Object.keys(groups).sort().reverse();
+          const chartTypeChip: Record<string, { cls: string; labelKey: string }> = {
+            vedic:      { cls: 'bg-amber-100 text-amber-800 border-amber-300', labelKey: 'notes.chartType.vedic' },
+            lalkitab:   { cls: 'bg-orange-100 text-orange-800 border-orange-300', labelKey: 'notes.chartType.lalkitab' },
+            numerology: { cls: 'bg-purple-100 text-purple-800 border-purple-300', labelKey: 'notes.chartType.numerology' },
+            general:    { cls: 'bg-gray-100 text-gray-700 border-gray-300', labelKey: 'notes.chartType.general' },
+          };
+          return (
+            <div className="space-y-4">
+              {dayKeys.map((dayKey) => {
+                const dayNotes = groups[dayKey];
+                const headerLabel = dayKey === 'unknown'
+                  ? (t('notes.unknownDate') || 'Undated')
+                  : formatDate(dayKey);
+                return (
+                  <div key={dayKey}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-3.5 h-3.5 text-sacred-gold-dark" />
+                      <span className="text-xs font-bold text-sacred-gold-dark uppercase tracking-wider">
+                        {headerLabel}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        · {dayNotes.length} {dayNotes.length === 1 ? (t('notes.noteSingular') || 'note') : (t('notes.notePlural') || 'notes')}
+                      </span>
+                      <div className="flex-1 h-px bg-sacred-gold/15" />
+                    </div>
+                    <div className="space-y-2">
+                      {dayNotes.map((note) => {
+                        const chip = chartTypeChip[note.chart_type] ?? chartTypeChip.general;
+                        return (
+                          <div key={note.id} className="border-l-2 border-sacred-gold pl-4 py-2 bg-sacred-gold/5 rounded-r-lg">
+                            <p className="text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
+                            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                              <span className="text-[11px] text-muted-foreground">
+                                {note.created_at ? formatDateTime(note.created_at) : ''}
+                              </span>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-semibold uppercase ${chip.cls}`}>
+                                {t(chip.labelKey) || note.chart_type}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
     </div>
   );
 }

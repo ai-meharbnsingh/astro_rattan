@@ -231,19 +231,44 @@ def create_client_and_generate(
 
     for chart_type in to_generate:
         try:
-            row = db.execute(
-                """INSERT INTO kundlis
-                   (user_id, client_id, person_name, birth_date, birth_time, birth_place,
-                    latitude, longitude, timezone_offset, chart_type, chart_data)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                   RETURNING id""",
-                (
-                    current_user["sub"], client_id, body.name, body.birth_date,
-                    body.birth_time, body.birth_place, body.latitude, body.longitude,
-                    body.timezone_offset, chart_type, chart_json,
-                ),
+            # UPSERT-style: one kundli per (client_id, chart_type).
+            # If the astrologer re-runs generate-all (or uses the per-chart
+            # form pages), don't create duplicates — overwrite the chart_data
+            # on the existing row so the latest birth details always win.
+            existing = db.execute(
+                """SELECT id FROM kundlis
+                   WHERE client_id = %s AND chart_type = %s
+                   LIMIT 1""",
+                (client_id, chart_type),
             ).fetchone()
-            generated[chart_type] = row["id"]
+            if existing:
+                db.execute(
+                    """UPDATE kundlis
+                       SET person_name = %s, birth_date = %s, birth_time = %s,
+                           birth_place = %s, latitude = %s, longitude = %s,
+                           timezone_offset = %s, chart_data = %s
+                       WHERE id = %s""",
+                    (
+                        body.name, body.birth_date, body.birth_time,
+                        body.birth_place, body.latitude, body.longitude,
+                        body.timezone_offset, chart_json, existing["id"],
+                    ),
+                )
+                generated[chart_type] = existing["id"]
+            else:
+                row = db.execute(
+                    """INSERT INTO kundlis
+                       (user_id, client_id, person_name, birth_date, birth_time, birth_place,
+                        latitude, longitude, timezone_offset, chart_type, chart_data)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                       RETURNING id""",
+                    (
+                        current_user["sub"], client_id, body.name, body.birth_date,
+                        body.birth_time, body.birth_place, body.latitude, body.longitude,
+                        body.timezone_offset, chart_type, chart_json,
+                    ),
+                ).fetchone()
+                generated[chart_type] = row["id"]
         except Exception as e:
             # Non-fatal — record the partial result and continue.
             generated[chart_type] = f"error:{type(e).__name__}"

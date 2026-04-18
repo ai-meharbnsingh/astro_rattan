@@ -309,19 +309,44 @@ def generate_kundli(
             ).fetchone()
             client_id = client_row["id"]
 
-    row = db.execute(
-        """INSERT INTO kundlis
-           (user_id, client_id, person_name, birth_date, birth_time, birth_place,
-            latitude, longitude, timezone_offset, ayanamsa, chart_type, chart_data)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-           RETURNING *""",
-        (
-            current_user["sub"], client_id,
-            body.person_name, body.birth_date, body.birth_time, body.birth_place,
-            body.latitude, body.longitude, body.timezone_offset, body.ayanamsa,
-            body.chart_type or "vedic", chart_json,
-        ),
-    ).fetchone()
+    # Upsert per (client_id, chart_type) — the astrologer should see one
+    # row per chart type per client, not a growing pile of duplicates.
+    resolved_chart_type = body.chart_type or "vedic"
+    existing_row = None
+    if client_id:
+        existing_row = db.execute(
+            "SELECT id FROM kundlis WHERE client_id = %s AND chart_type = %s LIMIT 1",
+            (client_id, resolved_chart_type),
+        ).fetchone()
+
+    if existing_row:
+        row = db.execute(
+            """UPDATE kundlis
+               SET person_name = %s, birth_date = %s, birth_time = %s,
+                   birth_place = %s, latitude = %s, longitude = %s,
+                   timezone_offset = %s, ayanamsa = %s, chart_data = %s
+               WHERE id = %s
+               RETURNING *""",
+            (
+                body.person_name, body.birth_date, body.birth_time, body.birth_place,
+                body.latitude, body.longitude, body.timezone_offset, body.ayanamsa,
+                chart_json, existing_row["id"],
+            ),
+        ).fetchone()
+    else:
+        row = db.execute(
+            """INSERT INTO kundlis
+               (user_id, client_id, person_name, birth_date, birth_time, birth_place,
+                latitude, longitude, timezone_offset, ayanamsa, chart_type, chart_data)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+               RETURNING *""",
+            (
+                current_user["sub"], client_id,
+                body.person_name, body.birth_date, body.birth_time, body.birth_place,
+                body.latitude, body.longitude, body.timezone_offset, body.ayanamsa,
+                resolved_chart_type, chart_json,
+            ),
+        ).fetchone()
     db.commit()
 
     return {

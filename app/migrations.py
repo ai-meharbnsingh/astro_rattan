@@ -730,6 +730,11 @@ CREATE INDEX IF NOT EXISTS idx_consultations_client ON consultations(client_id);
 CREATE INDEX IF NOT EXISTS idx_consultations_scheduled ON consultations(scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_consultations_status ON consultations(status);
     """),
+    (24, "Deduplicate kundlis per client+chart_type and enforce uniqueness", """
+UPDATE kundlis SET chart_type = 'vedic' WHERE chart_type IS NULL OR chart_type = '';
+DELETE FROM kundlis WHERE client_id IS NOT NULL AND id NOT IN (SELECT DISTINCT ON (client_id, chart_type) id FROM kundlis WHERE client_id IS NOT NULL ORDER BY client_id, chart_type, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_kundlis_client_chart_unique ON kundlis (client_id, chart_type) WHERE client_id IS NOT NULL;
+    """),
 ]
 
 
