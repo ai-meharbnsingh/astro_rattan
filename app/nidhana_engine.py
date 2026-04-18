@@ -22,7 +22,7 @@ Main function:
     analyze_longevity_indicators(chart_data) -> dict
 """
 from __future__ import annotations
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 # ───────────────────────────────────────────────────────────────
 # Classical constants (shared vocabulary)
@@ -660,10 +660,82 @@ def _life_chapters(overall: str) -> Dict[str, List[str]]:
 
 
 # ───────────────────────────────────────────────────────────────
+# Dasha–Gochara multi-signal timing
+# ───────────────────────────────────────────────────────────────
+
+def _dasha_gochara_timing(
+    chart_data: Dict[str, Any],
+    mahadasha_lord: Optional[str],
+    antardasha_lord: Optional[str],
+) -> Dict[str, Any]:
+    """Check whether current dasha lords coincide with maraka/8th/lagna lords."""
+    maraka_2nd = _lord_of(2, chart_data)
+    maraka_7th = _lord_of(7, chart_data)
+    eighth_lord = _lord_of(8, chart_data)
+    lagna_lord = _lord_of(1, chart_data)
+
+    signals = []
+    for dasha_label, lord in [("Mahadasha", mahadasha_lord), ("Antardasha", antardasha_lord)]:
+        if not lord:
+            continue
+        if lord == maraka_2nd:
+            signals.append({
+                "dasha": dasha_label, "lord": lord, "role": "maraka_2nd",
+                "en": f"{dasha_label} lord {lord} is the 2nd-house maraka — a classical karmic activator.",
+                "hi": f"{dasha_label} स्वामी {lord} द्वितीयेश मारक है — शास्त्रीय दृष्टि से कर्म-संक्रमण का सूचक।",
+            })
+        if lord == maraka_7th:
+            signals.append({
+                "dasha": dasha_label, "lord": lord, "role": "maraka_7th",
+                "en": f"{dasha_label} lord {lord} is the 7th-house maraka — brings transformation themes.",
+                "hi": f"{dasha_label} स्वामी {lord} सप्तमेश मारक है — परिवर्तन की आंतरिक यात्रा का सूचक।",
+            })
+        if lord == eighth_lord:
+            signals.append({
+                "dasha": dasha_label, "lord": lord, "role": "eighth_lord",
+                "en": f"{dasha_label} lord {lord} rules the 8th house — longevity bhava is activated.",
+                "hi": f"{dasha_label} स्वामी {lord} अष्टमेश है — दीर्घायु भाव सक्रिय है।",
+            })
+        if lord == lagna_lord:
+            signals.append({
+                "dasha": dasha_label, "lord": lord, "role": "lagna_lord",
+                "en": f"{dasha_label} lord {lord} is the lagna lord — overall vitality and body are in focus.",
+                "hi": f"{dasha_label} स्वामी {lord} लग्नेश है — शरीर एवं जीवन-शक्ति केन्द्र में है।",
+            })
+
+    count = len(signals)
+    if count >= 3:
+        convergence = "high"
+        summary_en = "Multiple dasha lords align with maraka/longevity indicators — a period of heightened karmic significance."
+        summary_hi = "अनेक दशा-स्वामी मारक/दीर्घायु सूचकों से संरेखित हैं — यह काल कर्म-दृष्टि से अत्यन्त महत्त्वपूर्ण है।"
+    elif count >= 1:
+        convergence = "moderate"
+        summary_en = "Current dasha period shows partial alignment with longevity indicators — philosophical reflection is advised."
+        summary_hi = "वर्तमान दशाकाल में आंशिक कर्म-संरेखण दिखता है — आत्म-चिन्तन उचित है।"
+    else:
+        convergence = "low"
+        summary_en = "Current dasha lords are not classical maraka or 8th-house lords — longevity indicators are quiescent."
+        summary_hi = "वर्तमान दशा-स्वामी शास्त्रीय मारक या अष्टमेश नहीं हैं — दीर्घायु-सूचक शान्त हैं।"
+
+    return {
+        "signals": signals,
+        "convergence": convergence,
+        "summary_en": summary_en,
+        "summary_hi": summary_hi,
+        "mahadasha_lord": mahadasha_lord,
+        "antardasha_lord": antardasha_lord,
+    }
+
+
+# ───────────────────────────────────────────────────────────────
 # Main entry
 # ───────────────────────────────────────────────────────────────
 
-def analyze_longevity_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+def analyze_longevity_indicators(
+    chart_data: Dict[str, Any],
+    mahadasha_lord: Optional[str] = None,
+    antardasha_lord: Optional[str] = None,
+) -> Dict[str, Any]:
     """Philosophical longevity analysis per Phaladeepika Adh. 17.
 
     Does NOT output specific ages or death-year predictions.
@@ -678,6 +750,7 @@ def analyze_longevity_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     karmic = _karmic_transitions_narrative(overall)
     chapters = _life_chapters(overall)
     transit_timing = _transit_timing_section(chart_data)
+    dasha_timing = _dasha_gochara_timing(chart_data, mahadasha_lord, antardasha_lord)
 
     return {
         "overall_longevity_strength": overall,
@@ -689,5 +762,6 @@ def analyze_longevity_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "life_chapters_en": chapters["life_chapters_en"],
         "life_chapters_hi": chapters["life_chapters_hi"],
         "transit_timing_indicators": transit_timing,
+        "dasha_gochara_timing": dasha_timing,
         "sloka_ref": "Phaladeepika Adh. 17",
     }

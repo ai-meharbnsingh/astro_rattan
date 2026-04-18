@@ -48,6 +48,23 @@ interface TransitTimingSection {
   sloka_ref: string;
 }
 
+interface DashaSignal {
+  dasha: string;
+  lord: string;
+  role: string;
+  en: string;
+  hi: string;
+}
+
+interface DashaGochara {
+  signals: DashaSignal[];
+  convergence: 'high' | 'moderate' | 'low';
+  summary_en: string;
+  summary_hi: string;
+  mahadasha_lord?: string;
+  antardasha_lord?: string;
+}
+
 interface ApiResponse {
   kundli_id?: string;
   person_name?: string;
@@ -60,6 +77,7 @@ interface ApiResponse {
   life_chapters_en: string[];
   life_chapters_hi: string[];
   transit_timing_indicators?: TransitTimingSection;
+  dasha_gochara_timing?: DashaGochara;
   sloka_ref: string;
 }
 
@@ -305,6 +323,51 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             <BookOpen className="w-3 h-3" />
             <span className="italic">{data.transit_timing_indicators.sloka_ref}</span>
           </div>
+        </section>
+      )}
+
+      {/* Dasha–Lagna Multi-Signal Analysis */}
+      {data.dasha_gochara_timing && (
+        <section className="rounded-xl border-2 border-indigo-200 bg-indigo-50 p-5">
+          <h3 className="font-semibold text-indigo-900 mb-1 flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            {isHi ? 'दशा–लग्न बहु-संकेत विश्लेषण' : 'Dasha–Lagna Multi-Signal Analysis'}
+          </h3>
+          {data.dasha_gochara_timing.mahadasha_lord && (
+            <p className="text-xs text-indigo-700 mb-3">
+              {isHi ? 'महादशा' : 'Mahadasha'}: <strong>{data.dasha_gochara_timing.mahadasha_lord}</strong>
+              {data.dasha_gochara_timing.antardasha_lord && (
+                <> · {isHi ? 'अन्तर्दशा' : 'Antardasha'}: <strong>{data.dasha_gochara_timing.antardasha_lord}</strong></>
+              )}
+              {' '}
+              <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                data.dasha_gochara_timing.convergence === 'high' ? 'bg-red-100 text-red-800' :
+                data.dasha_gochara_timing.convergence === 'moderate' ? 'bg-amber-100 text-amber-800' :
+                'bg-blue-100 text-blue-800'
+              }`}>
+                {data.dasha_gochara_timing.convergence === 'high' ? (isHi ? 'उच्च संरेखण' : 'High Convergence') :
+                 data.dasha_gochara_timing.convergence === 'moderate' ? (isHi ? 'मध्यम संरेखण' : 'Moderate Convergence') :
+                 (isHi ? 'निम्न संरेखण' : 'Low Convergence')}
+              </span>
+            </p>
+          )}
+          <p className="text-sm text-indigo-900/90 leading-relaxed mb-3">
+            {isHi ? data.dasha_gochara_timing.summary_hi : data.dasha_gochara_timing.summary_en}
+          </p>
+          {data.dasha_gochara_timing.signals.length > 0 && (
+            <div className="space-y-2">
+              {data.dasha_gochara_timing.signals.map((sig, i) => (
+                <div key={i} className="rounded-lg bg-white/70 border border-indigo-100 px-3 py-2 text-xs text-indigo-800">
+                  <span className="font-semibold">{sig.dasha} ({sig.lord})</span>: {isHi ? sig.hi : sig.en}
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-[10px] text-indigo-500 italic mt-3">
+            {isHi
+              ? 'यह विश्लेषण शास्त्रीय दृष्टिकोण है — कोई विशिष्ट आयु-भविष्यवाणी नहीं।'
+              : 'This is classical philosophical framing — no specific age or date prediction is made.'}
+          </p>
         </section>
       )}
 

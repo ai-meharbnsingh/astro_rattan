@@ -768,6 +768,20 @@ def _drik_bala(planet: str, planet_houses: Dict[str, int]) -> float:
 
 
 # ============================================================
+# 7. Chandrastha Bala — Phaladeepika Adh. 4
+# Strength based on the house distance from Moon to the planet.
+_CHANDRASTHA_TABLE = {1: 7, 2: 15, 3: 45, 4: 30, 5: 60, 6: 7,
+                       7: 30, 8: 7, 9: 60, 10: 30, 11: 45, 12: 15}
+
+
+def _chandrastha_bala(planet: str, moon_house: int, planet_house: int) -> float:
+    if planet == "Moon":
+        return 30.0
+    dist = ((planet_house - moon_house) % 12) + 1
+    return float(_CHANDRASTHA_TABLE.get(dist, 7))
+
+
+# ============================================================
 # PUBLIC API
 # ============================================================
 
@@ -812,6 +826,7 @@ def calculate_shadbala(
         planet_speeds = {}
 
     planets_result: Dict[str, Dict[str, Any]] = {}
+    moon_house = planet_houses.get("Moon", 1)
 
     for planet in _SHADBALA_PLANETS:
         sign = planet_signs.get(planet, "Aries")
@@ -844,7 +859,10 @@ def calculate_shadbala(
         # 6. Drik Bala
         drik = _drik_bala(planet, planet_houses)
 
-        total = round(sthana + dig + kala + cheshta + naisargika + drik, 2)
+        # 7. Chandrastha Bala (Phaladeepika Adh. 4)
+        chandra = _chandrastha_bala(planet, moon_house, house)
+
+        total = round(sthana + dig + kala + cheshta + naisargika + drik + chandra, 2)
         required = REQUIRED_STRENGTH.get(planet, 300)
         ratio = round(total / required, 2) if required > 0 else 0.0
 
@@ -861,6 +879,7 @@ def calculate_shadbala(
             "cheshta": cheshta,
             "naisargika": naisargika,
             "drik": drik,
+            "chandra": chandra,
             "total": total,
             "required": required,
             "ratio": ratio,

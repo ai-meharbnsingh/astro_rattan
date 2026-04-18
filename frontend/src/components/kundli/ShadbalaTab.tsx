@@ -179,6 +179,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.cheshta')}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.naisargika')}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.drik')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{language === 'hi' ? 'चन्द्र' : 'Chandra'}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('table.total')}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.ratio')}</TableHead>
               </TableRow>
@@ -207,6 +208,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                       <TableCell className="text-center p-2 text-foreground text-xs">{d.cheshta?.toFixed ? d.cheshta.toFixed(2) : d.cheshta}</TableCell>
                       <TableCell className="text-center p-2 text-foreground text-xs">{d.naisargika?.toFixed ? d.naisargika.toFixed(2) : d.naisargika}</TableCell>
                       <TableCell className="text-center p-2 text-foreground text-xs">{d.drik?.toFixed ? d.drik.toFixed(2) : d.drik}</TableCell>
+                      <TableCell className="text-center p-2 text-foreground text-xs">{d.chandra != null ? (d.chandra?.toFixed ? d.chandra.toFixed(1) : d.chandra) : '—'}</TableCell>
                       <TableCell className={`text-center p-2 font-semibold text-xs ${d.is_strong ? 'text-green-600' : 'text-red-600'}`}>{d.total?.toFixed ? d.total.toFixed(2) : d.total}</TableCell>
                       <TableCell className="text-center p-2 text-xs">
                         <div className="flex flex-col items-center gap-0.5">
