@@ -514,6 +514,193 @@ def _planet_info(planet: str, chart_data: dict) -> Dict[str, Any]:
     return {"sign": sign, "house": house, "combust": combust, "retrograde": retro}
 
 
+# ============================================================
+# ITEMS 5 & 6 — Dasha Quality Tags (Phaladeepika Adh. 20)
+# Auspicious: exalted / Vargottama
+# Challenging: debilitated / combust / Papakartari
+# ============================================================
+
+# Navamsha starting sign index for each D1 sign index
+# fire→Aries(0), earth→Capricorn(9), air→Libra(6), water→Cancer(3)
+_NAVAMSHA_START_IDX: Dict[int, int] = {
+    0: 0, 1: 9, 2: 6, 3: 3,
+    4: 0, 5: 9, 6: 6, 7: 3,
+    8: 0, 9: 9, 10: 6, 11: 3,
+}
+
+
+def _d9_sign(longitude: float) -> str:
+    """Compute D9 (Navamsha) sign from absolute ecliptic longitude."""
+    sign_idx = int(longitude / 30) % 12
+    deg_in_sign = longitude % 30
+    nav_part = int(deg_in_sign / (10.0 / 3.0))  # 0–8
+    start = _NAVAMSHA_START_IDX[sign_idx]
+    d9_idx = (start + nav_part) % 12
+    return _ZODIAC[d9_idx]
+
+
+def _is_vargottama(longitude: float, d1_sign: str) -> bool:
+    """True when D1 sign == D9 sign — planet is Vargottama."""
+    if longitude <= 0 or not d1_sign:
+        return False
+    return _d9_sign(longitude) == d1_sign
+
+
+def _is_in_papakartari(planet: str, planet_house: int, planets: dict) -> bool:
+    """
+    Planet is in Papakartari when malefics occupy BOTH adjacent houses.
+    house_before = (house - 2) % 12 + 1, house_after = house % 12 + 1.
+    """
+    if not (1 <= planet_house <= 12):
+        return False
+    house_before = ((planet_house - 2) % 12) + 1
+    house_after = (planet_house % 12) + 1
+
+    mal_before = any(
+        m != planet
+        and isinstance(planets.get(m), dict)
+        and int((planets[m] or {}).get("house", 0) or 0) == house_before
+        for m in _MALEFICS
+    )
+    mal_after = any(
+        m != planet
+        and isinstance(planets.get(m), dict)
+        and int((planets[m] or {}).get("house", 0) or 0) == house_after
+        for m in _MALEFICS
+    )
+    return mal_before and mal_after
+
+
+def _dasha_quality_tag(
+    planet: str,
+    chart_data: dict,
+    factors: list,
+) -> dict:
+    """
+    Build dasha quality tag per Phaladeepika Adh. 20 dignity rules.
+
+    Returns:
+        {
+          "tag": "Auspicious" | "Challenging" | "Neutral",
+          "tag_hi": str,
+          "label_en": str,
+          "label_hi": str,
+          "reasons": [str, ...],
+          "sloka_ref": "Phaladeepika Adh. 20"
+        }
+    """
+    planets = (chart_data or {}).get("planets", {}) or {}
+    pdata = planets.get(planet) or {}
+    longitude = float(pdata.get("longitude", 0.0) or 0.0)
+    d1_sign = str(pdata.get("sign", "") or "")
+    house = int(pdata.get("house", 0) or 0)
+
+    reasons: List[str] = []
+    auspicious_count = 0
+    challenging_count = 0
+
+    # --- Auspicious signals ---
+    if "exalted" in factors:
+        auspicious_count += 2
+        reasons.append(
+            f"{planet} is exalted — exceptional strength; "
+            f"dasha gives superior results (Uccha-bala)."
+        )
+    if _is_vargottama(longitude, d1_sign):
+        auspicious_count += 2
+        reasons.append(
+            f"{planet} is Vargottama (same sign D1 and D9) — double dignity; "
+            f"dasha results are consistent, strong, and long-lasting."
+        )
+    if "own_sign" in factors and "exalted" not in factors:
+        auspicious_count += 1
+        reasons.append(f"{planet} in own sign — stable, beneficial dasha results.")
+    if "kendra" in factors and auspicious_count == 0:
+        auspicious_count += 1
+        reasons.append(f"{planet} in Kendra — angular strength supports the dasha.")
+
+    # --- Challenging signals ---
+    if "debilitated" in factors:
+        challenging_count += 2
+        reasons.append(
+            f"{planet} is debilitated — weakened; "
+            f"dasha may bring hardship, delays, and frustration."
+        )
+    if "combust" in factors:
+        challenging_count += 2
+        reasons.append(
+            f"{planet} is combust (within orb of Sun) — diminished by solar rays; "
+            f"significations of {planet} suffer during this dasha."
+        )
+    if _is_in_papakartari(planet, house, planets):
+        challenging_count += 1
+        reasons.append(
+            f"{planet} is in Papakartari — malefics flank it on both sides; "
+            f"the dasha activates a period of obstruction and difficulty."
+        )
+
+    # --- Determine tag ---
+    if auspicious_count >= 2 and challenging_count == 0:
+        tag = "Auspicious"
+        tag_hi = "शुभ"
+        label_en = (
+            "Auspicious (Shubha) Dasha — planet is dignified, "
+            "giving strong positive results."
+        )
+        label_hi = (
+            "शुभ दशा — ग्रह बली एवं प्रतिष्ठित है; श्रेष्ठ परिणाम प्राप्त होते हैं।"
+        )
+    elif challenging_count >= 2 or ("debilitated" in factors and "combust" in factors):
+        tag = "Challenging"
+        tag_hi = "कठिन"
+        label_en = (
+            "Challenging (Kashta) Dasha — planet is afflicted; "
+            "period brings hardship requiring effort and remedies."
+        )
+        label_hi = (
+            "कठिन दशा — ग्रह पीड़ित है; यह काल कठिनाइयाँ लाता है, "
+            "उपाय एवं परिश्रम आवश्यक है।"
+        )
+    elif auspicious_count > 0 and challenging_count == 0:
+        tag = "Auspicious"
+        tag_hi = "शुभ"
+        label_en = (
+            "Mildly Auspicious Dasha — planet has some dignity; "
+            "generally positive results."
+        )
+        label_hi = "मध्यम शुभ दशा — ग्रह में कुछ बल है; सामान्यतः सकारात्मक परिणाम।"
+    elif challenging_count > 0 and auspicious_count == 0:
+        tag = "Challenging"
+        tag_hi = "कठिन"
+        label_en = (
+            "Mildly Challenging Dasha — planet has some affliction; "
+            "care and remedies recommended."
+        )
+        label_hi = (
+            "मध्यम कठिन दशा — ग्रह पर कुछ पीड़ा है; सावधानी एवं उपाय अनुशंसित।"
+        )
+    else:
+        tag = "Neutral"
+        tag_hi = "मध्यम"
+        label_en = (
+            "Neutral Dasha — mixed signals; "
+            "results depend on the Antardasha lord and transits."
+        )
+        label_hi = (
+            "मध्यम दशा — मिश्रित संकेत; "
+            "परिणाम अंतर्दशा स्वामी एवं गोचर पर निर्भर।"
+        )
+
+    return {
+        "tag": tag,
+        "tag_hi": tag_hi,
+        "label_en": label_en,
+        "label_hi": label_hi,
+        "reasons": reasons,
+        "sloka_ref": "Phaladeepika Adh. 20",
+    }
+
+
 def _assess_planet_strength(planet: str, chart_data: dict) -> Dict[str, Any]:
     """
     Classify a planet as 'strong' | 'weak' | 'neutral' and collect evidence.
@@ -626,6 +813,7 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
 
     assessment = _assess_planet_strength(planet, chart_data or {})
     strength = assessment["strength"]
+    quality_tag = _dasha_quality_tag(planet, chart_data or {}, assessment["factors"])
 
     if strength == "strong":
         effect_en = entry.get("when_strong_en", entry.get("general_en", ""))
@@ -681,6 +869,7 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         "aspected_houses": h_info["aspected_houses"],
         "house_synthesis_en": house_synthesis_en,
         "house_synthesis_hi": house_synthesis_hi,
+        "dasha_quality": quality_tag,
     }
 
 
@@ -736,6 +925,8 @@ def analyze_antardasha_phala(
     # Adjust using chart placement
     md_assess = _assess_planet_strength(mahadasha_lord, chart_data or {})
     bk_assess = _assess_planet_strength(bhukti_lord, chart_data or {})
+    md_quality = _dasha_quality_tag(mahadasha_lord, chart_data or {}, md_assess["factors"])
+    bk_quality = _dasha_quality_tag(bhukti_lord, chart_data or {}, bk_assess["factors"])
 
     factors: List[str] = []
     score = 0  # positive -> favorable, negative -> challenging
@@ -843,6 +1034,8 @@ def analyze_antardasha_phala(
         "base_nature": base,
         "combined_synthesis_en": combined_en,
         "combined_synthesis_hi": combined_hi,
+        "mahadasha_quality": md_quality,
+        "bhukti_quality": bk_quality,
     }
 
 
