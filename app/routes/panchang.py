@@ -653,12 +653,12 @@ def list_festivals(
     # Build query with month filter if provided
     if month and category:
         rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s AND MONTH(date) = %s AND category = %s ORDER BY date",
+            "SELECT * FROM festivals WHERE year = %s AND EXTRACT(MONTH FROM date) = %s AND category = %s ORDER BY date",
             (target_year, month, category),
         ).fetchall()
     elif month:
         rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s AND MONTH(date) = %s ORDER BY date",
+            "SELECT * FROM festivals WHERE year = %s AND EXTRACT(MONTH FROM date) = %s ORDER BY date",
             (target_year, month),
         ).fetchall()
     elif category:
