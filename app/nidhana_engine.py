@@ -663,12 +663,93 @@ def _life_chapters(overall: str) -> Dict[str, List[str]]:
 # Dasha–Gochara multi-signal timing
 # ───────────────────────────────────────────────────────────────
 
+def _compute_triple_confluence(
+    dasha_signal_count: int,
+    lagna_affliction_count: int,
+    natal_saturn_rahu_maraka: bool,
+) -> Dict[str, Any]:
+    """
+    Score the three-way confluence per Phaladeepika Adh. 17.
+
+    Returns: {confluence_level, active_signals, total_score, confluence_en, confluence_hi}
+    """
+    total: float = 0.0
+    active_signals: List[str] = []
+
+    if dasha_signal_count >= 1:
+        total += 1
+        active_signals.append("Dasha signal")
+    if lagna_affliction_count >= 2:
+        total += 1
+        active_signals.append("Lagna affliction")
+    elif lagna_affliction_count == 1:
+        total += 0.5
+        active_signals.append("Mild lagna affliction")
+    if natal_saturn_rahu_maraka:
+        total += 1
+        active_signals.append("Saturn/Rahu in maraka position")
+
+    if total >= 2.5:
+        level = "critical"
+        en = (
+            "Triple-signal confluence detected (Phaladeepika Adh. 17): "
+            f"Active signals: {', '.join(active_signals)}. "
+            "When Dasha lord, natal Lagna affliction, AND Saturn/Rahu maraka position align, "
+            "this marks the most karmically significant period for longevity themes. "
+            "Intensive spiritual practice, health vigilance, and family awareness are advised."
+        )
+        hi = (
+            "त्रि-संकेत संगम (फलदीपिका अ. 17): "
+            f"सक्रिय संकेत: {', '.join(active_signals)}। "
+            "दशा, लग्न-पीड़ा एवं शनि/राहु-मारक स्थिति का एकत्र संयोग "
+            "आयु के दृष्टिकोण से सर्वाधिक महत्वपूर्ण काल को दर्शाता है। "
+            "गहन आध्यात्मिक साधना, स्वास्थ्य सतर्कता एवं पारिवारिक जागरूकता अनुशंसित है।"
+        )
+    elif total >= 1.5:
+        level = "elevated"
+        en = (
+            f"Two-signal alignment (Phaladeepika Adh. 17): {', '.join(active_signals)}. "
+            "Partial karmic confluence — longevity themes are active. "
+            "Protective practices and mindful living are beneficial."
+        )
+        hi = (
+            f"द्वि-संकेत संरेखण (फलदीपिका अ. 17): {', '.join(active_signals)}। "
+            "आंशिक कर्म-संगम — आयु के विषय सक्रिय हैं। "
+            "सुरक्षात्मक उपाय एवं सचेत जीवन लाभदायक है।"
+        )
+    elif total >= 0.5:
+        level = "moderate"
+        en = (
+            f"Single-signal presence: {', '.join(active_signals)}. "
+            "One of three Phaladeepika Adh. 17 indicators is active — philosophical reflection is advised."
+        )
+        hi = (
+            f"एकल संकेत उपस्थित: {', '.join(active_signals)}। "
+            "तीन में से एक फलदीपिका अ. 17 संकेत सक्रिय है — आत्म-चिन्तन उचित है।"
+        )
+    else:
+        level = "quiescent"
+        en = "No strong confluence of longevity signals (Phaladeepika Adh. 17). Indicators are quiet."
+        hi = "कोई प्रबल आयु-संकेत संगम नहीं (फलदीपिका अ. 17)। संकेत शान्त हैं।"
+
+    return {
+        "confluence_level": level,
+        "active_signals": active_signals,
+        "total_score": round(total, 1),
+        "confluence_en": en,
+        "confluence_hi": hi,
+    }
+
+
 def _dasha_gochara_timing(
     chart_data: Dict[str, Any],
     mahadasha_lord: Optional[str],
     antardasha_lord: Optional[str],
 ) -> Dict[str, Any]:
-    """Check whether current dasha lords coincide with maraka/8th/lagna lords."""
+    """Check whether current dasha lords coincide with maraka/8th/lagna lords.
+
+    Also computes triple-signal confluence (Dasha + Lagna affliction + Saturn/Rahu natal maraka).
+    """
     maraka_2nd = _lord_of(2, chart_data)
     maraka_7th = _lord_of(7, chart_data)
     eighth_lord = _lord_of(8, chart_data)
@@ -717,6 +798,36 @@ def _dasha_gochara_timing(
         summary_en = "Current dasha lords are not classical maraka or 8th-house lords — longevity indicators are quiescent."
         summary_hi = "वर्तमान दशा-स्वामी शास्त्रीय मारक या अष्टमेश नहीं हैं — दीर्घायु-सूचक शान्त हैं।"
 
+    # ── Signal 2: Lagna natal affliction ──────────────────────────
+    malefics_in_lagna_axis = 0
+    for house_check in [1, 7, 8]:
+        house_malefics = [
+            p for p in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+            if _planet_house(p, chart_data) == house_check
+        ]
+        malefics_in_lagna_axis += len(house_malefics)
+
+    # Lagna lord in dusthana or debilitated?
+    if lagna_lord:
+        ll_house = _planet_house(lagna_lord, chart_data)
+        ll_sign = _planet_sign(lagna_lord, chart_data)
+        if ll_house in DUSTHANAS:
+            malefics_in_lagna_axis += 1
+        _DEBIL = {
+            "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer", "Mercury": "Pisces",
+            "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries",
+        }
+        if ll_sign and _DEBIL.get(lagna_lord) == ll_sign:
+            malefics_in_lagna_axis += 1
+
+    # ── Signal 3: Saturn/Rahu in natal maraka position ────────────
+    sat_house = _planet_house("Saturn", chart_data)
+    rahu_house = _planet_house("Rahu", chart_data)
+    saturn_rahu_maraka = sat_house in {2, 7, 8} or rahu_house in {2, 7, 8}
+
+    # ── Triple confluence ──────────────────────────────────────────
+    confluence = _compute_triple_confluence(count, malefics_in_lagna_axis, saturn_rahu_maraka)
+
     return {
         "signals": signals,
         "convergence": convergence,
@@ -724,6 +835,197 @@ def _dasha_gochara_timing(
         "summary_hi": summary_hi,
         "mahadasha_lord": mahadasha_lord,
         "antardasha_lord": antardasha_lord,
+        "lagna_affliction_count": malefics_in_lagna_axis,
+        "saturn_rahu_in_maraka": saturn_rahu_maraka,
+        "confluence": confluence,
+    }
+
+
+# ───────────────────────────────────────────────────────────────
+# Month and Lagna of demise — Adh. 17 Nakshatra/Tithi Method
+# ───────────────────────────────────────────────────────────────
+
+def _demise_month_lagna_indicators(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Phaladeepika Adh. 17 — indicators for the probable month, sign, and
+    nakshatra period during which longevity themes peak.
+
+    Method:
+      1. Month indicator: Sun transiting the sign of the 8th lord, OR the
+         sign of the 2nd/7th maraka lord (classical month-of-transition).
+      2. Rising sign at a critical transition: typically the 8th house sign
+         from lagna, or the sign where natal Saturn is placed.
+      3. Nakshatra period: nakshatra associated with the Moon's 22nd nakshatra
+         (Vainashika nakshatra = 22nd from natal Moon nakshatra).
+    """
+    _SIGN_MONTHS_EN = {
+        "Aries": "mid-March to mid-April (Chaitra)",
+        "Taurus": "mid-April to mid-May (Vaishakha)",
+        "Gemini": "mid-May to mid-June (Jyeshtha)",
+        "Cancer": "mid-June to mid-July (Ashadha)",
+        "Leo": "mid-July to mid-August (Shravana)",
+        "Virgo": "mid-August to mid-September (Bhadrapada)",
+        "Libra": "mid-September to mid-October (Ashwina)",
+        "Scorpio": "mid-October to mid-November (Kartika)",
+        "Sagittarius": "mid-November to mid-December (Margashirsha)",
+        "Capricorn": "mid-December to mid-January (Pausha)",
+        "Aquarius": "mid-January to mid-February (Magha)",
+        "Pisces": "mid-February to mid-March (Phalguna)",
+    }
+    _SIGN_MONTHS_HI = {
+        "Aries": "मध्य-मार्च से मध्य-अप्रैल (चैत्र)",
+        "Taurus": "मध्य-अप्रैल से मध्य-मई (वैशाख)",
+        "Gemini": "मध्य-मई से मध्य-जून (ज्येष्ठ)",
+        "Cancer": "मध्य-जून से मध्य-जुलाई (आषाढ़)",
+        "Leo": "मध्य-जुलाई से मध्य-अगस्त (श्रावण)",
+        "Virgo": "मध्य-अगस्त से मध्य-सितंबर (भाद्रपद)",
+        "Libra": "मध्य-सितंबर से मध्य-अक्टूबर (आश्विन)",
+        "Scorpio": "मध्य-अक्टूबर से मध्य-नवंबर (कार्तिक)",
+        "Sagittarius": "मध्य-नवंबर से मध्य-दिसंबर (मार्गशीर्ष)",
+        "Capricorn": "मध्य-दिसंबर से मध्य-जनवरी (पौष)",
+        "Aquarius": "मध्य-जनवरी से मध्य-फरवरी (माघ)",
+        "Pisces": "मध्य-फरवरी से मध्य-मार्च (फाल्गुन)",
+    }
+
+    asc = _asc_sign(chart_data)
+
+    # 1. Month indicator: Sun transiting 8th lord's sign OR maraka lord signs
+    eighth_lord = _lord_of(8, chart_data)
+    maraka_2nd_lord = _lord_of(2, chart_data)
+    maraka_7th_lord = _lord_of(7, chart_data)
+
+    eighth_lord_sign = _planet_sign(eighth_lord, chart_data) if eighth_lord else ""
+    maraka_2nd_sign = _planet_sign(maraka_2nd_lord, chart_data) if maraka_2nd_lord else ""
+    maraka_7th_sign = _planet_sign(maraka_7th_lord, chart_data) if maraka_7th_lord else ""
+
+    month_indicators: List[Dict[str, Any]] = []
+    if eighth_lord_sign:
+        month_en = _SIGN_MONTHS_EN.get(eighth_lord_sign, eighth_lord_sign)
+        month_hi = _SIGN_MONTHS_HI.get(eighth_lord_sign, eighth_lord_sign)
+        month_indicators.append({
+            "trigger": f"Sun transiting {eighth_lord_sign} (natal sign of 8th lord {eighth_lord})",
+            "trigger_hi": f"सूर्य का {eighth_lord_sign} में गोचर (अष्टमेश {eighth_lord} की जन्मकालीन राशि)",
+            "period_en": month_en,
+            "period_hi": month_hi,
+            "intensity": "high",
+            "note_en": "Phaladeepika Adh. 17: Sun transiting the sign of the 8th lord activates the longevity axis.",
+            "note_hi": "फलदीपिका अ. 17: सूर्य का अष्टमेश की राशि में गोचर आयु-अक्ष को सक्रिय करता है।",
+        })
+    if maraka_2nd_sign and maraka_2nd_sign != eighth_lord_sign:
+        month_en2 = _SIGN_MONTHS_EN.get(maraka_2nd_sign, maraka_2nd_sign)
+        month_hi2 = _SIGN_MONTHS_HI.get(maraka_2nd_sign, maraka_2nd_sign)
+        month_indicators.append({
+            "trigger": f"Sun transiting {maraka_2nd_sign} (natal sign of 2nd maraka lord {maraka_2nd_lord})",
+            "trigger_hi": f"सूर्य का {maraka_2nd_sign} में गोचर (2nd मारकेश {maraka_2nd_lord} की राशि)",
+            "period_en": month_en2,
+            "period_hi": month_hi2,
+            "intensity": "moderate",
+            "note_en": "2nd lord maraka activation.",
+            "note_hi": "द्वितीयेश मारक सक्रियण।",
+        })
+    if maraka_7th_sign and maraka_7th_sign not in {eighth_lord_sign, maraka_2nd_sign}:
+        month_en3 = _SIGN_MONTHS_EN.get(maraka_7th_sign, maraka_7th_sign)
+        month_hi3 = _SIGN_MONTHS_HI.get(maraka_7th_sign, maraka_7th_sign)
+        month_indicators.append({
+            "trigger": f"Sun transiting {maraka_7th_sign} (natal sign of 7th maraka lord {maraka_7th_lord})",
+            "trigger_hi": f"सूर्य का {maraka_7th_sign} में गोचर (7th मारकेश {maraka_7th_lord} की राशि)",
+            "period_en": month_en3,
+            "period_hi": month_hi3,
+            "intensity": "moderate",
+            "note_en": "7th lord maraka activation.",
+            "note_hi": "सप्तमेश मारक सक्रियण।",
+        })
+
+    # 2. Rising sign at critical transition = 8th house sign from lagna
+    eighth_house_sign = _sign_of_house_nidhana(8, asc) if asc else ""
+    saturn_sign = _planet_sign("Saturn", chart_data)
+
+    rising_sign_en = ""
+    rising_sign_hi = ""
+    if eighth_house_sign:
+        rising_sign_en = (
+            f"The 8th house sign ({eighth_house_sign}) from lagna is classically associated "
+            f"with the ascending sign during critical karmic transitions. "
+            f"Additionally, Saturn's natal sign ({saturn_sign}) is another traditional indicator. "
+            f"Phaladeepika Adh. 17: these signs mark periods of heightened longevity awareness."
+        )
+        rising_sign_hi = (
+            f"लग्न से अष्टम भाव की राशि ({eighth_house_sign}) शास्त्रीय दृष्टि से "
+            f"महत्वपूर्ण कर्म-संक्रमण के समय उदित राशि से सम्बद्ध है। "
+            f"इसके अतिरिक्त शनि की जन्मकालीन राशि ({saturn_sign}) भी परम्परागत संकेतक है। "
+            f"फलदीपिका अ. 17: ये राशियाँ आयु-जागरूकता के ऊँचे काल का संकेत देती हैं।"
+        )
+
+    # 3. Vainashika nakshatra (22nd from natal Moon nakshatra)
+    _NAKSHATRAS = [
+        "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+        "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+        "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+        "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha",
+        "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati",
+    ]
+
+    # Support both chart_data["moon_nakshatra"] and chart_data["planets"]["Moon"]["nakshatra"]
+    moon_nak = ""
+    moon_nak_top = chart_data.get("moon_nakshatra")
+    if isinstance(moon_nak_top, str):
+        moon_nak = moon_nak_top
+    elif isinstance(moon_nak_top, dict):
+        moon_nak = str(moon_nak_top.get("nakshatra", "") or "")
+    else:
+        moon_planet = (_planets(chart_data).get("Moon") or {})
+        if isinstance(moon_planet, dict):
+            moon_nak = str(moon_planet.get("nakshatra", "") or "")
+
+    vainashika_nak = ""
+    vainashika_en = ""
+    vainashika_hi = ""
+    if moon_nak in _NAKSHATRAS:
+        moon_idx = _NAKSHATRAS.index(moon_nak)
+        vainashika_idx = (moon_idx + 21) % 27  # 22nd from Moon = +21 (0-indexed)
+        vainashika_nak = _NAKSHATRAS[vainashika_idx]
+        vainashika_en = (
+            f"Vainashika (22nd) Nakshatra from natal Moon ({moon_nak}): {vainashika_nak}. "
+            f"Phaladeepika Adh. 17: the dasha of the lord of {vainashika_nak} nakshatra "
+            f"is considered karmically significant for longevity themes. "
+            f"Lord of {vainashika_nak}: used in conjunction with maraka dasha for timing."
+        )
+        vainashika_hi = (
+            f"जन्मकालीन चंद्र नक्षत्र ({moon_nak}) से 22वाँ नक्षत्र (वैनाशिक): {vainashika_nak}। "
+            f"फलदीपिका अ. 17: {vainashika_nak} नक्षत्र के स्वामी की दशा "
+            f"आयु के दृष्टिकोण से कर्म-महत्वपूर्ण मानी जाती है। "
+            f"मारक दशा के साथ {vainashika_nak} के स्वामी की दशा का मेल विशेष ध्यान देने योग्य है।"
+        )
+
+    disclaimer_en = (
+        "These indicators follow Phaladeepika Adhyaya 17 classical methods. "
+        "They identify POTENTIAL periods of heightened karmic significance — NOT specific death predictions. "
+        "These are tools for spiritual preparedness and health awareness. "
+        "Consult a qualified Jyotishi for confirmation."
+    )
+    disclaimer_hi = (
+        "ये संकेत फलदीपिका अ. 17 की शास्त्रीय पद्धतियों पर आधारित हैं। "
+        "ये किसी विशेष मृत्यु-तिथि की भविष्यवाणी नहीं — केवल कर्मिक दृष्टि से महत्वपूर्ण "
+        "संभावित कालों के संकेत हैं। पुष्टि के लिए योग्य ज्योतिषी से परामर्श करें।"
+    )
+
+    return {
+        "month_indicators": month_indicators,
+        "rising_sign_indicators": {
+            "eighth_house_sign": eighth_house_sign,
+            "saturn_natal_sign": saturn_sign,
+            "interpretation_en": rising_sign_en,
+            "interpretation_hi": rising_sign_hi,
+        },
+        "vainashika_nakshatra": {
+            "moon_nakshatra": moon_nak,
+            "vainashika_nak": vainashika_nak,
+            "interpretation_en": vainashika_en,
+            "interpretation_hi": vainashika_hi,
+        },
+        "disclaimer_en": disclaimer_en,
+        "disclaimer_hi": disclaimer_hi,
+        "sloka_ref": "Phaladeepika Adh. 17",
     }
 
 
@@ -751,6 +1053,7 @@ def analyze_longevity_indicators(
     chapters = _life_chapters(overall)
     transit_timing = _transit_timing_section(chart_data)
     dasha_timing = _dasha_gochara_timing(chart_data, mahadasha_lord, antardasha_lord)
+    demise_month_lagna = _demise_month_lagna_indicators(chart_data)
 
     return {
         "overall_longevity_strength": overall,
@@ -763,5 +1066,6 @@ def analyze_longevity_indicators(
         "life_chapters_hi": chapters["life_chapters_hi"],
         "transit_timing_indicators": transit_timing,
         "dasha_gochara_timing": dasha_timing,
+        "demise_month_lagna_indicators": demise_month_lagna,
         "sloka_ref": "Phaladeepika Adh. 17",
     }
