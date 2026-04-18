@@ -67,6 +67,22 @@ _SPECIAL_ASPECTS: Dict[str, List[int]] = {
 
 DUSTHANAS = {6, 8, 12}
 
+# Mooltrikona sign per planet (Phaladeepika Adh. 1)
+_MOOLTRIKONA: Dict[str, str] = {
+    "Sun": "Leo", "Moon": "Taurus", "Mars": "Aries",
+    "Mercury": "Virgo", "Jupiter": "Sagittarius",
+    "Venus": "Libra", "Saturn": "Aquarius",
+}
+
+# Planets with two lordships (dual-owned signs)
+_DUAL_LORDS: Dict[str, List[str]] = {
+    "Mars": ["Aries", "Scorpio"],
+    "Mercury": ["Gemini", "Virgo"],
+    "Jupiter": ["Sagittarius", "Pisces"],
+    "Venus": ["Taurus", "Libra"],
+    "Saturn": ["Capricorn", "Aquarius"],
+}
+
 # ───────────────────────────────────────────────────────────────
 # Data loading
 # ───────────────────────────────────────────────────────────────
@@ -284,19 +300,54 @@ def analyze_bhava_phala(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         entry = data["planets"].get(planet, {}).get(str(house), {})
         if not entry:
             continue
-        result["planet_placements"].append({
+
+        placement: Dict[str, Any] = {
             "planet": planet,
             "house": house,
             "sign": sign,
             "effect_en": entry.get("effect_en", ""),
             "effect_hi": entry.get("effect_hi", ""),
             "sloka_ref": entry.get("sloka_ref", ""),
-        })
+        }
+
+        # P0-2: Rahu/Ketu results modified by sign lord (Phaladeepika Adh. 8)
+        if planet in ("Rahu", "Ketu") and sign:
+            base_planet = "Saturn" if planet == "Rahu" else "Mars"
+            sign_lord = _SIGN_LORD.get(sign, "")
+            if sign_lord and sign_lord != base_planet:
+                placement["sign_lord_modifier_en"] = (
+                    f"{planet} acts like {base_planet} by nature, but its results in "
+                    f"{sign} are further coloured by its sign lord {sign_lord}. "
+                    f"The effects of {sign_lord}'s placement and strength modify "
+                    f"the house {house} results of {planet}."
+                )
+                placement["sign_lord_modifier_hi"] = (
+                    f"{planet} स्वभाव से {base_planet} जैसा फल देता है, किन्तु "
+                    f"{sign} राशि में इसके परिणाम भावेश {sign_lord} से भी प्रभावित होते हैं। "
+                    f"{sign_lord} की स्थिति एवं बल भाव {house} में {planet} के फल को संशोधित करते हैं।"
+                )
+
+        result["planet_placements"].append(placement)
+
+    # ── Bhava generals (all 12) with mooltrikona note ─────────
 
     # ── Bhava generals (all 12) ───────────────────────────────
+    # Build sign→house lookup for mooltrikona rule
+    ascendant = chart_data.get("ascendant") or {}
+    asc_sign = str(ascendant.get("sign", ""))
+    _zodiac = [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+    ]
+    sign_to_house: Dict[str, int] = {}
+    if asc_sign in _zodiac:
+        asc_idx = _zodiac.index(asc_sign)
+        for i, s in enumerate(_zodiac):
+            sign_to_house[s] = ((i - asc_idx) % 12) + 1
+
     for h in range(1, 13):
         info = data["bhavas"].get(str(h), {})
-        result["bhava_generals"].append({
+        bhava_entry: Dict[str, Any] = {
             "house": h,
             "name_en": info.get("name_en", ""),
             "name_hi": info.get("name_hi", ""),
@@ -304,6 +355,33 @@ def analyze_bhava_phala(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "general_hi": info.get("general_hi", ""),
             "sloka_ref": info.get("sloka_ref", ""),
             "status": _house_strength(h, chart_data),
-        })
+        }
+
+        # P0-3: Mooltrikona gets better effect (Phaladeepika Adh. 15-16)
+        # When a planet rules two bhavas, the mooltrikona bhava receives better results.
+        house_sign = ""
+        if asc_sign in _zodiac:
+            house_sign = _zodiac[((_zodiac.index(asc_sign) + h - 1) % 12)]
+        if house_sign:
+            lord = _SIGN_LORD.get(house_sign, "")
+            if lord in _DUAL_LORDS:
+                mlt_sign = _MOOLTRIKONA.get(lord, "")
+                if mlt_sign and mlt_sign == house_sign:
+                    other_sign = [s for s in _DUAL_LORDS[lord] if s != house_sign]
+                    other_house = sign_to_house.get(other_sign[0], 0) if other_sign else 0
+                    bhava_entry["mooltrikona_note_en"] = (
+                        f"{lord} rules both house {h} ({house_sign}) and house {other_house} "
+                        f"({other_sign[0] if other_sign else ''}). Since {house_sign} is "
+                        f"{lord}'s Mooltrikona sign, house {h} receives the primary and better "
+                        f"results of {lord} (Phaladeepika Adh. 15)."
+                    )
+                    bhava_entry["mooltrikona_note_hi"] = (
+                        f"{lord} भाव {h} ({house_sign}) और भाव {other_house} "
+                        f"({other_sign[0] if other_sign else ''}) दोनों का स्वामी है। "
+                        f"{house_sign} {lord} की मूलत्रिकोण राशि होने से भाव {h} को "
+                        f"{lord} के श्रेष्ठ फल प्राप्त होते हैं (फलदीपिका अ. 15)।"
+                    )
+
+        result["bhava_generals"].append(bhava_entry)
 
     return result

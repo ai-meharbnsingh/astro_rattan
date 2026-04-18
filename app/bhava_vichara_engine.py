@@ -430,6 +430,36 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
             reasons_en.append("Benefic support: " + "; ".join(detail_en) + ".")
             reasons_hi.append("शुभ सहायता: " + "; ".join(detail_hi) + "।")
 
+    # P0-4: Malefic in 6/8/12 (Dusthana) STRENGTHENS that bhava's significations.
+    # Counter-intuitive classical rule (Phaladeepika Adh. 15-16):
+    # A natural malefic in its own dusthana energises the house's core purpose
+    # (6th → defeats enemies; 8th → fortifies longevity; 12th → aids liberation/foreign).
+    if house in DUSTHANAS and has_malefic_occupant:
+        malefics_in_house = [o for o in occupants if o in NATURAL_MALEFICS]
+        dusthana_names = {6: "6th (Ari)", 8: "8th (Randhra)", 12: "12th (Vyaya)"}
+        dusthana_benefits = {
+            6: "strengthens the ability to defeat enemies and overcome disease",
+            8: "fortifies longevity and occult knowledge",
+            12: "supports spiritual liberation, foreign travel, and moksha",
+        }
+        dusthana_benefits_hi = {
+            6: "शत्रुनाश एवं रोग-निवारण की क्षमता बढ़ती है",
+            8: "आयु एवं गूढ़ ज्ञान को बल मिलता है",
+            12: "मोक्ष, विदेश-यात्रा, एवं आध्यात्मिक उन्नति को बल मिलता है",
+        }
+        if not destruction_risk:
+            flourishing = True
+        reasons_en.append(
+            f"Natural malefic(s) {', '.join(malefics_in_house)} in the {dusthana_names.get(house, str(house))} house "
+            f"{dusthana_benefits.get(house, 'strengthens this dusthana')} "
+            f"(Phaladeepika Adh. 15 — malefic in dusthana energises its significations)."
+        )
+        reasons_hi.append(
+            f"प्राकृतिक अशुभ ग्रह {', '.join(malefics_in_house)} {house}वें भाव में स्थित है — "
+            f"{dusthana_benefits_hi.get(house, 'यह दुःस्थान को बलवान बनाता है')} "
+            f"(फलदीपिका अ. 15 — दुःस्थान में पापग्रह उस भाव के फल को बलवान बनाता है)।"
+        )
+
     # If conflicting: destruction takes precedence
     if destruction_risk:
         flourishing = False

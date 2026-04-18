@@ -281,6 +281,43 @@ def calculate_panchaka_rahita(
 
 
 # ============================================================
+# CHATURMASA (चातुर्मास)
+# ============================================================
+
+_CHATURMASA_FULL_MONTHS = {"Shravana", "Bhadrapada", "Ashwin"}
+
+
+def calculate_chaturmasa(hindu_month: str, tithi_index: int, paksha: str) -> Dict[str, Any]:
+    """
+    Determine whether the given Hindu date falls within Chaturmasa.
+
+    Chaturmasa runs from Ashadh Shukla Ekadashi (tithi_index 10 in 0-based)
+    to Kartik Shukla Ekadashi.
+    """
+    active = False
+    if hindu_month in _CHATURMASA_FULL_MONTHS:
+        active = True
+    elif hindu_month == "Ashadh":
+        if paksha == "Shukla" and tithi_index >= 10:  # Ekadashi onward
+            active = True
+    elif hindu_month == "Kartik":
+        if paksha == "Krishna":
+            active = True
+        elif paksha == "Shukla" and tithi_index < 10:  # Before Ekadashi
+            active = True
+
+    return {
+        "active": active,
+        "period": "Chaturmasa",
+        "period_hindi": "चातुर्मास",
+        "warning": "Major ceremonies prohibited during Chaturmasa",
+        "warning_hindi": "चातुर्मास में बड़े संस्कार वर्जित हैं",
+        "start_month": "Ashadh",
+        "end_month": "Kartik",
+    }
+
+
+# ============================================================
 # MASTER FUNCTION
 # ============================================================
 

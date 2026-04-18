@@ -1,0 +1,56 @@
+i18n sanitize report
+Source: /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/frontend/src/lib/i18n.ts
+EN keys: 2459   HI keys: 2459
+Flagged: 9
+
+Issue summary:
+  suspicious_token_value        7
+  hi_same_as_en                 2
+
+--------------------------------------------------------------------------------
+
+[suspicious_token_value]
+  key  : auto.orb
+  en   : 'orb'
+  hi   : 'ऑर्ब'
+
+[suspicious_token_value]
+  key  : auto.h
+  en   : 'h'
+  hi   : 'घं'
+
+[suspicious_token_value]
+  key  : auto.years
+  en   : 'years'
+  hi   : 'वर्ष'
+
+[suspicious_token_value]
+  key  : auto.in
+  en   : 'in'
+  hi   : 'में'
+
+[suspicious_token_value]
+  key  : auto.today
+  en   : 'today'
+  hi   : 'आज'
+
+[suspicious_token_value]
+  key  : auto.detected
+  en   : 'detected'
+  hi   : 'पाए गए'
+
+[suspicious_token_value]
+  key  : auto.upto
+  en   : 'upto'
+  hi   : 'तक'
+
+[hi_same_as_en]
+  key  : misc.english
+  en   : 'English'
+  hi   : 'English'
+
+[hi_same_as_en]
+  key  : tab.iogita
+  en   : 'io-gita'
+  hi   : 'io-gita'
+

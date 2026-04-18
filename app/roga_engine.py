@@ -215,14 +215,135 @@ def _detect_blindness(planets: Dict[str, Dict[str, Any]]) -> bool:
     return not (benefic_on_sun or benefic_on_moon)
 
 
+def _detect_eye_ear_disease(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """
+    Eye: Sun or Moon in 2nd/12th afflicted by malefic (2nd=right eye, 12th=left eye).
+    Ear: Saturn or Rahu in 3rd (3rd house rules ears/hearing), or 3rd lord debilitated.
+    """
+    # Eye: Sun afflicted in 2nd or 12th
+    sun_h = _house_of("Sun", planets)
+    if sun_h in (2, 12) and any(
+        _aspects_planet(m, "Sun", planets) or _house_of(m, planets) == sun_h
+        for m in ("Saturn", "Rahu", "Mars") if m in planets
+    ):
+        return True
+    # Eye: Moon afflicted in 2nd or 12th
+    moon_h = _house_of("Moon", planets)
+    if moon_h in (2, 12) and any(
+        _aspects_planet(m, "Moon", planets) or _house_of(m, planets) == moon_h
+        for m in ("Saturn", "Rahu", "Mars") if m in planets
+    ):
+        return True
+    # Ear: Saturn or Rahu in 3rd house
+    if _house_of("Saturn", planets) == 3 or _house_of("Rahu", planets) == 3:
+        return True
+    # Ear: 3rd lord debilitated
+    asc = (chart.get("ascendant") or {}).get("sign", "")
+    third_lord = _lord_of_house(3, asc)
+    if third_lord:
+        return _is_debilitated(third_lord, _sign_of(third_lord, planets))
+    return False
+
+
+def _detect_cancer_tumor(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Rahu in 5th/8th + Saturn aspect on that house, OR two+ malefics in 8th."""
+    rahu_h = _house_of("Rahu", planets)
+    if rahu_h in (5, 8) and _aspects_house("Saturn", rahu_h, planets):
+        return True
+    malefics_in_8 = [p for p in ("Rahu", "Saturn", "Mars") if _house_of(p, planets) == 8]
+    return len(malefics_in_8) >= 2
+
+
+def _detect_heart_disease(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Sun in 4th afflicted by malefic, OR Sun debilitated in 4th or 5th house."""
+    sun_h = _house_of("Sun", planets)
+    sun_sign = _sign_of("Sun", planets)
+    if sun_h == 4 and any(
+        (_house_of(m, planets) == 4 or _aspects_house(m, 4, planets))
+        for m in ("Saturn", "Rahu", "Mars") if m in planets
+    ):
+        return True
+    return _is_debilitated("Sun", sun_sign) and sun_h in (4, 5)
+
+
+def _detect_liver_disease(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Jupiter debilitated, OR Jupiter in dusthana with Saturn's aspect."""
+    jup_sign = _sign_of("Jupiter", planets)
+    jup_h = _house_of("Jupiter", planets)
+    if _is_debilitated("Jupiter", jup_sign):
+        return True
+    return jup_h in DUSTHANAS and _aspects_planet("Saturn", "Jupiter", planets)
+
+
+def _detect_kidney_disease(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Venus debilitated in dusthana, OR Venus in dusthana aspected by Saturn or Rahu."""
+    ven_sign = _sign_of("Venus", planets)
+    ven_h = _house_of("Venus", planets)
+    if _is_debilitated("Venus", ven_sign) and ven_h in DUSTHANAS:
+        return True
+    return ven_h in DUSTHANAS and any(
+        _aspects_planet(m, "Venus", planets) for m in ("Saturn", "Rahu")
+    )
+
+
+def _detect_accidents_wounds(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Mars in 8th with Saturn aspect, OR Mars + Rahu both in 8th/12th."""
+    mars_h = _house_of("Mars", planets)
+    rahu_h = _house_of("Rahu", planets)
+    if mars_h == 8 and _aspects_planet("Saturn", "Mars", planets):
+        return True
+    return mars_h in (8, 12) and rahu_h in (8, 12)
+
+
+def _detect_paralysis(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Saturn + Rahu conjunct in 2nd/3rd/12th, OR Saturn debilitated in 3rd house."""
+    sat_h = _house_of("Saturn", planets)
+    rahu_h = _house_of("Rahu", planets)
+    sat_sign = _sign_of("Saturn", planets)
+    if sat_h == rahu_h and sat_h in (2, 3, 12):
+        return True
+    return sat_h == 3 and _is_debilitated("Saturn", sat_sign)
+
+
+def _detect_venereal_disease(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """Venus + Rahu conjunct in 7th/8th, OR Venus debilitated in 8th with Mars aspect."""
+    ven_h = _house_of("Venus", planets)
+    rahu_h = _house_of("Rahu", planets)
+    ven_sign = _sign_of("Venus", planets)
+    if ven_h == rahu_h and ven_h in (7, 8):
+        return True
+    return _is_debilitated("Venus", ven_sign) and ven_h == 8 and _aspects_planet("Mars", "Venus", planets)
+
+
+def _detect_manner_of_death(planets: Dict[str, Dict[str, Any]], chart: Dict[str, Any]) -> bool:
+    """8th lord debilitated in 12th, OR Saturn + Rahu both in 8th house."""
+    asc = (chart.get("ascendant") or {}).get("sign", "")
+    eighth_lord = _lord_of_house(8, asc)
+    if eighth_lord:
+        el_h = _house_of(eighth_lord, planets)
+        el_sign = _sign_of(eighth_lord, planets)
+        if _is_debilitated(eighth_lord, el_sign) and el_h == 12:
+            return True
+    return _house_of("Saturn", planets) == 8 and _house_of("Rahu", planets) == 8
+
+
 _SPECIAL_DETECTORS = {
-    "leprosy":      lambda p, c: _detect_leprosy(p),
-    "epilepsy":     lambda p, c: _detect_epilepsy(p),
-    "diabetes":     lambda p, c: _detect_diabetes(p),
-    "jaundice":     lambda p, c: _detect_jaundice(p),
-    "tuberculosis": lambda p, c: _detect_tuberculosis(p, c),
-    "insanity":     lambda p, c: _detect_insanity(p),
-    "blindness":    lambda p, c: _detect_blindness(p),
+    "leprosy":          lambda p, c: _detect_leprosy(p),
+    "epilepsy":         lambda p, c: _detect_epilepsy(p),
+    "diabetes":         lambda p, c: _detect_diabetes(p),
+    "jaundice":         lambda p, c: _detect_jaundice(p),
+    "tuberculosis":     lambda p, c: _detect_tuberculosis(p, c),
+    "insanity":         lambda p, c: _detect_insanity(p),
+    "blindness":        lambda p, c: _detect_blindness(p),
+    "eye_ear_disease":  _detect_eye_ear_disease,
+    "cancer_tumor":     _detect_cancer_tumor,
+    "heart_disease":    _detect_heart_disease,
+    "liver_disease":    _detect_liver_disease,
+    "kidney_disease":   _detect_kidney_disease,
+    "accidents_wounds": _detect_accidents_wounds,
+    "paralysis":        _detect_paralysis,
+    "venereal_disease": _detect_venereal_disease,
+    "manner_of_death":  _detect_manner_of_death,
 }
 
 

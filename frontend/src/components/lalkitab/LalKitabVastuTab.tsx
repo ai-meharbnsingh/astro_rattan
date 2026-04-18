@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, Home, AlertTriangle, CheckCircle2, Compass, Wrench, LayoutGrid } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

@@ -88,9 +88,15 @@ export default function DivisionalTab({
                 <TableBody>
                   {Object.entries(divisionalData.planet_signs || {}).map(([planet, sign]: [string, any]) => {
                     const posData = (divisionalData.planet_positions || []).find((p: any) => p.planet === planet);
+                    const isVargottama = posData?.is_vargottama;
                     return (
-                      <TableRow key={planet} className="border-t border-border hover:bg-muted/5">
-                        <TableCell className="p-3 text-foreground font-medium text-sm">{translatePlanet(planet, language)}</TableCell>
+                      <TableRow key={planet} className={`border-t border-border hover:bg-muted/5 ${isVargottama ? 'bg-yellow-50/40' : ''}`}>
+                        <TableCell className="p-3 text-foreground font-medium text-sm">
+                          {translatePlanet(planet, language)}
+                          {isVargottama && (
+                            <span className="ml-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-yellow-100 text-yellow-700 border border-yellow-300 uppercase tracking-tight">VGT</span>
+                          )}
+                        </TableCell>
                         <TableCell className="p-3 text-foreground text-sm">{translateSign(sign as string, language)}</TableCell>
                         <TableCell className="p-3 text-foreground text-sm">{posData?.sign_degree?.toFixed(1) || '--'}&deg;</TableCell>
                       </TableRow>

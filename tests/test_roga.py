@@ -25,12 +25,17 @@ def test_data_has_all_12_houses():
         assert str(h) in data["body_part_by_house"]
 
 
-def test_data_has_7_special_yogas():
+def test_data_has_special_yogas():
+    # P1 #15 expanded from 7 to 15 special yogas; original 7 must still be present
     data = load_roga_data()
-    assert len(data["special_yogas"]) == 7
-    expected_keys = {"leprosy", "epilepsy", "diabetes", "jaundice", "tuberculosis", "insanity", "blindness"}
+    assert len(data["special_yogas"]) >= 16
+    original_keys = {"leprosy", "epilepsy", "diabetes", "jaundice", "tuberculosis", "insanity", "blindness"}
     actual_keys = {y["key"] for y in data["special_yogas"]}
-    assert expected_keys == actual_keys
+    assert original_keys.issubset(actual_keys)
+    new_keys = {"cancer_tumor", "heart_disease", "liver_disease", "kidney_disease",
+                "accidents_wounds", "paralysis", "venereal_disease", "manner_of_death",
+                "eye_ear_disease"}
+    assert new_keys.issubset(actual_keys)
 
 
 # ═══════════════════════════════════════════════════════════════

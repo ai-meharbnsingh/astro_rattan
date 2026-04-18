@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import {
   Loader2, Users, UserPlus, Trash2, Link2,
   TrendingUp, TrendingDown, ChevronDown, ChevronUp, X,
@@ -386,7 +387,7 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
               <HarmonyBar score={data.family_harmony} />
               {data.family_theme && (
                 <p className="text-xs text-muted-foreground mt-1 italic">
-                  "{hi ? data.family_theme.hi : data.family_theme.en}"
+                  "{pickLang(data.family_theme, hi)}"
                 </p>
               )}
             </div>
@@ -444,7 +445,7 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
               {/* Per-member theme */}
               {member.theme && (
                 <p className="text-xs text-muted-foreground italic mb-3 px-0.5">
-                  "{hi ? member.theme.hi : member.theme.en}"
+                  "{pickLang(member.theme, hi)}"
                 </p>
               )}
 

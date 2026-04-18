@@ -66,7 +66,7 @@ function TransitHeatMap({ kundliId, t, language }: { kundliId: string; t: any; l
         {forecast.map((day, idx) => {
           const date = new Date(day.date);
           const dayNum = date.getDate();
-          const month = date.toLocaleDateString(t('auto.enIN'), { month: 'short' });
+          const month = date.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { month: 'short' });
           
           let color = 'bg-red-500';
           if (day.score >= 70) color = 'bg-green-500';

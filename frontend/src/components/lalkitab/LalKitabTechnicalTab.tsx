@@ -108,7 +108,7 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
           {(chalti_gaadi.train_status ?? 'unknown').toUpperCase()}
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {hi ? chalti_gaadi.interpretation?.hi : chalti_gaadi.interpretation?.en}
+          {pickLang(chalti_gaadi.interpretation, hi)}
         </p>
       </div>
 
@@ -181,10 +181,10 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
             {soya_ghar.sleeping_house_effects.map((item: any) => (
               <div key={item.house} className="border border-border rounded-lg p-2.5">
                 <div className="font-semibold text-xs text-foreground mb-1">
-                  {hi ? `घर ${item.house}:` : `House ${item.house}:`} {hi ? item.effect?.hi : item.effect?.en}
+                  {hi ? `घर ${item.house}:` : `House ${item.house}:`} {pickLang(item.effect, hi)}
                 </div>
                 <div className="text-xs text-green-700">
-                  💊 {hi ? item.remedy?.hi : item.remedy?.en}
+                  💊 {pickLang(item.remedy, hi)}
                 </div>
               </div>
             ))}
@@ -267,7 +267,7 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
         {muththi.recommendation && (
           <div className="mt-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
             <span className="shrink-0">🙏</span>
-            {hi ? muththi.recommendation.hi : muththi.recommendation.en}
+            {pickLang(muththi.recommendation, hi)}
           </div>
         )}
       </div>

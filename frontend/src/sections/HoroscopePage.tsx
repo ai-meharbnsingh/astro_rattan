@@ -163,7 +163,7 @@ export default function HoroscopePage() {
   };
 
   const dateDisplay = new Date(selectedDate + 'T12:00:00').toLocaleDateString(
-    t('auto.enIN'),
+    language === 'hi' ? 'hi-IN' : 'en-IN',
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' },
   );
 
@@ -175,7 +175,7 @@ export default function HoroscopePage() {
         <div className="rounded-xl border border-border bg-card p-3 mb-4">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <span className="font-semibold text-foreground">{dateDisplay}</span>
-            <span className="text-sm text-muted-foreground">{currentTime.toLocaleTimeString(t('auto.enIN'))}</span>
+            <span className="text-sm text-muted-foreground">{currentTime.toLocaleTimeString(language === 'hi' ? 'hi-IN' : 'en-IN')}</span>
           </div>
           <input
             type="date"

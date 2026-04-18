@@ -42,7 +42,9 @@ interface ExtPanchang extends FullPanchangData {
   directions?: DirectionsData;
   ekadashi_parana?: EkadashiParana | null;
   misc?: { panchaka_rahita?: PanchakaRahita | null; astronomical?: Record<string, any> };
-  nivas?: {
+  chaturmasa?: { active?: boolean; warning?: string; warning_hindi?: string };
+  dagdha_nakshatra?: { active?: boolean; name?: string; name_hindi?: string; dagdha_list?: string[] };
+  nivas?:
     chandra_vasa?: { direction: string; direction_hindi: string; name: string; name_hindi: string };
     agnivasa?: { location: string; location_hindi: string; name: string; name_hindi: string };
     rahu_vasa?: { direction: string; direction_hindi: string; name: string; name_hindi: string };
@@ -214,9 +216,63 @@ export default function MuhuratTab({ panchang: _panchang, language, t }: Props) 
       color: 'bg-red-500/15 text-red-700',
       borderColor: 'border-red-500/40',
     });
+  if (sy?.dagdha_nakshatra?.active)
+    prominentBanners.push({
+      label: language === 'hi' ? (sy.dagdha_nakshatra.name_hindi || 'दग्ध नक्षत्र') : (sy.dagdha_nakshatra.name || 'Dagdha Nakshatra'),
+      color: 'bg-red-500/15 text-red-700',
+      borderColor: 'border-red-500/40',
+    });
+
+  // P0: Vyatipata / Vaidhriti / Mrityu / Visha hard-block banners
+  const yogaNum = panchang.yoga?.number;
+  const hardBlockBanners: { label: string; sub: string; color: string }[] = [];
+  if (yogaNum === 17)
+    hardBlockBanners.push({
+      label: language === 'hi' ? 'व्यतीपात योग — सभी कार्य वर्जित' : 'Vyatipata Yoga — ALL ACTIVITY BLOCKED',
+      sub: language === 'hi' ? 'आज कोई भी शुभ कार्य न करें' : 'Do not begin any auspicious work today',
+      color: 'bg-red-600 text-white',
+    });
+  if (yogaNum === 27)
+    hardBlockBanners.push({
+      label: language === 'hi' ? 'वैधृति योग — सभी कार्य वर्जित' : 'Vaidhriti Yoga — ALL ACTIVITY BLOCKED',
+      sub: language === 'hi' ? 'आज कोई भी शुभ कार्य न करें' : 'Do not begin any auspicious work today',
+      color: 'bg-red-600 text-white',
+    });
 
   return (
     <div className="space-y-3">
+      {/* ── HARD BLOCK BANNERS (P0 safety) ── */}
+      {hardBlockBanners.length > 0 && (
+        <div className="space-y-1">
+          {hardBlockBanners.map((b, i) => (
+            <div key={i} className={`rounded-lg ${b.color} px-4 py-3 flex items-start gap-2`}>
+              <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-sm">{b.label}</p>
+                <p className="text-xs opacity-90">{b.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Chaturmasa Warning ── */}
+      {panchang.chaturmasa?.active && (
+        <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 flex items-start gap-2">
+          <CircleAlert className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-orange-700">
+              {language === 'hi' ? 'चातुर्मास काल सक्रिय' : 'Chaturmasa Period Active'}
+            </p>
+            <p className="text-xs text-orange-600/80">
+              {language === 'hi'
+                ? (panchang.chaturmasa.warning_hindi || 'चातुर्मास में बड़े संस्कार वर्जित हैं')
+                : (panchang.chaturmasa.warning || 'Major ceremonies are prohibited during Chaturmasa')}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── Prominent Yoga Banners (Amrit Siddhi / Sarvartha Siddhi etc.) ── */}
       {prominentBanners.length > 0 && (
         <div className="flex flex-wrap gap-2">

@@ -51,6 +51,7 @@ from app.lalkitab_milestones import get_seven_year_cycle
 from app.lalkitab_prediction_studio import build_prediction_studio
 from app.lalkitab_interpretations import get_all_interpretations_for_chart
 from app.lalkitab_source_tags import source_of
+from app.lalkitab_andhe_grah import detect_andhe_grah
 
 OUT = []
 def P(s=""):
@@ -120,6 +121,31 @@ def main():
         P(f"\n• {t.capitalize():<10} [{flag}]")
         P(f"  EN: {desc_en}")
         P(f"  HI: {desc_hi}")
+
+    # ── 3-B · ANDHE GRAH (Blind Planets — LK 2.12) ──
+    # Safety-critical detector. Rendered right after Teva because Andha
+    # Teva (chart-level) and Andhe Grah (planet-level) share the same
+    # enemy-pair logic.
+    H("3-B · ANDHE GRAH — BLIND PLANETS (safety layer, LK 2.12)",
+      engine="detect_andhe_grah")
+    andhe = detect_andhe_grah(pp, chart_data=chart)
+    blind = andhe.get("blind_planets") or []
+    if not blind:
+        P("  ✓ No blind planets detected for this chart.")
+        P("    (No remedy will require the blind-planet backlash warning.)")
+    else:
+        P(f"  ⚠ BLIND PLANETS: {', '.join(blind)}")
+        for name in blind:
+            info = andhe["per_planet"][name]
+            P(f"\n  • {name} (H{info['house']}, {info['sign']}) — severity {info['severity']}")
+            for r in info.get("reasons", []):
+                P(f"      · {r}")
+            P(f"    warning EN: {info.get('warning_en','')[:180]}")
+    adj = andhe.get("adjacency_warnings") or []
+    if adj:
+        P(f"\n  ADJACENCY warnings ({len(adj)} planet(s) next to a blind planet):")
+        for w in adj:
+            P(f"    • {w['planet']} (H{w['house']}) — adjacent to {w['adjacent_to_blind']}")
 
     # Karmic Rin — FULL
     H("4 · KARMIC RIN (full text, all detected debts)", engine="calculate_karmic_debts")
@@ -457,13 +483,31 @@ def main():
         P(f"  REMEDY   HI: {row.get('remedy_hi','')}")
         P(f"  trace: {row.get('trace')}")
 
-    # Per-planet remedies
+    # Per-planet remedies (now with mandatory safety layer: Savdhaniyan
+    # + Andhe-Grah warnings rendered BEFORE the remedy body per LK 4.14)
     H("20 · PER-PLANET REMEDIES (engine-generated, full)", engine="get_remedies")
     rem_by_planet = get_remedies({p["planet"]: p["sign"] for p in pp}, chart)
     for planet, info in (rem_by_planet or {}).items():
         rem = info.get("remedy") or {}
         P(f"\n◆ {planet}  (LK H{info.get('lk_house')})  dignity={info.get('dignity')}  "
           f"strength={info.get('strength')}  has_remedy={info.get('has_remedy')}")
+
+        # ── P0.3 Andhe Grah warning (before remedy action) ──
+        warn = info.get("andhe_grah_warning")
+        if warn:
+            P(f"  ⚠ ANDHE GRAH ({warn.get('kind')}, severity={warn.get('severity')}) [LK 4.14]")
+            P(f"    EN: {warn.get('en','')}")
+            P(f"    HI: {warn.get('hi','')}")
+
+        # ── P0.1 + P0.4 Savdhaniyan / Daytime-only rule ──
+        sav = info.get("savdhaniyan") or {}
+        if sav:
+            tr = info.get("time_rule", "—")
+            rr = info.get("reversal_risk")
+            P(f"  🔔 SAVDHANIYAN  (time_rule={tr}, reversal_risk={rr})  [LK {','.join(sav.get('lk_refs') or [])}]")
+            for i, p in enumerate(sav.get("precautions") or [], 1):
+                P(f"     {i}. [{p.get('severity','').upper()} / {p.get('category','')}] {p.get('en','')}")
+
         P(f"  Remedy EN : {rem.get('en','') if isinstance(rem, dict) else rem}")
         P(f"  Remedy HI : {rem.get('hi','') if isinstance(rem, dict) else ''}")
         P(f"  Material  : {rem.get('material','') if isinstance(rem, dict) else ''}")

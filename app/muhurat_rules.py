@@ -75,6 +75,7 @@ MUHURAT_REASONS = {
     "rahu_kaal": {"en": "Rahu Kaal", "hi": "राहु काल"},
     "panchaka": {"en": "Panchaka", "hi": "पंचक"},
     "ganda_moola": {"en": "Ganda Moola", "hi": "गण्ड मूल"},
+    "pushya_direction":  {"en": "Pushya Nakshatra — best for travel in all directions", "hi": "पुष्य नक्षत्र — सभी दिशाओं में यात्रा के लिए सर्वोत्तम"},
     "dagdha_tithi":      {"en": "Dagdha Tithi (burned day)", "hi": "दग्ध तिथि"},
     "guru_asta":         {"en": "Jupiter combust (Guru Asta) — marriage forbidden", "hi": "गुरु अस्त — विवाह वर्जित"},
     "shukra_asta":       {"en": "Venus combust (Shukra Asta) — marriage forbidden", "hi": "शुक्र अस्त — विवाह वर्जित"},

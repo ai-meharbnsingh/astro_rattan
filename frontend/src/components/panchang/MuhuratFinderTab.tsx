@@ -20,6 +20,10 @@ interface LagnaWindow {
   lagna: string;
   start: string;
   end: string;
+  degree?: number;
+  ganda_sandhi?: string | null;
+  warnings?: string[];
+  safe_window?: { start: string; end: string };
 }
 
 interface MuhuratDate {
@@ -400,11 +404,24 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                   <div className="text-xs font-medium text-foreground mb-1">
                     {language === 'hi' ? 'शुभ लग्न' : 'Favorable Lagna Windows'}
                   </div>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {d.lagna_windows.map((lw, i) => (
-                      <span key={`${lw.lagna}-${i}`} className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">
-                        {lw.lagna}: {lw.start} – {lw.end}
-                      </span>
+                      <div key={`${lw.lagna}-${i}`} className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs border border-blue-100">
+                        <div className="font-semibold">{lw.lagna}</div>
+                        <div>{lw.start} – {lw.end}</div>
+                        {lw.safe_window && (
+                          <div className="mt-0.5 text-green-700 bg-green-50 px-1.5 py-0.5 rounded text-[10px] border border-green-100">
+                            {language === 'hi' ? 'सुरक्षित खिड़की' : 'Safe window'}: {lw.safe_window.start} – {lw.safe_window.end}
+                          </div>
+                        )}
+                        {lw.warnings && lw.warnings.length > 0 && (
+                          <div className="mt-0.5 text-orange-700 text-[10px]">
+                            {lw.warnings.map((w, wi) => (
+                              <span key={wi} className="block">⚠ {w}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>

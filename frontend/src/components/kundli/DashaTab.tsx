@@ -134,6 +134,18 @@ export default function DashaTab({
                               <TableCell className="p-1.5 text-center text-foreground opacity-60">{(ad.years || (parseFloat(ad.duration_years) || 0).toFixed(2))}</TableCell>
                             </TableRow>
 
+                            {/* Antardasha Synthesis */}
+                            {isAdExpanded && (ad.analysis?.combined_synthesis_en || ad.analysis?.combined_synthesis_hi) && (
+                              <TableRow className="bg-indigo-50/30">
+                                <TableCell colSpan={5} className="p-3 pl-8">
+                                  <p className="text-[11px] text-indigo-900 leading-relaxed">
+                                    <span className="font-semibold text-indigo-700">{hi ? 'दशा विश्लेषण: ' : 'Dasha Analysis: '}</span>
+                                    {hi ? (ad.analysis?.combined_synthesis_hi || ad.analysis?.combined_synthesis_en) : (ad.analysis?.combined_synthesis_en || ad.analysis?.combined_synthesis_hi)}
+                                  </p>
+                                </TableCell>
+                              </TableRow>
+                            )}
+
                             {/* Pratyantar Rows */}
                             {isAdExpanded && (ad.pratyantar || []).map((pt: any, idx: number) => (
                               <TableRow 

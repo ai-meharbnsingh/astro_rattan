@@ -725,6 +725,9 @@ def get_divisional_chart(
             "house": house_num,
             "nakshatra": "",
             "longitude": sign_index * 30.0 + info["degree"],
+            "is_vargottama": bool(
+                chart.get("planets", {}).get(planet_name, {}).get("is_vargottama", False)
+            ),
         })
 
     # Simple sign mapping for backward compat
@@ -909,12 +912,12 @@ def get_yogas_and_doshas(
 
     # Merge declarative-engine yogas (Phaladeepika Adh. 6-7) into result.yogas
     try:
-        from app.yoga_rule_engine import detect_all_yogas
+        from app.yoga_rule_engine import detect_yogas_with_timing
         existing_yogas = result.get("yogas", []) or []
         existing_names_lower = {
             str(y.get("name", "")).strip().lower() for y in existing_yogas if y.get("name")
         }
-        new_matches = detect_all_yogas(chart)
+        new_matches = detect_yogas_with_timing(chart)
         for y in new_matches:
             name_en = y.get("name_en", "")
             if name_en.strip().lower() in existing_names_lower:
@@ -933,6 +936,9 @@ def get_yogas_and_doshas(
                 "sloka_ref": y.get("sloka_ref", ""),
                 "nature": y.get("nature", "mixed"),
                 "source": "rule_engine",
+                "fruition_dashas": y.get("fruition_dashas", []),
+                "fruition_note_en": y.get("fruition_note_en", ""),
+                "fruition_note_hi": y.get("fruition_note_hi", ""),
             })
         result["yogas"] = existing_yogas
     except Exception:

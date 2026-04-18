@@ -462,3 +462,118 @@ def detect_all_yogas(
 def list_categories() -> List[str]:
     """Return sorted unique categories present in the yoga database."""
     return sorted({y.get("category", "") for y in load_yoga_rules() if y.get("category")})
+
+
+# ───────────────────────────────────────────────────────────────
+# P1 #9: Yoga fruition timing (Phaladeepika Adh. 22)
+# ───────────────────────────────────────────────────────────────
+
+_VALID_PLANETS = {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"}
+
+
+def _extract_yoga_planets(rules: Dict[str, Any], asc: str) -> List[str]:
+    """Extract key planet names from a yoga rule dict given ascendant sign."""
+    found: List[str] = []
+    rtype = rules.get("type", "")
+
+    if rtype in ("AND", "OR"):
+        for c in rules.get("conditions", []):
+            found.extend(_extract_yoga_planets(c, asc))
+    elif rtype == "NOT":
+        found.extend(_extract_yoga_planets(rules.get("condition", {}), asc))
+    elif rtype in (
+        "planet_in_own_or_exaltation", "planet_in_houses", "planet_involved",
+        "planet_aspects_planet", "planet_aspects_house",
+    ):
+        p = rules.get("planet") or rules.get("source")
+        if p and p in _VALID_PLANETS:
+            found.append(p)
+    elif rtype == "planet_in_house_from_sun":
+        found.append("Sun")
+    elif rtype in (
+        "planet_in_house_from_moon", "no_planet_in_houses_from_moon",
+        "no_planet_in_kendra_from_moon", "count_benefics_in_houses_from_moon",
+    ):
+        found.append("Moon")
+    elif rtype in ("lord_of_house_in_houses", "lord_in_own_or_exaltation_in_houses"):
+        lo = rules.get("lord_of", 0)
+        if lo and asc:
+            lord = _lord_of_house(int(lo), asc)
+            if lord in _VALID_PLANETS:
+                found.append(lord)
+    elif rtype == "lords_conjunct_or_mutual":
+        for key in ("lord_a", "lord_b"):
+            lo = rules.get(key, 0)
+            if lo and asc:
+                lord = _lord_of_house(int(lo), asc)
+                if lord in _VALID_PLANETS:
+                    found.append(lord)
+
+    # Deduplicate preserving order
+    seen: set = set()
+    result = []
+    for p in found:
+        if p not in seen:
+            seen.add(p)
+            result.append(p)
+    return result
+
+
+_YOGA_KEY_INDEX: Optional[Dict[str, Dict[str, Any]]] = None
+
+
+def _yoga_rules_by_key() -> Dict[str, Dict[str, Any]]:
+    """Return a mapping of yoga key → raw yoga definition (with rules)."""
+    global _YOGA_KEY_INDEX
+    if _YOGA_KEY_INDEX is None:
+        _YOGA_KEY_INDEX = {y["key"]: y for y in load_yoga_rules()}
+    return _YOGA_KEY_INDEX
+
+
+def add_fruition_timing(yoga: Dict[str, Any], chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Augment a detected yoga entry with Phaladeepika Adh. 22 fruition timing.
+
+    Adds:
+      fruition_dashas  — list of planet names whose dasha activates this yoga
+      fruition_note_en — bilingual explanation of when the yoga will fructify
+      fruition_note_hi
+    """
+    asc = _asc_sign(chart_data)
+    key = yoga.get("key", "")
+    raw_yoga = _yoga_rules_by_key().get(key, {})
+    rules = raw_yoga.get("rules", {}) or {}
+    key_planets = _extract_yoga_planets(rules, asc)[:3]  # cap at 3 for readability
+
+    if not key_planets:
+        return {**yoga, "fruition_dashas": [], "fruition_note_en": "", "fruition_note_hi": ""}
+
+    planets_str_en = ", ".join(key_planets)
+    planets_str_hi = ", ".join(key_planets)
+    note_en = (
+        f"This yoga fructifies primarily during the Mahadasha/Antardasha of {planets_str_en}. "
+        f"Its results are also stimulated when these planets transit the Kendras or Trikonas "
+        f"from the natal Moon (Phaladeepika Adh. 22)."
+    )
+    note_hi = (
+        f"यह योग मुख्यतः {planets_str_hi} की महादशा/अंतर्दशा में फल देता है। "
+        f"जब ये ग्रह जन्म-चंद्र से केंद्र या त्रिकोण में गोचर करें, तब भी इसके फल जागृत होते हैं "
+        f"(फलदीपिका अ. 22)।"
+    )
+    return {
+        **yoga,
+        "fruition_dashas": key_planets,
+        "fruition_note_en": note_en,
+        "fruition_note_hi": note_hi,
+    }
+
+
+def detect_yogas_with_timing(
+    chart_data: Dict[str, Any],
+    category_filter: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Detect all yogas and augment each with fruition timing per Phaladeepika Adh. 22."""
+    return [
+        add_fruition_timing(y, chart_data)
+        for y in detect_all_yogas(chart_data, category_filter)
+    ]

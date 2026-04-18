@@ -570,7 +570,7 @@ export default function MonthlyCalendarTab({ language, t, latitude, longitude }:
               <div className="space-y-2">
                 <div className="text-center pb-2 border-b border">
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(t('auto.enUS'), {
+                    {new Date(selectedDay.date + 'T00:00:00').toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', {
                       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </p>

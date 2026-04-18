@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
     >
       <span className={language === 'en' ? 'text-sacred-gold' : 'text-muted-foreground'}>EN</span>
       <span className="text-foreground">/</span>
-      <span className={t('auto.textCosmicTextSecond')}>हिं</span>
+      <span className={language === 'hi' ? 'text-sacred-gold' : 'text-muted-foreground'}>हिं</span>
     </button>
   );
 }

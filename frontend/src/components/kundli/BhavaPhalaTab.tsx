@@ -10,6 +10,8 @@ interface PlanetPlacement {
   effect_en: string;
   effect_hi: string;
   sloka_ref: string;
+  sign_lord_modifier_en?: string;
+  sign_lord_modifier_hi?: string;
 }
 
 interface BhavaGeneral {
@@ -20,6 +22,8 @@ interface BhavaGeneral {
   general_hi: string;
   sloka_ref: string;
   status: 'strong' | 'weak' | 'neutral';
+  mooltrikona_note_en?: string;
+  mooltrikona_note_hi?: string;
 }
 
 interface ApiResponse {
@@ -134,6 +138,12 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
                     </span>
                   </div>
                   <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
+                  {(isHi ? pp.sign_lord_modifier_hi : pp.sign_lord_modifier_en) && (
+                    <div className="mb-3 p-2 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800 leading-relaxed">
+                      <span className="font-semibold">{isHi ? 'राशि-स्वामी प्रभाव: ' : 'Sign Lord Effect: '}</span>
+                      {isHi ? pp.sign_lord_modifier_hi : pp.sign_lord_modifier_en}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5 pt-2 border-t border-sacred-gold/20 text-[11px] text-muted-foreground">
                     <BookOpen className="w-3 h-3" />
                     <span className="italic">{pp.sloka_ref}</span>
@@ -178,6 +188,12 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
                   </span>
                 </div>
                 <p className="text-xs text-foreground/80 leading-relaxed mb-2">{general}</p>
+                {(isHi ? b.mooltrikona_note_hi : b.mooltrikona_note_en) && (
+                  <div className="mb-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-[10px] text-amber-800 leading-relaxed">
+                    <span className="font-semibold">{isHi ? 'मूलत्रिकोण: ' : 'Mooltrikona: '}</span>
+                    {isHi ? b.mooltrikona_note_hi : b.mooltrikona_note_en}
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5 pt-2 border-t border-current/10 text-[10px] text-muted-foreground">
                   <BookOpen className="w-3 h-3" />
                   <span className="italic">{b.sloka_ref}</span>

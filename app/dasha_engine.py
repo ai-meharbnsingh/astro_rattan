@@ -459,6 +459,31 @@ _DUSTHANAS = {6, 8, 12}
 _BENEFICS = {"Jupiter", "Venus", "Mercury", "Moon"}
 _MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
 
+_ZODIAC = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+_SPECIAL_ASPECTS: Dict[str, List[int]] = {
+    "Mars": [4, 8],
+    "Jupiter": [5, 9],
+    "Saturn": [3, 10],
+    "Rahu": [5, 9],
+    "Ketu": [5, 9],
+}
+_HOUSE_AREAS_EN: Dict[int, str] = {
+    1: "self/health/identity", 2: "wealth/family/speech", 3: "courage/siblings/travel",
+    4: "home/mother/comfort", 5: "children/creativity/education", 6: "enemies/debts/disease",
+    7: "marriage/partnerships", 8: "longevity/transformation/inheritance",
+    9: "fortune/father/dharma", 10: "career/status/authority",
+    11: "gains/social network/desires", 12: "losses/expenses/liberation",
+}
+_HOUSE_AREAS_HI: Dict[int, str] = {
+    1: "स्व/स्वास्थ्य", 2: "धन/परिवार", 3: "पराक्रम/भाई",
+    4: "गृह/माता", 5: "संतान/शिक्षा", 6: "शत्रु/ऋण/रोग",
+    7: "विवाह/साझेदारी", 8: "आयु/परिवर्तन", 9: "भाग्य/पिता/धर्म",
+    10: "कर्म/प्रतिष्ठा", 11: "लाभ/इच्छापूर्ति", 12: "व्यय/मोक्ष",
+}
+
 _DASHA_PHALA_CACHE: Optional[Dict[str, Any]] = None
 
 
@@ -541,6 +566,35 @@ def _assess_planet_strength(planet: str, chart_data: dict) -> Dict[str, Any]:
     return {"strength": strength, "factors": factors, "info": info}
 
 
+def _houses_for_planet(planet: str, chart_data: dict) -> Dict[str, Any]:
+    """Return owned, occupied, and aspected house numbers for a dasha planet."""
+    asc_sign = str(((chart_data or {}).get("ascendant") or {}).get("sign", "") or "")
+    info = _planet_info(planet, chart_data)
+    occupied_house = info["house"]
+
+    owned_houses: List[int] = []
+    if asc_sign in _ZODIAC:
+        asc_idx = _ZODIAC.index(asc_sign)
+        for sign, lord in _SIGN_LORD.items():
+            if lord == planet:
+                sign_idx = _ZODIAC.index(sign)
+                owned_houses.append(((sign_idx - asc_idx) % 12) + 1)
+        owned_houses = sorted(set(owned_houses))
+
+    aspected_houses: List[int] = []
+    if 1 <= occupied_house <= 12:
+        offsets = [7] + list(_SPECIAL_ASPECTS.get(planet, []))
+        for n in offsets:
+            aspected_houses.append(((occupied_house - 1 + (n - 1)) % 12) + 1)
+        aspected_houses = sorted(set(aspected_houses))
+
+    return {
+        "owned_houses": owned_houses,
+        "occupied_house": occupied_house,
+        "aspected_houses": aspected_houses,
+    }
+
+
 def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     """
     Synthesize the classical effect of a mahadasha per Phaladeepika Adh. 20.
@@ -583,6 +637,32 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         effect_en = entry.get("general_en", "")
         effect_hi = entry.get("general_hi", "")
 
+    # P1 #13: House synthesis — dasha planet delivers results of owned + occupied + aspected houses
+    # (Phaladeepika Adh. 20: phalaṃ dadyāt svakṣetrasthāna-dṛṣṭa-bhavānāṃ)
+    h_info = _houses_for_planet(planet, chart_data or {})
+    all_activated = sorted(set(
+        h_info["owned_houses"]
+        + ([h_info["occupied_house"]] if h_info["occupied_house"] else [])
+        + h_info["aspected_houses"]
+    ))
+    activated_descs_en = [f"H{h} ({_HOUSE_AREAS_EN.get(h, '')})" for h in all_activated]
+    activated_descs_hi = [f"भाव {h} ({_HOUSE_AREAS_HI.get(h, '')})" for h in all_activated]
+    owned_str = ", ".join(f"H{h}" for h in h_info["owned_houses"]) or "none"
+    owned_str_hi = ", ".join(f"भाव {h}" for h in h_info["owned_houses"]) or "कोई नहीं"
+    asp_str = ", ".join(str(h) for h in h_info["aspected_houses"]) or "none"
+    asp_str_hi = ", ".join(str(h) for h in h_info["aspected_houses"]) or "कोई नहीं"
+
+    house_synthesis_en = (
+        f"During {planet}'s Mahadasha, life areas activated: {', '.join(activated_descs_en)}. "
+        f"{planet} owns {owned_str}, occupies H{h_info['occupied_house'] or '?'}, "
+        f"and aspects houses {asp_str} (Phaladeepika Adh. 20)."
+    )
+    house_synthesis_hi = (
+        f"{planet} की महादशा में सक्रिय क्षेत्र: {', '.join(activated_descs_hi)}। "
+        f"{planet} {owned_str_hi} का स्वामी है, भाव {h_info['occupied_house'] or '?'} में स्थित है, "
+        f"तथा भाव {asp_str_hi} पर दृष्टि डालता है (फलदीपिका अ. 20)।"
+    )
+
     return {
         "planet": planet,
         "strength": strength,
@@ -596,6 +676,11 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         "when_weak_en": entry.get("when_weak_en", ""),
         "when_weak_hi": entry.get("when_weak_hi", ""),
         "sloka_ref": entry.get("sloka_ref", ""),
+        "owned_houses": h_info["owned_houses"],
+        "occupied_house": h_info["occupied_house"],
+        "aspected_houses": h_info["aspected_houses"],
+        "house_synthesis_en": house_synthesis_en,
+        "house_synthesis_hi": house_synthesis_hi,
     }
 
 
@@ -684,6 +769,69 @@ def analyze_antardasha_phala(
     else:
         severity = "mixed"
 
+    # P0-6: Combined synthesis — MD lord × AD lord blended narrative
+    # (Phaladeepika Adh. 20-21: a planet gives results of its owned + occupied + aspected houses
+    # during its period; the antardasha lord modifies that through its own chart placement.)
+    md_strength = md_assess["strength"]
+    bk_strength = bk_assess["strength"]
+    md_sign = md_assess["info"].get("sign", "")
+    bk_sign = bk_assess["info"].get("sign", "")
+    md_house = md_assess["info"].get("house", 0)
+    bk_house = bk_assess["info"].get("house", 0)
+
+    # Build combined synthesis from MD general effect + AD specific effect
+    md_data = _load_dasha_phala().get("mahadasha_effects", {}).get(mahadasha_lord, {})
+    md_general = md_data.get("general_en", "") if md_strength == "neutral" else (
+        md_data.get("when_strong_en", "") if md_strength == "strong" else md_data.get("when_weak_en", "")
+    )
+    ad_effect = entry.get("effect_en", "")
+
+    md_qualifier = (
+        f"a strong {mahadasha_lord} (in {md_sign}, house {md_house})"
+        if md_strength == "strong" else
+        f"a weakened {mahadasha_lord} (in {md_sign}, house {md_house})"
+        if md_strength == "weak" else
+        f"{mahadasha_lord} (in {md_sign}, house {md_house})"
+    )
+    bk_qualifier = (
+        f"a strong {bhukti_lord} (in {bk_sign}, house {bk_house})"
+        if bk_strength == "strong" else
+        f"a weakened {bhukti_lord} (in {bk_sign}, house {bk_house})"
+        if bk_strength == "weak" else
+        f"{bhukti_lord} (in {bk_sign}, house {bk_house})"
+    )
+    combined_en = (
+        f"During {md_qualifier}'s Mahadasha: {md_general} "
+        f"Within this, {bk_qualifier}'s Antardasha produces: {ad_effect} "
+        f"Overall outlook: {severity.upper()}."
+    ).strip()
+
+    # Hindi synthesis
+    md_data_hi = md_data.get("general_hi", "") if md_strength == "neutral" else (
+        md_data.get("when_strong_hi", "") if md_strength == "strong" else md_data.get("when_weak_hi", "")
+    )
+    ad_effect_hi = entry.get("effect_hi", "")
+    md_qualifier_hi = (
+        f"बलवान {mahadasha_lord} ({md_sign}, भाव {md_house})"
+        if md_strength == "strong" else
+        f"दुर्बल {mahadasha_lord} ({md_sign}, भाव {md_house})"
+        if md_strength == "weak" else
+        f"{mahadasha_lord} ({md_sign}, भाव {md_house})"
+    )
+    bk_qualifier_hi = (
+        f"बलवान {bhukti_lord} ({bk_sign}, भाव {bk_house})"
+        if bk_strength == "strong" else
+        f"दुर्बल {bhukti_lord} ({bk_sign}, भाव {bk_house})"
+        if bk_strength == "weak" else
+        f"{bhukti_lord} ({bk_sign}, भाव {bk_house})"
+    )
+    severity_hi = {"favorable": "शुभ", "challenging": "कठिन", "mixed": "मिश्रित"}.get(severity, severity)
+    combined_hi = (
+        f"{md_qualifier_hi} की महादशा में: {md_data_hi} "
+        f"इसके भीतर {bk_qualifier_hi} की अंतर्दशा: {ad_effect_hi} "
+        f"समग्र दृष्टिकोण: {severity_hi}।"
+    ).strip()
+
     return {
         "mahadasha": mahadasha_lord,
         "bhukti": bhukti_lord,
@@ -693,6 +841,8 @@ def analyze_antardasha_phala(
         "severity": severity,
         "severity_factors": factors,
         "base_nature": base,
+        "combined_synthesis_en": combined_en,
+        "combined_synthesis_hi": combined_hi,
     }
 
 

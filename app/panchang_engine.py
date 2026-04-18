@@ -235,7 +235,98 @@ YOGAS: List[str] = [
     "Indra", "Vaidhriti",
 ]
 
+YOGA_INTERPRETATIONS: List[Dict[str, str]] = [
+    {"en": "Obstacle-causing, avoid new starts. Inauspicious.", "hi": "बाधाएँ उत्पन्न करने वाला, नए कार्यों से बचें। अशुभ।"},
+    {"en": "Love and affection, good for social ceremonies.", "hi": "प्रेम और स्नेह, सामाजिक समारोहों के लिए उत्तम।"},
+    {"en": "Longevity, good for health and longevity rites.", "hi": "दीर्घायु, स्वास्थ्य और आयुष्य कर्मों के लिए शुभ।"},
+    {"en": "Good fortune, excellent for auspicious work.", "hi": "सौभाग्य, शुभ कार्यों के लिए उत्तम।"},
+    {"en": "Splendor, very auspicious for all ceremonies.", "hi": "तेज, सभी समारोहों के लिए अत्यंत शुभ।"},
+    {"en": "Great danger, avoid important beginnings.", "hi": "महान खतरा, महत्वपूर्ण प्रारंभ से बचें।"},
+    {"en": "Good deeds, auspicious for virtuous acts.", "hi": "शुभ कर्म, पुण्य कार्यों के लिए शुभ।"},
+    {"en": "Steadfastness, good for fixed/immovable works.", "hi": "दृढ़ता, स्थिर और अचल कार्यों के लिए शुभ।"},
+    {"en": "Pain/thorn, inauspicious, avoid travel and new starts.", "hi": "पीड़ा/कांटा, अशुभ, यात्रा और नए प्रारंभ से बचें।"},
+    {"en": "Danger, inauspicious for all ceremonies.", "hi": "खतरा, सभी समारोहों के लिए अशुभ।"},
+    {"en": "Growth, good for business and expansion.", "hi": "वृद्धि, व्यापार और विस्तार के लिए शुभ।"},
+    {"en": "Fixed/constant, excellent for permanent works.", "hi": "स्थिर/निश्चल, स्थायी कार्यों के लिए उत्तम।"},
+    {"en": "Obstruction, avoid new beginnings.", "hi": "बाधा, नए प्रारंभ से बचें।"},
+    {"en": "Joy, auspicious for celebrations and social events.", "hi": "आनंद, उत्सवों और सामाजिक कार्यक्रमों के लिए शुभ।"},
+    {"en": "Thunderbolt, mixed — good for aggressive acts, bad for gentle ceremonies.", "hi": "वज्र, मिश्र — आक्रामक कार्यों के लिए शुभ, कोमल समारोहों के लिए अशुभ।"},
+    {"en": "Success, very auspicious for all work.", "hi": "सफलता, सभी कार्यों के लिए अत्यंत शुभ।"},
+    {"en": "Calamity, EXTREMELY inauspicious — blocks ALL activity.", "hi": "आपदा, अत्यंत अशुभ — सभी गतिविधियाँ रुक जाती हैं।"},
+    {"en": "Luxury/comfort, good for enjoyment, not for austerity.", "hi": "विलास/आराम, भोग के लिए शुभ, तपस्या के लिए नहीं।"},
+    {"en": "Obstacle, inauspicious for new beginnings.", "hi": "बाधा, नए प्रारंभ के लिए अशुभ।"},
+    {"en": "Auspicious, excellent for spiritual and auspicious work.", "hi": "शुभ, आध्यात्मिक और शुभ कार्यों के लिए उत्तम।"},
+    {"en": "Accomplished, very favorable for all activities.", "hi": "सिद्ध, सभी गतिविधियों के लिए अत्यंत अनुकूल।"},
+    {"en": "Achievable, good for efforts and endeavors.", "hi": "साध्य, प्रयासों और उद्यमों के लिए शुभ।"},
+    {"en": "Auspicious, favorable for all ceremonies.", "hi": "शुभ, सभी समारोहों के लिए अनुकूल।"},
+    {"en": "Bright/pure, excellent for all auspicious work.", "hi": "शुद्ध/स्वच्छ, सभी शुभ कार्यों के लिए उत्तम।"},
+    {"en": "Creator, very auspicious for sacred ceremonies.", "hi": "सृष्टिकर्ता, पवित्र समारोहों के लिए अत्यंत शुभ।"},
+    {"en": "Lord of gods, highly auspicious for all work.", "hi": "देवताओं के स्वामी, सभी कार्यों के लिए अत्यंत शुभ।"},
+    {"en": "Unsupported, EXTREMELY inauspicious — blocks ALL activity.", "hi": "असहाय/अनावृत, अत्यंत अशुभ — सभी गतिविधियाँ रुक जाती हैं।"},
+]
+
 YOGA_SPAN = 360.0 / 27.0  # ~13.3333 degrees
+
+# ============================================================
+# CHANDRABALAM — Classical fruit per house from birth Moon
+# ============================================================
+_CHANDRABALAM_TEXT: List[Dict[str, str]] = [
+    # Index 0 = House 1
+    {"en": "Indifferent — neither strong gain nor loss. Maintain status quo.", "hi": "उदासीन — न लाभ न हानि। स्थिति बनाए रखें।"},
+    {"en": "Wealth loss possible — avoid major financial decisions.", "hi": "धन हानि संभव — बड़े वित्तीय निर्णय टालें।"},
+    {"en": "Gain and courage — good for enterprise and effort.", "hi": "लाभ और साहस — उद्यम और परिश्रम के लिए शुभ।"},
+    {"en": "Anxiety and discomfort — mental stress, postpone important work.", "hi": "चिंता और असुविधा — मानसिक तनाव, महत्वपूर्ण कार्य टालें।"},
+    {"en": "Mixed results — some pleasure but instability.", "hi": "मिश्र परिणाम — कुछ सुख पर अस्थिरता।"},
+    {"en": "Victory over enemies — good for competition and health recovery.", "hi": "शत्रु पर विजय — प्रतिस्पर्धा और स्वास्थ्य लाभ के लिए शुभ।"},
+    {"en": "Good for relationships and partnerships — auspicious.", "hi": "संबंधों और साझेदारी के लिए अच्छा — शुभ।"},
+    {"en": "Danger and physical weakness — worst position. Avoid all new starts.", "hi": "खतरा और शारीरिक कमजोरी — सबसे खराब स्थिति। नए कार्य वर्जित।"},
+    {"en": "Mixed — spiritual growth good, material matters uncertain.", "hi": "मिश्र — आध्यात्मिक विकास अच्छा, भौतिक मामले अनिश्चित।"},
+    {"en": "Success in work and career — excellent for professional efforts.", "hi": "कार्य और करियर में सफलता — पेशेवर प्रयासों के लिए उत्तम।"},
+    {"en": "Gain of wealth and fulfillment — best position for gains.", "hi": "धन लाभ और पूर्ति — लाभ के लिए सर्वोत्तम स्थिति।"},
+    {"en": "Loss and expenses — avoid commitments, rest instead.", "hi": "हानि और व्यय — प्रतिबद्धताएँ टालें, विश्राम करें।"},
+]
+
+# ============================================================
+# TARA BALAM — Classical interpretation per tara position
+# ============================================================
+_TARA_BALAM_TEXT: Dict[str, Dict[str, str]] = {
+    "Janma": {
+        "en": "Danger to body, worry, mental stress. Avoid major beginnings.",
+        "hi": "शरीर को खतरा, चिंता, मानसिक तनाव। बड़े प्रारंभ से बचें।",
+    },
+    "Sampat": {
+        "en": "Wealth and prosperity. Excellent for financial activities.",
+        "hi": "धन और समृद्धि। वित्तीय गतिविधियों के लिए उत्तम।",
+    },
+    "Vipat": {
+        "en": "Dangers, losses, accidents, disputes. Highly inauspicious.",
+        "hi": "खतरे, हानि, दुर्घटना, विवाद। अत्यंत अशुभ।",
+    },
+    "Kshema": {
+        "en": "Prosperity, well-being, gains in business. Very favorable.",
+        "hi": "समृद्धि, कल्याण, व्यापार में लाभ। अत्यंत अनुकूल।",
+    },
+    "Pratyari": {
+        "en": "Obstacles, harm to work, opposition. Proceed with caution.",
+        "hi": "बाधाएँ, कार्य को हानि, विरोध। सावधानी से आगे बढ़ें।",
+    },
+    "Sadhaka": {
+        "en": "Realization of ambitions, happiness, achievement. Auspicious.",
+        "hi": "महत्वाकांक्षाओं की पूर्ति, सुख, सफलता। शुभ।",
+    },
+    "Vadha": {
+        "en": "Destruction, monetary loss, dangers. Avoid all new work.",
+        "hi": "विनाश, धन हानि, खतरे। सभी नए कार्य वर्जित।",
+    },
+    "Mitra": {
+        "en": "Friendship, good happiness, harmony. Favorable for all.",
+        "hi": "मित्रता, सुख, सामंजस्य। सभी के लिए अनुकूल।",
+    },
+    "Ati-Mitra": {
+        "en": "Great friend, very favorable, excellent for all beginnings.",
+        "hi": "परम मित्र, अत्यंत अनुकूल, सभी प्रारंभों के लिए उत्तम।",
+    },
+}
 
 # ============================================================
 # KARANAS -- 11 karana types (cycle: 7 repeating + 4 fixed)
@@ -1149,6 +1240,106 @@ def _nakshatra_category_fields(nak_name: str) -> Dict[str, str]:
     }
 
 
+# ============================================================
+# PANCHANGA SHUDDHI — Composite day-quality score
+# ============================================================
+
+_GOOD_TITHIS = {2, 3, 5, 7, 10, 11, 12, 13}
+_BAD_TITHIS = {4, 6, 8, 9, 14}
+_BAD_NAKSHATRAS = {"Bharani", "Krittika", "Ardra", "Ashlesha", "Jyeshtha", "Mula", "Purva Ashadha", "Purva Bhadrapada"}
+_GOOD_NAKSHATRAS = {"Rohini", "Pushya", "Uttara Phalguni", "Hasta", "Swati", "Anuradha", "Uttara Ashadha", "Shravana", "Revati", "Uttara Bhadrapada"}
+_BAD_KARANAS = {"Vishti", "Shakuni", "Chatushpada", "Naga"}
+
+
+def _compute_panchanga_shuddhi(
+    tithi_index: int,
+    paksha: str,
+    weekday: int,
+    yoga_number: int,
+    karana_name: str,
+    nakshatra_name: str,
+) -> Dict[str, Any]:
+    """Compute Panchanga Shuddhi — composite score of day quality.
+
+    Scores each of the 5 limbs (tithi, vara, nakshatra, yoga, karana)
+    and returns a composite 0-100 score with a qualitative label.
+    """
+    # 1. Tithi score (0-20)
+    norm_t = tithi_index if tithi_index <= 15 else tithi_index - 15
+    if norm_t in _GOOD_TITHIS:
+        tithi_score = 20
+    elif norm_t in _BAD_TITHIS:
+        tithi_score = 0
+    elif norm_t == 15:
+        tithi_score = 10  # Purnima — mixed
+    else:
+        tithi_score = 5  # Pratipada/amavasya — weak
+    if paksha.lower() == "krishna" and norm_t in _BAD_TITHIS:
+        tithi_score = max(0, tithi_score - 5)
+
+    # 2. Vara score (0-20)
+    if weekday in {3, 4}:  # Wed, Thu
+        vara_score = 20
+    elif weekday in {0, 1, 5}:  # Sun, Mon, Fri
+        vara_score = 15
+    elif weekday == 6:  # Sat
+        vara_score = 5
+    else:  # Tue
+        vara_score = 0
+
+    # 3. Nakshatra score (0-20)
+    if nakshatra_name in _GOOD_NAKSHATRAS:
+        nak_score = 20
+    elif nakshatra_name in _BAD_NAKSHATRAS:
+        nak_score = 0
+    else:
+        nak_score = 10
+
+    # 4. Yoga score (0-20)
+    if yoga_number in {17, 27}:  # Vyatipata, Vaidhriti
+        yoga_score = 0
+    elif yoga_number in {1, 6, 9, 10, 13, 19, 24}:  # Other bad yogas
+        yoga_score = 5
+    elif yoga_number in {16, 20, 21, 22, 23, 25, 26}:  # Excellent yogas
+        yoga_score = 20
+    else:
+        yoga_score = 15
+
+    # 5. Karana score (0-20)
+    if karana_name in _BAD_KARANAS:
+        karana_score = 0
+    elif karana_name == "Kimstughna":
+        karana_score = 5
+    else:
+        karana_score = 20
+
+    total = tithi_score + vara_score + nak_score + yoga_score + karana_score
+
+    if total >= 85:
+        label, label_hindi = "Excellent", "उत्तम"
+    elif total >= 70:
+        label, label_hindi = "Good", "शुभ"
+    elif total >= 50:
+        label, label_hindi = "Average", "सामान्य"
+    elif total >= 30:
+        label, label_hindi = "Weak", "कमज़ोर"
+    else:
+        label, label_hindi = "Inauspicious", "अशुभ"
+
+    return {
+        "score": total,
+        "label": label,
+        "label_hindi": label_hindi,
+        "breakdown": {
+            "tithi": tithi_score,
+            "vara": vara_score,
+            "nakshatra": nak_score,
+            "yoga": yoga_score,
+            "karana": karana_score,
+        },
+    }
+
+
 # PUBLIC: calculate_panchang (ENHANCED)
 # ============================================================
 
@@ -1311,17 +1502,40 @@ def calculate_panchang(
     day_lord_idx = [3, 6, 2, 5, 1, 4, 0][weekday]
     hora_duration_day = dinamana_mins / 12
     hora_duration_night = ratrimana_mins / 12
+    HORA_GUIDE = {
+        "Sun": {"best_for": ["Government work", "Authority matters"], "best_for_hindi": "सरकारी कार्य, अधिकार संबंधी"},
+        "Moon": {"best_for": ["Travel", "Agriculture", "Art"], "best_for_hindi": "यात्रा, कृषि, कला"},
+        "Mars": {"best_for": ["Surgery", "Property", "Competition"], "best_for_hindi": "शल्य चिकित्सा, संपत्ति, प्रतिस्पर्धा"},
+        "Mercury": {"best_for": ["Business", "Education", "Commerce"], "best_for_hindi": "व्यापार, शिक्षा, वाणिज्य"},
+        "Jupiter": {"best_for": ["Marriage", "Spiritual", "Teaching"], "best_for_hindi": "विवाह, आध्यात्मिक, शिक्षण"},
+        "Venus": {"best_for": ["Marriage", "Art", "Luxury purchases"], "best_for_hindi": "विवाह, कला, विलासी खरीदारी"},
+        "Saturn": {"best_for": ["Property dealing", "Iron/oil work"], "best_for_hindi": "संपत्ति, लोहा/तेल कार्य", "avoid_for": ["New beginnings", "Marriage"]},
+    }
     hora_table = []
     for i in range(12):
         lord = hora_sequence_day[(day_lord_idx + i) % 7]
         start = _minutes_to_time(sunrise_mins + i * hora_duration_day)
         end = _minutes_to_time(sunrise_mins + (i + 1) * hora_duration_day)
-        hora_table.append({"hora": i + 1, "lord": lord, "start": start, "end": end, "type": "day"})
+        guide = HORA_GUIDE.get(lord, {})
+        activity_guide = {
+            "best_for": guide.get("best_for", []),
+            "best_for_hindi": guide.get("best_for_hindi", ""),
+        }
+        if "avoid_for" in guide:
+            activity_guide["avoid_for"] = guide["avoid_for"]
+        hora_table.append({"hora": i + 1, "lord": lord, "start": start, "end": end, "type": "day", "activity_guide": activity_guide})
     for i in range(12):
         lord = hora_sequence_day[(day_lord_idx + 12 + i) % 7]
         start = _minutes_to_time(sunset_mins + i * hora_duration_night)
         end = _minutes_to_time(sunset_mins + (i + 1) * hora_duration_night)
-        hora_table.append({"hora": i + 13, "lord": lord, "start": start, "end": end, "type": "night"})
+        guide = HORA_GUIDE.get(lord, {})
+        activity_guide = {
+            "best_for": guide.get("best_for", []),
+            "best_for_hindi": guide.get("best_for_hindi", ""),
+        }
+        if "avoid_for" in guide:
+            activity_guide["avoid_for"] = guide["avoid_for"]
+        hora_table.append({"hora": i + 13, "lord": lord, "start": start, "end": end, "type": "night", "activity_guide": activity_guide})
 
     # 23. Lagna Table (Udaya Lagna — rising sign changes through the day)
     # Calculate proper Ascendant using sidereal time (NOT Sun position)
@@ -1411,11 +1625,30 @@ def calculate_panchang(
             end_offset = 24 * 60  # full 24h
         start_str = _minutes_to_time((sunrise_mins + start_offset) % 1440)
         end_str = _minutes_to_time((sunrise_mins + end_offset) % 1440)
+
+        # Compute ascendant degree at midpoint for Ganda/Sandhi warning
+        mid_offset = (start_offset + end_offset) / 2
+        mid_jd = jd_sunrise + (mid_offset / 1440.0)
+        try:
+            mid_asc = _compute_ascendant(mid_jd, latitude, longitude)
+            mid_degree = round(mid_asc.get("longitude", 0) % 30, 1)
+        except Exception:
+            mid_degree = 15.0  # fallback: middle of sign
+
+        # Ganda = first 3°20' (3.333°), Sandhi = last 3°20' (26.667°)
+        ganda_sandhi = None
+        if mid_degree < 3.333:
+            ganda_sandhi = "ganda"
+        elif mid_degree > 26.667:
+            ganda_sandhi = "sandhi"
+
         lagna_table.append({
             "lagna": _RASHI_NAMES[sign_idx],
             "lagna_hindi": _RASHI_NAMES_HINDI[sign_idx],
             "start": start_str,
             "end": end_str,
+            "degree": mid_degree,
+            "ganda_sandhi": ganda_sandhi,
         })
 
     # 24. Chandrabalam (Moon strength for each Rashi)
@@ -1424,11 +1657,13 @@ def calculate_panchang(
     for i in range(12):
         house_from_moon = ((i - moon_rashi_idx) % 12) + 1
         good = house_from_moon in [1, 3, 6, 7, 10, 11]
+        cb_text = _CHANDRABALAM_TEXT[house_from_moon - 1]
         chandrabalam.append({
             "rashi": _RASHI_NAMES[i],
             "house_from_moon": house_from_moon,
             "balam": "Shubh" if good else "Ashubh",
             "good": good,
+            "interpretation": cb_text,
         })
 
     # 25. Tarabalam (Star strength for each Nakshatra)
@@ -1440,11 +1675,13 @@ def calculate_panchang(
         tara_num = ((i - moon_nak_idx) % 9)
         tara_name = tara_names[tara_num]
         good = tara_name in ["Sampat", "Kshema", "Sadhaka", "Mitra", "Ati-Mitra"]
+        tara_text = _TARA_BALAM_TEXT.get(tara_name, {"en": "", "hi": ""})
         tarabalam.append({
             "nakshatra": _ALL_NAKS[i]["name"] if i < len(_ALL_NAKS) else f"Nak-{i+1}",
             "tara": tara_name,
             "tara_number": tara_num + 1,
             "good": good,
+            "interpretation": tara_text,
         })
 
     # 26. Gowri Panchangam (8 periods, day + night)
@@ -1494,6 +1731,11 @@ def calculate_panchang(
     is_panchaka = moon_nak_idx in panchaka_nakshatras
     panchaka = {"active": is_panchaka, "rahita": not is_panchaka}
 
+    # 29. Panchanga Shuddhi — composite day-quality score (0-100)
+    panchanga_shuddhi = _compute_panchanga_shuddhi(
+        tithi_index, tithi["paksha"], weekday, yoga_index + 1, karana_name, nakshatra.get("name", "")
+    )
+
     return {
         # Original contract keys
         "tithi": {
@@ -1517,6 +1759,7 @@ def calculate_panchang(
             "next": next_yoga_name,
             "auspicious": (yoga_index + 1) not in _BAD_YOGA_NUMBERS,
             "quality": "bad" if (yoga_index + 1) in _BAD_YOGA_NUMBERS else "good",
+            "interpretation": YOGA_INTERPRETATIONS[yoga_index],
         },
         "karana": {
             "name": karana_name,
@@ -1571,18 +1814,22 @@ def calculate_panchang(
         "gowri_panchang": gowri_panchang,
         "do_ghati_muhurta": do_ghati,
         "panchaka": panchaka,
+        "panchanga_shuddhi": panchanga_shuddhi,
         # --- New modules (Wave 1) ---
         **_calculate_wave1_extras(weekday, tithi_index, tithi["name"],
                                   nakshatra.get("name", ""), nakshatra.get("index", 0),
                                   nakshatra_end, tithi_end, date, sunrise_str, sunset_str,
                                   hindu_calendar.get("vikram_samvat", 0),
-                                  jd_sunrise, ayanamsa),
+                                  jd_sunrise, ayanamsa,
+                                  hindu_calendar.get("maas", ""),
+                                  hindu_calendar.get("paksha", "")),
     }
 
 
 def _calculate_wave1_extras(
     weekday, tithi_index, tithi_name, nakshatra_name, nakshatra_index,
     nakshatra_end_time, tithi_end_time, date_str, sunrise, sunset, vikram_samvat, jd, ayanamsa,
+    hindu_month, paksha,
 ):
     """Integrate all new Wave 1 modules into panchang output."""
     result = {}
@@ -1590,8 +1837,9 @@ def _calculate_wave1_extras(
     # dt.weekday() returns 0=Monday, so convert: Sun=0 → (Mon_idx + 1) % 7
     weekday_sun = (weekday + 1) % 7
     try:
-        from app.panchang_yogas import calculate_all_special_yogas
+        from app.panchang_yogas import calculate_all_special_yogas, calculate_dagdha_nakshatra
         result["special_yogas"] = calculate_all_special_yogas(weekday_sun, tithi_index, nakshatra_name)
+        result["special_yogas"]["dagdha_nakshatra"] = calculate_dagdha_nakshatra(hindu_month, nakshatra_name)
     except Exception:
         result["special_yogas"] = {}
     try:
@@ -1636,4 +1884,9 @@ def _calculate_wave1_extras(
         )
     except Exception:
         result["samvat"] = {}
+    try:
+        from app.panchang_misc import calculate_chaturmasa
+        result["chaturmasa"] = calculate_chaturmasa(hindu_month, tithi_index, paksha)
+    except Exception:
+        result["chaturmasa"] = {}
     return result

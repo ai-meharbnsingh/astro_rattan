@@ -78,6 +78,81 @@ TRIPUSHKAR_NAKSHATRAS: List[str] = [
 ]
 
 # ============================================================
+# RAVI YOGA — Sun-ruled nakshatra on Sunday
+# ============================================================
+RAVI_NAKSHATRAS: List[str] = [
+    "Krittika", "Uttara Phalguni", "Uttara Ashadha",
+]
+
+# ============================================================
+# SIDDHI YOGA — Tithi category + Weekday combinations
+# (Muhurta Chintamani: Nanda/Bhadra/Jaya/Rikta/Purna tithis
+#  on specific weekday lords)
+# ============================================================
+SIDDHI_YOGA_TITHI_WEEKDAY: Dict[int, List[int]] = {
+    # weekday: list of favorable tithis (1-15)
+    0: [1, 6, 11],          # Sunday: Nanda tithis
+    1: [2, 7, 12],          # Monday: Bhadra tithis
+    2: [1, 3, 6, 8, 11, 13], # Tuesday: Nanda + Jaya
+    3: [2, 3, 7, 8, 12, 13], # Wednesday: Bhadra + Jaya
+    4: [4, 5, 9, 10, 14, 15], # Thursday: Rikta + Purna
+    5: [2, 7, 12],          # Friday: Bhadra tithis
+    6: [4, 5, 9, 10, 14, 15], # Saturday: Rikta + Purna
+}
+
+# ============================================================
+# TITHI-VARA DOSHA — Inauspicious tithi + weekday combinations
+# (Muhurta Chintamani, Shubhashubha Prakarana)
+# ============================================================
+# Each entry: weekday -> {dosha_name: tithi_or_list}
+TITHI_VARA_DOSHA: Dict[int, Dict[str, Any]] = {
+    0: {  # Sunday
+        "Dagdha": 12,
+        "Visha": 4,
+        "Hutasana": 12,
+        "Krakacha": 12,
+        "Samvartaka": 7,
+    },
+    1: {  # Monday
+        "Dagdha": 11,
+        "Visha": 6,
+        "Hutasana": 6,
+        "Krakacha": 11,
+    },
+    2: {  # Tuesday
+        "Dagdha": 5,
+        "Visha": 7,
+        "Hutasana": 7,
+        "Krakacha": 10,
+    },
+    3: {  # Wednesday
+        "Dagdha": [2, 3],
+        "Visha": 2,
+        "Hutasana": 8,
+        "Krakacha": 9,
+        "Samvartaka": 1,
+    },
+    4: {  # Thursday
+        "Dagdha": 6,
+        "Visha": 8,
+        "Hutasana": 9,
+        "Krakacha": 8,
+    },
+    5: {  # Friday
+        "Dagdha": 8,
+        "Visha": 9,
+        "Hutasana": 10,
+        "Krakacha": 7,
+    },
+    6: {  # Saturday
+        "Dagdha": 9,
+        "Visha": 7,
+        "Hutasana": 11,
+        "Krakacha": 6,
+    },
+}
+
+# ============================================================
 # GANDA MOOLA — Junction nakshatras
 # ============================================================
 GANDA_MOOLA_NAKSHATRAS: List[str] = [
@@ -88,6 +163,24 @@ GANDA_MOOLA_NAKSHATRAS: List[str] = [
     "Moola",      # First of Sagittarius group
     "Revati",     # Last of Pisces group
 ]
+
+# ============================================================
+# DAGDHA NAKSHATRA — Burned nakshatra per Hindu month
+# ============================================================
+DAGDHA_NAKSHATRA_BY_MONTH: Dict[str, List[str]] = {
+    "Chaitra": ["Bharani", "Krittika"],
+    "Vaishakha": ["Rohini", "Mrigashira"],
+    "Jyeshtha": ["Ardra", "Punarvasu"],
+    "Ashadha": ["Pushya", "Ashlesha"],
+    "Shravana": ["Magha", "Purva Phalguni"],
+    "Bhadrapada": ["Uttara Phalguni", "Hasta"],
+    "Ashwin": ["Chitra", "Swati"],
+    "Kartik": ["Vishakha", "Anuradha"],
+    "Margashirsha": ["Jyeshtha", "Mula"],
+    "Pausha": ["Purva Ashadha", "Uttara Ashadha"],
+    "Magha": ["Shravana", "Dhanishta"],
+    "Phalguna": ["Shatabhisha", "Purva Bhadrapada"],
+}
 
 
 # ============================================================
@@ -260,6 +353,122 @@ def calculate_ganda_moola(nakshatra_name: str) -> Dict[str, Any]:
     }
 
 
+def calculate_ravi_yoga(
+    weekday: int,
+    nakshatra_name: str,
+) -> Dict[str, Any]:
+    """Calculate Ravi Yoga.
+
+    Active when a Sun-ruled nakshatra (Krittika, Uttara Phalguni,
+    Uttara Ashadha) falls on Sunday.
+
+    Args:
+        weekday: 0=Sunday .. 6=Saturday
+        nakshatra_name: English nakshatra name
+
+    Returns:
+        dict with keys: active, name, name_hindi
+    """
+    active = weekday == 0 and nakshatra_name in RAVI_NAKSHATRAS
+    return {
+        "active": active,
+        "name": "Ravi Yoga",
+        "name_hindi": "रवि योग",
+    }
+
+
+def calculate_siddhi_yoga(
+    weekday: int,
+    tithi_index: int,
+) -> Dict[str, Any]:
+    """Calculate Siddhi Yoga (auspicious tithi + weekday combination).
+
+    Based on Muhurta Chintamani: specific tithi categories on
+    specific weekdays.
+
+    Args:
+        weekday: 0=Sunday .. 6=Saturday
+        tithi_index: 1-30
+
+    Returns:
+        dict with keys: active, name, name_hindi
+    """
+    norm_tithi = _normalise_tithi(tithi_index)
+    favorable = SIDDHI_YOGA_TITHI_WEEKDAY.get(weekday, [])
+    active = norm_tithi in favorable
+    return {
+        "active": active,
+        "name": "Siddhi Yoga",
+        "name_hindi": "सिद्धि योग",
+    }
+
+
+def calculate_tithi_vara_dosha(
+    weekday: int,
+    tithi_index: int,
+) -> Dict[str, Any]:
+    """Calculate all Tithi-Vara doshas for the day.
+
+    Returns a list of active inauspicious combinations
+    (Dagdha, Visha, Hutasana, Krakacha, Samvartaka).
+
+    Args:
+        weekday: 0=Sunday .. 6=Saturday
+        tithi_index: 1-30
+
+    Returns:
+        dict with keys: active_doshas (list), all_doshas (dict)
+    """
+    norm_tithi = _normalise_tithi(tithi_index)
+    dosha_map = TITHI_VARA_DOSHA.get(weekday, {})
+
+    active_doshas: List[Dict[str, Any]] = []
+    for name, tithis in dosha_map.items():
+        if isinstance(tithis, int):
+            tithis = [tithis]
+        if norm_tithi in tithis:
+            active_doshas.append({
+                "name": name,
+                "name_hindi": {
+                    "Dagdha": "दग्ध",
+                    "Visha": "विष",
+                    "Hutasana": "हुताशन",
+                    "Krakacha": "क्रकच",
+                    "Samvartaka": "संवर्तक",
+                }.get(name, name),
+                "tithi": norm_tithi,
+            })
+
+    return {
+        "active": len(active_doshas) > 0,
+        "active_doshas": active_doshas,
+        "name": "Tithi-Vara Dosha",
+        "name_hindi": "तिथि-वार दोष",
+    }
+
+
+def calculate_dagdha_nakshatra(hindu_month: str, nakshatra_name: str) -> Dict[str, Any]:
+    """Calculate Dagdha Nakshatra (burned nakshatra for the month).
+
+    Args:
+        hindu_month: English Hindu month name (e.g. "Chaitra")
+        nakshatra_name: English nakshatra name
+
+    Returns:
+        dict with keys: active, nakshatra, month, dagdha_list, name, name_hindi
+    """
+    dagdha_list = DAGDHA_NAKSHATRA_BY_MONTH.get(hindu_month, [])
+
+    return {
+        "active": nakshatra_name in dagdha_list,
+        "nakshatra": nakshatra_name,
+        "month": hindu_month,
+        "dagdha_list": dagdha_list,
+        "name": "Dagdha Nakshatra",
+        "name_hindi": "दग्ध नक्षत्र",
+    }
+
+
 # ============================================================
 # MASTER FUNCTION
 # ============================================================
@@ -278,7 +487,8 @@ def calculate_all_special_yogas(
 
     Returns:
         dict with keys: sarvartha_siddhi, amrit_siddhi,
-        dwipushkar, tripushkar, ganda_moola
+        dwipushkar, tripushkar, ganda_moola, ravi_yoga,
+        siddhi_yoga, tithi_vara_dosha
     """
     return {
         "sarvartha_siddhi": calculate_sarvartha_siddhi(weekday, tithi_index, nakshatra_name),
@@ -286,4 +496,7 @@ def calculate_all_special_yogas(
         "dwipushkar": calculate_dwipushkar(weekday, tithi_index, nakshatra_name),
         "tripushkar": calculate_tripushkar(weekday, tithi_index, nakshatra_name),
         "ganda_moola": calculate_ganda_moola(nakshatra_name),
+        "ravi_yoga": calculate_ravi_yoga(weekday, nakshatra_name),
+        "siddhi_yoga": calculate_siddhi_yoga(weekday, tithi_index),
+        "tithi_vara_dosha": calculate_tithi_vara_dosha(weekday, tithi_index),
     }
