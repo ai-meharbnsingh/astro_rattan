@@ -585,7 +585,7 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="yoga-dosha" className="min-h-[300px]">
-            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} doshaData={doshaData} loadingDosha={loadingDosha} language={language} t={t} />
+            <YogaDoshaTab yogaDoshaData={yogaDoshaData} loadingYogaDosha={loadingYogaDosha} doshaDisplay={doshaDisplay} doshaData={doshaData} loadingDosha={loadingDosha} language={language} t={t} kundliId={result?.id || ''} />
           </TabsContent>
 
           <TabsContent value="transits" className="min-h-[300px]">

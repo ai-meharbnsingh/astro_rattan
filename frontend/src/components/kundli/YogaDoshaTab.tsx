@@ -1,13 +1,16 @@
-import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, BookOpen, Star, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, BookOpen, Star, Clock, Sparkles } from 'lucide-react';
 import { translateName, translateLabel, translateRemedy, translateBackend, translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import { api } from '@/lib/api';
 
 interface YogaDoshaTabProps {
   yogaDoshaData: any;
   loadingYogaDosha: boolean;
   doshaDisplay?: { mangal: any; kaalsarp: any; sadesati: any } | null;
   doshaData?: any;
+  kundliId?: string;
   loadingDosha?: boolean;
   language: string;
   t: (key: string) => string;
@@ -37,7 +40,28 @@ function getNatureLabel(nature: string, hi: boolean): string {
   return nature === 'benefic' ? 'Benefic' : nature === 'malefic' ? 'Malefic' : 'Mixed';
 }
 
-export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDisplay, doshaData, loadingDosha, language, t }: YogaDoshaTabProps) {
+const NABHASA_CATEGORY_STYLE: Record<string, string> = {
+  Aashraya: 'bg-indigo-100 text-indigo-800',
+  Dala:     'bg-rose-100 text-rose-800',
+  Akriti:   'bg-amber-100 text-amber-800',
+  Sankhya:  'bg-teal-100 text-teal-800',
+};
+
+export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDisplay, doshaData, loadingDosha, language, t, kundliId }: YogaDoshaTabProps) {
+  const hi = language === 'hi';
+
+  const [mahaData, setMahaData] = useState<any>(null);
+  const [loadingMaha, setLoadingMaha] = useState(false);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    setLoadingMaha(true);
+    api.get(`/api/kundli/${kundliId}/maha-yogas`)
+      .then((res: any) => setMahaData(res.data ?? res))
+      .catch(() => setMahaData(null))
+      .finally(() => setLoadingMaha(false));
+  }, [kundliId]);
+
   if (loadingYogaDosha) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -58,8 +82,6 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
     );
   }
-
-  const hi = language === 'hi';
 
   // Group present yogas by category
   const presentYogas = (yogaDoshaData.yogas || []).filter((y: any) => y.present);
@@ -344,6 +366,107 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             </TableBody>
           </Table>
         </div>
+      </div>
+
+      {/* Nabhasa / Maha Yogas Section */}
+      <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-600" />
+            <Heading as={4} variant={4}>
+              {hi ? 'नभस योग (Nabhasa Yogas)' : 'Nabhasa Yogas (नभस योग)'}
+            </Heading>
+          </div>
+          {mahaData && (
+            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-800">
+              {mahaData.count} {hi ? 'योग' : 'yogas'}
+            </span>
+          )}
+        </div>
+
+        {loadingMaha ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+            <span className="ml-2 text-foreground text-sm">{hi ? 'नभस योग विश्लेषण...' : 'Analyzing Nabhasa yogas...'}</span>
+          </div>
+        ) : !mahaData ? (
+          <p className="text-center text-foreground text-sm py-4">
+            {hi ? 'नभस योग डेटा उपलब्ध नहीं।' : 'Nabhasa yoga data unavailable.'}
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {/* Summary banner */}
+            <div className="rounded-lg bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs text-indigo-800">
+              {hi ? mahaData.summary_hi : mahaData.summary_en}
+            </div>
+
+            {/* Group by category */}
+            {(() => {
+              const yogas: any[] = mahaData.detected || [];
+              if (yogas.length === 0) {
+                return <p className="text-center text-foreground text-sm py-2">{hi ? 'कोई नभस योग नहीं पाया गया।' : 'No Nabhasa yogas detected.'}</p>;
+              }
+              const catOrder = ['Aashraya', 'Dala', 'Akriti', 'Sankhya'];
+              const grouped: Record<string, any[]> = {};
+              for (const y of yogas) {
+                const c = y.category || 'Other';
+                if (!grouped[c]) grouped[c] = [];
+                grouped[c].push(y);
+              }
+              const cats = [...catOrder.filter(c => grouped[c]), ...Object.keys(grouped).filter(c => !catOrder.includes(c))];
+              return cats.map(cat => {
+                const items = grouped[cat];
+                if (!items || items.length === 0) return null;
+                const catStyle = NABHASA_CATEGORY_STYLE[cat] || 'bg-slate-100 text-slate-700';
+                return (
+                  <div key={cat}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${catStyle}`}>{cat}</span>
+                      <span className="text-xs text-muted-foreground">{items.length}</span>
+                      <div className="flex-1 border-t border-border/40" />
+                    </div>
+                    <div className="overflow-x-auto">
+                      <Table className="w-full text-xs">
+                        <TableHeader className="bg-muted/50">
+                          <TableRow>
+                            <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'योग' : 'Yoga'}</TableHead>
+                            <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'फल' : 'Effect'}</TableHead>
+                            <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'श्लोक संदर्भ' : 'Sloka Ref'}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {items.map((yoga: any, idx: number) => (
+                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
+                              <TableCell className="p-1.5 align-top">
+                                <p className="font-semibold text-foreground leading-tight">{yoga.name}</p>
+                                {yoga.count !== undefined && (
+                                  <span className="text-[10px] text-muted-foreground">{hi ? 'भाव' : 'Houses'}: {yoga.count}</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="p-1.5 align-top">
+                                <p className="text-foreground/90 leading-relaxed">{hi ? yoga.effect_hi : yoga.effect_en}</p>
+                              </TableCell>
+                              <TableCell className="p-1.5 align-top">
+                                {yoga.sloka_ref && (
+                                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                    <BookOpen className="w-3 h-3 shrink-0" />
+                                    <span className="italic">{yoga.sloka_ref}</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+
+            <p className="text-[10px] text-muted-foreground text-right italic">{mahaData.sloka_ref}</p>
+          </div>
+        )}
       </div>
     </div>
   );

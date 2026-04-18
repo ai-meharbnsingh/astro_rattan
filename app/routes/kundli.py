@@ -1431,11 +1431,29 @@ def get_longevity_indicators(
     """Nidhana-phala — longevity indicators + karmic transitions (Phaladeepika Adh. 17).
 
     Philosophically framed. Does NOT output specific death/age predictions.
+    Includes multi-signal Dasha+Lagna timing analysis when dasha data is available.
     """
     from app.nidhana_engine import analyze_longevity_indicators
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
-    result = analyze_longevity_indicators(chart)
+
+    # Resolve current dasha lords for multi-signal timing
+    mahadasha_lord = None
+    antardasha_lord = None
+    try:
+        planets = chart.get("planets", {})
+        moon = planets.get("Moon", {}) or {}
+        birth_nakshatra = moon.get("nakshatra", "")
+        moon_longitude = moon.get("longitude")
+        birth_date = str(row.get("birth_date", ""))
+        if birth_nakshatra and birth_date:
+            dasha_info = calculate_dasha(birth_nakshatra, birth_date, moon_longitude)
+            mahadasha_lord = dasha_info.get("current_dasha")
+            antardasha_lord = dasha_info.get("current_antardasha")
+    except Exception:
+        pass
+
+    result = analyze_longevity_indicators(chart, mahadasha_lord, antardasha_lord)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -2985,4 +3003,25 @@ def d108_analysis(
             detail="Calculation error — please try again",
         )
 
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Nabhasa / Maha Yogas — Phaladeepika Adhyaya 6
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/maha-yogas", status_code=status.HTTP_200_OK)
+def get_maha_yogas(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Nabhasa / Maha Yogas — Phaladeepika Adhyaya 6."""
+    from app.maha_yoga_engine import analyze_maha_yogas
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    result = analyze_maha_yogas(planets)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
     return result
