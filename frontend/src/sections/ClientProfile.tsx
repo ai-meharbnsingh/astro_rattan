@@ -12,6 +12,10 @@ interface Client {
   birth_date: string | null; birth_time: string | null; birth_place: string | null;
   latitude: number | null; longitude: number | null; timezone_offset: number | null;
   gender: string | null; notes: string | null; created_at: string;
+  // Sprint I — photo slots
+  profile_photo_url?: string | null;
+  left_hand_photo_url?: string | null;
+  right_hand_photo_url?: string | null;
 }
 
 interface KundliSummary {
@@ -247,6 +251,46 @@ export default function ClientProfile() {
           </div>
         )}
       </div>
+
+      {/* Sprint I — Photo slots (profile + left hand + right hand) */}
+      {isAstrologer && (
+        <div className="border border-sacred-gold rounded-lg p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-sacred-gold-dark" />
+              <Heading as={3} variant={6} className="uppercase tracking-wider">
+                {t('client.photos') || 'Photos'}
+              </Heading>
+            </div>
+            <span className="text-[11px] text-muted-foreground">
+              Profile · Left Hand · Right Hand (palmistry)
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <ClientPhotoSlot
+              clientId={client.id}
+              field="profile_photo_url"
+              label="Profile"
+              value={client.profile_photo_url ?? null}
+              onUpdate={(url) => setClient((prev) => prev ? { ...prev, profile_photo_url: url } : prev)}
+            />
+            <ClientPhotoSlot
+              clientId={client.id}
+              field="left_hand_photo_url"
+              label="Left Hand"
+              value={client.left_hand_photo_url ?? null}
+              onUpdate={(url) => setClient((prev) => prev ? { ...prev, left_hand_photo_url: url } : prev)}
+            />
+            <ClientPhotoSlot
+              clientId={client.id}
+              field="right_hand_photo_url"
+              label="Right Hand"
+              value={client.right_hand_photo_url ?? null}
+              onUpdate={(url) => setClient((prev) => prev ? { ...prev, right_hand_photo_url: url } : prev)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
@@ -521,6 +565,95 @@ export default function ClientProfile() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Sprint I — Client photo slot (profile + left/right hand).
+ *
+ * Encodes the file as a data URL client-side and PATCHes the
+ * /api/clients/{id} endpoint — no separate upload service needed.
+ * 2MB limit per image enforced.
+ */
+function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
+  clientId: string;
+  field: 'profile_photo_url' | 'left_hand_photo_url' | 'right_hand_photo_url';
+  label: string;
+  value: string | null;
+  onUpdate: (url: string) => void;
+}) {
+  const ref = (window as any)._phSlotRefs ??= {};
+  const slotKey = `${clientId}-${field}`;
+  const [uploading, setUploading] = useState(false);
+
+  const pick = async (file: File | null) => {
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File must be under 2MB');
+      return;
+    }
+    setUploading(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = String(reader.result ?? '');
+      try {
+        await api.patch(`/api/clients/${clientId}`, { [field]: dataUrl });
+        onUpdate(dataUrl);
+      } catch (e) {
+        console.error('Upload failed', e);
+      }
+      setUploading(false);
+    };
+    reader.onerror = () => setUploading(false);
+    reader.readAsDataURL(file);
+  };
+
+  const remove = async () => {
+    try {
+      await api.patch(`/api/clients/${clientId}`, { [field]: '' });
+      onUpdate('');
+    } catch (e) { console.error(e); }
+  };
+
+  return (
+    <div className="border-2 border-dashed border-sacred-gold/30 rounded-lg p-3 flex flex-col items-center gap-2">
+      <input
+        id={slotKey}
+        ref={(el) => { if (el) ref[slotKey] = el; }}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => pick(e.target.files?.[0] ?? null)}
+      />
+      {value ? (
+        <div className="relative">
+          <img src={value} alt={label} className="w-24 h-24 object-cover rounded-lg border border-sacred-gold/40" />
+          {uploading && (
+            <div className="absolute inset-0 rounded-lg bg-black/40 flex items-center justify-center">
+              <Loader2 className="w-5 h-5 animate-spin text-white" />
+            </div>
+          )}
+          <button
+            onClick={remove}
+            disabled={uploading}
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs disabled:opacity-50"
+            aria-label="Remove"
+          >
+            ×
+          </button>
+        </div>
+      ) : (
+        <div className="w-24 h-24 rounded-lg bg-sacred-gold/10 flex items-center justify-center">
+          {uploading ? <Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /> : <User className="w-8 h-8 text-sacred-gold/50" />}
+        </div>
+      )}
+      <div className="text-center">
+        <p className="text-xs font-semibold text-foreground">{label}</p>
+        <label htmlFor={slotKey} className="text-[11px] text-sacred-gold-dark hover:underline cursor-pointer">
+          {value ? 'Change' : 'Upload'}
+        </label>
+      </div>
     </div>
   );
 }

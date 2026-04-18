@@ -221,14 +221,23 @@ export default function AstrologerDashboard() {
               : 'Your clients, kundlis, consultations, and notes — all in one place.'}
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={refreshAll}
-          className="border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold/10"
-        >
-          <RefreshCw className="w-4 h-4 mr-1.5" />
-          {isHi ? 'रीफ्रेश' : 'Refresh'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={refreshAll}
+            className="border-sacred-gold text-sacred-gold-dark hover:bg-sacred-gold/10"
+          >
+            <RefreshCw className="w-4 h-4 mr-1.5" />
+            {isHi ? 'रीफ्रेश' : 'Refresh'}
+          </Button>
+          <Button
+            onClick={() => setShowNewClient(true)}
+            className="bg-sacred-gold-dark text-white hover:bg-sacred-gold"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            {isHi ? 'नया ग्राहक' : 'Add Client'}
+          </Button>
+        </div>
       </div>
 
       {/* ── Tab switcher ── */}
@@ -266,7 +275,7 @@ export default function AstrologerDashboard() {
 
       {/* ── Overview ── */}
       {activeTab === 'overview' && overview && (
-        <OverviewPanel overview={overview} isHi={isHi} onOpenClient={(id) => navigate(`/client/${id}`)} />
+        <OverviewPanel overview={overview} isHi={isHi} onOpenClient={(id) => setQuickViewClientId(id)} />
       )}
 
       {/* ── Clients ── */}
@@ -276,13 +285,13 @@ export default function AstrologerDashboard() {
           search={clientSearch}
           onSearchChange={setClientSearch}
           isHi={isHi}
-          onOpenClient={(id) => navigate(`/client/${id}`)}
+          onOpenClient={(id) => setQuickViewClientId(id)}
         />
       )}
 
       {/* ── Activity ── */}
       {activeTab === 'activity' && (
-        <ActivityPanel events={activity} isHi={isHi} onOpenClient={(id) => navigate(`/client/${id}`)} />
+        <ActivityPanel events={activity} isHi={isHi} onOpenClient={(id) => setQuickViewClientId(id)} />
       )}
 
       {/* ── Consultations ── */}
@@ -296,6 +305,67 @@ export default function AstrologerDashboard() {
           onReload={loadConsultations}
         />
       )}
+
+      {/* ── Sprint I — Settings (astrologer profile + password + avatar) ── */}
+      {activeTab === 'settings' && (
+        <AstrologerSettingsPanel isHi={isHi} user={user} />
+      )}
+
+      {/* ── Sprint I — Feedback ── */}
+      {activeTab === 'feedback' && (
+        <FeedbackPanel isHi={isHi} onOpenFeedback={() => navigate('/feedback')} />
+      )}
+
+      {/* ── Sprint I — Modals ── */}
+      {showNewClient && (
+        <NewClientModal
+          isHi={isHi}
+          onClose={() => setShowNewClient(false)}
+          onCreated={(clientId) => {
+            setShowNewClient(false);
+            refreshAll();
+            setQuickViewClientId(clientId);
+          }}
+        />
+      )}
+      {quickViewClientId && (
+        <ClientQuickViewModal
+          clientId={quickViewClientId}
+          isHi={isHi}
+          onClose={() => setQuickViewClientId(null)}
+          onOpenFullProfile={(id) => { setQuickViewClientId(null); navigate(`/client/${id}`); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Feedback panel — thin wrapper that links to existing /feedback
+// ─────────────────────────────────────────────────────────────
+
+function FeedbackPanel({ isHi, onOpenFeedback }: { isHi: boolean; onOpenFeedback: () => void }) {
+  return (
+    <div className="rounded-xl border border-sacred-gold/20 bg-card p-6">
+      <div className="flex items-start gap-3 mb-4">
+        <MessageCircleIcon className="w-6 h-6 text-sacred-gold shrink-0 mt-0.5" />
+        <div>
+          <h3 className="text-lg font-semibold text-sacred-gold-dark">
+            {isHi ? 'प्रतिक्रिया एवं सुझाव' : 'Feedback & Suggestions'}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isHi
+              ? 'कोई समस्या या सुझाव? हमें बताएं — हम इस प्लेटफ़ॉर्म को निरंतर बेहतर बनाते हैं।'
+              : 'Found a bug or have a feature idea? Let us know — this platform evolves with your input.'}
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={onOpenFeedback} className="bg-sacred-gold-dark text-white hover:bg-sacred-gold">
+          <MessageCircleIcon className="w-4 h-4 mr-1.5" />
+          {isHi ? 'प्रतिक्रिया भेजें' : 'Send Feedback'}
+        </Button>
+      </div>
     </div>
   );
 }
