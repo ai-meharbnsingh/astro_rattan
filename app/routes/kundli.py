@@ -3052,6 +3052,47 @@ def get_maha_yogas(
     return result
 
 
+# ─────────────────────────────────────────────────────────────
+# Family Demise Timing — Phaladeepika Adhyaya 17
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/family-demise-timing", status_code=status.HTTP_200_OK)
+def get_family_demise_timing(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Family demise timing indicators (father/mother/son) — Phaladeepika Adh. 17."""
+    from app.family_demise_engine import analyze_family_demise_indicators
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    asc_sign = chart.get("ascendant", {}).get("sign", "")
+    result = analyze_family_demise_indicators(planets, asc_sign)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Dasha First/Second Half Timing Rule — Phaladeepika Adhyaya 19-21
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/dasha-timing-rule", status_code=status.HTTP_200_OK)
+def get_dasha_timing_rule(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Dasha first/second half timing rule — Phaladeepika Adh. 19-21."""
+    from app.dasha_engine import analyze_all_dasha_timing
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_all_dasha_timing(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
 @router.get("/{kundli_id}/graha-sambandha", status_code=status.HTTP_200_OK)
 def get_graha_sambandha(
     kundli_id: str,

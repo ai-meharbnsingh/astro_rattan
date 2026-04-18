@@ -1316,3 +1316,179 @@ def get_current_dasha_phala(
         "mahadasha": mahadasha_record,
         "antardasha": antardasha_record,
     }
+
+
+# ─────────────────────────────────────────────────────────────
+# Phaladeepika Adhyaya 19-21 — DASHA TIMING HALF RULE
+# ─────────────────────────────────────────────────────────────
+
+_HOUSE_AREAS_EN_DASHA = {
+    1: "self/body", 2: "wealth/family", 3: "courage/siblings",
+    4: "home/mother", 5: "children/intelligence", 6: "enemies/disease",
+    7: "marriage/partnerships", 8: "longevity/transformation",
+    9: "fortune/dharma", 10: "career/status",
+    11: "gains/income", 12: "losses/liberation",
+}
+_HOUSE_AREAS_HI_DASHA = {
+    1: "स्वयं/शरीर", 2: "धन/परिवार", 3: "पराक्रम/भाई-बहन",
+    4: "गृह/माता", 5: "संतान/बुद्धि", 6: "शत्रु/रोग",
+    7: "विवाह/साझेदारी", 8: "आयु/परिवर्तन",
+    9: "भाग्य/धर्म", 10: "कर्म/प्रतिष्ठा",
+    11: "लाभ/आय", 12: "व्यय/मोक्ष",
+}
+
+_EXALTATION_D = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn", "Mercury": "Virgo",
+    "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra",
+}
+_DEBILITATION_D = {
+    "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer", "Mercury": "Pisces",
+    "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries",
+}
+_OWN_SIGNS_D = {
+    "Sun": {"Leo"}, "Moon": {"Cancer"}, "Mars": {"Aries", "Scorpio"},
+    "Mercury": {"Gemini", "Virgo"}, "Jupiter": {"Sagittarius", "Pisces"},
+    "Venus": {"Taurus", "Libra"}, "Saturn": {"Capricorn", "Aquarius"},
+}
+_DASHA_YEARS_HALF = {
+    "Sun": 6, "Moon": 10, "Mars": 7, "Rahu": 18, "Jupiter": 16,
+    "Saturn": 19, "Mercury": 17, "Ketu": 7, "Venus": 20,
+}
+
+
+def analyze_dasha_half_rule(planet: str, chart_data: dict) -> Dict[str, Any]:
+    """
+    Per Phaladeepika Adh. 19-21: determine when in a dasha period
+    the planet's results manifest — first half, second half, or throughout.
+
+    Args:
+        planet: dasha lord (e.g., "Jupiter")
+        chart_data: full kundli chart dict
+
+    Returns:
+        {
+          planet, house, house_type (odd/even),
+          strength, timing_phase (first_half/second_half/throughout),
+          timing_en, timing_hi, dasha_years, sloka_ref
+        }
+    """
+    planets = chart_data.get("planets", {}) if isinstance(chart_data, dict) else {}
+    pdata = planets.get(planet, {})
+    if not isinstance(pdata, dict):
+        return {"planet": planet, "error": f"Planet {planet} not found in chart."}
+
+    house = int(pdata.get("house", 0) or 0)
+    sign = str(pdata.get("sign", ""))
+    years = _DASHA_YEARS_HALF.get(planet, 0)
+
+    # Odd or even house
+    is_odd_house = house % 2 == 1 if house else None
+    house_type = "odd" if is_odd_house else ("even" if house else "unknown")
+
+    # Strength
+    is_exalted = _EXALTATION_D.get(planet) == sign
+    is_debilitated = _DEBILITATION_D.get(planet) == sign
+    is_own = sign in _OWN_SIGNS_D.get(planet, set())
+    if is_exalted or is_own:
+        strength = "strong"
+    elif is_debilitated:
+        strength = "weak"
+    else:
+        strength = "neutral"
+
+    # Timing phase per Adh. 19-21
+    if strength == "strong" and is_odd_house:
+        phase = "first_half"
+        phase_en = "FIRST HALF (early in dasha)"
+        phase_hi = "प्रथम अर्ध (दशा के प्रारंभ में)"
+    elif strength == "strong" and not is_odd_house:
+        phase = "first_half"
+        phase_en = "FIRST HALF (strength brings early results even from even house)"
+        phase_hi = "प्रथम अर्ध (बली ग्रह सम भाव से भी जल्दी फल देता है)"
+    elif strength == "weak":
+        phase = "second_half"
+        phase_en = "SECOND HALF (weak planet delays results to latter portion)"
+        phase_hi = "द्वितीय अर्ध (दुर्बल ग्रह दशा के उत्तरार्ध में फल देता है)"
+    elif is_odd_house:
+        phase = "first_half"
+        phase_en = "FIRST HALF (odd house — results manifest early)"
+        phase_hi = "प्रथम अर्ध (विषम भाव — फल शीघ्र प्राप्त होते हैं)"
+    else:
+        phase = "second_half"
+        phase_en = "SECOND HALF (even house — results emerge in the latter half)"
+        phase_hi = "द्वितीय अर्ध (सम भाव — फल उत्तरार्ध में प्रकट होते हैं)"
+
+    house_area = _HOUSE_AREAS_EN_DASHA.get(house, f"house {house}")
+    house_area_hi = _HOUSE_AREAS_HI_DASHA.get(house, f"भाव {house}")
+    half_years = round(years / 2, 1)
+
+    strong_note_en = "Exalted/strong planet gives results at the START of the dasha period." if strength == "strong" else ""
+    weak_note_en = "Debilitated planet gives results late and partially unfulfilled." if strength == "weak" else ""
+    timing_en = (
+        f"{planet}'s {years}-year Mahadasha: results peak in the {phase_en}. "
+        f"{planet} occupies house {house} ({house_area}) — a {'odd' if is_odd_house else 'even'} house, "
+        f"and is {strength}. "
+        f"Phaladeepika Adh. 19-21: planets in odd houses give results in the first ~{half_years} years; "
+        f"planets in even houses or weak planets deliver results in the latter ~{half_years} years. "
+        f"{strong_note_en}"
+        f"{weak_note_en}"
+    )
+    timing_hi = (
+        f"{planet} की {years} वर्षीय महादशा: फल {phase_hi} में प्राप्त होते हैं। "
+        f"{planet} भाव {house} ({house_area_hi}) में — {'विषम' if is_odd_house else 'सम'} भाव, बल: {strength}। "
+        f"फलदीपिका अ. 19-21: विषम भाव के ग्रह प्रथम {half_years} वर्षों में, "
+        f"सम भाव या दुर्बल ग्रह उत्तरार्ध {half_years} वर्षों में फल देते हैं।"
+    )
+
+    return {
+        "planet": planet,
+        "house": house,
+        "house_area_en": house_area,
+        "house_area_hi": house_area_hi,
+        "house_type": house_type,
+        "strength": strength,
+        "is_exalted": is_exalted,
+        "is_debilitated": is_debilitated,
+        "is_own_sign": is_own,
+        "timing_phase": phase,
+        "timing_phase_label_en": phase_en,
+        "timing_phase_label_hi": phase_hi,
+        "timing_en": timing_en,
+        "timing_hi": timing_hi,
+        "dasha_years": years,
+        "sloka_ref": "Phaladeepika Adh. 19-21",
+    }
+
+
+def analyze_all_dasha_timing(chart_data: dict) -> Dict[str, Any]:
+    """
+    Analyze the first/second half timing rule for all 9 dasha lords.
+    Returns a summary of when each planet's dasha delivers its results.
+    """
+    _PLANETS = ["Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury", "Ketu", "Venus"]
+    results = {}
+    for planet in _PLANETS:
+        results[planet] = analyze_dasha_half_rule(planet, chart_data)
+
+    first_half = [p for p, r in results.items() if r.get("timing_phase") == "first_half"]
+    second_half = [p for p, r in results.items() if r.get("timing_phase") == "second_half"]
+
+    summary_en = (
+        f"First-half dasha planets (results in early dasha period): {', '.join(first_half) or 'none'}. "
+        f"Second-half planets (results in latter dasha period): {', '.join(second_half) or 'none'}. "
+        f"Per Phaladeepika Adh. 19-21."
+    )
+    summary_hi = (
+        f"प्रथम अर्ध दशा ग्रह: {', '.join(first_half) or 'कोई नहीं'}। "
+        f"द्वितीय अर्ध दशा ग्रह: {', '.join(second_half) or 'कोई नहीं'}। "
+        f"फलदीपिका अ. 19-21 के अनुसार।"
+    )
+
+    return {
+        "planets": results,
+        "first_half_planets": first_half,
+        "second_half_planets": second_half,
+        "summary_en": summary_en,
+        "summary_hi": summary_hi,
+        "sloka_ref": "Phaladeepika Adh. 19-21",
+    }
