@@ -848,6 +848,12 @@ def calculate_shadbala(
         required = REQUIRED_STRENGTH.get(planet, 300)
         ratio = round(total / required, 2) if required > 0 else 0.0
 
+        # Ishta/Kashta Phala — Phaladeepika Adh. 4 sloka 26
+        # Ishta Phala = √(cheshta × sthana), capped at 60
+        # Kashta Phala = √(max(0, 60-cheshta) × max(0, 60-sthana)), capped at 60
+        ishta = round(min(60.0, math.sqrt(max(0.0, cheshta) * max(0.0, sthana))), 2)
+        kashta = round(min(60.0, math.sqrt(max(0.0, 60.0 - cheshta) * max(0.0, 60.0 - sthana))), 2)
+
         planets_result[planet] = {
             "sthana": sthana,
             "dig": dig,
@@ -859,12 +865,36 @@ def calculate_shadbala(
             "required": required,
             "ratio": ratio,
             "is_strong": total >= required,
+            "ishta_phala": ishta,
+            "kashta_phala": kashta,
             # Sub-component breakdowns for detailed display
             "sthana_detail": sthana_detail,
             "kala_detail": kala_detail,
         }
 
-    return {"planets": planets_result}
+    ishta_kashta_summary = {
+        planet: {
+            "ishta": planets_result[planet]["ishta_phala"],
+            "kashta": planets_result[planet]["kashta_phala"],
+            "net_phala": round(
+                planets_result[planet]["ishta_phala"] - planets_result[planet]["kashta_phala"], 2
+            ),
+            "verdict_en": (
+                "beneficial"
+                if planets_result[planet]["ishta_phala"] > planets_result[planet]["kashta_phala"]
+                else "afflicted"
+            ),
+            "verdict_hi": (
+                "शुभ-कारक"
+                if planets_result[planet]["ishta_phala"] > planets_result[planet]["kashta_phala"]
+                else "पीड़ित"
+            ),
+            "sloka_ref": "Phaladeepika Adh. 4 sloka 26",
+        }
+        for planet in planets_result
+    }
+
+    return {"planets": planets_result, "ishta_kashta_summary": ishta_kashta_summary}
 
 
 # ---------------------------------------------------------------------------
