@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { Calendar, ChevronDown, ChevronUp, Loader2, MapPin, Sparkles, Star, Sun, X } from 'lucide-react';
+import { AlertTriangle, Calendar, ChevronDown, ChevronUp, Info, Loader2, MapPin, Sparkles, Star, Sun, X } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG from '@/components/KundliChartSVG';
 
@@ -44,6 +44,84 @@ const SIGNS = [
   { id: 'aquarius', en: 'Aquarius', hi: 'कुंभ' },
   { id: 'pisces', en: 'Pisces', hi: 'मीन' },
 ] as const;
+
+const PLANET_COLORS: Record<string, string> = {
+  Sun: '#F97316',
+  Moon: '#94A3B8',
+  Mars: '#DC2626',
+  Mercury: '#10B981',
+  Jupiter: '#D97706',
+  Venus: '#EC4899',
+  Saturn: '#1E40AF',
+  Rahu: '#6366F1',
+  Ketu: '#9F1239',
+};
+
+const SIGN_THEMES: Record<string, { en: string; hi: string }> = {
+  Aries:       { en: 'impulsive decisions, action-oriented day',     hi: 'आवेगपूर्ण निर्णय, क्रियाशील दिन' },
+  Taurus:      { en: 'stability focus, material concerns',           hi: 'स्थिरता, भौतिक विषयों पर ध्यान' },
+  Gemini:      { en: 'communication active, mental energy high',     hi: 'संचार सक्रिय, मानसिक ऊर्जा उच्च' },
+  Cancer:      { en: 'emotional sensitivity, home focus',            hi: 'भावनात्मक संवेदनशीलता, घर पर ध्यान' },
+  Leo:         { en: 'confidence boost, creative expression',        hi: 'आत्मविश्वास, रचनात्मक अभिव्यक्ति' },
+  Virgo:       { en: 'analytical thinking, detail-oriented',         hi: 'विश्लेषणात्मक सोच, विवरण पर ध्यान' },
+  Libra:       { en: 'relationship focus, balance-seeking',          hi: 'संबंधों पर ध्यान, संतुलन की खोज' },
+  Scorpio:     { en: 'intense focus, transformation energy',         hi: 'गहन ध्यान, परिवर्तनकारी ऊर्जा' },
+  Sagittarius: { en: 'optimism, expansion, higher learning',         hi: 'आशावाद, विस्तार, उच्च शिक्षा' },
+  Capricorn:   { en: 'discipline, career focus, ambition',           hi: 'अनुशासन, करियर पर ध्यान' },
+  Aquarius:    { en: 'innovation, community, unconventional ideas',  hi: 'नवाचार, समुदाय, अपरंपरागत विचार' },
+  Pisces:      { en: 'emotional thinking, avoid confusion',          hi: 'भावनात्मक सोच, भ्रम से बचें' },
+};
+
+const SIGN_HI_NAMES: Record<string, string> = {
+  Aries: 'मेष', Taurus: 'वृषभ', Gemini: 'मिथुन', Cancer: 'कर्क', Leo: 'सिंह',
+  Virgo: 'कन्या', Libra: 'तुला', Scorpio: 'वृश्चिक', Sagittarius: 'धनु',
+  Capricorn: 'मकर', Aquarius: 'कुंभ', Pisces: 'मीन',
+};
+
+const PLANET_HI_NAMES: Record<string, string> = {
+  Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
+  Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+
+function computeDailyInsights(planets: any[], language: string): string[] {
+  if (!planets || planets.length === 0) return [];
+  const hi = language === 'hi';
+  const insights: string[] = [];
+
+  const signCount: Record<string, string[]> = {};
+  for (const p of planets) {
+    if (!p.sign || p.planet === 'Rahu' || p.planet === 'Ketu') continue;
+    if (!signCount[p.sign]) signCount[p.sign] = [];
+    signCount[p.sign].push(p.planet);
+  }
+
+  for (const [sign, ps] of Object.entries(signCount)) {
+    if (ps.length >= 2) {
+      const theme = SIGN_THEMES[sign];
+      const signLabel = hi ? (SIGN_HI_NAMES[sign] || sign) : sign;
+      const pLabels = ps.map(n => hi ? (PLANET_HI_NAMES[n] || n) : n).join(', ');
+      if (theme) insights.push(`${hi ? 'मजबूत' : 'Strong'} ${signLabel} ${hi ? 'प्रभाव' : 'influence'} (${pLabels}) → ${hi ? theme.hi : theme.en}`);
+    }
+  }
+
+  const rahu = planets.find(p => p.planet === 'Rahu');
+  if (rahu?.sign) {
+    const signLabel = hi ? (SIGN_HI_NAMES[rahu.sign] || rahu.sign) : rahu.sign;
+    insights.push(hi
+      ? `राहु ${signLabel} में → नए जोखिम भरे कार्यों से बचें, सतर्क रहें`
+      : `Rahu in ${signLabel} → avoid risky new beginnings, stay mindful`);
+  }
+
+  const retros = planets.filter(p => p.is_retrograde && p.planet !== 'Rahu' && p.planet !== 'Ketu');
+  if (retros.length > 0) {
+    const names = retros.map(p => hi ? (PLANET_HI_NAMES[p.planet] || p.planet) : p.planet).join(', ');
+    insights.push(hi
+      ? `${names} वक्री → लंबित मामलों की समीक्षा करें, नए अनुबंधों में देरी करें`
+      : `${names} retrograde → review pending matters, delay new contracts`);
+  }
+
+  return insights.slice(0, 5);
+}
 
 type HoroscopeSections = {
   general?: string;
@@ -790,17 +868,39 @@ export default function Features() {
     <section ref={sectionRef} id="features" className="relative pt-4 pb-24 bg-background">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Present Kundli — Current Sky */}
+        {/* Live Planetary Positions (Gochar) */}
         {currentSky && (
           <div id="present-kundli-section" className="features-title mb-12">
             <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
-              {l('Present Kundli — Current Sky', 'वर्तमान कुंडली — आकाश दर्शन')}
+              {l('Live Planetary Positions (Gochar)', 'लाइव ग्रह स्थिति (गोचर)')}
             </Heading>
             <LiveClock language={language} />
 
+            {/* Disclaimer Banner */}
+            <div className="flex items-start gap-3 rounded-xl bg-amber-50 border border-amber-300 px-4 py-3 mb-6">
+              <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-800">
+                  {l('This is NOT your birth chart.', 'यह आपकी जन्म कुंडली नहीं है।')}
+                </p>
+                <p className="text-sm text-amber-700 mt-0.5">
+                  {l('This shows current planetary positions affecting everyone today.', 'यह आज सभी को प्रभावित करने वाली वर्तमान ग्रह स्थिति दिखाता है।')}
+                </p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-              {/* LEFT: Chart (50% — equal to table) */}
-              <div className="flex justify-center -mt-[5px]">
+              {/* LEFT: Chart */}
+              <div className="flex flex-col items-center -mt-[5px]">
+                {/* Chart type label */}
+                <p className="text-xs font-semibold uppercase tracking-widest text-sacred-gold-dark mb-1">
+                  {l('North Indian Transit Chart (Gochar)', 'उत्तर भारतीय गोचर चार्ट')}
+                </p>
+                {/* Lagna info */}
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+                  <Info className="w-3.5 h-3.5 shrink-0" />
+                  <span>{l('Lagna is calculated for current time and location (Vedic system)', 'लग्न वर्तमान समय व स्थान के लिए वैदिक पद्धति से गणित है')}</span>
+                </div>
                 <div className="w-full max-w-[480px] aspect-square">
                   <KundliChartSVG
                     planets={(currentSky.planets || []).map((p: any) => {
@@ -874,10 +974,20 @@ export default function Features() {
                         </td>
                         <td className="px-3 py-2 text-center">--</td>
                       </tr>
-                      {(currentSky.planets || []).map((p: any, i: number) => (
-                        <tr key={p.planet} className={`border-b border-sacred-gold/10 ${i % 2 === 0 ? 'bg-sacred-gold/[0.03]' : ''}`}>
-                          <td className="px-3 py-2 font-semibold text-foreground">{hi ? (PLANET_HI[p.planet] || p.planet) : p.planet}</td>
-                          <td className="px-3 py-2 text-foreground">{hi ? (SIGN_HI[p.sign] || p.sign) : p.sign}</td>
+                      {(currentSky.planets || []).map((p: any, i: number) => {
+                        const planetColor = PLANET_COLORS[p.planet] || '#888';
+                        const planetLabel = hi ? (PLANET_HI[p.planet] || p.planet) : p.planet;
+                        const signLabel = hi ? (SIGN_HI[p.sign] || p.sign) : p.sign;
+                        const tooltipText = `${planetLabel} ${l('in', 'में')} ${signLabel} (${l('Transit', 'गोचर')})`;
+                        return (
+                        <tr key={p.planet} title={tooltipText} className={`border-b border-sacred-gold/10 cursor-default ${i % 2 === 0 ? 'bg-sacred-gold/[0.03]' : ''} hover:bg-sacred-gold/10 transition-colors`}>
+                          <td className="px-3 py-2 font-semibold text-foreground">
+                            <span className="inline-flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: planetColor }} />
+                              {planetLabel}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2 text-foreground">{signLabel}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.sign_degree != null ? `${p.sign_degree}°` : '--'}</td>
                           <td className="px-3 py-2 text-right text-muted-foreground">{p.longitude != null ? `${Number(p.longitude).toFixed(2)}°` : '--'}</td>
                           <td className="px-3 py-2 text-center text-xs font-bold">
@@ -893,7 +1003,8 @@ export default function Features() {
                             })()}
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -915,6 +1026,30 @@ export default function Features() {
                 <span className="flex items-center gap-1"><span style={{ color: '#C4611F' }}>▲</span>{l('ASC', 'लग्न')}</span>
               </span>
             </div>
+
+            {/* Today's Planetary Influence */}
+            {(() => {
+              const insights = computeDailyInsights(currentSky.planets || [], language);
+              if (insights.length === 0) return null;
+              return (
+                <div className="mt-5 rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-4 h-4 text-sacred-gold-dark shrink-0" />
+                    <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wide">
+                      {l("Today's Planetary Influence", 'आज का ग्रह प्रभाव')}
+                    </h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {insights.map((insight, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                        <span className="text-sacred-gold-dark mt-0.5 shrink-0">•</span>
+                        <span>{insight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })()}
           </div>
         )}
 
