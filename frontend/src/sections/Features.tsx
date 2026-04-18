@@ -876,31 +876,9 @@ export default function Features() {
             </Heading>
             <LiveClock language={language} />
 
-            {/* Disclaimer Banner */}
-            <div className="flex items-start gap-3 rounded-xl bg-amber-50 border border-amber-300 px-4 py-3 mb-6">
-              <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-amber-800">
-                  {l('This is NOT your birth chart.', 'यह आपकी जन्म कुंडली नहीं है।')}
-                </p>
-                <p className="text-sm text-amber-700 mt-0.5">
-                  {l('This shows current planetary positions affecting everyone today.', 'यह आज सभी को प्रभावित करने वाली वर्तमान ग्रह स्थिति दिखाता है।')}
-                </p>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {/* LEFT: Chart */}
               <div className="flex flex-col items-center -mt-[5px]">
-                {/* Chart type label */}
-                <p className="text-xs font-semibold uppercase tracking-widest text-sacred-gold-dark mb-1">
-                  {l('North Indian Transit Chart (Gochar)', 'उत्तर भारतीय गोचर चार्ट')}
-                </p>
-                {/* Lagna info */}
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-                  <Info className="w-3.5 h-3.5 shrink-0" />
-                  <span>{l('Lagna is calculated for current time and location (Vedic system)', 'लग्न वर्तमान समय व स्थान के लिए वैदिक पद्धति से गणित है')}</span>
-                </div>
                 <div className="w-full max-w-[480px] aspect-square">
                   <KundliChartSVG
                     planets={(currentSky.planets || []).map((p: any) => {
