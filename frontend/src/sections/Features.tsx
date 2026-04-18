@@ -332,8 +332,16 @@ const samvatsaraName = (year?: number, offset = 12, lang = 'en') => {
   return lang === 'hi' ? SAMVATSARA_60_HI[idx] : SAMVATSARA_60[idx];
 };
 
-const compactLine = (value?: string, fallback = 'Guidance will update shortly.') => {
-  const text = (value || '').replace(/\s+/g, ' ').trim();
+// Safely extract a string from either a plain string or a bilingual {en, hi} object
+const extractStr = (value: any, lang = 'en'): string => {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') return String(value[lang] || value['en'] || '');
+  return String(value);
+};
+
+const compactLine = (value?: any, fallback = 'Guidance will update shortly.', lang = 'en') => {
+  const text = extractStr(value, lang).replace(/\s+/g, ' ').trim();
   if (!text) return fallback;
   const sentence = text.split(/(?<=[.!?])\s+/)[0] || text;
   return sentence.length > 95 ? `${sentence.slice(0, 92).trim()}...` : sentence;
@@ -342,7 +350,8 @@ const compactLine = (value?: string, fallback = 'Guidance will update shortly.')
 const hasMeaningfulSections = (sections?: HoroscopeSections) => {
   if (!sections) return false;
   return ['general', 'love', 'career', 'finance', 'health'].some((k) => {
-    const value = (sections[k as keyof HoroscopeSections] || '').trim();
+    const raw = sections[k as keyof HoroscopeSections];
+    const value = extractStr(raw).trim();
     return value.length >= 15;
   });
 };
@@ -1337,11 +1346,11 @@ export default function Features() {
                       <p className="text-xs text-muted-foreground">{horoscopeData?.dates || ''}</p>
                     </div>
                     <div className="space-y-1.5 text-sm text-foreground">
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('General', 'सामान्य')}:</span> {compactLine(horoscopeData?.sections?.general, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Love', 'प्रेम')}:</span> {compactLine(horoscopeData?.sections?.love, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Career', 'करियर')}:</span> {compactLine(horoscopeData?.sections?.career, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Health', 'स्वास्थ्य')}:</span> {compactLine(horoscopeData?.sections?.health, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
-                      <p><span className="font-semibold text-sacred-gold-dark">{l('Finance', 'वित्त')}:</span> {compactLine(horoscopeData?.sections?.finance, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'))}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('General', 'सामान्य')}:</span> {compactLine(horoscopeData?.sections?.general, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'), language)}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Love', 'प्रेम')}:</span> {compactLine(horoscopeData?.sections?.love, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'), language)}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Career', 'करियर')}:</span> {compactLine(horoscopeData?.sections?.career, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'), language)}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Health', 'स्वास्थ्य')}:</span> {compactLine(horoscopeData?.sections?.health, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'), language)}</p>
+                      <p><span className="font-semibold text-sacred-gold-dark">{l('Finance', 'वित्त')}:</span> {compactLine(horoscopeData?.sections?.finance, l('Guidance will update shortly.', 'मार्गदर्शन शीघ्र अपडेट होगा।'), language)}</p>
                     </div>
                   </>
                 )}
