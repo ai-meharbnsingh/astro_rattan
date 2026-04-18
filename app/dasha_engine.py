@@ -851,6 +851,88 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         f"तथा भाव {asp_str_hi} पर दृष्टि डालता है (फलदीपिका अ. 20)।"
     )
 
+    # --- Dignity Modifier (Phaladeepika Adh. 19-20) ---
+    factors = assessment["factors"]
+    planets_data = (chart_data or {}).get("planets", {}) or {}
+    pdata_entry = planets_data.get(planet) or {}
+    planet_lon = float(pdata_entry.get("longitude", 0.0) or 0.0)
+    planet_d1_sign = str(pdata_entry.get("sign", "") or "")
+    planet_house = int(pdata_entry.get("house", 0) or 0)
+
+    is_exalted_dm = "exalted" in factors
+    is_vargottama_dm = _is_vargottama(planet_lon, planet_d1_sign)
+    is_debilitated_dm = "debilitated" in factors
+    is_combust_dm = "combust" in factors
+    is_papakartari_dm = _is_in_papakartari(planet, planet_house, planets_data)
+
+    if is_exalted_dm or is_vargottama_dm:
+        dignity_modifier = "excellent"
+        if is_exalted_dm and is_vargottama_dm:
+            dignity_note_en = (
+                f"{planet} is both exalted and Vargottama — dasha promises the highest elevated results."
+            )
+            dignity_note_hi = (
+                f"{planet} उच्च और वर्गोत्तम दोनों है — दशा सर्वोत्तम उत्कृष्ट फल देगी।"
+            )
+        elif is_exalted_dm:
+            dignity_note_en = (
+                f"{planet} is exalted — dasha promises elevated results (Phaladeepika Adh. 19)."
+            )
+            dignity_note_hi = (
+                f"{planet} उच्च है — दशा उत्कृष्ट फल देगी (फलदीपिका अ. 19)।"
+            )
+        else:
+            dignity_note_en = (
+                f"{planet} is Vargottama (same sign D1 & D9) — dasha gives consistent, elevated results."
+            )
+            dignity_note_hi = (
+                f"{planet} वर्गोत्तम है (D1 और D9 में समान राशि) — दशा सुसंगत उत्कृष्ट फल देगी।"
+            )
+    elif is_debilitated_dm or is_combust_dm:
+        dignity_modifier = "challenged"
+        if is_debilitated_dm and is_combust_dm:
+            dignity_note_en = (
+                f"{planet} is both debilitated and combust — dasha period is severely challenged; "
+                f"remedies strongly recommended."
+            )
+            dignity_note_hi = (
+                f"{planet} नीच और अस्त दोनों है — दशा काल अत्यंत कठिन; उपाय अत्यावश्यक।"
+            )
+        elif is_debilitated_dm:
+            dignity_note_en = (
+                f"{planet} is debilitated — dasha brings hardship and reduced signification results."
+            )
+            dignity_note_hi = (
+                f"{planet} नीच है — दशा में कठिनाई और ग्रह-फल में कमी।"
+            )
+        else:
+            dignity_note_en = (
+                f"{planet} is combust (too close to Sun) — dasha significations are diminished."
+            )
+            dignity_note_hi = (
+                f"{planet} अस्त है (सूर्य के निकट) — दशा में ग्रह-कारकत्व न्यून।"
+            )
+    elif is_papakartari_dm:
+        dignity_modifier = "obstructed"
+        dignity_note_en = (
+            f"{planet} is in Papakartari (malefics on both adjacent houses) — "
+            f"dasha activates a period of obstruction and difficulty."
+        )
+        dignity_note_hi = (
+            f"{planet} पापकर्तरी में है (दोनों आसन्न भावों में पापग्रह) — "
+            f"दशा में अवरोध और कठिनाई।"
+        )
+    else:
+        dignity_modifier = "neutral"
+        dignity_note_en = (
+            f"{planet} is in a neutral dignity state — dasha gives mixed or average results "
+            f"based on house placement and transits."
+        )
+        dignity_note_hi = (
+            f"{planet} मध्यम बल में है — दशा में मिश्रित या सामान्य फल; "
+            f"भाव-स्थिति और गोचर पर निर्भर।"
+        )
+
     return {
         "planet": planet,
         "strength": strength,
@@ -870,6 +952,9 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         "house_synthesis_en": house_synthesis_en,
         "house_synthesis_hi": house_synthesis_hi,
         "dasha_quality": quality_tag,
+        "dignity_modifier": dignity_modifier,
+        "dignity_note_en": dignity_note_en,
+        "dignity_note_hi": dignity_note_hi,
     }
 
 

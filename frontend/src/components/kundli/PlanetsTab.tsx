@@ -21,35 +21,130 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
     return () => { cancelled = true; };
   }, [kundliId]);
 
-  if (!data?.planets || (data.planets as any[]).length === 0) return null;
+  if (!data?.planets || typeof data.planets !== 'object') return null;
+
+  const planetEntries = Object.entries(data.planets as Record<string, any>);
+  if (planetEntries.length === 0) return null;
+
+  const dni = data.day_night_indicator;
+  const mgs = data.mercury_gender_state;
 
   return (
-    <div className="mt-6 overflow-x-auto rounded-xl border border-border">
-      <div className="px-4 py-2 bg-muted border-b border-border">
-        <span className="text-xs font-semibold text-primary uppercase tracking-wide">
-          {hi ? 'ग्रह गुण' : 'Planet Properties'}
-        </span>
-      </div>
-      <table className="w-full text-xs">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>
-            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'अवस्था' : 'Stage'}</th>
-            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'गुण' : 'Guna'}</th>
-            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'बलादि' : 'Baladi'}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(data.planets as any[]).map((p: any, i: number) => (
-            <tr key={i} className="border-t border-border">
-              <td className="p-1.5 font-medium text-foreground">{translatePlanet(p.planet, language)}</td>
-              <td className="p-1.5 text-foreground/80">{hi ? (p.avastha_hi || p.avastha) : p.avastha}</td>
-              <td className="p-1.5 text-foreground/80">{hi ? (p.guna_hi || p.guna) : p.guna}</td>
-              <td className="p-1.5 text-foreground/80">{hi ? (p.baladi_hi || p.baladi) : p.baladi}</td>
+    <div className="mt-6 space-y-4">
+      {/* ── Parent Indicators (Adhyaya 2 Day/Night Rule) ── */}
+      {dni && (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <div className="px-4 py-2 bg-muted border-b border-border flex items-center gap-2">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+              {hi ? 'पितृ-मातृ कारक (दिन/रात्रि नियम)' : 'Parent Indicators (Day/Night Rule)'}
+            </span>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
+              dni.day_night_chart === 'day'
+                ? 'bg-amber-100 text-amber-800'
+                : 'bg-indigo-100 text-indigo-800'
+            }`}>
+              {hi ? dni.day_night_chart_hi : (dni.day_night_chart === 'day' ? 'Day Chart' : 'Night Chart')}
+            </span>
+          </div>
+          <div className="p-3 grid grid-cols-2 gap-3 text-xs">
+            <div className="bg-card rounded-lg p-2.5 border border-border">
+              <p className="text-foreground/60 mb-1">{hi ? 'पिता-कारक' : 'Father Indicator'}</p>
+              <p className="font-semibold text-foreground text-sm">{translatePlanet(dni.father_indicator?.planet, language)}</p>
+              <p className="text-foreground/70 mt-1 leading-snug">
+                {hi ? dni.father_indicator?.reason_hi : dni.father_indicator?.reason_en}
+              </p>
+            </div>
+            <div className="bg-card rounded-lg p-2.5 border border-border">
+              <p className="text-foreground/60 mb-1">{hi ? 'माता-कारक' : 'Mother Indicator'}</p>
+              <p className="font-semibold text-foreground text-sm">{translatePlanet(dni.mother_indicator?.planet, language)}</p>
+              <p className="text-foreground/70 mt-1 leading-snug">
+                {hi ? dni.mother_indicator?.reason_hi : dni.mother_indicator?.reason_en}
+              </p>
+            </div>
+          </div>
+          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">{dni.sloka_ref}</p>
+        </div>
+      )}
+
+      {/* ── Mercury Gender State (Adhyaya 2 Hermaphrodite Rule) ── */}
+      {mgs && (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <div className="px-4 py-2 bg-muted border-b border-border flex items-center gap-2">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+              {hi ? 'बुध लिंग-अवस्था' : 'Mercury Gender State'}
+            </span>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
+              mgs.effective_gender === 'male'
+                ? 'bg-blue-100 text-blue-800'
+                : mgs.effective_gender === 'female'
+                  ? 'bg-pink-100 text-pink-800'
+                  : 'bg-slate-100 text-slate-700'
+            }`}>
+              {hi ? mgs.effective_gender_hi : mgs.effective_gender}
+            </span>
+          </div>
+          <div className="p-3 text-xs text-foreground/80">
+            <p>{hi ? mgs.reason_hi : mgs.reason_en}</p>
+            {mgs.conjunct_planets?.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {mgs.conjunct_planets.map((p: string) => (
+                  <span key={p} className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-medium text-foreground">
+                    {translatePlanet(p, language)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">{mgs.sloka_ref}</p>
+        </div>
+      )}
+
+      {/* ── Planet Properties Table (Stage / Guna / Baladi / Metal / Grain / Tree) ── */}
+      <div className="rounded-xl border border-border overflow-x-auto">
+        <div className="px-4 py-2 bg-muted border-b border-border">
+          <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+            {hi ? 'ग्रह गुण — धातु, अन्न, वृक्ष' : 'Planet Properties — Metal, Grain, Tree'}
+          </span>
+        </div>
+        <table className="w-full text-xs">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'अवस्था' : 'Stage'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'गुण' : 'Guna'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'बलादि' : 'Baladi'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'धातु' : 'Metal'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'अन्न' : 'Grain'}</th>
+              <th className="text-left p-1.5 text-primary font-medium">{hi ? 'वृक्ष' : 'Tree'}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {planetEntries.map(([planetName, p]: [string, any]) => (
+              <tr key={planetName} className="border-t border-border">
+                <td className="p-1.5 font-medium text-foreground">{translatePlanet(planetName, language)}</td>
+                <td className="p-1.5 text-foreground/80">
+                  {hi ? (p.stage_of_life?.stage_hi || p.stage_of_life?.stage) : p.stage_of_life?.stage}
+                </td>
+                <td className="p-1.5 text-foreground/80">
+                  {hi ? (p.guna?.guna_hi || p.guna?.guna) : p.guna?.guna}
+                </td>
+                <td className="p-1.5 text-foreground/80">
+                  {hi ? (p.baladi_avastha?.name_hi || p.baladi_avastha?.stage) : p.baladi_avastha?.stage}
+                </td>
+                <td className="p-1.5 text-foreground/70">
+                  {hi ? (p.metal_hi || p.metal_en || '—') : (p.metal_en || '—')}
+                </td>
+                <td className="p-1.5 text-foreground/70">
+                  {hi ? (p.grain_hi || p.grain_en || '—') : (p.grain_en || '—')}
+                </td>
+                <td className="p-1.5 text-foreground/70">
+                  {hi ? (p.tree_hi || p.tree_en || '—') : (p.tree_en || '—')}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
