@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles } from 'lucide-react';
+import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles, Eye, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -30,6 +30,24 @@ interface SaturnAssessment {
   interpretation_hi: string;
 }
 
+interface TransitTimingIndicator {
+  planet_transit: string;
+  target_sign: string;
+  target_house: number;
+  significance_en: string;
+  significance_hi: string;
+  watch_period_en: string;
+  watch_period_hi: string;
+  intensity: 'high' | 'moderate' | 'low';
+}
+
+interface TransitTimingSection {
+  indicators: TransitTimingIndicator[];
+  summary_en: string;
+  summary_hi: string;
+  sloka_ref: string;
+}
+
 interface ApiResponse {
   kundli_id?: string;
   person_name?: string;
@@ -41,6 +59,7 @@ interface ApiResponse {
   karmic_transitions_hi: string;
   life_chapters_en: string[];
   life_chapters_hi: string[];
+  transit_timing_indicators?: TransitTimingSection;
   sloka_ref: string;
 }
 
@@ -59,6 +78,12 @@ const STRENGTH_STYLE: Record<string, { card: string; badge: string; key: string 
   strong:   { card: 'border-emerald-300 bg-emerald-50', badge: 'bg-emerald-600 text-white', key: 'auto.longevityStrong' },
   moderate: { card: 'border-sacred-gold/30 bg-sacred-gold/5', badge: 'bg-sacred-gold-dark text-white', key: 'auto.longevityModerate' },
   weak:     { card: 'border-amber-300 bg-amber-50', badge: 'bg-amber-600 text-white', key: 'auto.longevityWeak' },
+};
+
+const INTENSITY_STYLE: Record<string, { card: string; badge: string; label: string; labelHi: string }> = {
+  high:     { card: 'border-red-200 bg-red-50',    badge: 'bg-red-600 text-white',    label: 'High',     labelHi: 'उच्च' },
+  moderate: { card: 'border-amber-200 bg-amber-50', badge: 'bg-amber-500 text-white', label: 'Moderate', labelHi: 'मध्यम' },
+  low:      { card: 'border-blue-200 bg-blue-50',   badge: 'bg-blue-500 text-white',  label: 'Low',      labelHi: 'निम्न' },
 };
 
 export default function LongevityTab({ kundliId, language, t }: Props) {
@@ -230,6 +255,58 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           </p>
         </div>
       </section>
+
+      {/* Transit timing indicators (death timing — Phaladeepika Adh. 17) */}
+      {data.transit_timing_indicators && data.transit_timing_indicators.indicators.length > 0 && (
+        <section>
+          <h3 className="text-lg font-semibold text-sacred-gold-dark mb-1 flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            {isHi ? 'कर्म-संक्रमण गोचर संकेत' : 'Karmic Transition Transit Markers'}
+          </h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            {isHi
+              ? data.transit_timing_indicators.summary_hi
+              : data.transit_timing_indicators.summary_en}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.transit_timing_indicators.indicators.map((ind, i) => {
+              const style = INTENSITY_STYLE[ind.intensity] || INTENSITY_STYLE.moderate;
+              return (
+                <div key={i} className={`rounded-xl border-2 p-4 ${style.card}`}>
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div>
+                      <h4 className="font-bold text-foreground text-sm">
+                        {planetName(ind.planet_transit)}
+                        <span className="font-normal text-muted-foreground ml-1">→</span>
+                        <span className="ml-1">{ind.target_sign}</span>
+                      </h4>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide mt-0.5">
+                        {isHi ? `भाव ${ind.target_house}` : `House ${ind.target_house}`}
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${style.badge}`}>
+                      {isHi ? style.labelHi : style.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-foreground/80 leading-relaxed mb-2">
+                    {isHi ? ind.significance_hi : ind.significance_en}
+                  </p>
+                  <div className="rounded-lg bg-white/60 border border-current/10 px-3 py-2 flex items-start gap-2 text-xs">
+                    <Eye className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground" />
+                    <span className="text-foreground/70 italic leading-relaxed">
+                      {isHi ? ind.watch_period_hi : ind.watch_period_en}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-1.5 mt-3 text-[10px] text-muted-foreground">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.transit_timing_indicators.sloka_ref}</span>
+          </div>
+        </section>
+      )}
 
       {/* Karmic transitions */}
       <section className="rounded-xl border-2 border-purple-200 bg-purple-50 p-5">
