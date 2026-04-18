@@ -148,7 +148,7 @@ def send_otp(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Failed to send verification email. Please try again.",
         )
-    return {"message": "Verification code sent to your email"}
+    return {"message": {"en": "Verification code sent to your email", "hi": "सत्यापन कोड आपके ईमेल पर भेजा गया है"}}
 
 
 @router.post("/verify-otp", status_code=status.HTTP_200_OK)
@@ -299,7 +299,7 @@ def register_astrologer(
     db.commit()
 
     return {
-        "message": "Astrologer registration submitted. Your account is pending admin approval.",
+        "message": {"en": "Astrologer registration submitted. Your account is pending admin approval.", "hi": "ज्योतिषी पंजीकरण सबमिट किया गया। आपका खाता व्यवस्थापक अनुमोदन के लिए लंबित है।"},
         "email": user_row["email"],
         "status": "pending_astrologer",
     }
@@ -479,7 +479,7 @@ def change_password(
     )
     db.commit()
 
-    return {"message": "Password changed successfully"}
+    return {"message": {"en": "Password changed successfully", "hi": "पासवर्ड सफलतापूर्वक बदला गया"}}
 
 
 @router.get("/history", status_code=status.HTTP_200_OK)
@@ -553,7 +553,7 @@ def forgot_password(
     user = db.execute("SELECT id FROM users WHERE email = %s", (body.email,)).fetchone()
     if not user:
         # Don't reveal whether email exists
-        return {"message": "If this email is registered, a reset code has been sent."}
+        return {"message": {"en": "If this email is registered, a reset code has been sent.", "hi": "यदि यह ईमेल पंजीकृत है, तो एक रीसेट कोड भेजा गया है।"}}
 
     import hashlib
     otp = _generate_otp()
@@ -568,7 +568,7 @@ def forgot_password(
 
     _send_otp_email(body.email, otp)  # send plaintext to user, store only hash
 
-    return {"message": "If this email is registered, a reset code has been sent."}
+    return {"message": {"en": "If this email is registered, a reset code has been sent.", "hi": "यदि यह ईमेल पंजीकृत है, तो एक रीसेट कोड भेजा गया है।"}}
 
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
@@ -621,4 +621,4 @@ def reset_password(
     db.execute("DELETE FROM email_verifications WHERE email = %s", (body.email,))
     db.commit()
 
-    return {"message": "Password reset successfully. You can now log in."}
+    return {"message": {"en": "Password reset successfully. You can now log in.", "hi": "पासवर्ड सफलतापूर्वक रीसेट हो गया। अब आप लॉग इन कर सकते हैं।"}}

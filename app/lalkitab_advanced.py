@@ -2346,22 +2346,22 @@ def calculate_dhoka(planet_positions: List[Dict[str, Any]]) -> List[Dict[str, An
 _STRIKE_RULES: List[Dict] = [
     # 6th house strikes 2nd (service/conflict destroys accumulated wealth)
     {"striker_house": 6, "victim_house": 2,
-     "name": "Service-Wealth Strike",
+     "name": {"en": "Service-Wealth Strike", "hi": "सेवा-धन प्रहार"},
      "en": "6th house enemies/service unexpectedly drains 2nd house savings and family resources. Legal disputes, medical bills.",
      "hi": "6ठे भाव के शत्रु 2रे भाव के धन को अचानक नष्ट करते हैं — कानूनी विवाद, चिकित्सा खर्च।"},
     # 3rd house strikes 9th
     {"striker_house": 3, "victim_house": 9,
-     "name": "Effort-Fortune Strike",
+     "name": {"en": "Effort-Fortune Strike", "hi": "प्रयास-भाग्य प्रहार"},
      "en": "3rd house impulsive actions or sibling conflicts suddenly undermine 9th house fortune and long-term blessings.",
      "hi": "3रे भाव की आवेगशील कार्रवाइयां 9वें भाव के भाग्य को अचानक नुकसान पहुंचाती हैं।"},
     # 11th house strikes 5th
     {"striker_house": 11, "victim_house": 5,
-     "name": "Network-Creativity Strike",
+     "name": {"en": "Network-Creativity Strike", "hi": "नेटवर्क-रचनात्मकता प्रहार"},
      "en": "11th house social circle or false friends suddenly disrupts 5th house children/creativity/speculation.",
      "hi": "11वें भाव के मित्र या नेटवर्क 5वें भाव की रचनात्मकता/संतान को अचानक झटका देते हैं।"},
     # 12th house strikes 1st
     {"striker_house": 12, "victim_house": 1,
-     "name": "Loss-Self Strike",
+     "name": {"en": "Loss-Self Strike", "hi": "हानि-स्व प्रहार"},
      "en": "Hidden 12th house enemies or foreign elements suddenly attack personal health and identity.",
      "hi": "12वें भाव के छिपे दुश्मन व्यक्तित्व और स्वास्थ्य पर अचानक प्रहार करते हैं।"},
 ]

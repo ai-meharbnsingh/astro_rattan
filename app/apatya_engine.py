@@ -638,6 +638,206 @@ def _remedies(prospect: str, yogas: List[Dict[str, Any]]) -> Dict[str, List[str]
     return {"en": en, "hi": hi}
 
 
+def _children_timing_section(
+    chart_data: Dict[str, Any],
+    fifth_info: Dict[str, Any],
+    yogas: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """
+    Classical progeny timing: favorable dasha periods + Jupiter transit triggers.
+    Source: Phaladeepika Adh. 12 (dasha rules) + Adh. 26 (Gochara principles).
+    """
+    asc_sign = (chart_data.get("ascendant") or {}).get("sign", "")
+
+    fifth_lord = fifth_info.get("fifth_lord", "")
+    fifth_sign = fifth_info.get("fifth_sign", "")          # 5th house sign
+    fifth_lord_natal_sign = fifth_info.get("sign", "")     # where 5th lord sits natally
+
+    ninth_sign = _house_sign(9, asc_sign)
+    ninth_lord = SIGN_LORD.get(ninth_sign, "")
+
+    yoga_keys = {y["key"] for y in yogas}
+    delayed = "delayed_progeny_yoga" in yoga_keys
+
+    # ── Favorable dasha planets ──────────────────────────────────────────────
+    dasha_planets: List[Dict[str, Any]] = []
+
+    # Jupiter — primary karaka for progeny
+    dasha_planets.append({
+        "planet": "Jupiter",
+        "role_en": "Putra Karaka — natural significator of progeny",
+        "role_hi": "पुत्र कारक — संतान का नैसर्गिक कारक",
+        "favorable": True,
+        "reason_en": (
+            "Jupiter's Mahadasha or Antardasha is the most auspicious period for children "
+            "per Phaladeepika Adh. 12. Even within an otherwise unfavorable Mahadasha, "
+            "Jupiter's Antardasha can open a reliable progeny window."
+        ),
+        "reason_hi": (
+            "फलदीपिका अध्याय 12 के अनुसार गुरु की महादशा अथवा अंतर्दशा संतान-प्राप्ति के "
+            "लिए सर्वाधिक शुभ काल है। प्रतिकूल महादशा में भी गुरु का अंतर एक शुभ "
+            "संतान-खिड़की खोल सकता है।"
+        ),
+    })
+
+    # 5th lord — Putra Bhava lord
+    if fifth_lord and fifth_lord != "Jupiter":
+        lord_strength = fifth_info.get("fifth_lord_strength", "moderate")
+        favorable = lord_strength != "weak"
+        weak_note_en = f" (Note: {fifth_lord} is currently weak — this window benefits from remedies.)" if not favorable else ""
+        dasha_planets.append({
+            "planet": fifth_lord,
+            "role_en": "5th lord — Putra Bhava lord",
+            "role_hi": "पंचमेश — पुत्र भाव का स्वामी",
+            "favorable": favorable,
+            "reason_en": (
+                f"{fifth_lord} rules the 5th house (Putra Bhava). Its Mahadasha or Antardasha — "
+                f"particularly when Jupiter simultaneously transits the 5th or 9th sign — "
+                f"brings progeny events to fruition.{weak_note_en}"
+            ),
+            "reason_hi": (
+                f"{fifth_lord} पंचम भाव (पुत्र भाव) का स्वामी है। इसकी महादशा अथवा अंतर्दशा में — "
+                "विशेषतः जब गुरु एक साथ पंचम या नवम राशि में गोचर करे — संतान-प्राप्ति सिद्ध होती है।"
+            ),
+        })
+
+    # 9th lord — trikona, purva-punya axis
+    if ninth_lord and ninth_lord not in ("Jupiter", fifth_lord):
+        dasha_planets.append({
+            "planet": ninth_lord,
+            "role_en": "9th lord — Trikona (Purva Punya)",
+            "role_hi": "नवमेश — त्रिकोण (पूर्व पुण्य)",
+            "favorable": True,
+            "reason_en": (
+                f"{ninth_lord} lords the 9th (trikona to 5th). Its Antardasha within Jupiter's "
+                "or 5th-lord's Mahadasha creates a double-trikona activation — classically "
+                "very auspicious for the manifestation of progeny."
+            ),
+            "reason_hi": (
+                f"{ninth_lord} नवम (पंचम से त्रिकोण) का स्वामी है। गुरु या पंचमेश की महादशा "
+                "में इसका अंतर द्विगुण-त्रिकोण सक्रियता बनाता है — शास्त्र-सम्मत अत्यंत शुभ संयोग।"
+            ),
+        })
+
+    # Saturn — flag as delaying factor when delayed_progeny_yoga present
+    if delayed:
+        dasha_planets.append({
+            "planet": "Saturn",
+            "role_en": "Saturn — Delaying factor",
+            "role_hi": "शनि — विलम्ब कारक",
+            "favorable": False,
+            "reason_en": (
+                "Saturn's Mahadasha or prominent Antardasha tends to delay progeny. "
+                "Children are more likely after age 32–36, or in Saturn's Antar within "
+                "a favorable Mahadasha once karmic dues are cleared."
+            ),
+            "reason_hi": (
+                "शनि की महादशा या प्रमुख अंतर्दशा में संतान-प्राप्ति में विलम्ब होता है। "
+                "32-36 वर्ष की आयु के पश्चात, शुभ महादशा में शनि के अंतर में, "
+                "जब कर्म-ऋण पूर्ण हो, संतान संभव है।"
+            ),
+        })
+
+    # ── Jupiter transit triggers ─────────────────────────────────────────────
+    triggers: List[Dict[str, Any]] = []
+
+    if fifth_sign:
+        triggers.append({
+            "planet": "Jupiter",
+            "watch_sign": fifth_sign,
+            "house_ref": 5,
+            "trigger_en": f"Jupiter transiting {fifth_sign} (natal 5th house sign)",
+            "trigger_hi": f"गुरु का {fifth_sign} में गोचर (जन्मकालीन पंचम भाव)",
+            "significance_en": (
+                f"Jupiter directly activates the Putra Bhava ({fifth_sign}) — "
+                "the single most reliable transit indicator for progeny. "
+                "Most effective when concurrent dasha is Jupiter or the 5th lord."
+            ),
+            "significance_hi": (
+                f"गुरु सीधे पुत्र भाव ({fifth_sign}) को सक्रिय करता है — "
+                "संतान का सर्वाधिक विश्वसनीय गोचर-संकेत। "
+                "जब समवर्ती दशा गुरु या पंचमेश की हो तब सर्वाधिक प्रभावी।"
+            ),
+        })
+
+    if fifth_lord_natal_sign and fifth_lord_natal_sign != fifth_sign:
+        triggers.append({
+            "planet": "Jupiter",
+            "watch_sign": fifth_lord_natal_sign,
+            "house_ref": None,
+            "trigger_en": f"Jupiter transiting {fifth_lord_natal_sign} (natal sign of {fifth_lord}, 5th lord)",
+            "trigger_hi": f"गुरु का {fifth_lord_natal_sign} में गोचर (पंचमेश {fifth_lord} की जन्मकालीन राशि)",
+            "significance_en": (
+                f"Jupiter conjoining the natal 5th lord ({fifth_lord}) by transit "
+                "energises the progeny significator and can trigger conception events."
+            ),
+            "significance_hi": (
+                f"गुरु का जन्मकालीन पंचमेश {fifth_lord} पर गोचर पुत्र-कारक को "
+                "ऊर्जान्वित करता है और गर्भधारण की संभावना को जागृत करता है।"
+            ),
+        })
+
+    if ninth_sign and ninth_sign not in (fifth_sign, fifth_lord_natal_sign):
+        triggers.append({
+            "planet": "Jupiter",
+            "watch_sign": ninth_sign,
+            "house_ref": 9,
+            "trigger_en": f"Jupiter transiting {ninth_sign} (9th house — trikona to 5th)",
+            "trigger_hi": f"गुरु का {ninth_sign} में गोचर (नवम भाव — पंचम का त्रिकोण)",
+            "significance_en": (
+                "9th house is trine to the 5th. Jupiter here activates the purva-punya "
+                "axis, which classically supports the manifestation of progeny."
+            ),
+            "significance_hi": (
+                "नवम भाव पंचम का त्रिकोण है। यहाँ गुरु का गोचर पूर्व-पुण्य अक्ष को "
+                "जागृत करता है — शास्त्रीय रूप से संतान-योग को बल देने वाला।"
+            ),
+        })
+
+    # ── Summary ──────────────────────────────────────────────────────────────
+    if delayed:
+        summary_en = (
+            "Saturn's influence on the 5th house suggests children may arrive after age 32–36, "
+            "or during a favorable Antardasha within Jupiter's or 5th-lord's Mahadasha. "
+            "Remedies (Santan Gopal mantra, Putrakameshti Yagna) and patience are key."
+        )
+        summary_hi = (
+            "पंचम भाव पर शनि के प्रभाव से संतान 32-36 वर्ष की आयु के पश्चात अथवा गुरु / "
+            "पंचमेश की महादशा में शुभ अंतर में आ सकती है। "
+            "उपाय (संतान गोपाल मंत्र, पुत्रकामेष्टि यज्ञ) एवं धैर्य आवश्यक हैं।"
+        )
+    elif "putra_yoga" in yoga_keys or "bahu_putra_yoga" in yoga_keys:
+        summary_en = (
+            "Strong progeny yoga present. The optimal window for children is when Jupiter "
+            "transits your 5th house sign AND the concurrent dasha belongs to Jupiter or "
+            "the 5th lord. Both conditions together are the most reliable classical timing."
+        )
+        summary_hi = (
+            "बलवान पुत्र-योग विद्यमान। संतान-प्राप्ति का सर्वश्रेष्ठ काल वह है जब "
+            "गुरु पंचम राशि में गोचर करे और समवर्ती दशा गुरु अथवा पंचमेश की हो — "
+            "दोनों संयोगों का मेल सर्वाधिक विश्वसनीय शास्त्रीय काल-खिड़की है।"
+        )
+    else:
+        summary_en = (
+            "Watch for periods when Jupiter transits your 5th house sign and the concurrent "
+            "Mahadasha or Antardasha belongs to Jupiter or the 5th lord. "
+            "The overlap of both conditions is the classical timing window for progeny."
+        )
+        summary_hi = (
+            "वह काल देखें जब गुरु पंचम राशि में गोचर करे और समवर्ती महादशा "
+            "या अंतर्दशा गुरु अथवा पंचमेश की हो। "
+            "दोनों संयोगों का मेल शास्त्रीय संतान-काल-खिड़की है।"
+        )
+
+    return {
+        "favorable_dasha_planets": dasha_planets,
+        "transit_triggers": triggers,
+        "summary_en": summary_en,
+        "summary_hi": summary_hi,
+        "sloka_ref": "Phaladeepika Adh. 12 + Adh. 26 (Gochara)",
+    }
+
+
 def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Apatyadhyaya — classical progeny analysis per Phaladeepika Adhyaya 12.
@@ -677,11 +877,13 @@ def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     prospect = _assess_prospect(yogas, fifth)
     recs = _recommendations(prospect, yogas)
     rems = _remedies(prospect, yogas)
+    timing = _children_timing_section(chart_data, fifth, yogas)
 
     return {
         "fifth_house_analysis": fifth,
         "yogas_detected": yogas,
         "progeny_prospect": prospect,
+        "children_timing": timing,
         "recommendations_en": recs["en"],
         "recommendations_hi": recs["hi"],
         "remedies_en": rems["en"],

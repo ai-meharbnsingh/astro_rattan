@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Baby, BookOpen, Heart, Sparkles } from 'lucide-react';
+import { Loader2, Baby, BookOpen, Heart, Sparkles, Calendar, Eye } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -30,10 +30,38 @@ interface FifthHouseAnalysis {
   interpretation_hi: string;
 }
 
+interface DashaPlanet {
+  planet: string;
+  role_en: string;
+  role_hi: string;
+  favorable: boolean;
+  reason_en: string;
+  reason_hi: string;
+}
+
+interface TransitTrigger {
+  planet: string;
+  watch_sign: string;
+  house_ref: number | null;
+  trigger_en: string;
+  trigger_hi: string;
+  significance_en: string;
+  significance_hi: string;
+}
+
+interface ChildrenTiming {
+  favorable_dasha_planets: DashaPlanet[];
+  transit_triggers: TransitTrigger[];
+  summary_en: string;
+  summary_hi: string;
+  sloka_ref: string;
+}
+
 interface ApatyaData {
   fifth_house_analysis: FifthHouseAnalysis;
   yogas_detected: ApatyaYoga[];
   progeny_prospect: 'favorable' | 'challenging' | 'mixed';
+  children_timing?: ChildrenTiming;
   recommendations_en: string[];
   recommendations_hi: string[];
   remedies_en: string[];
@@ -61,6 +89,11 @@ const PROSPECT_STYLES: Record<string, { bg: string; border: string; text: string
   mixed: { bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-900' },
 };
 
+const PLANET_HI: Record<string, string> = {
+  Sun: 'सूर्य', Moon: 'चन्द्र', Mars: 'मंगल', Mercury: 'बुध',
+  Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+
 export default function ApatyaTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<ApatyaData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,9 +115,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
         if (!cancelled) setLoading(false);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [kundliId]);
 
   if (loading) {
@@ -107,6 +138,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
   const prospectStyle = PROSPECT_STYLES[data.progeny_prospect] || PROSPECT_STYLES.mixed;
   const recs = isHi ? data.recommendations_hi : data.recommendations_en;
   const rems = isHi ? data.remedies_hi : data.remedies_en;
+  const pName = (p: string) => isHi ? (PLANET_HI[p] || p) : p;
 
   return (
     <div className="space-y-6">
@@ -120,9 +152,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
       </div>
 
       {/* Prospect banner */}
-      <div
-        className={`p-4 rounded-xl border ${prospectStyle.bg} ${prospectStyle.border} ${prospectStyle.text} flex items-start gap-3`}
-      >
+      <div className={`p-4 rounded-xl border ${prospectStyle.bg} ${prospectStyle.border} ${prospectStyle.text} flex items-start gap-3`}>
         <Heart className="w-5 h-5 shrink-0 mt-0.5" />
         <div>
           <p className="font-semibold capitalize">
@@ -190,10 +220,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
             const effect = isHi ? yoga.effect_hi : yoga.effect_en;
             const probLabel = t(`auto.probability${cap(yoga.probability)}`);
             return (
-              <div
-                key={yoga.key}
-                className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm"
-              >
+              <div key={yoga.key} className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm">
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
                     <h3 className="text-lg font-bold text-sacred-gold-dark">{name}</h3>
@@ -201,9 +228,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
                       <p className="text-xs text-muted-foreground">{yoga.name_hi}</p>
                     )}
                   </div>
-                  <div
-                    className={`shrink-0 px-2 py-1 rounded-md text-xs font-semibold border ${PROBABILITY_STYLES[yoga.probability] || PROBABILITY_STYLES.moderate}`}
-                  >
+                  <div className={`shrink-0 px-2 py-1 rounded-md text-xs font-semibold border ${PROBABILITY_STYLES[yoga.probability] || PROBABILITY_STYLES.moderate}`}>
                     {probLabel}
                   </div>
                 </div>
@@ -226,6 +251,81 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
             );
           })}
         </div>
+      )}
+
+      {/* Children timing — dasha + transit window */}
+      {data.children_timing && (
+        <section className="rounded-xl border-2 border-violet-200 bg-violet-50 p-5">
+          <h3 className="text-lg font-semibold text-violet-900 mb-1 flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
+            {isHi ? 'संतान-प्राप्ति काल — दशा एवं गोचर' : 'Timing for Children — Dasha & Transit'}
+          </h3>
+          <p className="text-xs text-violet-700 leading-relaxed mb-4">
+            {isHi ? data.children_timing.summary_hi : data.children_timing.summary_en}
+          </p>
+
+          {/* Favorable dasha planets */}
+          <div className="mb-4">
+            <h4 className="text-sm font-semibold text-violet-800 mb-2">
+              {isHi ? 'अनुकूल दशा-ग्रह' : 'Favorable Dasha Periods'}
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {data.children_timing.favorable_dasha_planets.map((dp) => (
+                <div
+                  key={dp.planet}
+                  className={`rounded-lg border p-3 ${dp.favorable ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span className="font-bold text-sm text-foreground">{pName(dp.planet)}</span>
+                    <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded ${dp.favorable ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`}>
+                      {dp.favorable ? (isHi ? 'अनुकूल' : 'Favorable') : (isHi ? 'विलम्बकारक' : 'Delaying')}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic mb-1">
+                    {isHi ? dp.role_hi : dp.role_en}
+                  </p>
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    {isHi ? dp.reason_hi : dp.reason_en}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Jupiter transit triggers */}
+          {data.children_timing.transit_triggers.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-violet-800 mb-2">
+                {isHi ? 'गुरु गोचर — संकेत खिड़कियाँ' : 'Jupiter Transit Windows'}
+              </h4>
+              <div className="space-y-2">
+                {data.children_timing.transit_triggers.map((tr, i) => (
+                  <div key={i} className="rounded-lg border border-violet-200 bg-white/70 p-3">
+                    <div className="flex items-start gap-2 mb-1">
+                      <Eye className="w-3.5 h-3.5 shrink-0 mt-0.5 text-violet-500" />
+                      <span className="text-xs font-semibold text-violet-900">
+                        {isHi ? tr.trigger_hi : tr.trigger_en}
+                        {tr.house_ref && (
+                          <span className="ml-1.5 text-[10px] font-normal text-muted-foreground">
+                            ({isHi ? `भाव ${tr.house_ref}` : `House ${tr.house_ref}`})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <p className="text-xs text-foreground/70 leading-relaxed pl-5 italic">
+                      {isHi ? tr.significance_hi : tr.significance_en}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-violet-200 text-[10px] text-violet-600">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.children_timing.sloka_ref}</span>
+          </div>
+        </section>
       )}
 
       {/* Recommendations */}
@@ -277,13 +377,9 @@ function cap(s: string): string {
 
 function translateProspectHi(p: string): string {
   switch (p) {
-    case 'favorable':
-      return 'अनुकूल';
-    case 'challenging':
-      return 'कठिन';
-    case 'mixed':
-      return 'मिश्रित';
-    default:
-      return p;
+    case 'favorable': return 'अनुकूल';
+    case 'challenging': return 'कठिन';
+    case 'mixed': return 'मिश्रित';
+    default: return p;
   }
 }

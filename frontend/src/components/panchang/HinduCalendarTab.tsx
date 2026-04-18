@@ -45,7 +45,7 @@ interface SelectedDayFull {
   loading: boolean;
 }
 
-// ---- helpers (shared with MonthlyCalendarTab) ----
+// ---- helpers ----
 
 const FIXED_FESTIVALS_BY_MMDD: Record<string, string[]> = {
   '01-14': ['Makar Sankranti', 'Pongal'], '01-26': ['Republic Day'],

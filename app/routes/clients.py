@@ -146,7 +146,7 @@ def update_client(
         values,
     )
     db.commit()
-    return {"message": "Client updated"}
+    return {"message": {"en": "Client updated", "hi": "क्लाइंट अपडेट किया गया"}}
 
 
 # ── Sprint I — Create client + auto-generate all charts ─────

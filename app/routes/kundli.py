@@ -2422,7 +2422,7 @@ async def delete_all_my_kundlis(
     db.commit()
 
     return {
-        "message": "All kundlis deleted successfully",
+        "message": {"en": "All kundlis deleted successfully", "hi": "सभी कुंडलियां सफलतापूर्वक हटा दी गईं"},
         "deleted_count": deleted_count,
     }
 
@@ -2460,7 +2460,7 @@ async def delete_kundli(
         db.execute("DELETE FROM kundlis WHERE id = %s", (kundli_id,))
         db.commit()
         
-        return {"message": "Kundli deleted successfully", "kundli_id": kundli_id}
+        return {"message": {"en": "Kundli deleted successfully", "hi": "कुंडली सफलतापूर्वक हटा दी गई"}, "kundli_id": kundli_id}
     except HTTPException:
         raise
     except Exception as e:
@@ -2589,7 +2589,7 @@ def free_kundli_preview(
             mangal = check_mangal_dosha(mars_house)
             if mangal and mangal.get("present"):
                 problems.append({
-                    "title": "Mangal Dosha detected",
+                    "title": {"en": "Mangal Dosha detected", "hi": "मंगल दोष पाया गया"},
                     "detail": "Mars placement may affect marriage prospects",
                 })
 
@@ -2603,7 +2603,7 @@ def free_kundli_preview(
             kaal_sarp = check_kaal_sarp(rahu_house, ketu_house, planet_houses)
             if kaal_sarp and kaal_sarp.get("present"):
                 problems.append({
-                    "title": "Kaal Sarp Dosha",
+                    "title": {"en": "Kaal Sarp Dosha", "hi": "काल सर्प दोष"},
                     "detail": "All planets between Rahu-Ketu axis",
                 })
 
@@ -2613,7 +2613,7 @@ def free_kundli_preview(
             sade_sati = check_sade_sati(moon_sign, saturn_sign)
             if sade_sati and sade_sati.get("active"):
                 problems.append({
-                    "title": "Sade Sati active",
+                    "title": {"en": "Sade Sati active", "hi": "साढ़े साती चल रही है"},
                     "detail": "Saturn transiting near Moon — period of challenges",
                 })
     except Exception as e:
@@ -2624,13 +2624,13 @@ def free_kundli_preview(
         saturn_house = planets.get("Saturn", {}).get("house", 0)
         if saturn_house in [1, 4, 7, 10]:
             problems.append({
-                "title": "Saturn in key house",
+                "title": {"en": "Saturn in key house", "hi": "शनि महत्वपूर्ण भाव में"},
                 "detail": f"Saturn in house {saturn_house} may cause delays in that life area",
             })
         mars_h = planets.get("Mars", {}).get("house", 0)
         if mars_h in [7, 8]:
             problems.append({
-                "title": "Mars affecting relationships",
+                "title": {"en": "Mars affecting relationships", "hi": "मंगल रिश्तों को प्रभावित कर रहा है"},
                 "detail": f"Mars in house {mars_h} brings intensity to partnerships",
             })
 

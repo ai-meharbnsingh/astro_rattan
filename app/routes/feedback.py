@@ -63,7 +63,7 @@ def submit_feedback(
          payload.rating_calculations, text),
     )
     db.commit()
-    return {"message": "Feedback submitted — thank you!"}
+    return {"message": {"en": "Feedback submitted — thank you!", "hi": "फीडबैक सबमिट हो गया — धन्यवाद!"}}
 
 
 # ── User: my history ──────────────────────────────────────────────────────────
@@ -101,7 +101,7 @@ def close_feedback(
         "UPDATE feedback SET status='closed', updated_at=NOW() WHERE id=%s", (feedback_id,)
     )
     db.commit()
-    return {"message": "Marked as resolved"}
+    return {"message": {"en": "Marked as resolved", "hi": "समाधान के रूप में चिह्नित किया गया"}}
 
 
 # ── Admin: word cloud — OPEN feedback only ────────────────────────────────────
@@ -187,4 +187,4 @@ def admin_update_feedback(
         params + [feedback_id],
     )
     db.commit()
-    return {"message": "Updated"}
+    return {"message": {"en": "Updated", "hi": "अपडेट किया गया"}}

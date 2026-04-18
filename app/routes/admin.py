@@ -116,7 +116,7 @@ def update_user_role(
         raise HTTPException(status_code=400, detail="Role must be user, astrologer, or admin")
     db.execute("UPDATE users SET role = %s, updated_at = NOW() WHERE id = %s", (new_role, user_id))
     db.commit()
-    return {"message": f"User role updated to {new_role}"}
+    return {"message": {"en": f"User role updated to {new_role}", "hi": f"उपयोगकर्ता की भूमिका को {new_role} कर दिया गया है"}}
 
 
 @router.patch("/users/{user_id}/toggle-active")
@@ -133,7 +133,7 @@ def toggle_user_active(
         (user_id,),
     )
     db.commit()
-    return {"message": "User status toggled"}
+    return {"message": {"en": "User status toggled", "hi": "उपयोगकर्ता स्थिति बदली गई"}}
 
 
 @router.get("/live")
