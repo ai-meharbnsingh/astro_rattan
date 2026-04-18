@@ -261,6 +261,27 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                         </TableCell>
                       </TableRow>
                     )}
+                    {isExpanded && planet === 'Moon' && d.chandravritta_bala && (
+                      <TableRow className="bg-amber-50/40">
+                        <TableCell className="p-2 pl-6 text-sm font-medium text-amber-700" colSpan={2}>
+                          {language === 'hi' ? 'चन्द्रवृत्त-बल (अ. 4)' : 'Chandravritta Bala (Adh. 4)'}
+                        </TableCell>
+                        <TableCell colSpan={7} className="p-2 text-xs text-foreground/80">
+                          <span className="font-semibold text-amber-700 mr-2">
+                            {language === 'hi' ? 'कुल:' : 'Total:'} {d.chandravritta_bala.total?.toFixed(1)}
+                          </span>
+                          {language === 'hi'
+                            ? `पक्ष: ${d.chandravritta_bala.paksha_component?.toFixed(1)} | गरिमा: ${d.chandravritta_bala.dignity_component?.toFixed(1)}`
+                            : `Paksha: ${d.chandravritta_bala.paksha_component?.toFixed(1)} | Dignity: ${d.chandravritta_bala.dignity_component?.toFixed(1)}`
+                          }
+                          {' — '}
+                          {language === 'hi'
+                            ? d.chandravritta_bala.description_hi
+                            : d.chandravritta_bala.description_en
+                          }
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </React.Fragment>
                 );
               })}

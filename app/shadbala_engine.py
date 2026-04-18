@@ -782,6 +782,85 @@ def _chandrastha_bala(planet: str, moon_house: int, planet_house: int) -> float:
 
 
 # ============================================================
+# 8. Chandravritta Bala — Phaladeepika Adh. 4 (Moon-specific)
+# Extra strength for the Moon based on paksha bala, sign dignity.
+#
+# Full Moon (paksha bala at max 60) = +60 Virupas (1 Rupa extra)
+# Moon in own sign (Cancer / sign index 3) = +30 Virupas (+0.5 Rupa)
+# Moon in exaltation (Taurus / sign index 1) = +60 Virupas (+1 Rupa)
+# Moon in enemy / debilitation (Scorpio / sign index 7) = -30 Virupas
+# ============================================================
+
+def _chandravritta_bala(
+    moon_sign: str,
+    moon_sun_elongation: float,
+) -> Dict[str, Any]:
+    """
+    Moon-specific Chandravritta Bala (Phaladeepika Adh. 4).
+
+    Returns a dict with:
+        total      — Virupas (may be negative for debilitated/enemy)
+        paksha_component  — bonus from lunar phase
+        dignity_component — bonus/penalty from sign placement
+        description_en, description_hi
+        sloka_ref
+    """
+    paksha_component = 0.0
+    dignity_component = 0.0
+    notes_en = []
+    notes_hi = []
+
+    # --- Paksha component: Full Moon bonus ---
+    # paksha_bala for Moon ranges 0–60. At maximum (full Moon = 60 Virupas),
+    # award the full +60; taper proportionally.
+    elong = moon_sun_elongation % 360.0
+    if elong <= 180.0:
+        moon_paksha_val = round(elong / 3.0, 2)
+    else:
+        moon_paksha_val = round((360.0 - elong) / 3.0, 2)
+    moon_paksha_val = min(60.0, max(0.0, moon_paksha_val))
+
+    # Full Moon bonus: scaled so 60 Virupas paksha → +60 Virupas chandravritta
+    paksha_component = round(moon_paksha_val, 2)
+    if moon_paksha_val >= 55.0:
+        notes_en.append("Moon is near Full (Purnima) — maximum Paksha Bala bonus.")
+        notes_hi.append("चन्द्रमा पूर्णिमा के निकट है — अधिकतम पक्ष-बल बोनस।")
+    elif moon_paksha_val >= 30.0:
+        notes_en.append("Moon is waxing/waning moderately — moderate Paksha Bala.")
+        notes_hi.append("चन्द्रमा मध्यम वृद्धि/क्षय में है — मध्यम पक्ष-बल।")
+    else:
+        notes_en.append("Moon is near New (Amavasya) — low Paksha Bala.")
+        notes_hi.append("चन्द्रमा अमावस्या के निकट है — न्यून पक्ष-बल।")
+
+    # --- Dignity component based on sign ---
+    moon_sign_idx = _sign_name_to_index(moon_sign)
+
+    if moon_sign_idx == 3:  # Cancer — own sign
+        dignity_component = 30.0
+        notes_en.append("Moon in own sign Cancer — +0.5 Rupa Chandravritta Bala.")
+        notes_hi.append("चन्द्रमा स्वराशि कर्क में — +0.5 रूप चन्द्रवृत्त-बल।")
+    elif moon_sign_idx == 1:  # Taurus — exaltation
+        dignity_component = 60.0
+        notes_en.append("Moon exalted in Taurus — +1 Rupa Chandravritta Bala.")
+        notes_hi.append("चन्द्रमा वृष में उच्च — +1 रूप चन्द्रवृत्त-बल।")
+    elif moon_sign_idx == 7:  # Scorpio — debilitation / enemy
+        dignity_component = -30.0
+        notes_en.append("Moon debilitated in Scorpio — −0.5 Rupa Chandravritta Bala.")
+        notes_hi.append("चन्द्रमा वृश्चिक में नीच — −0.5 रूप चन्द्रवृत्त-बल।")
+
+    total = round(paksha_component + dignity_component, 2)
+
+    return {
+        "total": total,
+        "paksha_component": paksha_component,
+        "dignity_component": dignity_component,
+        "description_en": " ".join(notes_en),
+        "description_hi": " ".join(notes_hi),
+        "sloka_ref": "Phaladeepika Adh. 4",
+    }
+
+
+# ============================================================
 # PUBLIC API
 # ============================================================
 
@@ -816,7 +895,7 @@ def calculate_shadbala(
 
     Returns:
         {"planets": {planet: {sthana, dig, kala, cheshta, naisargika, drik,
-                              total, required, ratio, is_strong}}}
+                              chandra, chandravritta (Moon only), total, required, ratio, is_strong}}}
     """
     if retrograde_planets is None:
         retrograde_planets = set()
@@ -862,7 +941,14 @@ def calculate_shadbala(
         # 7. Chandrastha Bala (Phaladeepika Adh. 4)
         chandra = _chandrastha_bala(planet, moon_house, house)
 
-        total = round(sthana + dig + kala + cheshta + naisargika + drik + chandra, 2)
+        # 8. Chandravritta Bala (Moon only — Phaladeepika Adh. 4)
+        chandravritta_detail: Optional[Dict[str, Any]] = None
+        chandravritta_bonus = 0.0
+        if planet == "Moon":
+            chandravritta_detail = _chandravritta_bala(sign, moon_sun_elongation)
+            chandravritta_bonus = chandravritta_detail["total"]
+
+        total = round(sthana + dig + kala + cheshta + naisargika + drik + chandra + chandravritta_bonus, 2)
         required = REQUIRED_STRENGTH.get(planet, 300)
         ratio = round(total / required, 2) if required > 0 else 0.0
 
@@ -872,7 +958,7 @@ def calculate_shadbala(
         ishta = round(min(60.0, math.sqrt(max(0.0, cheshta) * max(0.0, sthana))), 2)
         kashta = round(min(60.0, math.sqrt(max(0.0, 60.0 - cheshta) * max(0.0, 60.0 - sthana))), 2)
 
-        planets_result[planet] = {
+        planet_entry: Dict[str, Any] = {
             "sthana": sthana,
             "dig": dig,
             "kala": kala,
@@ -890,6 +976,10 @@ def calculate_shadbala(
             "sthana_detail": sthana_detail,
             "kala_detail": kala_detail,
         }
+        if chandravritta_detail is not None:
+            planet_entry["chandravritta_bala"] = chandravritta_detail
+
+        planets_result[planet] = planet_entry
 
     ishta_kashta_summary = {
         planet: {

@@ -21,6 +21,9 @@ interface MahadashaAnalysis {
   when_weak_en?: string;
   when_weak_hi?: string;
   sloka_ref: string;
+  dignity_modifier?: 'excellent' | 'challenged' | 'obstructed' | 'neutral';
+  dignity_note_en?: string;
+  dignity_note_hi?: string;
 }
 
 interface AntardashaAnalysis {
@@ -86,6 +89,37 @@ function severityClasses(sev: string): { badge: string; label: string } {
       return { badge: 'bg-rose-100 text-rose-800 border-rose-300', label: 'severityChallenging' };
     default:
       return { badge: 'bg-amber-100 text-amber-800 border-amber-300', label: 'severityMixed' };
+  }
+}
+
+function dignityBadge(modifier?: string): { classes: string; labelEn: string; labelHi: string } | null {
+  if (!modifier) return null;
+  switch (modifier) {
+    case 'excellent':
+      return {
+        classes: 'bg-green-100 text-green-800 border-green-300',
+        labelEn: 'Excellent',
+        labelHi: 'उत्कृष्ट',
+      };
+    case 'challenged':
+      return {
+        classes: 'bg-orange-100 text-orange-800 border-orange-300',
+        labelEn: 'Challenged',
+        labelHi: 'चुनौतीपूर्ण',
+      };
+    case 'obstructed':
+      return {
+        classes: 'bg-red-100 text-red-800 border-red-300',
+        labelEn: 'Obstructed',
+        labelHi: 'अवरुद्ध',
+      };
+    case 'neutral':
+    default:
+      return {
+        classes: 'bg-slate-100 text-slate-600 border-slate-300',
+        labelEn: 'Neutral',
+        labelHi: 'मध्यम',
+      };
   }
 }
 
@@ -195,6 +229,17 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
             >
               {t(`auto.${strengthClasses(md.analysis.strength).label}`)}
             </span>
+            {(() => {
+              const db = dignityBadge(md.analysis.dignity_modifier);
+              return db ? (
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${db.classes}`}
+                  title={hi ? md.analysis.dignity_note_hi : md.analysis.dignity_note_en}
+                >
+                  {hi ? db.labelHi : db.labelEn}
+                </span>
+              ) : null;
+            })()}
             <span className="text-xs text-foreground/60 ml-auto">
               {md.start} → {md.end} · {md.years} {l('yrs', 'वर्ष')}
             </span>
@@ -203,6 +248,19 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
           <p className="text-sm text-foreground leading-relaxed">
             {hi ? md.analysis.effect_hi : md.analysis.effect_en}
           </p>
+
+          {/* Dignity note */}
+          {md.analysis.dignity_modifier && md.analysis.dignity_modifier !== 'neutral' && (
+            <div className={`mt-2 px-3 py-2 rounded-lg text-xs ${
+              md.analysis.dignity_modifier === 'excellent'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : md.analysis.dignity_modifier === 'obstructed'
+                  ? 'bg-red-50 text-red-800 border border-red-200'
+                  : 'bg-orange-50 text-orange-800 border border-orange-200'
+            }`}>
+              {hi ? md.analysis.dignity_note_hi : md.analysis.dignity_note_en}
+            </div>
+          )}
 
           <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
             {md.analysis.factors.map((f) => (
