@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Baby, BookOpen, Heart, Sparkles, Calendar, Eye } from 'lucide-react';
+import { Loader2, Baby, BookOpen, Heart, Sparkles, Calendar, Eye, ShieldAlert, Clock, Users } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -98,6 +98,77 @@ interface FecundityScore {
   sloka_ref: string;
 }
 
+interface AdoptionReason {
+  reason_en: string;
+  reason_hi: string;
+}
+
+interface AdoptionIndicators {
+  indicated: boolean;
+  strength: 'strong' | 'moderate' | 'none';
+  reasons: AdoptionReason[];
+  sloka_ref: string;
+}
+
+interface ChildGenderReasons {
+  reason_en: string;
+  reason_hi: string;
+}
+
+interface FemaleChildYogas {
+  indicated: boolean;
+  reasons: ChildGenderReasons[];
+  sloka_ref: string;
+}
+
+interface MaleChildYogas {
+  indicated: boolean;
+  reasons: ChildGenderReasons[];
+  sloka_ref: string;
+}
+
+interface ConceptionWindow {
+  period_en: string;
+  period_hi: string;
+  jupiter_position: string;
+  type: 'transit' | 'dasha';
+}
+
+interface ConceptionTiming {
+  favorable_windows: ConceptionWindow[];
+  current_favorable: boolean;
+  note_en: string;
+  note_hi: string;
+  sloka_ref: string;
+}
+
+interface DeliveryIndicators {
+  method_en: string;
+  method_hi: string;
+  estimated_months_range: string;
+  note_en: string;
+  note_hi: string;
+  sloka_ref: string;
+}
+
+interface ChildLossYoga {
+  key: string;
+  name_en: string;
+  name_hi: string;
+  description_en: string;
+  description_hi: string;
+  severity: 'high' | 'moderate_high' | 'moderate';
+}
+
+interface ChildLossYogas {
+  present: boolean;
+  overall_risk: 'very_high' | 'high' | 'moderate' | 'none';
+  yogas: ChildLossYoga[];
+  note_en: string;
+  note_hi: string;
+  sloka_ref: string;
+}
+
 interface ApatyaData {
   fifth_house_analysis: FifthHouseAnalysis;
   yogas_detected: ApatyaYoga[];
@@ -106,6 +177,13 @@ interface ApatyaData {
   child_count_estimate?: ChildCountEstimate | null;
   gender_analysis?: GenderAnalysis | null;
   fecundity_score?: FecundityScore | null;
+  // Sprint F — advanced analysis
+  adoption_indicators?: AdoptionIndicators | null;
+  female_child_yogas?: FemaleChildYogas | null;
+  male_child_yogas?: MaleChildYogas | null;
+  conception_timing?: ConceptionTiming | null;
+  delivery_indicators?: DeliveryIndicators | null;
+  child_loss_yogas?: ChildLossYogas | null;
   recommendations_en: string[];
   recommendations_hi: string[];
   remedies_en: string[];
@@ -136,6 +214,19 @@ const PROSPECT_STYLES: Record<string, { bg: string; border: string; text: string
 const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चन्द्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
+};
+
+const SEVERITY_STYLES: Record<string, string> = {
+  high: 'bg-red-100 text-red-800 border-red-300',
+  moderate_high: 'bg-orange-100 text-orange-800 border-orange-300',
+  moderate: 'bg-amber-100 text-amber-800 border-amber-300',
+};
+
+const RISK_LABEL: Record<string, { en: string; hi: string }> = {
+  very_high: { en: 'Very High Risk', hi: 'अत्यंत उच्च जोखिम' },
+  high: { en: 'High Risk', hi: 'उच्च जोखिम' },
+  moderate: { en: 'Moderate Risk', hi: 'मध्यम जोखिम' },
+  none: { en: 'No Risk', hi: 'कोई जोखिम नहीं' },
 };
 
 export default function ApatyaTab({ kundliId, language, t }: Props) {
@@ -460,6 +551,213 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
           <div className="flex items-center gap-1.5 pt-2 border-t border-emerald-200 text-[10px] text-emerald-600">
             <BookOpen className="w-3 h-3" />
             <span className="italic">{data.fecundity_score.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint F — Gender of Children (male + female yogas side by side) */}
+      {(data.female_child_yogas?.indicated || data.male_child_yogas?.indicated) && (
+        <section className="rounded-xl border border-pink-200 bg-pink-50 p-5">
+          <h3 className="text-base font-semibold text-pink-900 mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            {isHi ? 'संतान लिंग योग' : 'Gender of Children Yogas'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Female yogas */}
+            {data.female_child_yogas?.indicated && (
+              <div className="rounded-lg border border-pink-300 bg-white/70 p-4">
+                <p className="text-sm font-semibold text-pink-800 mb-2">
+                  {isHi ? 'कन्या संतान योग' : 'Female Children Yoga'}
+                </p>
+                <ul className="space-y-2">
+                  {data.female_child_yogas.reasons.map((r, i) => (
+                    <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
+                      <span className="text-pink-500 mt-0.5">•</span>
+                      <span>{isHi ? r.reason_hi : r.reason_en}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-pink-200 text-[10px] text-pink-600">
+                  <BookOpen className="w-3 h-3" />
+                  <span className="italic">{data.female_child_yogas.sloka_ref}</span>
+                </div>
+              </div>
+            )}
+            {/* Male yogas */}
+            {data.male_child_yogas?.indicated && (
+              <div className="rounded-lg border border-blue-300 bg-white/70 p-4">
+                <p className="text-sm font-semibold text-blue-800 mb-2">
+                  {isHi ? 'पुत्र संतान योग' : 'Male Children Yoga'}
+                </p>
+                <ul className="space-y-2">
+                  {data.male_child_yogas.reasons.map((r, i) => (
+                    <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
+                      <span className="text-blue-500 mt-0.5">•</span>
+                      <span>{isHi ? r.reason_hi : r.reason_en}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-blue-200 text-[10px] text-blue-600">
+                  <BookOpen className="w-3 h-3" />
+                  <span className="italic">{data.male_child_yogas.sloka_ref}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Sprint F — Adoption Indicators (shown only when indicated or strength != none) */}
+      {data.adoption_indicators && data.adoption_indicators.strength !== 'none' && (
+        <section className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+          <h3 className="text-base font-semibold text-amber-900 mb-3 flex items-center gap-2">
+            <Heart className="w-4 h-4" />
+            {isHi ? 'दत्तक संतान संकेत' : 'Adoption Indicators'}
+            <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded border ${
+              data.adoption_indicators.strength === 'strong'
+                ? 'bg-orange-100 text-orange-800 border-orange-300'
+                : 'bg-amber-100 text-amber-800 border-amber-300'
+            }`}>
+              {data.adoption_indicators.strength === 'strong'
+                ? (isHi ? 'प्रबल' : 'Strong')
+                : (isHi ? 'मध्यम' : 'Moderate')}
+            </span>
+          </h3>
+          <ul className="space-y-2 mb-3">
+            {data.adoption_indicators.reasons.map((r, i) => (
+              <li key={i} className="text-sm text-foreground/80 flex items-start gap-2">
+                <span className="text-amber-600 mt-0.5">•</span>
+                <span>{isHi ? r.reason_hi : r.reason_en}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-1.5 pt-2 border-t border-amber-200 text-[10px] text-amber-700">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.adoption_indicators.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint F — Conception Timing */}
+      {data.conception_timing && data.conception_timing.favorable_windows.length > 0 && (
+        <section className="rounded-xl border border-teal-200 bg-teal-50 p-5">
+          <h3 className="text-base font-semibold text-teal-900 mb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            {isHi ? 'गर्भधारण अनुकूल काल' : 'Conception Timing Windows'}
+          </h3>
+          <p className="text-xs text-teal-700 leading-relaxed mb-4">
+            {isHi ? data.conception_timing.note_hi : data.conception_timing.note_en}
+          </p>
+          <div className="space-y-2 mb-3">
+            {data.conception_timing.favorable_windows.map((w, i) => (
+              <div key={i} className={`rounded-lg border p-3 flex items-start gap-2 ${
+                w.type === 'dasha'
+                  ? 'border-violet-200 bg-violet-50/80'
+                  : 'border-teal-200 bg-white/70'
+              }`}>
+                <span className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded mt-0.5 ${
+                  w.type === 'dasha'
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-teal-600 text-white'
+                }`}>
+                  {w.type === 'dasha' ? (isHi ? 'दशा' : 'DASHA') : (isHi ? 'गोचर' : 'TRANSIT')}
+                </span>
+                <div>
+                  <p className="text-xs font-medium text-foreground leading-snug">
+                    {isHi ? w.period_hi : w.period_en}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    {isHi ? 'गुरु स्थिति:' : 'Jupiter:'} {w.jupiter_position}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 pt-2 border-t border-teal-200 text-[10px] text-teal-600">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.conception_timing.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint F — Delivery Notes */}
+      {data.delivery_indicators && (
+        <section className="rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFFBF0] to-white p-5">
+          <h3 className="text-base font-semibold text-sacred-gold-dark mb-2 flex items-center gap-2">
+            <Baby className="w-4 h-4" />
+            {isHi ? 'प्रसव काल — शास्त्रीय विधि' : 'Delivery Timing — Classical Method'}
+            <span className="ml-auto text-xs font-medium bg-sacred-gold/10 text-sacred-gold-dark border border-sacred-gold/30 px-2 py-0.5 rounded">
+              {data.delivery_indicators.estimated_months_range} {isHi ? 'माह' : 'months'}
+            </span>
+          </h3>
+          <p className="text-sm text-foreground/80 leading-relaxed mb-3">
+            {isHi ? data.delivery_indicators.method_hi : data.delivery_indicators.method_en}
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed italic mb-3">
+            {isHi ? data.delivery_indicators.note_hi : data.delivery_indicators.note_en}
+          </p>
+          <div className="flex items-center gap-1.5 pt-2 border-t border-sacred-gold/15 text-[10px] text-muted-foreground">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.delivery_indicators.sloka_ref}</span>
+          </div>
+        </section>
+      )}
+
+      {/* Sprint F — Child Loss Yogas (complete) */}
+      {data.child_loss_yogas?.present && (
+        <section className={`rounded-xl border-2 p-5 ${
+          data.child_loss_yogas.overall_risk === 'very_high' || data.child_loss_yogas.overall_risk === 'high'
+            ? 'border-red-300 bg-red-50'
+            : 'border-orange-200 bg-orange-50'
+        }`}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`text-base font-semibold flex items-center gap-2 ${
+              data.child_loss_yogas.overall_risk === 'very_high' || data.child_loss_yogas.overall_risk === 'high'
+                ? 'text-red-900'
+                : 'text-orange-900'
+            }`}>
+              <ShieldAlert className="w-4 h-4" />
+              {isHi ? 'संतान-हानि योग' : 'Child Loss Yogas'}
+            </h3>
+            <span className={`text-xs font-bold px-2 py-1 rounded border ${
+              data.child_loss_yogas.overall_risk === 'very_high'
+                ? 'bg-red-200 text-red-900 border-red-400'
+                : data.child_loss_yogas.overall_risk === 'high'
+                  ? 'bg-red-100 text-red-800 border-red-300'
+                  : 'bg-orange-100 text-orange-800 border-orange-300'
+            }`}>
+              {isHi
+                ? RISK_LABEL[data.child_loss_yogas.overall_risk]?.hi
+                : RISK_LABEL[data.child_loss_yogas.overall_risk]?.en}
+            </span>
+          </div>
+          <div className="space-y-3 mb-3">
+            {data.child_loss_yogas.yogas.map((yoga, i) => (
+              <div key={i} className="rounded-lg border bg-white/70 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <p className="text-sm font-semibold text-foreground">
+                    {isHi ? yoga.name_hi : yoga.name_en}
+                  </p>
+                  <span className={`shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${SEVERITY_STYLES[yoga.severity] || SEVERITY_STYLES.moderate}`}>
+                    {yoga.severity === 'high' ? (isHi ? 'उच्च' : 'High')
+                      : yoga.severity === 'moderate_high' ? (isHi ? 'मध्यम-उच्च' : 'Mod-High')
+                      : (isHi ? 'मध्यम' : 'Moderate')}
+                  </span>
+                </div>
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  {isHi ? yoga.description_hi : yoga.description_en}
+                </p>
+              </div>
+            ))}
+          </div>
+          {(isHi ? data.child_loss_yogas.note_hi : data.child_loss_yogas.note_en) && (
+            <p className="text-xs text-foreground/70 italic leading-relaxed mb-3 p-3 bg-white/60 rounded-lg border border-current/10">
+              {isHi ? data.child_loss_yogas.note_hi : data.child_loss_yogas.note_en}
+            </p>
+          )}
+          <div className="flex items-center gap-1.5 pt-2 border-t border-red-200 text-[10px] text-red-600">
+            <BookOpen className="w-3 h-3" />
+            <span className="italic">{data.child_loss_yogas.sloka_ref}</span>
           </div>
         </section>
       )}
