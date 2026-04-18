@@ -454,6 +454,122 @@ def _sign_of_house(house: int, ascendant_sign: str) -> str:
     return _SIGN_NAMES[(asc_idx + house - 1) % 12]
 
 
+# ============================================================
+# KAKSHA (Sub-division) System — Phaladeepika Adh. 23-24
+# Each sign (30°) is divided into 8 Kakshas of 3°45' each,
+# ruled in order: Saturn→Jupiter→Mars→Sun→Venus→Mercury→Moon→Ascendant.
+# If the Kaksha lord contributed a bindu to the transiting planet's
+# Bhinnashtakavarga for that sign, the Kaksha is favorable.
+# ============================================================
+
+_KAKSHA_LORDS_ORDER = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon", "Ascendant"]
+_KAKSHA_DEGREE = 30.0 / 8  # 3.75° per Kaksha
+
+_KAKSHA_PLANET_HI: Dict[str, str] = {
+    "Sun": "सूर्य", "Moon": "चंद्र", "Mars": "मंगल", "Mercury": "बुध",
+    "Jupiter": "गुरु", "Venus": "शुक्र", "Saturn": "शनि", "Ascendant": "लग्न",
+}
+_KAKSHA_SIGN_HI: Dict[str, str] = {
+    "Aries": "मेष", "Taurus": "वृषभ", "Gemini": "मिथुन", "Cancer": "कर्क",
+    "Leo": "सिंह", "Virgo": "कन्या", "Libra": "तुला", "Scorpio": "वृश्चिक",
+    "Sagittarius": "धनु", "Capricorn": "मकर", "Aquarius": "कुंभ", "Pisces": "मीन",
+}
+
+
+def get_kaksha_info(
+    transiting_planet: str,
+    longitude: float,
+    natal_planet_signs: Dict[str, str],
+    natal_asc_sign: str,
+) -> Dict[str, Any]:
+    """Return Kaksha sub-division info for a transiting planet.
+
+    Args:
+        transiting_planet: Name of transiting planet (e.g. "Sun").
+        longitude:         Ecliptic longitude 0–360 of the transit planet.
+        natal_planet_signs: Dict mapping planet name → natal sign (str).
+        natal_asc_sign:    Natal ascendant sign (str).
+
+    Returns dict with:
+        kaksha_number    (1–8)
+        kaksha_lord      (str)
+        kaksha_lord_hi   (str)
+        favorable        (bool)
+        gave_bindu       (bool)
+        sign             (str)
+        degree_in_sign   (float)
+        interpretation_en/hi
+        sloka_ref
+    """
+    sign_idx = int(longitude / 30) % 12
+    sign_name = _SIGN_NAMES[sign_idx]
+    degree_in_sign = longitude % 30
+
+    kaksha_idx = min(int(degree_in_sign / _KAKSHA_DEGREE), 7)
+    kaksha_number = kaksha_idx + 1
+    kaksha_lord = _KAKSHA_LORDS_ORDER[kaksha_idx]
+
+    # Determine whether the Kaksha lord contributed a bindu to this sign
+    # in the transiting planet's Bhinnashtakavarga.
+    contrib_key = "Ascendant" if kaksha_lord == "Ascendant" else kaksha_lord
+    contrib_sign = natal_asc_sign if kaksha_lord == "Ascendant" else natal_planet_signs.get(kaksha_lord, "")
+
+    gave_bindu = False
+    if (
+        contrib_sign
+        and transiting_planet in BENEFIC_POINTS
+        and contrib_key in BENEFIC_POINTS[transiting_planet]
+    ):
+        try:
+            contrib_idx = _sign_name_to_index(contrib_sign)
+            house_from_contrib = (sign_idx - contrib_idx) % 12 + 1
+            gave_bindu = house_from_contrib in BENEFIC_POINTS[transiting_planet][contrib_key]
+        except (ValueError, KeyError):
+            pass
+
+    favorable = gave_bindu
+
+    planet_hi = _KAKSHA_PLANET_HI.get(transiting_planet, transiting_planet)
+    lord_hi = _KAKSHA_PLANET_HI.get(kaksha_lord, kaksha_lord)
+    sign_hi = _KAKSHA_SIGN_HI.get(sign_name, sign_name)
+
+    if favorable:
+        interp_en = (
+            f"{transiting_planet} is in Kaksha {kaksha_number} of {sign_name} "
+            f"(lord: {kaksha_lord}). Kaksha lord granted a bindu — transit is "
+            f"effective and beneficial in this sub-zone."
+        )
+        interp_hi = (
+            f"{planet_hi} {sign_hi} राशि की काक्षा {kaksha_number} में है "
+            f"({lord_hi} काक्षाधिपति)। काक्षाधिपति ने बिंदु दिया — "
+            f"इस उपखंड में गोचर प्रभावी और अनुकूल है।"
+        )
+    else:
+        interp_en = (
+            f"{transiting_planet} is in Kaksha {kaksha_number} of {sign_name} "
+            f"(lord: {kaksha_lord}). Kaksha lord denied a bindu — transit "
+            f"results may be weaker in this sub-zone."
+        )
+        interp_hi = (
+            f"{planet_hi} {sign_hi} राशि की काक्षा {kaksha_number} में है "
+            f"({lord_hi} काक्षाधिपति)। काक्षाधिपति ने बिंदु नहीं दिया — "
+            f"इस उपखंड में गोचर फल कमज़ोर हो सकता है।"
+        )
+
+    return {
+        "kaksha_number": kaksha_number,
+        "kaksha_lord": kaksha_lord,
+        "kaksha_lord_hi": lord_hi,
+        "favorable": favorable,
+        "gave_bindu": gave_bindu,
+        "sign": sign_name,
+        "degree_in_sign": round(degree_in_sign, 2),
+        "interpretation_en": interp_en,
+        "interpretation_hi": interp_hi,
+        "sloka_ref": "Phaladeepika Adh. 23-24",
+    }
+
+
 def analyze_ashtakvarga_phala(chart_data: dict) -> dict:
     """Phaladeepika Adhyaya 24 — applied predictive rules from Ashtakavarga.
 

@@ -1116,6 +1116,47 @@ _UNFAVORABLE_DESC: Dict[str, str] = {
     "Moon":     "The Moon's transit here may bring emotional turbulence, anxiety, or domestic unease.",
 }
 
+# Phaladeepika Adh. 26 — retrograde transit modifies the direct effect.
+# A retrograde planet's influence is intensified and turned inward.
+_RETROGRADE_EFFECTS: Dict[str, Dict[str, str]] = {
+    "Mars": {
+        "en": "Retrograde Mars intensifies aggression and unresolved conflicts. Past disputes may resurface; channel energy into disciplined action rather than confrontation.",
+        "hi": "वक्री मंगल आक्रामकता और अनसुलझे विवादों को तीव्र करता है। पुराने मामले फिर सामने आ सकते हैं; टकराव के बजाय अनुशासित कार्रवाई में ऊर्जा लगाएँ।",
+    },
+    "Mercury": {
+        "en": "Retrograde Mercury disrupts communication and contracts. Double-check agreements; delays in travel and technology are likely.",
+        "hi": "वक्री बुध संचार और अनुबंधों में व्यवधान डालता है। समझौतों को दोबारा जाँचें; यात्रा और तकनीक में देरी संभव है।",
+    },
+    "Jupiter": {
+        "en": "Retrograde Jupiter turns wisdom inward. Spiritual review is favored, but outward expansion and new ventures should be deferred.",
+        "hi": "वक्री गुरु ज्ञान को अंतर्मुखी कर देता है। आध्यात्मिक पुनर्विलोकन अनुकूल है, किंतु बाह्य विस्तार और नए उद्यम टालें।",
+    },
+    "Venus": {
+        "en": "Retrograde Venus reopens old relationship matters. Reassess values and artistic projects; avoid new romantic commitments.",
+        "hi": "वक्री शुक्र पुराने संबंधों के मामले फिर खोलता है। मूल्यों और कलात्मक परियोजनों का पुनर्मूल्यांकन करें; नई रोमांटिक प्रतिबद्धताएँ टालें।",
+    },
+    "Saturn": {
+        "en": "Retrograde Saturn deepens karmic reckoning. Unfinished duties and long-pending responsibilities demand attention; slow but sure progress.",
+        "hi": "वक्री शनि कर्मिक हिसाब-किताब गहरा करता है। अधूरे कर्तव्य और दीर्घकालीन ज़िम्मेदारियाँ ध्यान माँगती हैं; धीमी किंतु निश्चित प्रगति।",
+    },
+    "Rahu": {
+        "en": "Retrograde Rahu amplifies obsessive desires and unconventional urges. Stay grounded; sudden disruptions from the past may reappear.",
+        "hi": "वक्री राहु आसक्त इच्छाओं और अपरंपरागत प्रवृत्तियों को बढ़ाता है। भूमि से जुड़े रहें; अतीत से अचानक व्यवधान फिर सामने आ सकते हैं।",
+    },
+    "Ketu": {
+        "en": "Retrograde Ketu accelerates spiritual detachment and release. Letting go of old attachments is easier now; trust inner guidance.",
+        "hi": "वक्री केतु आध्यात्मिक वैराग्य और मोचन को तेज़ करता है। पुराने आसक्तियों को छोड़ना अब आसान है; आंतरिक मार्गदर्शन पर भरोसा रखें।",
+    },
+    "Sun": {
+        "en": "The Sun is never retrograde in geocentric astrology.",
+        "hi": "भूकेंद्रीय ज्योतिष में सूर्य कभी वक्री नहीं होता।",
+    },
+    "Moon": {
+        "en": "The Moon is never retrograde in geocentric astrology.",
+        "hi": "भूकेंद्रीय ज्योतिष में चंद्रमा कभी वक्री नहीं होता।",
+    },
+}
+
 
 def _check_sade_sati(moon_sign: str, saturn_sign: str) -> Dict[str, Any]:
     """
@@ -1216,6 +1257,12 @@ def calculate_transits(
     favorable_count = 0
     total_planets = 0
 
+    # Build natal planet signs + asc sign for Kaksha computation
+    natal_planets_map = natal_chart_data.get("planets", {})
+    natal_planet_signs = {p: info.get("sign", "") for p, info in natal_planets_map.items()}
+    natal_asc_sign = natal_chart_data.get("ascendant", {}).get("sign", "Aries")
+    _KAKSHA_PLANETS = {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
+
     for planet_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
         planet_info = current_planets.get(planet_name, {})
         current_sign = planet_info.get("sign", "Aries")
@@ -1241,7 +1288,23 @@ def calculate_transits(
         )
         description += f" (Transiting house {house_from_moon} from Moon in {natal_moon_sign})"
 
-        transits.append({
+        # Kaksha sub-division (Phaladeepika Adh. 23-24) — Sun through Saturn only
+        kaksha = None
+        if planet_name in _KAKSHA_PLANETS:
+            try:
+                from app.ashtakvarga_engine import get_kaksha_info
+                lon = planet_info.get("longitude", 0.0)
+                if not lon:
+                    # Reconstruct from sign index + sign_degree
+                    _SIGNS = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+                               "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+                    s_idx = _SIGNS.index(current_sign) if current_sign in _SIGNS else 0
+                    lon = s_idx * 30.0 + planet_info.get("sign_degree", 0.0)
+                kaksha = get_kaksha_info(planet_name, lon, natal_planet_signs, natal_asc_sign)
+            except Exception:
+                pass
+
+        entry = {
             "planet": planet_name,
             "current_sign": current_sign,
             "sign_degree": round(planet_info.get("sign_degree", 0.0), 1),
@@ -1251,7 +1314,10 @@ def calculate_transits(
             "natal_house_from_moon": house_from_moon,
             "effect": effect,
             "description": description,
-        })
+        }
+        if kaksha:
+            entry["kaksha"] = kaksha
+        transits.append(entry)
 
     # Apply Gochara Vedhas + Lattas (Phaladeepika Adh. 26) for classical accuracy
     try:

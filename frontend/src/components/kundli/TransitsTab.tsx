@@ -422,8 +422,23 @@ export default function TransitsTab(props: TransitsTabProps) {
                             {language === 'hi' ? tr.latta_description_hi : tr.latta_description_en}
                           </p>
                         )}
+                        {/* Kaksha sub-division badge */}
+                        {tr.kaksha && (
+                          <div className="mt-2 flex items-center gap-2 flex-wrap">
+                            <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold border ${tr.kaksha.favorable ? 'bg-violet-50 text-violet-800 border-violet-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                              ◈ Kaksha {tr.kaksha.kaksha_number}/{tr.kaksha.kaksha_lord}
+                              {tr.kaksha.favorable ? ' ✓' : ' ✗'}
+                            </span>
+                            <p className="text-xs text-muted-foreground/80 italic">
+                              {language === 'hi' ? tr.kaksha.interpretation_hi : tr.kaksha.interpretation_en}
+                            </p>
+                          </div>
+                        )}
                         {tr.sloka_ref && (
                           <p className="text-[10px] text-muted-foreground/70 mt-2 italic">{tr.sloka_ref}</p>
+                        )}
+                        {tr.kaksha?.sloka_ref && !tr.sloka_ref && (
+                          <p className="text-[10px] text-muted-foreground/70 mt-2 italic">{tr.kaksha.sloka_ref}</p>
                         )}
                       </div>
                     );
