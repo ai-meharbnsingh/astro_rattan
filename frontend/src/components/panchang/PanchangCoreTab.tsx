@@ -103,6 +103,17 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   const dagdhaTithiNum = DAGDHA_TITHIS[vaarNum];
   const isDagdha = dagdhaTithiNum !== undefined && panchang.tithi.number === dagdhaTithiNum;
 
+  // Karana quality badge (extended: also show quality from backend if present)
+  const karanaQualityBadge = karanaData?.quality && !karanaData?.is_vishti && karanaData?.type !== 'sthira' && karanaData?.type !== 'chara' ? (
+    <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1 ${
+      karanaData.quality === 'auspicious' ? 'bg-green-100 text-green-800' :
+      karanaData.quality === 'inauspicious' ? 'bg-red-100 text-red-800' :
+      'bg-gray-100 text-gray-700'
+    }`}>
+      {karanaData.quality}
+    </span>
+  ) : null;
+
   const coreRows = [
     {
       metric: isHi ? 'तिथि' : t('panchang.tithi'),
@@ -110,6 +121,10 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       details: `${t('auto.no')} ${panchang.tithi.number} • ${isHi ? panchang.tithi.paksha_hindi || panchang.tithi.paksha : panchang.tithi.paksha}`,
       endTime: panchang.tithi.end_time || '--',
       badge: tithiTypeBadge,
+      subLines: [
+        panchang.tithi.lord ? `${isHi ? 'स्वामी' : 'Lord'}: ${isHi ? panchang.tithi.lord_hi || panchang.tithi.lord : panchang.tithi.lord}` : null,
+        panchang.tithi.phala_en ? (isHi ? panchang.tithi.phala_hi || panchang.tithi.phala_en : panchang.tithi.phala_en) : null,
+      ].filter(Boolean) as string[],
     },
     {
       metric: isHi ? 'नक्षत्र' : t('panchang.nakshatra'),
@@ -121,6 +136,9 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
           {nakCatLabel}
         </span>
       ),
+      subLines: [
+        panchang.nakshatra.deity ? `${isHi ? 'देवता' : 'Deity'}: ${isHi ? panchang.nakshatra.deity_hi || panchang.nakshatra.deity : panchang.nakshatra.deity}` : null,
+      ].filter(Boolean) as string[],
     },
     {
       metric: isHi ? 'योग' : t('panchang.yoga'),
@@ -128,13 +146,19 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       details: `${t('auto.no')} ${panchang.yoga.number}`,
       endTime: panchang.yoga.end_time || '--',
       badge: yogaBadge,
+      subLines: [
+        panchang.yoga.interpretation_en ? (isHi ? panchang.yoga.interpretation_hi || panchang.yoga.interpretation_en : panchang.yoga.interpretation_en) : null,
+      ].filter(Boolean) as string[],
     },
     {
       metric: isHi ? 'करण' : t('panchang.karana'),
       value: isHi ? panchang.karana.name_hindi || panchang.karana.name : panchang.karana.name,
       details: `${t('auto.no')} ${panchang.karana.number}`,
       endTime: panchang.karana.end_time || '--',
-      badge: karanaBadge,
+      badge: <>{karanaBadge}{karanaQualityBadge}</>,
+      subLines: [
+        panchang.karana.interpretation_en ? (isHi ? panchang.karana.interpretation_hi || panchang.karana.interpretation_en : panchang.karana.interpretation_en) : null,
+      ].filter(Boolean) as string[],
     },
   ];
 
@@ -180,7 +204,9 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
     {
       metric: t('auto.weekday'),
       value: language === 'hi' ? panchang.vaar?.name_hindi || panchang.vaar?.name || '--' : panchang.vaar?.name || '--',
-      details: t('auto.dayName'),
+      details: panchang.vaar?.planet_lord
+        ? `${t('auto.dayName')} • ${isHi ? panchang.vaar.planet_lord_hi || panchang.vaar.planet_lord : panchang.vaar.planet_lord}`
+        : t('auto.dayName'),
     },
   ];
 
@@ -221,6 +247,9 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
                 <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">
                   <span>{row.details}</span>
                   {row.badge && <span className="ml-1.5 align-middle">{row.badge}</span>}
+                  {row.subLines && row.subLines.map((line, i) => (
+                    <p key={i} className="text-xs text-muted-foreground mt-0.5 leading-relaxed italic">{line}</p>
+                  ))}
                 </TableCell>
                 <TableCell className="px-2 py-1 text-sacred-gold whitespace-normal break-words">{row.endTime}</TableCell>
               </TableRow>
@@ -271,6 +300,24 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
         </Table>
       </div>
     </div>
+
+    {/* Panchanga Shuddhi Score */}
+    {panchang.panchanga_shuddhi && (
+      <div className="flex items-center gap-2 p-2 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20">
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground">{isHi ? 'पंचांग शुद्धि' : 'Panchanga Shuddhi'}</p>
+          <p className="text-lg font-bold text-sacred-gold">{panchang.panchanga_shuddhi.percentage}%</p>
+        </div>
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+          panchang.panchanga_shuddhi.grade === 'Shubha' ? 'bg-green-100 text-green-800' :
+          panchang.panchanga_shuddhi.grade === 'Madhyama' ? 'bg-yellow-100 text-yellow-800' :
+          'bg-red-100 text-red-800'
+        }`}>
+          {isHi ? panchang.panchanga_shuddhi.grade_hi : panchang.panchanga_shuddhi.grade}
+        </span>
+        <p className="text-xs text-muted-foreground ml-1">{panchang.panchanga_shuddhi.score}/{panchang.panchanga_shuddhi.max}</p>
+      </div>
+    )}
     </div>
   );
 }

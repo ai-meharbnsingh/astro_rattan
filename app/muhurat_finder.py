@@ -20,10 +20,130 @@ from typing import Any, Dict, List, Optional
 from app.muhurat_rules import (
     MUHURAT_RULES, MUHURAT_ACTIVITIES, DAGDHA_TITHIS,
     get_all_activities, check_day_favorable, normalize_tithi_for_rules,
-    MRITYU_YOGA_TITHI, VISHA_YOGA_TITHI,
+    MRITYU_YOGA_TITHI, VISHA_YOGA_TITHI, DOSHA_CANCELLATIONS,
 )
 from app.panchang_engine import calculate_panchang
 from app.sankranti_engine import find_sankranti_times
+
+# ============================================================
+# Muhurat Scoring & Quality
+# ============================================================
+
+def _score_muhurat(
+    tithi_index: int,
+    weekday: int,
+    nak_name: str,
+    yoga_auspicious: bool,
+    karana_name: str,
+    rahu_kaal_active: bool,
+    avoid_tithis: List[int],
+    avoid_weekdays: List[int],
+    avoid_nakshatras: List[str],
+    favorable_tithis: List[int],
+    favorable_weekdays: List[int],
+    favorable_nakshatras: List[str],
+    panchang_data: Dict[str, Any],
+) -> int:
+    """Score a muhurat slot 0-100 based on positive/negative factors.
+
+    Positive factors: favorable tithi (+20), favorable vara (+15), favorable
+    nakshatra (+25), auspicious yoga (+10), non-Vishti karana (+5),
+    Sarvartha Siddhi (+20), Amrit Siddhi (+20).
+
+    Negative factors: rahu_kaal (−30), avoid_tithi (−25), avoid_vara (−20),
+    avoid_nakshatra (−25).
+
+    Returns score clamped to [0, 100].
+    """
+    score = 0
+    norm_t = normalize_tithi_for_rules(tithi_index)
+
+    # Positive
+    if norm_t in favorable_tithis:
+        score += 20
+    if weekday in favorable_weekdays:
+        score += 15
+    if nak_name in favorable_nakshatras:
+        score += 25
+    if yoga_auspicious:
+        score += 10
+    if "vishti" not in karana_name.lower() and "bhadra" not in karana_name.lower():
+        score += 5
+
+    special = panchang_data.get("special_yogas", {}) or {}
+    if special.get("sarvartha_siddhi", {}).get("active"):
+        score += 20
+    if special.get("amrit_siddhi", {}).get("active"):
+        score += 20
+
+    # Negative
+    if rahu_kaal_active:
+        score -= 30
+    if norm_t in avoid_tithis:
+        score -= 25
+    if weekday in avoid_weekdays:
+        score -= 20
+    if nak_name in avoid_nakshatras:
+        score -= 25
+
+    return max(0, min(100, score))
+
+
+def _quality_label(score: int) -> str:
+    """Convert numeric score to Sanskrit quality label."""
+    if score >= 75:
+        return "Uttama"
+    if score >= 50:
+        return "Madhyama"
+    return "Saamanya"
+
+
+def _check_dosha_cancellations(
+    panchang: Dict[str, Any],
+    active_doshas: List[str],
+) -> List[str]:
+    """Return list of dosha keys that are cancelled by active yoga/nakshatra conditions."""
+    cancelled: List[str] = []
+    nak_name = (panchang.get("nakshatra") or {}).get("name", "")
+    special = panchang.get("special_yogas", {}) or {}
+
+    is_pushya = (nak_name == "Pushya")
+    # Abhijit muhurat: midday window — check if current time is near solar noon.
+    # We check structurally: panchang may expose abhijit_muhurat key.
+    abhijit_active = bool((special.get("abhijit_muhurat") or {}).get("active"))
+    guru_pushya = is_pushya and bool(special.get("guru_pushya_yoga", {}).get("active"))
+    guru_hora_active = False
+    for h in (panchang.get("hora_table") or []):
+        if h.get("lord") == "Jupiter":
+            guru_hora_active = True
+            break
+    special_yoga_active = (
+        bool((special.get("sarvartha_siddhi") or {}).get("active"))
+        or bool((special.get("amrit_siddhi") or {}).get("active"))
+    )
+
+    for dosha_key, dosha_def in DOSHA_CANCELLATIONS.items():
+        if dosha_key not in active_doshas:
+            continue
+        for canceller in dosha_def["cancelled_by"]:
+            if canceller == "pushya_nakshatra" and is_pushya:
+                cancelled.append(dosha_key)
+                break
+            if canceller == "abhijit_muhurat" and abhijit_active:
+                cancelled.append(dosha_key)
+                break
+            if canceller == "guru_pushya_yoga" and guru_pushya:
+                cancelled.append(dosha_key)
+                break
+            if canceller == "guru_hora" and guru_hora_active:
+                cancelled.append(dosha_key)
+                break
+            if canceller == "special_yoga_active" and special_yoga_active:
+                cancelled.append(dosha_key)
+                break
+
+    return cancelled
+
 
 # Good tara numbers (1-indexed): Sampat=2, Kshema=4, Sadhaka=6, Mitra=8, Ati-Mitra=9
 _GOOD_TARAS = {2, 4, 6, 8, 9}
@@ -366,6 +486,54 @@ def find_muhurat_dates(
                 result["reasons_bad"].append(f"Tara Balam — {tara_name} tara (unfavorable)")
                 result["score"] = max(0, result["score"] - 25)
 
+        # ── Muhurat score (structured scoring) + quality label ──────────
+        karana_name_raw = panchang.get("karana", {}).get("name", "")
+        yoga_number_val = (panchang.get("yoga") or {}).get("number", 0)
+        # Yoga is auspicious if not Vyatipata(17) or Vaidhriti(27) and yoga_number >= 1
+        yoga_is_auspicious = bool(yoga_number_val and yoga_number_val not in (17, 27))
+        # Rahu Kaal active check: compare current time window? We use a heuristic —
+        # rahu_kaal dict present and non-empty means it's a day-time slot consideration.
+        rahu_kaal_dict = panchang.get("rahu_kaal", {}) or {}
+        rahu_kaal_active_flag = bool(rahu_kaal_dict.get("start") and rahu_kaal_dict.get("end"))
+
+        _avoid_tithis_norm = [normalize_tithi_for_rules(t) for t in [4, 8, 9, 14, 15, 30]]
+        _avoid_weekdays_map: Dict[str, int] = {
+            "Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3,
+            "Friday": 4, "Saturday": 5, "Sunday": 6,
+        }
+        muhurat_score_val = _score_muhurat(
+            tithi_index=tithi_index,
+            weekday=weekday,
+            nak_name=nak_name,
+            yoga_auspicious=yoga_is_auspicious,
+            karana_name=karana_name_raw,
+            rahu_kaal_active=rahu_kaal_active_flag,
+            avoid_tithis=_avoid_tithis_norm,
+            avoid_weekdays=[
+                _avoid_weekdays_map[w]
+                for w in ["Tuesday", "Saturday"]
+                if w in _avoid_weekdays_map
+            ],
+            avoid_nakshatras=[],  # activity-specific avoids embedded in check_day_favorable
+            favorable_tithis=rules.get("favorable_tithis", []),
+            favorable_weekdays=rules.get("favorable_weekdays", []),
+            favorable_nakshatras=rules.get("favorable_nakshatras", []),
+            panchang_data=panchang,
+        )
+        muhurat_quality = _quality_label(muhurat_score_val)
+
+        # ── Dosha cancellation check ─────────────────────────────────────
+        active_doshas_for_cancellation: List[str] = []
+        _kn = karana_name_raw.lower()
+        if "vishti" in _kn or "bhadra" in _kn:
+            active_doshas_for_cancellation.append("vishti")
+        if rahu_kaal_active_flag:
+            active_doshas_for_cancellation.append("rahu_kaal")
+        _norm_t_val = normalize_tithi_for_rules(tithi_index)
+        if _norm_t_val in (8, 14):
+            active_doshas_for_cancellation.append("ashtami_chaturdashi")
+        cancelled_doshas = _check_dosha_cancellations(panchang, active_doshas_for_cancellation)
+
         # ── Favorable lagna windows ───────────────────────────────────
         lagna_windows = [
             {
@@ -493,6 +661,9 @@ def find_muhurat_dates(
             "nakshatra":      nak_name,
             "paksha":         paksha,
             "score":          result["score"],
+            "muhurat_score":  muhurat_score_val,
+            "quality":        muhurat_quality,
+            "dosha_cancellations": cancelled_doshas,
             "reasons_good":   result["reasons_good"],
             "reasons_bad":    result.get("reasons_bad", []),
             "sunrise":        panchang.get("sunrise", ""),

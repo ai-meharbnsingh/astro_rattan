@@ -118,6 +118,66 @@ MUHURAT_ACTIVITIES: Dict[str, Dict[str, str]] = {
         "description": "Guidance for funeral timings (avoid major doshas)",
         "description_hindi": "अंत्येष्टि समय-निर्धारण (मुख्य दोषों से बचें)",
     },
+    "medical_treatment": {
+        "name": "Medical Treatment / Surgery", "name_hindi": "चिकित्सा / शल्य चिकित्सा", "icon": "⚕️",
+        "description": "Auspicious time for medical treatment or surgery",
+        "description_hindi": "चिकित्सा / शल्य चिकित्सा के लिए शुभ समय",
+    },
+    "puja_havan": {
+        "name": "Puja / Havan / Yagna", "name_hindi": "पूजा / हवन / यज्ञ", "icon": "🪔",
+        "description": "Auspicious time for puja, havan, or yagna",
+        "description_hindi": "पूजा / हवन / यज्ञ के लिए शुभ समय",
+    },
+    "legal_court": {
+        "name": "Legal / Court Proceedings", "name_hindi": "कानूनी / न्यायालय कार्य", "icon": "⚖️",
+        "description": "Auspicious time for legal or court matters",
+        "description_hindi": "कानूनी / न्यायालय कार्य के लिए शुभ समय",
+    },
+    "loan_debt": {
+        "name": "Loan / Debt Repayment", "name_hindi": "ऋण / उधार चुकाना", "icon": "💰",
+        "description": "Auspicious time for taking or repaying loans",
+        "description_hindi": "ऋण / उधार चुकाने के लिए शुभ समय",
+    },
+    "garbha_dhana": {
+        "name": "Garbha Dhana (Conception Ceremony)", "name_hindi": "गर्भाधान संस्कार", "icon": "🌱",
+        "description": "Auspicious time for Garbha Dhana samskara",
+        "description_hindi": "गर्भाधान संस्कार के लिए शुभ समय",
+    },
+    "jatakarma": {
+        "name": "Jatakarma (Birth Ceremony)", "name_hindi": "जातकर्म संस्कार", "icon": "👶",
+        "description": "Auspicious time for birth ceremony",
+        "description_hindi": "जातकर्म संस्कार के लिए शुभ समय",
+    },
+    "nishkramana": {
+        "name": "Nishkramana (First Outdoor Outing)", "name_hindi": "निष्क्रमण संस्कार", "icon": "🌞",
+        "description": "Auspicious time for first outdoor outing of infant",
+        "description_hindi": "निष्क्रमण संस्कार के लिए शुभ समय",
+    },
+    "karnavedha": {
+        "name": "Karnavedha (Ear Piercing)", "name_hindi": "कर्णवेध संस्कार", "icon": "💎",
+        "description": "Auspicious time for ear piercing ceremony",
+        "description_hindi": "कर्णवेध संस्कार के लिए शुभ समय",
+    },
+    "kupa_baoli": {
+        "name": "Well / Water Body Construction", "name_hindi": "कुआँ / बावली निर्माण", "icon": "💧",
+        "description": "Auspicious time for constructing a well or water body",
+        "description_hindi": "कुआँ / बावली निर्माण के लिए शुभ समय",
+    },
+    "door_gate": {
+        "name": "Door / Gate Installation", "name_hindi": "दरवाज़ा / द्वार स्थापना", "icon": "🚪",
+        "description": "Auspicious time for door or gate installation",
+        "description_hindi": "दरवाज़ा / द्वार स्थापना के लिए शुभ समय",
+    },
+    "vehicle_purchase_ext": {
+        "name": "Vehicle Purchase (Extended)", "name_hindi": "वाहन खरीद (विस्तृत)", "icon": "🚙",
+        "description": "Extended auspicious time for vehicle purchase with additional checks",
+        "description_hindi": "वाहन खरीद (विस्तृत नियमों सहित) के लिए शुभ समय",
+    },
+    "construction_start": {
+        "name": "Construction Start", "name_hindi": "निर्माण प्रारंभ", "icon": "🏗️",
+        "description": "Auspicious time for starting construction",
+        "description_hindi": "निर्माण प्रारंभ के लिए शुभ समय",
+    },
 }
 
 # ============================================================
@@ -198,9 +258,11 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
     "griha_pravesh": {
         "favorable_tithis": [2, 3, 5, 7, 10, 11, 12, 13],
         "favorable_nakshatras": [
-            "Ashwini", "Rohini", "Pushya", "Uttara Phalguni", "Hasta",
-            "Chitra", "Swati", "Anuradha", "Uttara Ashadha", "Shravana",
-            "Dhanishta", "Shatabhisha", "Uttara Bhadrapada", "Revati",
+            "Rohini", "Mrigashira", "Pushya", "Uttara Phalguni", "Hasta",
+            "Anuradha", "Uttara Ashadha", "Uttara Bhadrapada", "Revati",
+            # also retained from original for backward compat
+            "Ashwini", "Chitra", "Swati", "Shravana",
+            "Dhanishta", "Shatabhisha",
         ],
         "favorable_weekdays": [0, 2, 3, 4],  # Mon, Wed, Thu, Fri
         "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Simha", "Tula", "Dhanu"],
@@ -211,6 +273,15 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
             "ekadashi", "sankranti", "retrograde_jupiter", "retrograde_saturn",
         ],
         "samskara": True,
+        # Extended Griha Pravesh rules
+        "uttarayan_preferred": True,   # Makar Sankranti → Karka Sankranti (roughly Jan–Jul)
+        "notes_extended": (
+            "Uttarayan (Jan–Jul, Sun in Capricorn→Gemini) is strongly preferred. "
+            "Pushya and Rohini nakshatras are especially auspicious — Pushya is ruled by "
+            "Brihaspati (Jupiter) ensuring divine blessing, and Rohini by the Moon ensuring "
+            "prosperity and comfort in the new home. "
+            "Best lagnas: Vrishabha (stability), Simha (strength), Dhanu (expansion)."
+        ),
     },
     "vehicle_purchase": {
         "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
@@ -428,6 +499,230 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         "avoid_krishna_paksha": False,
         "avoid_conditions": ["bhadra", "panchaka", "ganda_moola", "sankranti"],
         "samskara": True,
+    },
+    # ── New activities (Sprint II) ────────────────────────────────────────
+    "medical_treatment": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Ashwini", "Pushya", "Hasta", "Shravana", "Mrigashira",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Ashwini nakshatra (deity: Ashwini Kumaras — celestial physicians) is especially auspicious. Avoid Rahu Kaal.",
+        "dosha_free": True,
+    },
+    "puja_havan": {
+        # good_vara: Sunday=6, Monday=0, Wednesday=2, Thursday=3, Friday=4
+        "favorable_tithis": [1, 2, 3, 5, 6, 7, 10, 11, 12, 13, 15],
+        "favorable_nakshatras": [
+            "Rohini", "Pushya", "Uttara Phalguni", "Hasta", "Shravana",
+            "Uttara Ashadha", "Revati",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4, 6],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu", "Meena"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Full moon (Purnima) and Ekadashi are especially auspicious for puja.",
+        "dosha_free": False,
+    },
+    "legal_court": {
+        # good_vara: Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Saturday=5, Tuesday=1
+        "favorable_tithis": [2, 3, 5, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Punarvasu", "Pushya", "Hasta", "Uttara Phalguni",
+        ],
+        "favorable_weekdays": [2, 3, 4],
+        "favorable_lagnas": ["Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Mercury-ruled days (Wednesday) are best for legal matters.",
+        "dosha_free": True,
+    },
+    "loan_debt": {
+        # good_vara: Wednesday=2, Thursday=3, Friday=4, Monday=0
+        # avoid_vara: Saturday=5
+        "favorable_tithis": [2, 5, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Pushya", "Hasta", "Shravana", "Uttara Phalguni",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Avoid borrowing on Amavasya. Repayment is best on waxing moon days.",
+        "dosha_free": False,
+    },
+    "garbha_dhana": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5, Sunday=6
+        "favorable_tithis": [4, 6, 8, 10, 12, 14],  # even tithis for son
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Uttara Phalguni", "Uttara Ashadha",
+            "Uttara Bhadrapada", "Anuradha", "Dhanishta",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti", "retrograde_jupiter"],
+        "samskara": True,
+        "notes": "Even tithis in Shukla Paksha preferred. Avoid Vishti Karana.",
+        "dosha_free": True,
+    },
+    "jatakarma": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [1, 2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Pushya", "Uttara Phalguni", "Uttara Ashadha",
+            "Uttara Bhadrapada", "Shravana", "Dhanishta", "Revati",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": True,
+        "notes": "Performed within 10 days of birth. Time of birth nakshatra is primary consideration.",
+        "dosha_free": False,
+    },
+    "nishkramana": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4, Sunday=6
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Pushya", "Hasta", "Shravana", "Revati", "Punarvasu",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4, 6],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": True,
+        "notes": "Performed in 4th month. Sun or Moon nakshatra at time is auspicious.",
+        "dosha_free": False,
+    },
+    "karnavedha": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Pushya", "Hasta", "Shravana", "Uttara Phalguni",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": True,
+        "notes": "6th or 12th month after birth. Avoid Rahu Kaal.",
+        "dosha_free": False,
+    },
+    "kupa_baoli": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya",
+            "Hasta", "Shravana", "Shatabhisha",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Water-related nakshatras (Ardra, Shatabhisha, Purva Ashadha) are especially good.",
+        "dosha_free": False,
+    },
+    "door_gate": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Hasta", "Uttara Phalguni",
+            "Uttara Ashadha", "Uttara Bhadrapada",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Uttara nakshatras (Uttara Phalguni, Uttara Ashadha, Uttara Bhadrapada) are most auspicious.",
+        "dosha_free": False,
+    },
+    "vehicle_purchase_ext": {
+        # good_vara: Monday=0, Wednesday=2, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Pushya", "Hasta", "Uttara Phalguni",
+            "Anuradha", "Shravana",
+        ],
+        "favorable_weekdays": [0, 2, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu", "Meena"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "sankranti"],
+        "samskara": False,
+        "notes": "Avoid Ashtami and Chaturdashi. Saturn hora during purchase is unfavourable.",
+        "dosha_free": True,
+    },
+    "construction_start": {
+        # good_vara: Monday=0, Wednesday=2, Thursday=3, Friday=4
+        # avoid_vara: Tuesday=1, Saturday=5
+        "favorable_tithis": [2, 3, 5, 6, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Pushya", "Uttara Phalguni", "Uttara Ashadha",
+            "Uttara Bhadrapada", "Hasta", "Anuradha",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": ["Margashirsha", "Pausha", "Magha", "Phalguna", "Chaitra", "Vaishakha", "Jyeshtha"],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": [
+            "rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya",
+            "ekadashi", "sankranti", "retrograde_saturn",
+        ],
+        "samskara": False,
+        "notes": "Month-based rule: Margashirsha to Jyeshtha months are preferred. Avoid Ashadha and Shraavana.",
+        "dosha_free": True,
+    },
+}
+
+
+# ============================================================
+# DOSHA CANCELLATION RULES
+# ============================================================
+DOSHA_CANCELLATIONS: Dict[str, Dict[str, Any]] = {
+    "vishti": {
+        "cancelled_by": ["pushya_nakshatra", "abhijit_muhurat", "guru_pushya_yoga"],
+        "description": "Vishti/Bhadra Karana dosha is cancelled if Pushya nakshatra is active, or during Abhijit Muhurat",
+        "description_hi": "पुष्य नक्षत्र या अभिजित मुहूर्त में भद्रा/विष्टि दोष समाप्त हो जाता है",
+    },
+    "rahu_kaal": {
+        "cancelled_by": ["abhijit_muhurat"],
+        "description": "Rahu Kaal dosha is partially cancelled during Abhijit Muhurat (midday)",
+        "description_hi": "अभिजित मुहूर्त में राहु काल का प्रभाव कम होता है",
+    },
+    "ashtami_chaturdashi": {
+        "cancelled_by": ["special_yoga_active", "guru_hora"],
+        "description": "8th and 14th tithi dosha is reduced when special yogas (Sarvartha Siddhi, Amrit Siddhi) are active",
+        "description_hi": "अष्टमी/चतुर्दशी दोष विशेष योग (सर्वार्थ सिद्धि, अमृत सिद्धि) में कम होता है",
     },
 }
 

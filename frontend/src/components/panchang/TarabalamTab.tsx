@@ -75,6 +75,11 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                     </TableCell>
                     <TableCell className="px-2 py-1 text-muted-foreground">
                       {row.tara}
+                      {row.interpretation && (
+                        <p className="text-[11px] text-muted-foreground mt-0.5 italic">
+                          {hi ? row.interpretation_hi || row.interpretation : row.interpretation}
+                        </p>
+                      )}
                     </TableCell>
                     <TableCell className="px-2 py-1 text-center">
                       {row.good ? (
@@ -140,6 +145,11 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                       </TableCell>
                       <TableCell className="px-2 py-1 text-muted-foreground">
                         {row.balam}
+                        {row.interpretation && (
+                          <p className="text-[11px] text-muted-foreground mt-0.5 italic">
+                            {hi ? row.interpretation_hi || row.interpretation : row.interpretation}
+                          </p>
+                        )}
                       </TableCell>
                       <TableCell className="px-2 py-1 text-center">
                         {row.good ? (

@@ -74,6 +74,39 @@ NAKSHATRA_HINDI: Dict[str, str] = {
 }
 
 # ============================================================
+# NAKSHATRA DEITY — presiding deity for each nakshatra
+# ============================================================
+NAKSHATRA_DEITY: Dict[str, Tuple[str, str]] = {
+    "Ashwini":           ("Ashwini Kumaras",       "अश्विनी कुमार"),
+    "Bharani":           ("Yama",                  "यम"),
+    "Krittika":          ("Agni",                  "अग्नि"),
+    "Rohini":            ("Brahma/Prajapati",       "ब्रह्मा/प्रजापति"),
+    "Mrigashira":        ("Soma/Chandra",           "सोम/चन्द्र"),
+    "Ardra":             ("Rudra",                  "रुद्र"),
+    "Punarvasu":         ("Aditi",                  "अदिति"),
+    "Pushya":            ("Brihaspati",             "बृहस्पति"),
+    "Ashlesha":          ("Sarpas/Nagas",           "सर्प/नाग"),
+    "Magha":             ("Pitrs/Ancestors",        "पितर"),
+    "Purva Phalguni":    ("Bhaga",                  "भग"),
+    "Uttara Phalguni":   ("Aryaman",                "अर्यमा"),
+    "Hasta":             ("Savitar/Surya",           "सवितर/सूर्य"),
+    "Chitra":            ("Tvashtar/Vishwakarma",   "त्वष्टर/विश्वकर्मा"),
+    "Swati":             ("Vayu",                   "वायु"),
+    "Vishakha":          ("Indra-Agni",             "इन्द्र-अग्नि"),
+    "Anuradha":          ("Mitra",                  "मित्र"),
+    "Jyeshtha":          ("Indra",                  "इन्द्र"),
+    "Mula":              ("Nirrti/Rakshasa",         "निर्ऋति/राक्षस"),
+    "Purva Ashadha":     ("Apas/Water",             "अप/जल"),
+    "Uttara Ashadha":    ("Vishwadevas",             "विश्वदेव"),
+    "Shravana":          ("Vishnu",                 "विष्णु"),
+    "Dhanishta":         ("Vasus",                  "वसु"),
+    "Shatabhisha":       ("Varuna",                 "वरुण"),
+    "Purva Bhadrapada":  ("Aja Ekapad",             "अज एकपाद"),
+    "Uttara Bhadrapada": ("Ahir Budhnya",           "अहिर्बुध्न्य"),
+    "Revati":            ("Pushan",                 "पूषन"),
+}
+
+# ============================================================
 # NAKSHATRA CATEGORY (Muhurta Chintamani, Ch. 2)
 # 7 types: Sthira, Chara, Ugra, Mishra, Laghu, Mridu, Tikshna
 # ============================================================
@@ -224,6 +257,59 @@ TITHIS: List[Dict[str, Any]] = [
 ]
 
 # ============================================================
+# TITHI LORDS & PHALA (fruit texts) — 1-based tithi number 1-30
+# Tithis 16-30 mirror 1-15 (same lord/phala, Krishna Paksha context)
+# ============================================================
+TITHI_LORD: Dict[int, str] = {
+    1: "Moon",    2: "Mars",     3: "Venus",    4: "Mercury",  5: "Jupiter",
+    6: "Venus",   7: "Saturn",   8: "Saturn",   9: "Sun",      10: "Moon",
+    11: "Mars",   12: "Venus",   13: "Mercury", 14: "Jupiter", 15: "Saturn",
+    16: "Moon",   17: "Mars",    18: "Venus",   19: "Mercury", 20: "Jupiter",
+    21: "Venus",  22: "Saturn",  23: "Saturn",  24: "Sun",     25: "Moon",
+    26: "Mars",   27: "Venus",   28: "Mercury", 29: "Jupiter", 30: "Saturn",
+}
+TITHI_LORD_HI: Dict[int, str] = {
+    1: "चन्द्र",   2: "मंगल",     3: "शुक्र",    4: "बुध",      5: "बृहस्पति",
+    6: "शुक्र",    7: "शनि",      8: "शनि",      9: "सूर्य",    10: "चन्द्र",
+    11: "मंगल",   12: "शुक्र",   13: "बुध",     14: "बृहस्पति", 15: "शनि",
+    16: "चन्द्र",  17: "मंगल",    18: "शुक्र",   19: "बुध",     20: "बृहस्पति",
+    21: "शुक्र",   22: "शनि",     23: "शनि",     24: "सूर्य",   25: "चन्द्र",
+    26: "मंगल",   27: "शुक्र",   28: "बुध",     29: "बृहस्पति", 30: "शनि",
+}
+TITHI_PHALA: Dict[int, Dict[str, str]] = {
+    1:  {"en": "Auspicious, good for new beginnings", "hi": "शुभ, नए कार्य के लिए उत्तम"},
+    2:  {"en": "Good for wealth and partnerships", "hi": "धन और साझेदारी के लिए शुभ"},
+    3:  {"en": "Favourable for celebration", "hi": "उत्सव के लिए अनुकूल"},
+    4:  {"en": "Neutral; avoid major decisions", "hi": "तटस्थ; बड़े निर्णयों से बचें"},
+    5:  {"en": "Auspicious for education and growth", "hi": "शिक्षा और विकास के लिए शुभ"},
+    6:  {"en": "Good for artistic and creative work", "hi": "कलात्मक कार्य के लिए उत्तम"},
+    7:  {"en": "Favourable for travel and new ventures", "hi": "यात्रा और नए उद्यम के लिए अनुकूल"},
+    8:  {"en": "Neutral; health care advised", "hi": "तटस्थ; स्वास्थ्य पर ध्यान दें"},
+    9:  {"en": "Auspicious for devotion and charity", "hi": "भक्ति और दान के लिए शुभ"},
+    10: {"en": "Good for all auspicious work", "hi": "सभी शुभ कार्यों के लिए उत्तम"},
+    11: {"en": "Ekadashi — best for fasting and worship", "hi": "एकादशी — व्रत और पूजा के लिए श्रेष्ठ"},
+    12: {"en": "Good for gifts and charitable acts", "hi": "दान और उपहार के लिए शुभ"},
+    13: {"en": "Good for learning and prosperity", "hi": "ज्ञान और समृद्धि के लिए शुभ"},
+    14: {"en": "Avoid auspicious work; good for mantras", "hi": "शुभ कार्य टालें; मंत्र जाप उत्तम"},
+    15: {"en": "Purnima — highly auspicious for all sacred acts", "hi": "पूर्णिमा — सभी पवित्र कार्यों के लिए अत्यंत शुभ"},
+    16: {"en": "Auspicious, good for new beginnings (Krishna)", "hi": "शुभ, नए कार्य के लिए उत्तम (कृष्ण पक्ष)"},
+    17: {"en": "Good for wealth and partnerships (Krishna)", "hi": "धन और साझेदारी के लिए शुभ (कृष्ण पक्ष)"},
+    18: {"en": "Favourable for celebration (Krishna)", "hi": "उत्सव के लिए अनुकूल (कृष्ण पक्ष)"},
+    19: {"en": "Neutral; avoid major decisions (Krishna)", "hi": "तटस्थ; बड़े निर्णयों से बचें (कृष्ण पक्ष)"},
+    20: {"en": "Auspicious for education and growth (Krishna)", "hi": "शिक्षा और विकास के लिए शुभ (कृष्ण पक्ष)"},
+    21: {"en": "Good for artistic and creative work (Krishna)", "hi": "कलात्मक कार्य के लिए उत्तम (कृष्ण पक्ष)"},
+    22: {"en": "Favourable for travel and new ventures (Krishna)", "hi": "यात्रा और नए उद्यम के लिए अनुकूल (कृष्ण पक्ष)"},
+    23: {"en": "Neutral; health care advised (Krishna)", "hi": "तटस्थ; स्वास्थ्य पर ध्यान दें (कृष्ण पक्ष)"},
+    24: {"en": "Auspicious for devotion and charity (Krishna)", "hi": "भक्ति और दान के लिए शुभ (कृष्ण पक्ष)"},
+    25: {"en": "Good for all auspicious work (Krishna)", "hi": "सभी शुभ कार्यों के लिए उत्तम (कृष्ण पक्ष)"},
+    26: {"en": "Ekadashi — best for fasting and worship (Krishna)", "hi": "एकादशी — व्रत और पूजा के लिए श्रेष्ठ (कृष्ण पक्ष)"},
+    27: {"en": "Good for gifts and charitable acts (Krishna)", "hi": "दान और उपहार के लिए शुभ (कृष्ण पक्ष)"},
+    28: {"en": "Good for learning and prosperity (Krishna)", "hi": "ज्ञान और समृद्धि के लिए शुभ (कृष्ण पक्ष)"},
+    29: {"en": "Avoid auspicious work; good for mantras (Krishna)", "hi": "शुभ कार्य टालें; मंत्र जाप उत्तम (कृष्ण पक्ष)"},
+    30: {"en": "Amavasya — very powerful for ancestor rites", "hi": "अमावस्या — पितृ कर्म के लिए अत्यंत शक्तिशाली"},
+}
+
+# ============================================================
 # YOGAS -- 27 yogas
 # ============================================================
 YOGAS: List[str] = [
@@ -348,6 +434,23 @@ _VISHTI_NAMES: set = {"Vishti", "Bhadra"}
 # Chara (moveable) karanas cycle repeatedly; Sthira (fixed) karanas are the 4 fixed ones
 _CHARA_KARANA_NAMES: set = {"Bava", "Balava", "Kaulava", "Taitila", "Garaja", "Vanija", "Vishti"}
 
+# ============================================================
+# KARANA INTERPRETATION TEXT
+# ============================================================
+KARANA_INTERP: Dict[str, Dict[str, str]] = {
+    "Bava":        {"quality": "auspicious",   "en": "Favourable for all auspicious work",                  "hi": "सभी शुभ कार्यों के लिए अनुकूल"},
+    "Balava":      {"quality": "auspicious",   "en": "Good for financial and social activities",             "hi": "वित्तीय एवं सामाजिक कार्यों के लिए शुभ"},
+    "Kaulava":     {"quality": "auspicious",   "en": "Suitable for learning and friendships",               "hi": "शिक्षा और मित्रता के लिए उपयुक्त"},
+    "Taitila":     {"quality": "auspicious",   "en": "Good for agriculture and physical work",              "hi": "कृषि और शारीरिक कार्य के लिए शुभ"},
+    "Garaja":      {"quality": "neutral",      "en": "Neutral; proceed with care",                          "hi": "तटस्थ; सावधानी से आगे बढ़ें"},
+    "Vanija":      {"quality": "auspicious",   "en": "Excellent for trade and business",                    "hi": "व्यापार के लिए अत्युत्तम"},
+    "Vishti":      {"quality": "inauspicious", "en": "Inauspicious; avoid new beginnings (Bhadra)",         "hi": "अशुभ; नए कार्य न करें (भद्रा)"},
+    "Shakuni":     {"quality": "inauspicious", "en": "Avoid important undertakings",                        "hi": "महत्वपूर्ण कार्य टालें"},
+    "Chatushpada": {"quality": "neutral",      "en": "Suitable for animal-related and rural work",          "hi": "पशुपालन एवं ग्रामीण कार्य के लिए उपयुक्त"},
+    "Naga":        {"quality": "inauspicious", "en": "Avoid travel and financial transactions",              "hi": "यात्रा और वित्तीय लेनदेन से बचें"},
+    "Kimstughna":  {"quality": "neutral",      "en": "Neutral energy; use for routine tasks",               "hi": "तटस्थ ऊर्जा; नियमित कार्यों के लिए"},
+}
+
 
 # ============================================================
 # RAHU KAAL / GULIKA / YAMAGANDA timing by weekday
@@ -460,6 +563,16 @@ _VAAR_ENGLISH = [
     "Monday", "Tuesday", "Wednesday", "Thursday",
     "Friday", "Saturday", "Sunday",
 ]
+
+# Vara (weekday) planet lords — 1-based weekday number (1=Mon..7=Sun)
+VARA_LORDS: Dict[int, str] = {
+    1: "Moon", 2: "Mars", 3: "Mercury", 4: "Jupiter",
+    5: "Venus", 6: "Saturn", 7: "Sun",
+}
+VARA_LORDS_HI: Dict[int, str] = {
+    1: "चन्द्र", 2: "मंगल", 3: "बुध", 4: "बृहस्पति",
+    5: "शुक्र", 6: "शनि", 7: "सूर्य",
+}
 
 
 # ============================================================
@@ -1340,6 +1453,35 @@ def _compute_panchanga_shuddhi(
     }
 
 
+# ============================================================
+# KULA YOGA — special yoga when tithi + vara + nakshatra sums to multiple of 9
+# ============================================================
+
+def _kula_yoga(tithi_num: int, vara_num: int, nak_num: int) -> Dict[str, Any]:
+    """Compute Kula Yoga.
+
+    tithi_num: 1-30
+    vara_num:  1-7 (1=Mon..7=Sun, matching VARA_LORDS keys)
+    nak_num:   1-27 (nakshatra number, 1-based)
+    """
+    total = tithi_num + vara_num + nak_num
+    active = (total % 9 == 0)
+    return {
+        "active": active,
+        "total": total,
+        "en": (
+            "Kula Yoga active — very auspicious for family ceremonies"
+            if active else
+            "Kula Yoga not active today"
+        ),
+        "hi": (
+            "कुल योग सक्रिय — पारिवारिक समारोहों के लिए अत्यंत शुभ"
+            if active else
+            "कुल योग आज सक्रिय नहीं"
+        ),
+    }
+
+
 # PUBLIC: calculate_panchang (ENHANCED)
 # ============================================================
 
@@ -1536,6 +1678,23 @@ def calculate_panchang(
         if "avoid_for" in guide:
             activity_guide["avoid_for"] = guide["avoid_for"]
         hora_table.append({"hora": i + 13, "lord": lord, "start": start, "end": end, "type": "night", "activity_guide": activity_guide})
+
+    # best_hora_for_travel: find the first upcoming hora whose lord is Moon, Jupiter, or Mercury
+    _TRAVEL_LORDS = {"Moon", "Jupiter", "Mercury"}
+    _now_mins = _time_to_minutes(_minutes_to_time(sunrise_mins))  # reference: start of day
+    best_hora_for_travel: Optional[Dict[str, Any]] = None
+    for _h in hora_table:
+        if _h["lord"] in _TRAVEL_LORDS:
+            best_hora_for_travel = {
+                "hora": _h["hora"],
+                "lord": _h["lord"],
+                "start": _h["start"],
+                "end": _h["end"],
+                "type": _h["type"],
+                "en": f"Best hora for travel: {_h['lord']} hora ({_h['start']}–{_h['end']})",
+                "hi": f"यात्रा के लिए श्रेष्ठ होरा: {PLANET_HINDI.get(_h['lord'], _h['lord'])} होरा ({_h['start']}–{_h['end']})",
+            }
+            break
 
     # 23. Lagna Table (Udaya Lagna — rising sign changes through the day)
     # Calculate proper Ascendant using sidereal time (NOT Sun position)
@@ -1744,6 +1903,10 @@ def calculate_panchang(
             "paksha": tithi["paksha"],
             "end_time": tithi_end,
             "next": next_tithi["name"],
+            "lord": TITHI_LORD.get(tithi["number"], ""),
+            "lord_hi": TITHI_LORD_HI.get(tithi["number"], ""),
+            "phala_en": (TITHI_PHALA.get(tithi["number"]) or {}).get("en", ""),
+            "phala_hi": (TITHI_PHALA.get(tithi["number"]) or {}).get("hi", ""),
         },
         "nakshatra": {
             **nakshatra,
@@ -1751,6 +1914,8 @@ def calculate_panchang(
             "end_time": nakshatra_end,
             "next": next_nak_name,
             **_nakshatra_category_fields(nakshatra.get("name", "")),
+            "deity": (NAKSHATRA_DEITY.get(nakshatra.get("name", "")) or ("", ""))[0],
+            "deity_hi": (NAKSHATRA_DEITY.get(nakshatra.get("name", "")) or ("", ""))[1],
         },
         "yoga": {
             "name": yoga_name,
@@ -1772,6 +1937,9 @@ def calculate_panchang(
             "is_vishti": karana_name in _VISHTI_NAMES,
             "type": "chara" if karana_name in _CHARA_KARANA_NAMES else "sthira",
             "auspicious": karana_name not in _VISHTI_NAMES,
+            "quality": (KARANA_INTERP.get(karana_name) or {}).get("quality", "neutral"),
+            "interpretation_en": (KARANA_INTERP.get(karana_name) or {}).get("en", ""),
+            "interpretation_hi": (KARANA_INTERP.get(karana_name) or {}).get("hi", ""),
         },
         "sunrise": sunrise_str,
         "sunset": sunset_str,
@@ -1784,6 +1952,9 @@ def calculate_panchang(
             "name": _VAAR_NAMES[weekday],
             "english": _VAAR_ENGLISH[weekday],
             "number": weekday,
+            # weekday 0=Mon..6=Sun → vara_num 1=Mon..7=Sun
+            "planet_lord": VARA_LORDS.get(weekday + 1, ""),
+            "planet_lord_hi": VARA_LORDS_HI.get(weekday + 1, ""),
         },
         "dinamana": dinamana_str,
         "ratrimana": ratrimana_str,
@@ -1810,6 +1981,7 @@ def calculate_panchang(
         "moon_longitude": round(moon_sid, 4),
         # Advanced Panchang
         "hora_table": hora_table,
+        "best_hora_for_travel": best_hora_for_travel,
         "lagna_table": lagna_table,
         "chandrabalam": chandrabalam,
         "tarabalam": tarabalam,
@@ -1844,6 +2016,15 @@ def _calculate_wave1_extras(
         result["special_yogas"]["dagdha_nakshatra"] = calculate_dagdha_nakshatra(hindu_month, nakshatra_name)
     except Exception:
         result["special_yogas"] = {}
+    # Kula Yoga — tithi_num is 1-based, vara_num is weekday+1 (1=Mon..7=Sun),
+    # nakshatra_index from astro_engine is 0-based so use +1 for 1-based num
+    try:
+        _tithi_num = (tithi_index % 30) + 1      # 1–30
+        _vara_num = weekday + 1                   # 1=Mon..7=Sun
+        _nak_num = (nakshatra_index % 27) + 1     # 1–27
+        result["special_yogas"]["kula_yoga"] = _kula_yoga(_tithi_num, _vara_num, _nak_num)
+    except Exception:
+        result["special_yogas"]["kula_yoga"] = {"active": False, "total": 0, "en": "", "hi": ""}
     try:
         from app.panchang_directions import calculate_all_directions
         result["directions"] = calculate_all_directions(weekday_sun, tithi_index, nakshatra_index)

@@ -35,14 +35,14 @@ interface HinduCalendarData {
   vikram_samvat: number; shaka_samvat: number; maas: string;
   paksha: string; ritu: string; ritu_english: string; ayana: string;
 }
-interface VaarData { name: string; english: string; number: number; }
+interface VaarData { name: string; english: string; number: number; planet_lord?: string; planet_lord_hi?: string; }
 
 export interface FullPanchangData {
   date: string;
-  tithi: { name: string; number: number; paksha: string; end_time?: string; [key: string]: any };
-  nakshatra: { name: string; pada: number; lord: string; end_time?: string; [key: string]: any };
-  yoga: { name: string; number: number; end_time?: string; [key: string]: any };
-  karana: { name: string; number: number; end_time?: string; [key: string]: any };
+  tithi: { name: string; number: number; paksha: string; end_time?: string; lord?: string; lord_hi?: string; phala_en?: string; phala_hi?: string; [key: string]: any };
+  nakshatra: { name: string; pada: number; lord: string; end_time?: string; deity?: string; deity_hi?: string; [key: string]: any };
+  yoga: { name: string; number: number; end_time?: string; interpretation_en?: string; interpretation_hi?: string; [key: string]: any };
+  karana: { name: string; number: number; end_time?: string; quality?: string; interpretation_en?: string; interpretation_hi?: string; is_vishti?: boolean; [key: string]: any };
   sunrise: string;
   sunset: string;
   moonrise: string;
@@ -99,13 +99,14 @@ export interface FullPanchangData {
     panchaka_rahita?: any | null;
   };
   ayanamsa?: number;
+  panchanga_shuddhi?: { score: number; max: number; percentage: number; grade: string; grade_hi: string };
 }
 
 interface HoraRow { hora: string; lord: string; start: string; end: string; type: string }
 interface LagnaRow { lagna: string; start: string; end: string }
 interface GowriRow { name: string; start: string; end: string; type: string; quality: string }
-interface ChandrabalamRow { rashi: string; balam: string; good: boolean; house_from_moon: number }
-interface TarabalamRow { nakshatra: string; tara: string; good: boolean }
+interface ChandrabalamRow { rashi: string; balam: string; good: boolean; house_from_moon: number; interpretation?: string; interpretation_hi?: string; }
+interface TarabalamRow { nakshatra: string; tara: string; good: boolean; interpretation?: string; interpretation_hi?: string; }
 interface DoGhatiRow { muhurta: string; name: string; start: string; end: string; quality: string }
 interface GeocodeResult { name: string; lat: number; lon: number }
 

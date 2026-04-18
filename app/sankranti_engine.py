@@ -6,8 +6,12 @@ Notes:
 - Calculations are performed in UTC and then converted to a local timezone
   inferred from longitude (same heuristic used in `app/panchang_engine.py`).
 - Restriction window uses the classical ±16 hour rule (P0/P1).
-- Punyakaal is returned as a conservative heuristic window and explicitly
-  marked as such (classical prahar-specific punyakaal varies by sankranti type).
+- Amritkaal uses the classical 16-ghati (384 min) Punya Kaal window centered
+  on ingress, with a 4-ghati (96 min) Maha Punya Kaal sub-period.
+- Sankranti type is determined by the vara (weekday) at ingress moment.
+- Makar Sankranti (Capricorn ingress) gets additional Uttarayan fields.
+- Ayana (Uttarayan/Dakshinayana) is computed for every Sankranti.
+- Sign effects (most/least affected rashis) are included per Sankranti.
 """
 
 from __future__ import annotations
@@ -17,6 +21,44 @@ from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from typing import Any
 
+
+# ---------------------------------------------------------------------------
+# Classical lookup tables
+# ---------------------------------------------------------------------------
+
+# 8 Sankranti types keyed by weekday name (as returned by datetime.strftime("%A"))
+_SANKRANTI_TYPES: dict[str, dict[str, str]] = {
+    "Sunday":    {"type": "Ghora",     "type_hi": "घोर",      "mount": "Elephant", "mount_hi": "हाथी",  "effect": "Inauspicious for grains; good for gold",   "effect_hi": "अन्न के लिए अशुभ; सोने के लिए शुभ"},
+    "Monday":    {"type": "Soumya",    "type_hi": "सौम्य",    "mount": "Cow",      "mount_hi": "गाय",   "effect": "Auspicious; prosperity for farmers",        "effect_hi": "शुभ; किसानों के लिए समृद्धि"},
+    "Tuesday":   {"type": "Rakshasi",  "type_hi": "राक्षसी",  "mount": "Buffalo",  "mount_hi": "भैंस",  "effect": "Disease and conflict; inauspicious",        "effect_hi": "रोग और संघर्ष; अशुभ"},
+    "Wednesday": {"type": "Mandakini", "type_hi": "मन्दाकिनी","mount": "Horse",    "mount_hi": "घोड़ा", "effect": "Mixed; moderate harvests",                  "effect_hi": "मिश्रित; मध्यम फसल"},
+    "Thursday":  {"type": "Mandaa",    "type_hi": "मन्दा",    "mount": "Garuda",   "mount_hi": "गरुड़", "effect": "Auspicious; good for religious work",       "effect_hi": "शुभ; धार्मिक कार्य के लिए उत्तम"},
+    "Friday":    {"type": "Mahodari",  "type_hi": "महोदरी",   "mount": "Lotus",    "mount_hi": "कमल",   "effect": "Prosperity for trade and arts",             "effect_hi": "व्यापार और कला के लिए समृद्धि"},
+    "Saturday":  {"type": "Dhwankshi", "type_hi": "ध्वांक्षी","mount": "Donkey",   "mount_hi": "गधा",   "effect": "Famine and hardship; inauspicious",         "effect_hi": "अकाल और कठिनाई; अशुभ"},
+}
+
+# Ayana map keyed by English rashi name (sidereal)
+_AYANA_MAP: dict[str, dict[str, str]] = {
+    "Makara": {
+        "ayana": "Uttarayan",
+        "ayana_hi": "उत्तरायण",
+        "significance_en": "Sun moves north — auspicious period begins",
+        "significance_hi": "सूर्य उत्तर की ओर — शुभ काल प्रारंभ",
+    },
+    "Karka": {
+        "ayana": "Dakshinayana",
+        "ayana_hi": "दक्षिणायन",
+        "significance_en": "Sun moves south — religious observances favoured",
+        "significance_hi": "सूर्य दक्षिण की ओर — धार्मिक अनुष्ठान शुभ",
+    },
+}
+
+# Rashis in sidereal order (0-indexed, Mesha=0)
+_RASHI_LIST = [
+    "Mesha", "Vrishabha", "Mithuna", "Karka",
+    "Simha", "Kanya", "Tula", "Vrishchika",
+    "Dhanu", "Makara", "Kumbha", "Meena",
+]
 
 _RASHI_NAMES = [
     "Mesha",
@@ -122,6 +164,91 @@ def find_sankranti_times(year: int) -> list[SankrantiEvent]:
     return events
 
 
+def _sankranti_type(ingress_utc: datetime, tz: timezone) -> dict[str, str]:
+    """Return the classical Sankranti type based on the vara (weekday) at local ingress."""
+    local_dt = ingress_utc.astimezone(tz)
+    weekday_name = local_dt.strftime("%A")  # e.g. "Monday"
+    return dict(_SANKRANTI_TYPES.get(weekday_name, _SANKRANTI_TYPES["Sunday"]))
+
+
+def _sankranti_amritkaal(ingress_utc: datetime, tz: timezone) -> dict[str, Any]:
+    """Classical 16-ghati Punya Kaal + 4-ghati Maha Punya Kaal centered on ingress.
+
+    1 ghati = 24 minutes.
+    Punya Kaal  : 16 ghatis = 384 min  → ±8 ghatis (±192 min) around ingress.
+    Maha Punya Kaal: 4 ghatis = 96 min → ±2 ghatis (±48 min) around ingress.
+    """
+    ghati = 24  # minutes per ghati
+
+    def _fmt(dt_utc: datetime) -> str:
+        return dt_utc.astimezone(tz).strftime("%H:%M")
+
+    punya_start = ingress_utc - timedelta(minutes=8 * ghati)
+    punya_end   = ingress_utc + timedelta(minutes=8 * ghati)
+    maha_start  = ingress_utc - timedelta(minutes=2 * ghati)
+    maha_end    = ingress_utc + timedelta(minutes=2 * ghati)
+
+    return {
+        "punya_kaal": {
+            "start_local": _fmt(punya_start),
+            "end_local":   _fmt(punya_end),
+            "duration_minutes": 16 * ghati,
+        },
+        "maha_punya_kaal": {
+            "start_local": _fmt(maha_start),
+            "end_local":   _fmt(maha_end),
+            "duration_minutes": 4 * ghati,
+        },
+        "is_classical": True,
+        "note_en": "Classical 16-ghati window. Maha Punya Kaal (4 ghati) is most auspicious for bath and donation.",
+        "note_hi": "शास्त्रीय 16 घटी खिड़की। महा पुण्य काल (4 घटी) स्नान और दान के लिए अत्यंत शुभ।",
+    }
+
+
+def _ayana_info(rashi_name: str) -> dict[str, str] | None:
+    """Return Ayana info for the given rashi, or None for non-ayana-change rashis."""
+    return _AYANA_MAP.get(rashi_name)
+
+
+def _makar_special() -> dict[str, Any]:
+    """Extra fields added only for Makar Sankranti (Capricorn ingress)."""
+    return {
+        "is_makar": True,
+        "uttarayan_start": True,
+        "significance_en": (
+            "Makar Sankranti marks Uttarayan — sun begins northward journey. "
+            "Most auspicious Sankranti of the year."
+        ),
+        "significance_hi": (
+            "मकर संक्रांति उत्तरायण का आरंभ है — सूर्य उत्तर दिशा में गमन करता है। "
+            "वर्ष की सबसे शुभ संक्रांति।"
+        ),
+        "special_activities_en": [
+            "Holy bath (Prayagraj, Haridwar, Pushkar)",
+            "Til-gur donation",
+            "Kite flying",
+            "Khichdi offering",
+        ],
+        "special_activities_hi": [
+            "पवित्र स्नान (प्रयागराज, हरिद्वार, पुष्कर)",
+            "तिल-गुड़ दान",
+            "पतंग उड़ाना",
+            "खिचड़ी अर्पण",
+        ],
+    }
+
+
+def _sankranti_sign_effects(rashi_index: int) -> dict[str, list[str]]:
+    """Return rashis most / least affected by this Sankranti.
+
+    Most affected  : the ingress rashi itself + its 4th, 7th, 10th (squares/opposition).
+    Least affected : 5th and 9th from ingress rashi (trines).
+    """
+    most  = [_RASHI_LIST[(rashi_index + d) % 12] for d in [0, 3, 6, 9]]
+    least = [_RASHI_LIST[(rashi_index + d) % 12] for d in [4, 8]]
+    return {"most_affected": most, "least_affected": least}
+
+
 def build_sankranti_payload(year: int, longitude: float) -> dict[str, Any]:
     """Build API-friendly sankranti payload with local times + windows."""
     tz_offset = _timezone_offset_from_longitude(longitude)
@@ -137,36 +264,52 @@ def build_sankranti_payload(year: int, longitude: float) -> dict[str, Any]:
     out: list[dict[str, Any]] = []
     for e in events:
         ingress = e.ingress_utc
+        rashi_name = _RASHI_NAMES[e.rashi_index]
+
         restriction_start = ingress - timedelta(hours=16)
         restriction_end = ingress + timedelta(hours=16)
 
-        # Heuristic punyakaal (explicitly marked). Classical punyakaal depends on
-        # sankranti type (day/night, direction, weekday), which is P2.
-        punya_start = ingress - timedelta(hours=1)
-        punya_end = ingress + timedelta(hours=1)
+        # --- 1. Sankranti type (based on vara / weekday at local ingress) ---
+        stype = _sankranti_type(ingress, tz)
 
-        out.append(
-            {
-                "rashi_index": e.rashi_index,
-                "rashi": _RASHI_NAMES[e.rashi_index],
-                "rashi_hindi": _RASHI_NAMES_HI[e.rashi_index],
-                "ingress_utc": _fmt_utc(ingress),
-                "ingress_local": _fmt_local(ingress),
-                "restriction_window": {
-                    "start_local": _fmt_local(restriction_start),
-                    "end_local": _fmt_local(restriction_end),
-                    "hours_before": 16,
-                    "hours_after": 16,
-                },
-                "punyakaal": {
-                    "start_local": _fmt_local(punya_start),
-                    "end_local": _fmt_local(punya_end),
-                    "heuristic": True,
-                    "note_en": "Heuristic 2-hour window around ingress; classical punyakaal varies by sankranti type.",
-                    "note_hi": "यह 2-घंटे का अनुमानित विंडो है; शास्त्रीय पुण्यकाल संक्रांति-प्रकार पर निर्भर करता है।",
-                },
-            }
-        )
+        # --- 2. Classical 16-ghati amritkaal (replaces heuristic 2-hour window) ---
+        amritkaal = _sankranti_amritkaal(ingress, tz)
+
+        # --- 4. Ayana (Uttarayan / Dakshinayana) ---
+        ayana = _ayana_info(rashi_name)
+
+        # --- 5. Sign effects ---
+        sign_effects = _sankranti_sign_effects(e.rashi_index)
+
+        entry: dict[str, Any] = {
+            "rashi_index": e.rashi_index,
+            "rashi": rashi_name,
+            "rashi_hindi": _RASHI_NAMES_HI[e.rashi_index],
+            "ingress_utc": _fmt_utc(ingress),
+            "ingress_local": _fmt_local(ingress),
+            "restriction_window": {
+                "start_local": _fmt_local(restriction_start),
+                "end_local": _fmt_local(restriction_end),
+                "hours_before": 16,
+                "hours_after": 16,
+            },
+            # Classical amritkaal (was heuristic 2-hour window)
+            "amritkaal": amritkaal,
+            # Sankranti type
+            "sankranti_type": stype,
+            # Sign effects
+            "sign_effects": sign_effects,
+        }
+
+        # --- 4. Ayana info (only for Makara and Karka; others inherit) ---
+        if ayana is not None:
+            entry["ayana"] = ayana
+
+        # --- 3. Makar Sankranti special fields ---
+        if rashi_name == "Makara":
+            entry["makar_special"] = _makar_special()
+
+        out.append(entry)
 
     return {
         "year": year,
