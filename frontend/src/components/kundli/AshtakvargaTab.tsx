@@ -233,8 +233,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
           <div className="bg-muted rounded-xl p-5 border border-border">
-            <Heading as={4} variant={4} className="mb-2">{t('auto.bhinnaAshtakvargaCha')}</Heading>
-            <p className="text-sm text-muted-foreground mb-4">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
+            <Heading as={4} variant={4} className="mb-1">{t('auto.bhinnaAshtakvargaCha')}</Heading>
+            <p className="text-sm text-muted-foreground mb-1">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
+            <p className="text-xs text-violet-700 bg-violet-50 border border-violet-200 rounded px-3 py-1.5 mb-4">
+              ◈ <strong>{language === 'hi' ? 'काक्षा क्रम' : 'Kaksha Order'}</strong>: {language === 'hi' ? 'प्रत्येक पंक्ति एक काक्षा (3°45\') है — शनि→गुरु→मंगल→सूर्य→शुक्र→बुध→चंद्र→लग्न क्रम में। यदि काक्षाधिपति ने बिंदु दिया तो वह काक्षा गोचर के लिए अनुकूल है।' : 'Each row is one Kaksha (3°45\' sub-zone of the sign) in classical order: Saturn→Jupiter→Mars→Sun→Venus→Mercury→Moon→Lagna. A ✓ means the Kaksha lord granted a bindu — transit through that Kaksha is favorable.'}
+            </p>
             <div className="grid grid-cols-1 gap-5">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'].map((planet) => {
                 const bindus = ashtakvargaData.planet_bindus?.[planet] || {};
@@ -277,12 +280,14 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       {/* LEFT: Full contributor matrix table */}
                       <div className="flex-1 overflow-x-auto p-3">
                         {(() => {
-                          const contributors = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Lagna'];
+                          // Kaksha order: Saturn→Jupiter→Mars→Sun→Venus→Mercury→Moon→Lagna (Phaladeepika Adh. 23-24)
+                          const kakshaOrder = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon', 'Lagna'];
                           const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
                           return (
                             <Table className="w-full text-sm border-collapse">
                               <TableHeader>
                                 <TableRow>
+                                  <TableHead className="text-center p-1 text-violet-700 font-bold border-b border-border w-8 text-xs">K#</TableHead>
                                   <TableHead className="text-left p-1 text-primary font-medium border-b border-border whitespace-nowrap">{t('auto.contributor')}</TableHead>
                                   {signs.map((s, i) => (
                                     <TableHead key={i} className="text-center p-1 text-primary font-medium border-b border-border min-w-[26px] text-xs">
@@ -293,17 +298,20 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {contributors.map((contrib) => {
+                                {kakshaOrder.map((contrib, kIdx) => {
                                   const row = contribData?.[contrib] || {};
                                   const rowVals = signs.map((s) => row[s] || 0);
                                   const rowTotal = rowVals.reduce((a, b) => a + b, 0);
                                   return (
-                                    <TableRow key={contrib} className="border-t border-border hover:bg-muted/5">
+                                    <TableRow key={contrib} className="border-t border-border hover:bg-violet-50/30">
+                                      <TableCell className="text-center p-1">
+                                        <span className="inline-block w-5 h-5 leading-5 rounded-full bg-violet-100 text-violet-700 text-[10px] font-bold">{kIdx + 1}</span>
+                                      </TableCell>
                                       <TableCell className="p-1 text-foreground font-medium whitespace-nowrap">{translatePlanet(contrib, language)}</TableCell>
                                       {rowVals.map((v, i) => (
                                         <TableCell key={i} className="text-center p-1">
-                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-sm font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-foreground'}`}>
-                                            {v}
+                                          <span className={`inline-block w-5 h-5 leading-5 rounded-sm text-xs font-semibold ${v === 1 ? 'bg-green-100 text-green-800' : 'text-muted-foreground'}`}>
+                                            {v === 1 ? '✓' : '–'}
                                           </span>
                                         </TableCell>
                                       ))}
