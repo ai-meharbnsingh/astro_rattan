@@ -28,6 +28,11 @@ Supported rule types:
   - all_planets_in_2_6_10_or_3_7_11_or_4_8_12
   - all_planets_in_contiguous_4_houses_from_lagna / from_4 / from_7 / from_10
   - all_planets_in_panapharas_or_apoklimas
+  - count_planets_in_own_or_exaltation (operator, count)
+  - lords_exchange_houses (house_a, house_b) — parivartana
+  - lord_exalted_in_house (lord_of, in_house)
+  - moon_waxing — Moon ahead of Sun by 1-6 houses (Shukla Paksha proxy)
+  - moon_conjunct_or_aspected_by (planets list) — all listed planets touch Moon
 """
 from __future__ import annotations
 import json
@@ -406,6 +411,82 @@ def evaluate_rule(rule: Dict[str, Any], chart: Dict[str, Any]) -> bool:
 
     if rtype == "all_planets_in_contiguous_4_houses_from_10":
         return _all_in(planets, {10, 11, 12, 1})
+
+    # ── Adh. 6 special rule types ──
+
+    if rtype == "count_planets_in_own_or_exaltation":
+        # Count how many planets (from classical 7) are in own sign or exaltation
+        op = rule.get("operator", ">=")
+        want = int(rule.get("count", 4))
+        count = sum(
+            1 for p in CLASSICAL_7
+            if p in planets and (_is_own(p, _sign_of(p, planets)) or _is_exalted(p, _sign_of(p, planets)))
+        )
+        if op == ">=":
+            return count >= want
+        if op == "==":
+            return count == want
+        if op == ">":
+            return count > want
+        return False
+
+    if rtype == "lords_exchange_houses":
+        # Parivartana: lord of house_a is placed in house_b's sign,
+        # and lord of house_b is placed in house_a's sign.
+        ha = int(rule.get("house_a", 0))
+        hb = int(rule.get("house_b", 0))
+        if not (asc and 1 <= ha <= 12 and 1 <= hb <= 12):
+            return False
+        lord_a = _lord_of_house(ha, asc)
+        lord_b = _lord_of_house(hb, asc)
+        if not (lord_a and lord_b and lord_a in planets and lord_b in planets):
+            return False
+        sign_a = ZODIAC[(ZODIAC.index(asc) + ha - 1) % 12]  # sign that rules house_a
+        sign_b = ZODIAC[(ZODIAC.index(asc) + hb - 1) % 12]  # sign that rules house_b
+        # Lord of house_a placed in sign_b (i.e. house_b) AND lord of house_b in sign_a
+        return _sign_of(lord_a, planets) == sign_b and _sign_of(lord_b, planets) == sign_a
+
+    if rtype == "lord_exalted_in_house":
+        # Lord of given house is exalted AND placed in specified house
+        lo = int(rule.get("lord_of", 0))
+        h = int(rule.get("in_house", 0))
+        if not (asc and 1 <= lo <= 12):
+            return False
+        lord = _lord_of_house(lo, asc)
+        if lord not in planets:
+            return False
+        s = _sign_of(lord, planets)
+        return _is_exalted(lord, s) and _house_of(lord, planets) == h
+
+    if rtype == "moon_waxing":
+        # Approximate waxing Moon: Moon is in houses 1..6 counted from Sun's house
+        # (i.e. Moon is ahead of Sun by 1-6 houses = Shukla paksha / waxing)
+        sh = _house_of("Sun", planets)
+        mh = _house_of("Moon", planets)
+        if sh < 1 or mh < 1:
+            return False
+        diff = ((mh - sh) % 12)
+        # diff 1..6 = waxing (Shukla Paksha); 0 = new moon; 7..11 = waning
+        return 1 <= diff <= 6
+
+    if rtype == "moon_conjunct_or_aspected_by":
+        # Check if Moon is conjunct OR aspected by ALL listed planets
+        required = set(rule.get("planets", []))
+        if not required:
+            return False
+        mh = _house_of("Moon", planets)
+        if mh < 1:
+            return False
+        for p in required:
+            if p not in planets:
+                return False
+            ph = _house_of(p, planets)
+            # Conjunct = same house; aspected = Moon's house is in planet's aspect list
+            conjunct = (ph == mh)
+            aspected = (mh in _houses_aspected_by(p, planets))
+            if not (conjunct or aspected):
+                return False
+        return True
 
     # Unknown rule type — conservative false
     return False

@@ -534,35 +534,25 @@
       "type": "AND",
       "conditions": [
         {
-          "type": "lords_conjunct_or_mutual",
-          "lord_a": 7,
-          "lord_b": 10,
-          "in_houses": [
-            1,
-            4,
-            5,
-            7,
-            9,
-            10
-          ]
+          "type": "lord_exalted_in_house",
+          "lord_of": 7,
+          "in_house": 10
         },
         {
-          "type": "planet_involved",
+          "type": "planet_in_houses",
+          "planet": "Mercury",
+          "houses": [1]
+        },
+        {
+          "type": "planet_in_houses",
           "planet": "Venus",
-          "in_houses": [
-            1,
-            4,
-            5,
-            7,
-            9,
-            10
-          ]
+          "houses": [11]
         }
       ]
     },
-    "effect_en": "7th + 10th lords connected with Venus — devotion to Vishnu, fame, comfortable life.",
-    "effect_hi": "सप्तमेश+दशमेश शुक्र सहित — विष्णु भक्ति, यश, सुखी जीवन।",
-    "sloka_ref": "Phaladeepika Adh. 6 sloka 44",
+    "effect_en": "7th lord exalted in the 10th house, Mercury in lagna, Venus in 11th — native becomes a famous, honoured leader; achieves recognition in public life, distinguished career, and lasting renown.",
+    "effect_hi": "सप्तमेश उच्च दशम में, बुध लग्न में, शुक्र एकादश में — प्रसिद्ध नेता",
+    "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "benefic"
   },
   {
@@ -1964,33 +1954,12 @@
     "category_label_en": "Phaladeepika Adh. 6 Yogas",
     "category_label_hi": "फलदीपिका अ. 6 योग",
     "rules": {
-      "type": "AND",
-      "conditions": [
-        {
-          "type": "planet_in_house_from_sun",
-          "offset": 2,
-          "exclude": [
-            "Jupiter",
-            "Venus",
-            "Mercury",
-            "Moon"
-          ]
-        },
-        {
-          "type": "planet_in_house_from_sun",
-          "offset": 12,
-          "exclude": [
-            "Jupiter",
-            "Venus",
-            "Mercury",
-            "Moon"
-          ]
-        }
-      ]
+      "type": "moon_conjunct_or_aspected_by",
+      "planets": ["Sun", "Mars", "Saturn"]
     },
-    "effect_en": "Natural malefics hem the Sun from both sides (2nd and 12th from Sun) — native faces hardships, physical difficulties, and obstacles in self-expression. The Sun's vital force is weakened by this malefic siege.",
-    "effect_hi": "सूर्य के द्वितीय और द्वादश भाव में पापग्रह — सूर्य की शक्ति कमज़ोर, शारीरिक कठिनाइयाँ, आत्म-प्रकाश में बाधा। पापग्रहों के बीच घिरे सूर्य की जीवनशक्ति क्षीण।",
-    "sloka_ref": "Phaladeepika Adh. 6 sloka 38",
+    "effect_en": "Moon afflicted by all three natural malefics (Sun, Mars, Saturn — all conjunct or aspect Moon) — native faces severe hardships, persistent obstacles, and difficulties in life. The mind is under constant siege of adversity.",
+    "effect_hi": "तीन पापग्रहों से पीड़ित चंद्रमा — जीवन में बाधाएं और कठिनाइयां",
+    "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "malefic"
   },
   {
@@ -2001,36 +1970,12 @@
     "category_label_en": "Phaladeepika Adh. 6 Yogas",
     "category_label_hi": "फलदीपिका अ. 6 योग",
     "rules": {
-      "type": "AND",
-      "conditions": [
-        {
-          "type": "planet_in_houses",
-          "planet": "Jupiter",
-          "houses": [
-            1,
-            4,
-            5,
-            7,
-            9,
-            10
-          ]
-        },
-        {
-          "type": "lord_of_house_in_houses",
-          "lord_of": 9,
-          "in_houses": [
-            1,
-            4,
-            5,
-            7,
-            9,
-            10
-          ]
-        }
-      ]
+      "type": "count_planets_in_own_or_exaltation",
+      "operator": ">=",
+      "count": 4
     },
-    "effect_en": "Jupiter in a Kendra or Trikona with the 9th lord also strong in Kendra/Trikona — native is extremely wealthy, honoured, lives with great luxury and dharmic prosperity.",
-    "effect_hi": "बृहस्पति केंद्र/त्रिकोण में, भाग्येश भी केंद्र/त्रिकोण में — जातक अत्यंत धनवान, सम्माननीय, ऐश्वर्यशाली एवं धर्मिष्ठ।",
+    "effect_en": "4 or more planets simultaneously in their own signs or exaltation signs — native enjoys great wealth, prosperity, and abundant resources throughout life; a mark of extraordinary fortune.",
+    "effect_hi": "4+ ग्रह स्वराशि/उच्च में — महान धन और समृद्धि योग",
     "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "benefic"
   },
@@ -2042,31 +1987,12 @@
     "category_label_en": "Phaladeepika Adh. 6 Yogas",
     "category_label_hi": "फलदीपिका अ. 6 योग",
     "rules": {
-      "type": "AND",
-      "conditions": [
-        {
-          "type": "planet_in_houses",
-          "planet": "Sun",
-          "houses": [
-            5
-          ]
-        },
-        {
-          "type": "planet_in_houses",
-          "planet": "Jupiter",
-          "houses": [
-            1,
-            4,
-            5,
-            7,
-            9,
-            10
-          ]
-        }
-      ]
+      "type": "lords_exchange_houses",
+      "house_a": 1,
+      "house_b": 9
     },
-    "effect_en": "Sun in the 5th house with Jupiter in Kendra or Trikona — native is born to a noble dynasty, carries forward the family lineage with honour, and is blessed with righteous children.",
-    "effect_hi": "सूर्य पंचम भाव में, बृहस्पति केंद्र/त्रिकोण में — कुलीन वंश में जन्म, वंश का गौरव बढ़ाने वाला, धर्मी संतान का योग।",
+    "effect_en": "Lagna lord and 9th lord exchange houses (parivartana yoga) — native is of noble lineage, carries forward the family dynasty with honour, upholds tradition, and earns high respect in society.",
+    "effect_hi": "लग्नेश-नवमेश परिवर्तन — वंश परंपरा, कुलीन जन्म",
     "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "benefic"
   },
@@ -2081,23 +2007,54 @@
       "type": "AND",
       "conditions": [
         {
-          "type": "planet_in_own_or_exaltation",
-          "planet": "Mars"
+          "type": "planet_in_houses",
+          "planet": "Jupiter",
+          "houses": [1, 7]
         },
         {
           "type": "planet_in_houses",
-          "planet": "Mars",
-          "houses": [
-            1,
-            4,
-            7,
-            10
-          ]
+          "planet": "Venus",
+          "houses": [11]
+        },
+        {
+          "type": "moon_waxing"
         }
       ]
     },
-    "effect_en": "Mars in own or exalted sign placed in a Kendra — native is exceptionally brave, physically strong, a natural warrior and leader, gains victory over enemies and achieves martial glory.",
-    "effect_hi": "मंगल स्वराशि या उच्च में, केंद्र भाव में — जातक अत्यंत साहसी, बलशाली, योद्धा-स्वभाव, शत्रु-विजेता एवं मार्तण्ड-तेज से युक्त।",
+    "effect_en": "Jupiter in lagna or 7th, Venus in 11th, and Moon in waxing phase (Shukla Paksha) — native acquires wealth through cattle, land, and property; blessed with agricultural prosperity and material abundance.",
+    "effect_hi": "गुरु लग्न/सप्तम में, शुक्र एकादश में, पूर्ण चंद्र — भूमि-गो-संपत्ति योग",
+    "sloka_ref": "Phaladeepika Adh. 6",
+    "nature": "benefic"
+  },
+  {
+    "key": "srikantha_adh6",
+    "name_en": "Srikantha Yoga (Adh. 6)",
+    "name_hi": "श्रीकण्ठ योग (अ. 6)",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
+    "rules": {
+      "type": "AND",
+      "conditions": [
+        {
+          "type": "planet_in_houses",
+          "planet": "Jupiter",
+          "houses": [1]
+        },
+        {
+          "type": "planet_in_houses",
+          "planet": "Moon",
+          "houses": [7]
+        },
+        {
+          "type": "planet_in_houses",
+          "planet": "Sun",
+          "houses": [5, 9]
+        }
+      ]
+    },
+    "effect_en": "Jupiter in lagna, Moon in 7th, Sun in 5th or 9th — native is a devoted follower of Shiva, blessed with spiritual authority, wisdom, and lasting fame; a revered figure in dharmic matters.",
+    "effect_hi": "गुरु लग्न में, चंद्र सप्तम में, सूर्य पंचम/नवम में — शिव भक्त, आध्यात्मिक अधिकार",
     "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "benefic"
   }
