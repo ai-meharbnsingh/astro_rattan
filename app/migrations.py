@@ -712,6 +712,16 @@ ALTER TABLE clients ADD COLUMN IF NOT EXISTS right_hand_photo_url TEXT;
 -- semicolons that the simple `sql.split(';')` runner splits on, leaving
 -- the migration partially executed or silently skipped on production.
 -- This migration re-applies the 3 column adds as plain idempotent ALTERs.
+
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS client_id TEXT;
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 30;
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+CREATE INDEX IF NOT EXISTS idx_consultations_astrologer ON consultations(astrologer_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_client ON consultations(client_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_scheduled ON consultations(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_consultations_status ON consultations(status);
+    """),
+    (23, "Sprint I re-fixup — retry consultations columns (v22 had bad comment)", """
 ALTER TABLE consultations ADD COLUMN IF NOT EXISTS client_id TEXT;
 ALTER TABLE consultations ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 30;
 ALTER TABLE consultations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();

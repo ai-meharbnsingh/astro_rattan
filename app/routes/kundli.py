@@ -1105,12 +1105,14 @@ def get_upagrahas(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     
+    planets = chart.get("planets", {})
     result = calculate_upagrahas(
         birth_date=row["birth_date"],
         birth_time=row["birth_time"] or "12:00:00",
         lat=row["latitude"],
         lon=row["longitude"],
-        tz_offset=row["timezone_offset"]
+        tz_offset=row["timezone_offset"],
+        planet_houses={p: int(v.get("house", 0)) for p, v in planets.items() if isinstance(v, dict)},
     )
     return {
         "kundli_id": kundli_id,

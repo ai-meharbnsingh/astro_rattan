@@ -96,7 +96,8 @@ def calculate_upagrahas(
     birth_time: str,
     lat: float,
     lon: float,
-    tz_offset: float
+    tz_offset: float,
+    planet_houses: dict | None = None,
 ) -> Dict[str, Any]:
     """
     Calculate Upagrahas (sub-planets) including Aprakasha Grahas and Kala Velas.
@@ -205,6 +206,50 @@ def calculate_upagrahas(
         "interpretation_en": g_interp_en,
         "interpretation_hi": g_interp_hi,
     }
+
+    # Rule: Gulika in 8th/12th intensifies Mrita effect
+    if gulika_house in (8, 12):
+        area = "longevity and sudden adversity" if gulika_house == 8 else "losses, hospitalization, and isolation"
+        results["Gulika"]["special_rule_en"] = (
+            f"Gulika in house {gulika_house} activates Mrita Yoga — significantly intensifies malefic "
+            f"influence over {area}. Affliction to lifespan and well-being is heightened. "
+            f"Phaladeepika Adh. 22 warns of serious obstacles in the significations of this house."
+        )
+        results["Gulika"]["special_rule_hi"] = (
+            f"गुलिक भाव {gulika_house} में मृत योग सक्रिय करता है — {area} पर पापी "
+            f"प्रभाव तीव्र। आयु एवं कल्याण पर पीड़ा बढ़ी। "
+            f"फलदीपिका अध्याय 22 के अनुसार इस भाव के विषयों में गंभीर बाधाएं।"
+        )
+    else:
+        results["Gulika"]["special_rule_en"] = None
+        results["Gulika"]["special_rule_hi"] = None
+
+    # Rule: Gulika conjunct a benefic (Jupiter or Venus in same house)
+    benefics_in_gulika_house = []
+    if planet_houses:
+        for ben in ("Jupiter", "Venus"):
+            if planet_houses.get(ben) == gulika_house:
+                benefics_in_gulika_house.append(ben)
+    if benefics_in_gulika_house:
+        ben_str = " and ".join(benefics_in_gulika_house)
+        ben_str_hi = " एवं ".join(
+            ("बृहस्पति" if b == "Jupiter" else "शुक्र") for b in benefics_in_gulika_house
+        )
+        results["Gulika"]["benefic_conjunction_en"] = (
+            f"Gulika is conjoined by {ben_str} in house {gulika_house}. "
+            f"The benefic presence partially counters Gulika's malefic influence, "
+            f"reducing adversity and offering protection from sudden calamities. "
+            f"Classical texts (Phaladeepika Adh. 22) note that benefic association mitigates Gulika's harm."
+        )
+        results["Gulika"]["benefic_conjunction_hi"] = (
+            f"गुलिक भाव {gulika_house} में {ben_str_hi} से युक्त है। "
+            f"शुभ ग्रह की उपस्थिति गुलिक के पापी प्रभाव को आंशिक रूप से नियंत्रित करती है, "
+            f"विपत्ति को कम करती और आकस्मिक आपदाओं से सुरक्षा देती है। "
+            f"फलदीपिका अध्याय 22 के अनुसार शुभ-युति गुलिक की पीड़ा कम करती है।"
+        )
+    else:
+        results["Gulika"]["benefic_conjunction_en"] = None
+        results["Gulika"]["benefic_conjunction_hi"] = None
 
     mandi_hour = start_time + (saturn_index + 0.5) * part_len
     if mandi_hour >= 24.0:
