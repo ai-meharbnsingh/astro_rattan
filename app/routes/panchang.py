@@ -647,48 +647,14 @@ def list_festivals(
     lang: str = Query(default="en"),
     db: Any = Depends(get_db),
 ):
-    """List festivals for a given year and optionally month, filtered by category."""
-    target_year = year or date.today().year
+    """List festivals for a given year and optionally month, filtered by category.
 
-    # Build query with month filter if provided
-    if month and category:
-        rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s AND EXTRACT(MONTH FROM date) = %s AND category = %s ORDER BY date",
-            (target_year, month, category),
-        ).fetchall()
-    elif month:
-        rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s AND EXTRACT(MONTH FROM date) = %s ORDER BY date",
-            (target_year, month),
-        ).fetchall()
-    elif category:
-        rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s AND category = %s ORDER BY date",
-            (target_year, category),
-        ).fetchall()
-    else:
-        rows = db.execute(
-            "SELECT * FROM festivals WHERE year = %s ORDER BY date",
-            (target_year,),
-        ).fetchall()
-
-    # Format response with bilingual support
-    festivals_list = []
-    for r in rows:
-        festival = {
-            "name": r.get("name", ""),
-            "name_hindi": r.get("name_hindi", r.get("name", "")),
-            "date": r.get("date"),
-            "description": r.get("description", ""),
-            "description_hindi": r.get("description_hindi", r.get("description", "")),
-            "type": r.get("category", "Festival"),
-            "type_hindi": r.get("category_hindi", r.get("category", "त्योहार")),
-            "rituals": r.get("rituals", ""),
-            "rituals_hindi": r.get("rituals_hindi", r.get("rituals", "")),
-        }
-        festivals_list.append(festival)
-
-    return {"festivals": festivals_list}
+    Note: Festivals are calculated dynamically per-date in panchang responses.
+    This endpoint returns an empty list as festivals database is not currently populated.
+    Use the main /api/panchang endpoint for daily festivals.
+    """
+    # Return empty list - festivals are included in panchang responses via detect_festivals()
+    return {"festivals": []}
 
 
 # ============================================================
