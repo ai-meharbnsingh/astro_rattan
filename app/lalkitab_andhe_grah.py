@@ -122,13 +122,16 @@ def detect_andhe_grah(
         sign_by_planet[name] = p.get("sign", "")
         house_by_planet[name] = h
 
-    # Extract retrograde & combust flags from the full chart if supplied
+    # Extract retrograde, combust, and sign fallback from the full chart if supplied
     retrograde: Dict[str, bool] = {}
     combust: Dict[str, bool] = {}
     if isinstance(chart_data, dict) and "planets" in chart_data:
         for n, info in chart_data["planets"].items():
             retrograde[n] = bool(info.get("retrograde") or info.get("is_retrograde"))
             combust[n]    = bool(info.get("is_combust"))
+            # Only fill sign from chart_data when the positions list left it blank
+            if n in sign_by_planet and not sign_by_planet[n]:
+                sign_by_planet[n] = info.get("sign", "")
 
     per_planet: Dict[str, Dict[str, Any]] = {}
 

@@ -358,3 +358,49 @@ class TestSeverityLogic:
         if venus_info is not None:
             if not venus_info["is_blind"]:
                 assert venus_info["severity"] == "none"
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — BUG-6: sign fallback from chart_data when positions has no 'sign'
+# ---------------------------------------------------------------------------
+
+class TestSignFallbackFromChartData:
+    """detect_andhe_grah() must pull sign from chart_data when positions lacks 'sign' key."""
+
+    def test_moon_blind_via_chart_data_sign_scorpio_h8(self):
+        """
+        BUG-6: positions list has no 'sign' field; chart_data provides it.
+        Moon: debilitation=Scorpio, H8 is dusthana → Rule 4 must fire → blind.
+        """
+        positions = [{"planet": "Moon", "house": 8}]  # no 'sign' key
+        chart_data = {
+            "planets": {
+                "Moon": {"sign": "Scorpio", "retrograde": False, "is_combust": False}
+            }
+        }
+        result = detect_andhe_grah(positions, chart_data=chart_data)
+        assert "Moon" in result["blind_planets"], (
+            "Moon (debilitated Scorpio, H8 dusthana) must be detected as blind "
+            "when sign is supplied via chart_data instead of positions list."
+        )
+
+    def test_sign_from_positions_wins_over_chart_data(self):
+        """Explicit sign in positions overrides chart_data sign — Taurus ≠ debilitated."""
+        positions = [_pos("Moon", 8, "Taurus")]  # Taurus → not debilitated
+        chart_data = {
+            "planets": {"Moon": {"sign": "Scorpio"}}  # would be debilitated, but ignored
+        }
+        result = detect_andhe_grah(positions, chart_data=chart_data)
+        moon_info = result["per_planet"].get("Moon")
+        if moon_info is not None:
+            debil_triggered = any("debilitated" in r.lower() for r in moon_info["reasons"])
+            assert not debil_triggered, "Positions-list sign must take precedence over chart_data sign"
+
+    def test_jupiter_blind_via_chart_data_sign_capricorn_h6(self):
+        """Jupiter debilitated in Capricorn, H6 dusthana — sign from chart_data."""
+        positions = [{"planet": "Jupiter", "house": 6}]  # no sign
+        chart_data = {"planets": {"Jupiter": {"sign": "Capricorn"}}}
+        result = detect_andhe_grah(positions, chart_data=chart_data)
+        assert "Jupiter" in result["blind_planets"], (
+            "Jupiter debilitated in Capricorn (H6 dusthana) must be blind via chart_data sign."
+        )
