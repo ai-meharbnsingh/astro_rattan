@@ -162,7 +162,7 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
                     </span>
                   </p>
                   <p className="text-sm text-red-900 leading-relaxed">
-                    {isHi ? r.andhe_grah_warning.hi : r.andhe_grah_warning.en}
+                    {pickLang(r.andhe_grah_warning, isHi)}
                   </p>
                 </div>
               </div>
@@ -188,7 +188,7 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
                         <span className="font-semibold uppercase text-[10px] mr-1">
                           [{p.severity || 'info'} / {p.category || '—'}]
                         </span>
-                        {isHi ? (p.hi || p.en) : (p.en || p.hi)}
+                        {pickLang(p, isHi)}
                       </li>
                     ))}
                   </ol>

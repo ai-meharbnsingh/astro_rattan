@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, ArrowRight, Sparkles } from 'lucide-react';
 
 interface SacrificeResult {
@@ -126,17 +127,17 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="bg-white/60 rounded-lg p-2">
               <div className="text-xs font-semibold text-green-700 mb-1">📈 {hi ? 'जो बढ़ता है' : 'What GROWS'}</div>
-              <div className="text-xs text-foreground">{hi ? result.growth_area.areas.hi : result.growth_area.areas.en}</div>
+              <div className="text-xs text-foreground">{pickLang(result.growth_area.areas, hi)}</div>
             </div>
             <div className="bg-white/60 rounded-lg p-2">
               <div className="text-xs font-semibold text-red-700 mb-1">📉 {hi ? 'जो पीड़ित होता है' : 'What SUFFERS'}</div>
-              <div className="text-xs text-foreground">{hi ? result.cost_area.areas.hi : result.cost_area.areas.en}</div>
+              <div className="text-xs text-foreground">{pickLang(result.cost_area.areas, hi)}</div>
             </div>
           </div>
 
           {/* Message */}
           <p className="text-sm text-foreground leading-relaxed mb-3 italic">
-            "{hi ? result.message.hi : result.message.en}"
+            "{pickLang(result.message, hi)}"
           </p>
 
           {/* Remedy */}
@@ -144,7 +145,7 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
             <Sparkles className="w-3.5 h-3.5 text-sacred-gold mt-0.5 shrink-0" />
             <div>
               <div className="text-xs font-semibold text-sacred-gold mb-0.5">{hi ? 'उपाय' : 'Remedy'}</div>
-              <div className="text-xs text-foreground">{hi ? result.remedy.hi : result.remedy.en}</div>
+              <div className="text-xs text-foreground">{pickLang(result.remedy, hi)}</div>
             </div>
           </div>
         </div>

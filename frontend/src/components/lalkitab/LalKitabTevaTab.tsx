@@ -3,6 +3,7 @@ import { useTranslation } from '@/lib/i18n';
 import { Info } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { toLkPlanetList } from './lalkitab-core';
 
@@ -141,7 +142,7 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
             </div>
             {activeTypes.map((ty) => {
               const desc = teva?.description?.[ty];
-              const text = isHi ? desc?.hi : desc?.en;
+              const text = pickLang(desc, isHi);
               if (!text) return null;
               return (
                 <p key={`desc-${ty}`} className="text-sm text-foreground/80 leading-relaxed">

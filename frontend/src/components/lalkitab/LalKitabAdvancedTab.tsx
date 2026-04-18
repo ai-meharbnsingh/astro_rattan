@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import {
   Zap,
   ShieldAlert,
@@ -26,28 +27,6 @@ import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
 interface Props {
   kundliId: string;
   chartData: any;
-}
-
-/**
- * Safely render a bilingual value. Accepts:
- *  - a plain string/number → returned as-is
- *  - a {hi, en} object → returns the requested language
- *  - null/undefined → returns ''
- * Prevents React Error #31 when backend returns a `{hi, en}` object
- * where the frontend expected a string.
- */
-function pickLang(value: any, isHi: boolean): string {
-  if (value == null) return '';
-  if (typeof value === 'string' || typeof value === 'number') return String(value);
-  if (typeof value === 'object') {
-    const picked = isHi ? value.hi : value.en;
-    if (picked != null) return String(picked);
-    // Fallback to the other language if preferred is missing
-    const other = isHi ? value.en : value.hi;
-    if (other != null) return String(other);
-    return '';
-  }
-  return String(value);
 }
 
 export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
@@ -374,7 +353,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   const label = qualityLabel[m.quality] ?? { en: String(m.quality), hi: String(m.quality), cls: 'bg-green-100 text-green-700' };
                   return (
                     <span className={`text-[10px] px-1.5 py-0.5 rounded ${label.cls}`}>
-                      {isHi ? label.hi : label.en}
+                      {pickLang(label, isHi)}
                     </span>
                   );
                 })()}

@@ -63,23 +63,18 @@ const PLANET_LABELS: Record<string, { en: string; hi: string }> = {
   Ketu: { en: 'Ketu', hi: 'केतु' },
 };
 
-function getPlanetLabel(key: string, language: string): string {
-  const p = PLANET_LABELS[key];
-  if (!p) return key;
-  return language === 'hi' ? p.hi : p.en;
-}
-
 function mapLiveTransit(t: LiveTransit): ApproxTransit {
   const deg = typeof t.sign_degree === 'number' ? t.sign_degree.toFixed(1) : '?';
   const retro = t.retrograde ? ' (R)' : '';
   const nak = t.nakshatra ? ` · ${t.nakshatra}` : '';
   const nakHi = t.nakshatra ? ` · ${t.nakshatra}` : '';
+  const planetLabel = PLANET_LABELS[t.planet];
   return {
     planet: t.planet,
     lkHouse: t.lk_house,
     speedNote: t.speed_note,
     en: `${t.planet} in ${t.sign}${retro} ${deg}°${nak}`,
-    hi: `${getPlanetLabel(t.planet, 'hi')} ${SIGN_HI[t.sign] || t.sign} में${t.retrograde ? ' (वक्री)' : ''} ${deg}°${nakHi}`,
+    hi: `${pickLang(planetLabel, true)} ${SIGN_HI[t.sign] || t.sign} में${t.retrograde ? ' (वक्री)' : ''} ${deg}°${nakHi}`,
   };
 }
 

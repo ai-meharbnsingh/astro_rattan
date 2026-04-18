@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Star, ChevronDown, ChevronUp, ShieldCheck, Zap, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { LK_PLANETS } from './lalkitab-core';
 
@@ -201,7 +202,7 @@ export default function LalKitabPlanetsTab() {
                     </div>
                     {interp ? (
                       <div className="text-sm text-foreground/80 leading-relaxed">
-                        {isHi ? (interp?.hi || interp?.en) : (interp?.en || interp?.hi)}
+                        {pickLang(interp, isHi)}
                       </div>
                     ) : (
                       <div className="text-xs text-muted-foreground">

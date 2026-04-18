@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, Clock, ChevronDown, ChevronUp, Sparkles, AlertTriangle } from 'lucide-react';
 
 interface Countdown { years: number; months: number; days: number; total_days: number; }
@@ -146,7 +147,7 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                   {hi ? 'उपाय अनुशंसित' : 'Remedy Recommended'}
                 </div>
                 <div className="text-xs text-amber-600">
-                  {hi ? next.remedy.hi : next.remedy.en}
+                  {pickLang(next.remedy, hi)}
                 </div>
               </div>
             </div>
@@ -225,7 +226,7 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                       {m.remedy_needed && m.remedy && (
                         <div className="flex items-start gap-1.5 bg-amber-50 rounded-lg p-2 text-xs text-amber-700">
                           <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                          {hi ? m.remedy.hi : m.remedy.en}
+                          {pickLang(m.remedy, hi)}
                         </div>
                       )}
                     </div>

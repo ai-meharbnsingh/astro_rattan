@@ -204,14 +204,14 @@ function VastuCompass({ map, warnings, hi }: CompassProps) {
           <div className="absolute bottom-0 left-0 right-0 mx-4 bg-white border border-sacred-gold/30 rounded-xl p-3 shadow-lg text-xs pointer-events-none">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-bold text-sacred-gold">H{entry.house}</span>
-              <span className="text-muted-foreground">{hi ? (entry.direction?.hi || '') : (entry.direction?.en || '')}</span>
-              <span className="text-muted-foreground">· {hi ? (entry.zone?.hi || '') : (entry.zone?.en || '')}</span>
+              <span className="text-muted-foreground">{pickLang(entry.direction, hi)}</span>
+              <span className="text-muted-foreground">· {pickLang(entry.zone, hi)}</span>
             </div>
             {entry.planets?.length > 0
               ? <div className="flex gap-1">{entry.planets.map(p => <span key={p} className={`font-semibold ${PLANET_CSS[p] ?? ''}`}>{p}</span>)}</div>
               : <span className="text-muted-foreground">{hi ? 'खाली' : 'Empty house'}</span>
             }
-            {warn && <p className="mt-1 text-orange-700">{hi ? warn.warning.hi : warn.warning.en}</p>}
+            {warn && <p className="mt-1 text-orange-700">{pickLang(warn.warning, hi)}</p>}
           </div>
         );
       })()}
@@ -512,23 +512,23 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                       <span className={`font-bold text-sm ${PLANET_CSS[w.planet] ?? ''}`}>{w.planet}</span>
-                      <span className="text-xs text-muted-foreground">{hi ? w.direction.hi : w.direction.en}</span>
+                      <span className="text-xs text-muted-foreground">{pickLang(w.direction, hi)}</span>
                       {w.is_critical && (
                         <span className="text-[10px] font-black text-red-600 bg-red-100 px-1.5 rounded-full uppercase">
                           {hi ? 'गंभीर' : 'CRITICAL'}
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-muted-foreground">{hi ? w.zone.hi : w.zone.en}</div>
+                    <div className="text-xs text-muted-foreground">{pickLang(w.zone, hi)}</div>
                   </div>
                 </div>
-                <p className="text-xs text-foreground/80 mb-3">{hi ? w.warning.hi : w.warning.en}</p>
+                <p className="text-xs text-foreground/80 mb-3">{pickLang(w.warning, hi)}</p>
                 <div className="bg-white/80 rounded-lg p-2.5 border border-green-100">
                   <div className="text-xs font-semibold text-green-700 mb-1 flex items-center gap-1">
                     <Wrench className="w-3 h-3" />
                     {hi ? 'उपाय:' : 'Fix:'}
                   </div>
-                  <p className="text-xs text-green-800">{hi ? w.fix.hi : w.fix.en}</p>
+                  <p className="text-xs text-green-800">{pickLang(w.fix, hi)}</p>
                 </div>
               </div>
             ))
@@ -547,7 +547,7 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
               {data.priority_fixes.map((fix, i) => (
                 <div key={i} className="flex gap-2 mb-1.5 last:mb-0">
                   <span className={`text-xs font-bold shrink-0 ${PLANET_CSS[fix.planet] ?? ''}`}>{fix.planet}</span>
-                  <p className="text-xs text-orange-800">{hi ? fix.fix.hi : fix.fix.en}</p>
+                  <p className="text-xs text-orange-800">{pickLang(fix.fix, hi)}</p>
                 </div>
               ))}
             </div>
@@ -559,9 +559,9 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
               </div>
               <div>
                 <div className="text-xs font-semibold text-foreground mb-0.5">
-                  {hi ? item.direction.hi : item.direction.en}
+                  {pickLang(item.direction, hi)}
                 </div>
-                <p className="text-xs text-muted-foreground">{hi ? item.tip.hi : item.tip.en}</p>
+                <p className="text-xs text-muted-foreground">{pickLang(item.tip, hi)}</p>
               </div>
             </div>
           ))}

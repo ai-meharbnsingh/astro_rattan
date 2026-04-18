@@ -154,7 +154,7 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
           <div className="flex items-start gap-2 mb-2">
             <Ban className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
             <p className="text-sm font-semibold text-foreground">
-              {hi ? rule.action.hi : rule.action.en}
+              {pickLang(rule.action, hi)}
             </p>
           </div>
 
@@ -164,7 +164,7 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
               {hi ? 'कारण' : 'Why'}
             </div>
             <p className="text-xs text-foreground leading-relaxed">
-              {hi ? rule.reason.hi : rule.reason.en}
+              {pickLang(rule.reason, hi)}
             </p>
           </div>
 
@@ -176,7 +176,7 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
                 {hi ? 'अनदेखा करने पर' : 'If ignored'}
               </div>
               <p className="text-xs text-red-700 leading-relaxed">
-                {hi ? rule.consequence.hi : rule.consequence.en}
+                {pickLang(rule.consequence, hi)}
               </p>
             </div>
           </div>

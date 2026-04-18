@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, Hand, Sparkles, X, RotateCcw } from 'lucide-react';
 import PalmSVG from './PalmSVG';
 
@@ -218,7 +219,7 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
                 : `${result.benefic_count} benefic • ${result.malefic_count} malefic marks`}
             </div>
             <p className="text-sm text-foreground mt-2 italic">
-              "{hi ? result.summary.hi : result.summary.en}"
+              "{pickLang(result.summary, hi)}"
             </p>
           </div>
 
@@ -234,7 +235,7 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
                 </span>
               </div>
               <p className="text-xs text-foreground leading-relaxed">
-                {hi ? c.interpretation.hi : c.interpretation.en}
+                {pickLang(c.interpretation, hi)}
               </p>
             </div>
           ))}
