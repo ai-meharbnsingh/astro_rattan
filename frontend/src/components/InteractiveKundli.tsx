@@ -1169,15 +1169,34 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (count > 0 ? 2 : 0);
                 const py = baseY + pRow * rowHeight;
                 const label = getPlanetLabel(p, language, hideCombust);
+                // P1.1 — use LK state colour when provided (non-normal).
+                const stateTag = planetStates?.[p.planet];
+                const useStateColor = !!stateTag && stateTag.state !== 'normal';
+                const planetFill = useStateColor ? stateTag!.hexColour : getPlanetColor(p.planet);
+                const ariaLabel = useStateColor
+                  ? `${p.planet} — ${language === 'hi' ? stateTag!.labelHi : stateTag!.labelEn}`
+                  : p.planet;
 
                 return (
-                  <g key={p.planet} role="img" aria-label={p.planet}>
+                  <g key={p.planet} role="img" aria-label={ariaLabel}>
+                    {/* P1.1 — small state indicator dot above the label when non-normal */}
+                    {useStateColor && (
+                      <circle
+                        cx={px}
+                        cy={py - fontSize + 2}
+                        r={2.5}
+                        fill={planetFill}
+                        opacity={0.8}
+                      >
+                        <title>{language === 'hi' ? stateTag!.labelHi : stateTag!.labelEn}</title>
+                      </circle>
+                    )}
                     {/* Planet abbreviation + status symbols */}
                     <text
                       x={px}
                       y={py}
                       textAnchor="middle"
-                      fill={getPlanetColor(p.planet)}
+                      fill={planetFill}
                       fontSize={fontSize}
                       fontWeight="bold"
                       fontFamily="var(--, Inter, sans-serif)"
@@ -1185,6 +1204,13 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                       onClick={(e) => { e.stopPropagation(); onPlanetClick?.(p); }}
                     >
                       {label}
+                      {useStateColor && (
+                        <title>
+                          {language === 'hi'
+                            ? `${stateTag!.labelHi} — ${stateTag!.descHi ?? ''}`
+                            : `${stateTag!.labelEn} — ${stateTag!.descEn ?? ''}`}
+                        </title>
+                      )}
                     </text>
                   </g>
                 );

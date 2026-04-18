@@ -6,6 +6,8 @@ import { api } from '@/lib/api';
 import { pickLang } from './safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { toLkPlanetList } from './lalkitab-core';
+// P1.1 — Modified Analytical Tewa planet-state classifier
+import { classifyPlanetStates, legendEntries, type PlanetStateTag } from './planet-state';
 
 interface Props {
   apiResult?: any;
@@ -100,6 +102,31 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
     };
   }, [apiResult]);
 
+  // P1.1 — classify each planet into a dominant LK state so the chart
+  // renderer can colour-code planets consistently. Falls back to 'normal'
+  // for every planet if `advanced` hasn't loaded yet.
+  const planetStateTags = useMemo(
+    () => classifyPlanetStates(advanced),
+    [advanced],
+  );
+  // Shape required by InteractiveKundli's planetStates prop.
+  const planetStates = useMemo(() => {
+    const out: Record<string, PlanetStateTag> = {};
+    for (const [name, tag] of Object.entries(planetStateTags)) {
+      if (tag.state !== 'normal') out[name] = tag;
+    }
+    return out;
+  }, [planetStateTags]);
+  const hasAnyState = Object.keys(planetStates).length > 0;
+  // Counts per state for the legend ("Blind · 2" etc.)
+  const statesInChart = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const tag of Object.values(planetStates)) {
+      counts[tag.state] = (counts[tag.state] ?? 0) + 1;
+    }
+    return counts;
+  }, [planetStates]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -163,7 +190,9 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
       {/* NOTE: Planet classification (blind/righteous/underage) was previously fabricated client-side.
           In strict mode we do not render those until a backend section provides authoritative lists. */}
 
-      {/* Kundli chart */}
+      {/* Kundli chart — P1.1 Modified Analytical Tewa with per-planet LK
+          state colour coding (Andhe/Masnui/Soye/Kayam/Jage) driven by the
+          backend /advanced endpoint. */}
       {interactiveChartData ? (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
           <h3 className="font-sans font-semibold text-sacred-gold mb-3 text-sm">
@@ -171,9 +200,45 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
           </h3>
           <div className="flex justify-center">
             <div className="w-72 h-72">
-              <InteractiveKundli chartData={interactiveChartData} compact hideCombust />
+              <InteractiveKundli
+                chartData={interactiveChartData}
+                compact
+                hideCombust
+                planetStates={planetStates}
+              />
             </div>
           </div>
+          {/* P1.1 — legend for the LK state colours. Rendered only when at
+              least one planet has a non-normal state so charts with clean
+              readings stay visually quiet. */}
+          {hasAnyState && (
+            <div className="mt-4 pt-3 border-t border-sacred-gold/10">
+              <p className="text-[10px] font-bold text-sacred-gold uppercase tracking-widest mb-2">
+                {isHi ? 'ग्रह अवस्था रंग-संकेत' : 'Planet State Legend'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {legendEntries().map((entry) => {
+                  const count = statesInChart[entry.state] ?? 0;
+                  if (count === 0) return null;
+                  return (
+                    <span
+                      key={entry.state}
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${entry.bgClass} ${entry.textClass} ${entry.borderClass}`}
+                      title={isHi ? entry.descHi : entry.descEn}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: entry.hexColour }}
+                        aria-hidden="true"
+                      />
+                      {isHi ? entry.labelHi : entry.labelEn}
+                      <span className="opacity-60">· {count}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
