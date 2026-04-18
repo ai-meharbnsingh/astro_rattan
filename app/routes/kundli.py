@@ -641,6 +641,36 @@ def _compute_dasha(db: Any, kundli_id: str, user_id: str) -> dict:
     return result
 
 
+@router.get("/{kundli_id}/sookshma-prana", status_code=status.HTTP_200_OK)
+def get_sookshma_prana(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Sookshma (4th) and Prana (5th) Dasha subdivisions.
+
+    Returns the current 5-level dasha chain (MD → AD → PAD → SK → PR)
+    plus bilingual interpretation (Phaladeepika Adh. 21).
+    """
+    from app.dasha_engine import calculate_sookshma_prana
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+
+    moon_info = chart.get("planets", {}).get("Moon", {})
+    moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+    moon_longitude = moon_info.get("longitude", None)
+    birth_date = str(row.get("birth_date", ""))
+
+    result = calculate_sookshma_prana(
+        birth_nakshatra=moon_nakshatra,
+        birth_date=birth_date,
+        moon_longitude=moon_longitude,
+    )
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 @router.get("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
 def get_dasha_via_get(
     kundli_id: str,

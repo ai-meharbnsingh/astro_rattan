@@ -409,6 +409,12 @@ export default function TransitsTab(props: TransitsTabProps) {
                         <p className={`text-sm ${isCancelled ? 'text-muted-foreground line-through' : 'text-muted-foreground'}`}>
                           {tr.description}
                         </p>
+                        {/* Retrograde effect (Phaladeepika Adh. 26) */}
+                        {tr.is_retrograde && (tr.retrograde_effect_en || tr.retrograde_effect_hi) && (
+                          <p className="text-sm mt-2 italic text-purple-700 bg-purple-50/50 rounded px-2 py-1 border-l-2 border-purple-400">
+                            {language === 'hi' ? (tr.retrograde_effect_hi || tr.retrograde_effect_en) : (tr.retrograde_effect_en || tr.retrograde_effect_hi)}
+                          </p>
+                        )}
                         {/* Vedha detail */}
                         {isCancelled && tr.vedha_by && (
                           <p className="text-xs text-red-700 mt-2 italic">

@@ -1304,13 +1304,17 @@ def calculate_transits(
             except Exception:
                 pass
 
+        is_retrograde = planet_info.get("retrograde", False)
+        retro_fx = _RETROGRADE_EFFECTS.get(planet_name, {}) if is_retrograde else {}
         entry = {
             "planet": planet_name,
             "current_sign": current_sign,
             "sign_degree": round(planet_info.get("sign_degree", 0.0), 1),
             "house": planet_info.get("house", 1),
             "nakshatra": planet_info.get("nakshatra", ""),
-            "is_retrograde": planet_info.get("retrograde", False),
+            "is_retrograde": is_retrograde,
+            "retrograde_effect_en": retro_fx.get("en", ""),
+            "retrograde_effect_hi": retro_fx.get("hi", ""),
             "natal_house_from_moon": house_from_moon,
             "effect": effect,
             "description": description,
