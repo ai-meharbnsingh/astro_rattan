@@ -2937,3 +2937,332 @@ def get_lalkitab_pdf_report(
     if not report["_errors"]:
         del report["_errors"]
     return report
+# P2.4 — REMEDY WIZARD (intent → conditions → ranked remedies)
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/remedy-wizard/intents")
+def get_remedy_wizard_intents():
+    """Return the list of supported intents for the wizard Step 1 card grid.
+
+    Public (no auth) — this is static catalog data driving the UI, not any
+    per-user chart information. Keeps the frontend snappy.
+    """
+    from app.lalkitab_remedy_wizard import list_intents, LK_DERIVED
+    return {"intents": list_intents(), "source": LK_DERIVED}
+
+
+@router.post("/api/lalkitab/remedy-wizard")
+def lalkitab_remedy_wizard(
+    payload: dict,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Intent → ranked remedies.
+
+    Input:  {kundli_id: str, intent: str}
+    Output: {intent, intent_label_en/hi, focus_planets, focus_houses,
+             avoid, ranked_remedies, top_picks, source}
+
+    Re-uses the same enriched remedies the /remedies/enriched endpoint
+    already produces — the wizard layer only RE-RANKS by intent affinity,
+    so every remedy returned retains its LK_CANONICAL provenance.
+    """
+    from app.lalkitab_remedy_wizard import recommend_remedies
+
+    kundli_id = payload.get("kundli_id")
+    intent = payload.get("intent")
+    if not kundli_id:
+        raise HTTPException(status_code=400, detail="kundli_id is required")
+    if not intent:
+        raise HTTPException(status_code=400, detail="intent is required")
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    try:
+        raw = row["chart_data"]
+        chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except (json.JSONDecodeError, TypeError):
+        raise HTTPException(status_code=500, detail="Corrupt chart data")
+
+    # Build enriched remedy list using the SAME path as /remedies/enriched.
+    planet_positions = {
+        p: info.get("sign")
+        for p, info in chart_data.get("planets", {}).items()
+        if isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+    }
+    if not planet_positions:
+        raise HTTPException(
+            status_code=400,
+            detail="No planet positions with valid signs in chart",
+        )
+
+    res = get_remedies(planet_positions, chart_data=chart_data)
+    enriched: list[dict] = []
+    afflictions_map: dict[str, list[str]] = {}
+    for planet, info in res.items():
+        r = info.get("remedy") or {}
+        afflictions_map[planet] = list(info.get("afflictions", []) or [])
+        enriched.append({
+            "planet": planet,
+            "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+            "sign": info.get("sign"),
+            "lk_house": info.get("lk_house", 0),
+            "dignity": info.get("dignity", ""),
+            "strength": info.get("strength", 0.0),
+            "has_remedy": info.get("has_remedy", False),
+            "urgency": r.get("urgency", "low"),
+            "material": r.get("material", ""),
+            "day": r.get("day", ""),
+            "remedy_en": r.get("en", ""),
+            "remedy_hi": r.get("hi", ""),
+            "problem_en": r.get("problem_en", ""),
+            "problem_hi": r.get("problem_hi", ""),
+            "reason_en": r.get("reason_en", ""),
+            "reason_hi": r.get("reason_hi", ""),
+            "how_en": r.get("how_en", ""),
+            "how_hi": r.get("how_hi", ""),
+            "afflictions": afflictions_map[planet],
+        })
+
+    return recommend_remedies(
+        intent=intent,
+        planet_positions=enriched,
+        afflictions=afflictions_map,
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════
+# P2.12 — CALCULATION DETAILS (professional verification)
+# ═══════════════════════════════════════════════════════════════════
+
+def _degrees_to_dms(longitude: float) -> dict:
+    """Split a decimal longitude into degree / minute / second pieces.
+
+    Returns the sign-relative degree (0..30), the sign name, and a DMS
+    string. Used in the calculation-detail payload so pandits can verify
+    against manual ephemeris lookups.
+    """
+    try:
+        lon = float(longitude) % 360.0
+    except (TypeError, ValueError):
+        return {"deg": 0, "min": 0, "sec": 0.0, "dms": "", "sign_deg": 0.0}
+    sign_deg = lon % 30.0
+    deg = int(sign_deg)
+    rem_min = (sign_deg - deg) * 60.0
+    minute = int(rem_min)
+    second = round((rem_min - minute) * 60.0, 2)
+    return {
+        "deg": deg,
+        "min": minute,
+        "sec": second,
+        "dms": f"{deg}\u00b0{minute:02d}'{second:05.2f}\"",
+        "sign_deg": round(sign_deg, 6),
+    }
+
+
+@router.get("/api/lalkitab/calculation-details/{kundli_id}")
+def get_calculation_details(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return raw calculation steps so an astrologer can audit the software.
+
+    Payload sections:
+      ayanamsa:         system + numeric value + sidereal offset
+      planets:          per-planet longitude with DMS precision, sign,
+                        nakshatra, nakshatra_pada, retrograde, combust,
+                        derived Lal Kitab house (Aries=H1 scheme)
+      ascendant:        longitude + DMS
+      houses:           LK fixed house map
+      bunyaad:          foundation check with friend/enemy resolution
+      takkar:           confrontation pairs
+      masnui:           masnui detections
+      aspects:          Lal Kitab aspect calculations
+      source_references: every value's provenance tag
+    """
+    from app.lalkitab_advanced import (
+        calculate_bunyaad,
+        calculate_takkar,
+        calculate_masnui_planets,
+        calculate_lk_aspects,
+        LK_FRIENDS,
+        LK_ENEMIES,
+        PAKKA_GHAR,
+        BUNYAAD_HOUSE,
+    )
+    from app.lalkitab_source_tags import source_of, LK_CANONICAL, LK_DERIVED
+
+    row = db.execute(
+        "SELECT chart_data, birth_date, birth_time, latitude, longitude, timezone_offset "
+        "FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    try:
+        raw = row["chart_data"]
+        chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    except (json.JSONDecodeError, TypeError):
+        raise HTTPException(status_code=500, detail="Corrupt chart data")
+
+    # ── Ayanamsa ──
+    ayanamsa_value = chart_data.get("ayanamsa_value")
+    ayanamsa_system = chart_data.get("ayanamsa_system", "lahiri")
+    ayanamsa_section = {
+        "system": ayanamsa_system,
+        "value_degrees": ayanamsa_value,
+        "sidereal_offset_dms": _degrees_to_dms(ayanamsa_value)["dms"] if ayanamsa_value is not None else None,
+        "note_en": (
+            "Sidereal longitudes = tropical_longitude - ayanamsa. "
+            "Lahiri is the default for Vedic; KP uses Krishnamurti."
+        ),
+        "note_hi": (
+            "\u0938\u093e\u092f\u0928 \u0930\u093e\u0936\u093f = \u0909\u0937\u094d\u0923 - \u0905\u092f\u0928\u093e\u0902\u0936\u0964 "
+            "\u0935\u0948\u0926\u093f\u0915 \u092e\u0947\u0902 \u0932\u093e\u0939\u093f\u0930\u0940 \u0921\u093f\u092b\u093c\u0949\u0932\u094d\u091f, KP \u092e\u0947\u0902 \u0915\u0943\u0937\u094d\u0923\u092e\u0942\u0930\u094d\u0924\u093f\u0964"
+        ),
+        "source": LK_CANONICAL,
+    }
+
+    # ── Planet longitudes ──
+    planet_rows: list[dict] = []
+    formatted_positions: list[dict] = []  # for downstream calculators
+    for planet_name, info in (chart_data.get("planets") or {}).items():
+        if not isinstance(info, dict):
+            continue
+        longitude = info.get("longitude")
+        dms = _degrees_to_dms(longitude) if longitude is not None else {
+            "deg": None, "min": None, "sec": None, "dms": None, "sign_deg": info.get("sign_degree"),
+        }
+        sign = info.get("sign", "")
+        lk_house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        if lk_house > 0:
+            formatted_positions.append({"planet": planet_name.capitalize(), "house": lk_house})
+        planet_rows.append({
+            "planet": planet_name,
+            "longitude": longitude,
+            "sign": sign,
+            "sign_degree": info.get("sign_degree"),
+            "dms": dms.get("dms"),
+            "deg": dms.get("deg"),
+            "min": dms.get("min"),
+            "sec": dms.get("sec"),
+            "nakshatra": info.get("nakshatra"),
+            "nakshatra_pada": info.get("nakshatra_pada"),
+            "vedic_house": info.get("house"),       # whole-sign from ascendant
+            "lk_house": lk_house,                    # LK fixed-house (Aries=H1)
+            "retrograde": info.get("retrograde", False),
+            "is_combust": info.get("is_combust", False),
+            "is_vargottama": info.get("is_vargottama", False),
+            "is_sandhi": info.get("is_sandhi", False),
+            "status": info.get("status", ""),
+        })
+
+    asc = chart_data.get("ascendant") or {}
+    asc_dms = _degrees_to_dms(asc.get("longitude")) if asc.get("longitude") is not None else {}
+    ascendant_section = {
+        "longitude": asc.get("longitude"),
+        "sign": asc.get("sign"),
+        "sign_degree": asc.get("sign_degree"),
+        "dms": asc_dms.get("dms"),
+        "note_en": (
+            "Lal Kitab uses FIXED houses (Aries=H1 ... Pisces=H12) regardless of "
+            "ascendant. The Vedic ascendant is shown here only for reference."
+        ),
+        "note_hi": (
+            "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c \u092e\u0947\u0902 \u0918\u0930 \u0938\u0926\u093e \u0938\u094d\u0925\u093f\u0930 \u0939\u094b\u0924\u0947 \u0939\u0948\u0902 "
+            "(\u092e\u0947\u0937=H1 ... \u092e\u0940\u0928=H12), \u0932\u0917\u094d\u0928 \u0915\u0941\u091b \u092d\u0940 \u0939\u094b\u0964"
+        ),
+        "source": LK_CANONICAL,
+    }
+
+    # ── LK Houses map ──
+    houses_map = {
+        h: {"sign": s, "planets": [r["planet"] for r in planet_rows if r["lk_house"] == h]}
+        for s, h in _SIGN_TO_LK_HOUSE.items()
+    }
+
+    # ── Bunyaad (friend/enemy resolution) ──
+    try:
+        bunyaad = calculate_bunyaad(formatted_positions)
+    except Exception as e:
+        logger.warning("calculation-details: bunyaad failed: %s", e)
+        bunyaad = {"_error": str(e)}
+    friend_tables = {
+        p: {
+            "pakka_ghar": PAKKA_GHAR.get(p),
+            "bunyaad_house": BUNYAAD_HOUSE.get(p),
+            "friends": sorted(list(LK_FRIENDS.get(p, set()))),
+            "enemies": sorted(list(LK_ENEMIES.get(p, set()))),
+        }
+        for p in PAKKA_GHAR.keys()
+    }
+
+    # ── Takkar pairs ──
+    try:
+        takkar = calculate_takkar(formatted_positions)
+    except Exception as e:
+        logger.warning("calculation-details: takkar failed: %s", e)
+        takkar = {"_error": str(e)}
+
+    # ── Masnui detections ──
+    try:
+        masnui = calculate_masnui_planets(formatted_positions)
+    except Exception as e:
+        logger.warning("calculation-details: masnui failed: %s", e)
+        masnui = {"_error": str(e)}
+
+    # ── Aspects ──
+    try:
+        aspects = calculate_lk_aspects(formatted_positions)
+    except Exception as e:
+        logger.warning("calculation-details: aspects failed: %s", e)
+        aspects = {"_error": str(e)}
+
+    # ── Source references block ──
+    source_references = {
+        "ayanamsa":          {"source": LK_CANONICAL,
+                              "note_en": "Swiss Ephemeris (Lahiri/KP)",
+                              "note_hi": "\u0938\u094d\u0935\u093f\u0938 \u090f\u092b\u0947\u092e\u0947\u0930\u093f\u0938"},
+        "planet_longitudes": {"source": LK_CANONICAL,
+                              "note_en": "Sidereal = tropical - ayanamsa",
+                              "note_hi": "\u0938\u093e\u092f\u0928 = \u0909\u0937\u094d\u0923 - \u0905\u092f\u0928\u093e\u0902\u0936"},
+        "lk_houses":         {"source": LK_CANONICAL,
+                              "note_en": "Fixed house map: Aries=H1 ... Pisces=H12",
+                              "note_hi": "\u0938\u094d\u0925\u093f\u0930 \u092d\u093e\u0935: \u092e\u0947\u0937=H1 ... \u092e\u0940\u0928=H12"},
+        "bunyaad":           {"source": source_of("calculate_bunyaad"),
+                              "note_en": "Foundation = 9th from pakka ghar",
+                              "note_hi": "\u092c\u0941\u0928\u093f\u092f\u093e\u0926 = \u092a\u0915\u094d\u0915\u093e \u0918\u0930 \u0938\u0947 \u0928\u094c\u0935\u093e\u0902"},
+        "takkar":            {"source": source_of("calculate_takkar"),
+                              "note_en": "Axis confrontations 1-7, 2-8, etc.",
+                              "note_hi": "\u0905\u0915\u094d\u0937 \u091f\u0915\u0930\u093e\u0935 1-7, 2-8"},
+        "masnui":            {"source": source_of("calculate_masnui_planets"),
+                              "note_en": "Masnui (artificial) planets formed by combinations",
+                              "note_hi": "\u0938\u0902\u092f\u094b\u091c\u0928\u094b\u0902 \u0938\u0947 \u092c\u0928\u0947 \u092e\u0938\u0928\u0942\u0908 \u0917\u094d\u0930\u0939"},
+        "aspects":           {"source": source_of("calculate_lk_aspects"),
+                              "note_en": "Lal Kitab aspects (not Parashari 3/7/10)",
+                              "note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c \u0915\u0940 \u0926\u0943\u0937\u094d\u091f\u093f"},
+    }
+
+    return {
+        "kundli_id": kundli_id,
+        "birth_date": row["birth_date"],
+        "birth_time": row["birth_time"],
+        "ayanamsa": ayanamsa_section,
+        "ascendant": ascendant_section,
+        "planets": planet_rows,
+        "houses": houses_map,
+        "bunyaad": bunyaad,
+        "takkar": takkar,
+        "masnui": masnui,
+        "aspects": aspects,
+        "friend_tables": friend_tables,
+        "source_references": source_references,
+        "source": LK_DERIVED,
+    }
