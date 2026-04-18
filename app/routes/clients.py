@@ -21,6 +21,10 @@ class ClientCreate(BaseModel):
     timezone_offset: Optional[float] = 5.5
     gender: Optional[str] = "male"
     notes: Optional[str] = None
+    # Sprint I — profile + palmistry photos (data URL or /uploads/ path)
+    profile_photo_url: Optional[str] = None
+    left_hand_photo_url: Optional[str] = None
+    right_hand_photo_url: Optional[str] = None
 
 
 class ClientUpdate(BaseModel):
@@ -34,6 +38,10 @@ class ClientUpdate(BaseModel):
     timezone_offset: Optional[float] = None
     gender: Optional[str] = None
     notes: Optional[str] = None
+    # Sprint I — photo slots (set to "" to clear)
+    profile_photo_url: Optional[str] = None
+    left_hand_photo_url: Optional[str] = None
+    right_hand_photo_url: Optional[str] = None
 
 
 @router.get("")
@@ -74,13 +82,15 @@ def create_client(
     row = db.execute(
         """INSERT INTO clients
            (astrologer_id, name, phone, birth_date, birth_time, birth_place,
-            latitude, longitude, timezone_offset, gender, notes)
-           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            latitude, longitude, timezone_offset, gender, notes,
+            profile_photo_url, left_hand_photo_url, right_hand_photo_url)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
            RETURNING *""",
         (
             current_user["sub"], body.name, body.phone, body.birth_date,
             body.birth_time, body.birth_place, body.latitude, body.longitude,
             body.timezone_offset, body.gender, body.notes,
+            body.profile_photo_url, body.left_hand_photo_url, body.right_hand_photo_url,
         ),
     ).fetchone()
     db.commit()
