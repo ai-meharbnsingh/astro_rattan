@@ -103,6 +103,9 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "\u092a\u0942\u0930\u094d\u0935\u091c\u094b\u0902 \u0915\u0947 \u0905\u0927\u0942\u0930\u0947 \u0915\u0930\u094d\u092e \u091c\u0940\u0935\u0928 \u092e\u0947\u0902 \u092c\u093e\u0927\u093e\u090f\u0902 \u0921\u093e\u0932 \u0930\u0939\u0947 \u0939\u0948\u0902\u0964 "
             "\u092a\u093f\u0924\u093e \u0914\u0930 \u0905\u0927\u093f\u0915\u093e\u0930\u093f\u092f\u094b\u0902 \u0938\u0947 \u0938\u092e\u0938\u094d\u092f\u093e\u0964"
         ),
+        "source_note_en": "Lal Kitab 1952 canonical — Sun in H9 with Saturn or Rahu.",
+        "source_note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c 1952 \u0936\u0941\u0926\u094d\u0927 — \u0938\u0942\u0930\u094d\u092f \u0909\u0928\u094d\u0928\u0938\u0947 \u0936\u0928\u093f \u0905\u0925\u0935\u093e \u0930\u093e\u0939\u0941 \u0938\u0939\u093f\u0924\u0964",
+        "lk_equivalent_key": None,
         "affected_planets": pitra_affected_planets,
         "affected_houses": pitra_affected_houses,
         "remedy_hint_en": (
@@ -153,6 +156,9 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "\u0917\u094d\u0930\u0939\u094b\u0902 \u092a\u0930 \u0917\u094d\u0930\u0939\u0923 \u091c\u0948\u0938\u093e \u092a\u094d\u0930\u092d\u093e\u0935\u0964 "
             "\u092e\u093e\u0928\u0938\u093f\u0915 \u092d\u094d\u0930\u092e, \u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f \u0938\u092e\u0938\u094d\u092f\u093e \u0914\u0930 \u0935\u093f\u0932\u0902\u092c\u093f\u0924 \u0938\u092b\u0932\u0924\u093e\u0964"
         ),
+        "source_note_en": "Lal Kitab 1952 canonical — Sun or Moon conjunct Rahu or Ketu.",
+        "source_note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c 1952 \u0936\u0941\u0926\u094d\u0927 — \u0938\u0942\u0930\u094d\u092f \u092f\u093e \u091a\u0902\u0926\u094d\u0930 \u0930\u093e\u0939\u0941 \u0905\u0925\u0935\u093e \u0915\u0947\u0924\u0941 \u0938\u0947 \u0938\u0902\u092f\u0941\u0915\u094d\u0924\u0964",
+        "lk_equivalent_key": None,
         "affected_planets": grahan_affected_planets,
         "affected_houses": sorted(grahan_affected_houses),
         "remedy_hint_en": (
@@ -263,6 +269,9 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "\u0936\u0928\u093f \u0926\u0947\u0930\u0940, \u092c\u093f\u0928\u093e \u092b\u0932 \u0915\u0947 \u0915\u0920\u093f\u0928 \u092a\u0930\u093f\u0936\u094d\u0930\u092e "
             "\u0914\u0930 \u0915\u093e\u0930\u094d\u092e\u093f\u0915 \u0938\u092c\u0915 \u0926\u0947 \u0930\u0939\u093e \u0939\u0948\u0964"
         ),
+        "source_note_en": "Lal Kitab 1952 canonical — Saturn in H1, H4, H7, H8, or H10.",
+        "source_note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c 1952 \u0936\u0941\u0926\u094d\u0927 — \u0936\u0928\u093f \u092a\u094d\u0930\u0925\u092e, \u091a\u0924\u0941\u0930\u094d\u0925, \u0938\u092a\u094d\u0924\u092e, \u0905\u0937\u094d\u0920\u092e \u092f\u093e \u0926\u0936\u092e \u092d\u093e\u0935 \u092e\u0947\u0902\u0964",
+        "lk_equivalent_key": None,
         "affected_planets": ["Saturn"] if shani_detected else [],
         "affected_houses": [sat_h] if shani_detected else [],
         "remedy_hint_en": (
@@ -328,6 +337,9 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "\u0905\u091a\u093e\u0928\u0915 \u0935\u093f\u092a\u0924\u094d\u0924\u093f\u092f\u093e\u0902, \u092d\u092f, \u091a\u093f\u0902\u0924\u093e \u0914\u0930 \u092e\u0939\u0924\u094d\u0935\u092a\u0942\u0930\u094d\u0923 \u091c\u0940\u0935\u0928 \u0918\u091f\u0928\u093e\u0913\u0902 \u092e\u0947\u0902 \u092c\u093e\u0927\u093e\u090f\u0902\u0964 "
             "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c \u0915\u0947 \u0938\u092c\u0938\u0947 \u092a\u094d\u0930\u092d\u093e\u0935\u0936\u093e\u0932\u0940 \u0926\u094b\u0937\u094b\u0902 \u092e\u0947\u0902 \u0938\u0947 \u090f\u0915\u0964"
         ),
+        "source_note_en": "Lal Kitab 1952 canonical — All planets between Rahu-Ketu axis.",
+        "source_note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c 1952 \u0936\u0941\u0926\u094d\u0927 — \u0938\u092d\u0940 \u0917\u094d\u0930\u0939 \u0930\u093e\u0939\u0941-\u0915\u0947\u0924\u0941 \u0905\u0915\u094d\u0937 \u0915\u0947 \u092c\u0940\u091a\u0964",
+        "lk_equivalent_key": None,
         "affected_planets": kaal_sarp_planets + ["Rahu", "Ketu"] if kaal_sarp_detected else [],
         "affected_houses": sorted({rahu_h, ketu_h}) if kaal_sarp_detected else [],
         "remedy_hint_en": (
@@ -374,6 +386,9 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "\u092a\u0942\u0930\u094d\u0935 \u091c\u0928\u094d\u092e \u0915\u0947 \u090b\u0923 \u092c\u093e\u0930-\u092c\u093e\u0930 \u092c\u093e\u0927\u093e\u0913\u0902, "
             "\u0935\u093f\u0924\u094d\u0924\u0940\u092f \u0938\u092e\u0938\u094d\u092f\u093e\u0913\u0902 \u092f\u093e \u0938\u0902\u092c\u0902\u0927 \u0938\u092e\u0938\u094d\u092f\u093e\u0913\u0902 \u0915\u0947 \u0930\u0942\u092a \u092e\u0947\u0902 \u092a\u094d\u0930\u0915\u091f \u0939\u094b \u0930\u0939\u0947 \u0939\u0948\u0902\u0964"
         ),
+        "source_note_en": "Lal Kitab 1952 canonical — 2+ malefics in dusthana houses.",
+        "source_note_hi": "\u0932\u093e\u0932 \u0915\u093f\u0924\u093e\u092c 1952 \u0936\u0941\u0926\u094d\u0927 — \u0926\u0941\u0937\u094d\u0924\u0941 \u092d\u093e\u0935\u094b\u0902 \u092e\u0947\u0902 2 \u092f\u093e \u0905\u0927\u093f\u0915 \u092a\u093e\u092a\u0917\u094d\u0930\u0939\u0964",
+        "lk_equivalent_key": None,
         "affected_planets": karmic_affected_planets,
         "affected_houses": sorted(set(malefics_in_dusthana)),
         "remedy_hint_en": (
