@@ -77,6 +77,9 @@ function LalKitabPageInner() {
   const [chartData, setChartData] = useState<LalKitabChartLite | null>(null);
   const [apiResult, setApiResult] = useState<any>(null);
   const [birthDate, setBirthDate] = useState('');
+  const [formName, setFormName] = useState('');
+  const [formTime, setFormTime] = useState('');
+  const [formPlace, setFormPlace] = useState('');
   const [error, setError] = useState('');
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
@@ -148,6 +151,9 @@ function LalKitabPageInner() {
     setError('');
     setTimezoneAutoDetected(!formData.timezone_offset);
     setBirthDate(formData.date);
+    setFormName(formData.name || 'Lal Kitab User');
+    setFormTime(formData.time || '');
+    setFormPlace(formData.place || '');
     try {
       const payload: any = {
         person_name: formData.name || 'Lal Kitab User',
@@ -205,19 +211,25 @@ function LalKitabPageInner() {
       <div className="max-w-7xl mx-auto">
         {/* Result View Header (only show when not in form) */}
         {view !== 'form' && (
-          <div className="text-center mb-10">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-600 to-sacred-gold flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-white" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+            {/* LEFT: Kundli-style user info */}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="min-w-0">
+                {formName ? (
+                  <>
+                    <h3 className="font-bold text-xl sm:text-2xl text-sacred-brown truncate">{formName} — {t('lk.title')}</h3>
+                    <p className="text-sm text-gray-500 truncate">
+                      {birthDate}{formTime ? ` | ${formTime}` : ''}{formPlace ? ` | ${formPlace}` : ''}
+                    </p>
+                  </>
+                ) : (
+                  <h3 className="font-bold text-xl sm:text-2xl text-sacred-brown truncate">{t('lk.title')}</h3>
+                )}
+              </div>
             </div>
-            <h1 className="text-3xl sm:text-4xl  font-bold text-sacred-gold mb-2">
-              {t('lk.title')}
-            </h1>
-            <p className="text-foreground max-w-lg mx-auto">
-              {t('lk.subtitle')}
-            </p>
-            {/* P2.6 — Full Report button (opens printable 10-15 page report modal). */}
-            {kundliId && (
-              <div className="mt-4 flex justify-center">
+            {/* RIGHT: Full Report button + Edition Selector */}
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              {kundliId && (
                 <button
                   onClick={() => setShowFullReport(true)}
                   className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-sacred-gold text-white font-semibold text-sm shadow-sm hover:bg-sacred-gold-dark transition-colors"
@@ -225,29 +237,28 @@ function LalKitabPageInner() {
                   <span aria-hidden="true">📄</span>
                   {isHi ? 'पूर्ण रिपोर्ट' : 'Full Report'}
                 </button>
-              </div>
-            )}
-            {/* Edition Selector */}
-            <div className="flex items-center justify-center gap-1.5 mt-4 flex-wrap">
-              <span className="text-xs text-muted-foreground mr-1">{isHi ? 'संस्करण:' : 'Edition:'}</span>
-              {EDITIONS.map((ed) => (
-                <button
-                  key={ed}
-                  onClick={() => setEdition(ed)}
-                  className={`text-xs px-3 py-1 rounded-full border transition-all ${
-                    edition === ed
-                      ? 'bg-sacred-gold text-white border-sacred-gold font-semibold'
-                      : 'border-sacred-gold/30 text-muted-foreground hover:border-sacred-gold/60'
-                  }`}
-                >
-                  {ed}
-                </button>
-              ))}
-              {edition !== '1952' && (
-                <span className="text-xs text-amber-600 ml-2">
-                  {isHi ? `${edition} संस्करण: कुछ उपाय भिन्न हो सकते हैं` : `${edition} ed: some remedies may vary`}
-                </span>
               )}
+              <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                <span className="text-xs text-muted-foreground mr-1">{isHi ? 'संस्करण:' : 'Edition:'}</span>
+                {EDITIONS.map((ed) => (
+                  <button
+                    key={ed}
+                    onClick={() => setEdition(ed)}
+                    className={`text-xs px-3 py-1 rounded-full border transition-all ${
+                      edition === ed
+                        ? 'bg-sacred-gold text-white border-sacred-gold font-semibold'
+                        : 'border-sacred-gold/30 text-muted-foreground hover:border-sacred-gold/60'
+                    }`}
+                  >
+                    {ed}
+                  </button>
+                ))}
+                {edition !== '1952' && (
+                  <span className="text-xs text-amber-600 ml-2">
+                    {isHi ? `${edition} संस्करण: कुछ उपाय भिन्न हो सकते हैं` : `${edition} ed: some remedies may vary`}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}

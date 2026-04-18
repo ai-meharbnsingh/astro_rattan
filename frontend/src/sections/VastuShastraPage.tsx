@@ -25,10 +25,14 @@ export default function VastuShastraPage() {
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('home');
+  const [vastu_buildingType, setVastuBuildingType] = useState('');
+  const [vastu_entranceDir, setVastuEntranceDir] = useState('');
 
   const handleGenerate = useCallback(async (formData: VastuFormData) => {
     setAnalysisView('generating');
     setError('');
+    setVastuBuildingType(formData.buildingType || '');
+    setVastuEntranceDir(formData.entranceDirection || '');
     try {
       const payload: any = {
         building_type: formData.buildingType,
@@ -58,19 +62,40 @@ export default function VastuShastraPage() {
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 mb-4">
-            <Compass className="w-4 h-4 text-sacred-gold" />
-            <span className="text-sm font-bold text-sacred-gold-dark tracking-wider uppercase">
-              {t('auto.vastuShastra')}
-            </span>
-          </div>
-          <Heading as={1} variant={1} className="mb-2">
-            {t('auto.vastuShastraAnalysis')}
-          </Heading>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            {t('auto.45DevtasVastuPurusha')}
-          </p>
+        <div className={`mb-10 ${analysisView === 'result' && vastu_buildingType ? 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4' : 'text-center'}`}>
+          {analysisView === 'result' && vastu_buildingType ? (
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 shrink-0">
+                <Compass className="w-4 h-4 text-sacred-gold" />
+                <span className="text-sm font-bold text-sacred-gold-dark tracking-wider uppercase">
+                  {t('auto.vastuShastra')}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-xl sm:text-2xl text-sacred-brown truncate">
+                  {t('auto.vastuAnalysis')} — {vastu_buildingType}
+                </h3>
+                <p className="text-sm text-gray-500 truncate">
+                  {isHi ? 'प्रवेश:' : 'Entrance:'} {vastu_entranceDir}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/20 mb-4">
+                <Compass className="w-4 h-4 text-sacred-gold" />
+                <span className="text-sm font-bold text-sacred-gold-dark tracking-wider uppercase">
+                  {t('auto.vastuShastra')}
+                </span>
+              </div>
+              <Heading as={1} variant={1} className="mb-2">
+                {t('auto.vastuShastraAnalysis')}
+              </Heading>
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                {t('auto.45DevtasVastuPurusha')}
+              </p>
+            </>
+          )}
         </div>
 
         {/* ── Mode Selector ────────────────────────────────────────── */}

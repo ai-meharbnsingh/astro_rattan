@@ -275,6 +275,18 @@ export default function NumerologyTabs() {
         </div>
       )}
 
+      {/* Kundli-style user info header — shown after result is ready */}
+      {numResult && numName && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="min-w-0">
+              <h3 className="font-bold text-xl sm:text-2xl text-sacred-brown truncate">{numName} — {t('numerology.lifePath')}</h3>
+              <p className="text-sm text-gray-500 truncate">{numDob}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} className="space-y-6">
         <TabsList className="grid grid-cols-5 h-auto p-1 gap-1">
           {tabConfig.map((tab) => (
