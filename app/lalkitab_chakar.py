@@ -116,6 +116,7 @@ def detect_chakar_cycle(
 
     Args:
         ascendant_sign:  Zodiac sign of the ascendant (e.g. "Leo", "Scorpio").
+                         Must be a str or None — passing a list/dict/int raises TypeError.
         planets_in_h1:   Planets occupying the 1st house (LK-style). If Rahu
                          or Ketu sits in H1 the shadow cycle (36-Sala) fires
                          even though Rahu/Ketu are not formal sign lords.
@@ -135,7 +136,15 @@ def detect_chakar_cycle(
           source:           "LK_CANONICAL",
           lk_ref:           "3.04",      # LK 1952 Saala Grah section
         }
+
+    Raises:
+        TypeError: when ascendant_sign is not a str or None.
     """
+    if ascendant_sign is not None and not isinstance(ascendant_sign, str):
+        raise TypeError(
+            f"ascendant_sign must be a str (e.g. 'Taurus'), got {type(ascendant_sign).__name__}. "
+            "Pass the zodiac sign name, not a position list or house dict."
+        )
     sign = _normalize_sign(ascendant_sign)
     h1_planets = [_normalize_planet(p) for p in (planets_in_h1 or []) if p]
     h1_planets = [p for p in h1_planets if p]  # drop empties

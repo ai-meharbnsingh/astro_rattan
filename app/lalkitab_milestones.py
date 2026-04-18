@@ -7,6 +7,19 @@ determines major life events. These are fixed regardless of Varshphal.
 from typing import List, Dict, Any, Optional
 from datetime import date
 
+
+def _parse_date(date_str: str) -> date:
+    """Parse YYYY-MM-DD or DD/MM/YYYY — raises ValueError for invalid strings."""
+    s = str(date_str).strip()
+    if "/" in s and "-" not in s:
+        parts = s.split("/")
+        if len(parts) == 3:
+            try:
+                return date(int(parts[2]), int(parts[1]), int(parts[0]))
+            except (ValueError, IndexError):
+                raise ValueError(f"Invalid date '{date_str}' — expected YYYY-MM-DD or DD/MM/YYYY")
+    return date.fromisoformat(s)
+
 # ============================================================
 # AGE MILESTONES — Lal Kitab fixed trigger ages
 # ============================================================
@@ -220,11 +233,11 @@ def calculate_age_milestones(
 
     today = date.today()
     try:
-        bdate = date.fromisoformat(birth_date)
+        bdate = _parse_date(birth_date)
     except Exception as e:
         raise ValueError(
-            f"Invalid birth_date '{birth_date}' — milestones require a valid ISO date (YYYY-MM-DD)"
-        )
+            f"Invalid birth_date '{birth_date}' — milestones require a valid date (YYYY-MM-DD or DD/MM/YYYY)"
+        ) from e
 
     # Current age in years
     current_age = today.year - bdate.year - ((today.month, today.day) < (bdate.month, bdate.day))

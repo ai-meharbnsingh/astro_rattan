@@ -12,6 +12,22 @@ from datetime import date as _date
 from typing import Any, Dict, List
 
 
+def _parse_date(date_str: str) -> _date:
+    """Parse a date string in either ISO (YYYY-MM-DD) or DD/MM/YYYY format.
+
+    Raises ValueError for genuinely unparseable strings.
+    """
+    s = str(date_str).strip()
+    if "/" in s and "-" not in s:
+        parts = s.split("/")
+        if len(parts) == 3:
+            try:
+                return _date(int(parts[2]), int(parts[1]), int(parts[0]))
+            except (ValueError, IndexError):
+                raise ValueError(f"Invalid date '{date_str}' — expected YYYY-MM-DD or DD/MM/YYYY")
+    return _date.fromisoformat(s)
+
+
 # ── Planet sequence (0-indexed) ───────────────────────────────────────────────
 _PLANET_SEQUENCE: List[str] = [
     "Sun",      # index 0  — year 1, 10, 19, …
@@ -133,8 +149,8 @@ def _planet_at_age(age: int) -> str:
 
 def _calc_age(birth_date_str: str, current_date_str: str) -> int:
     """Return completed years of age (integer floor)."""
-    bd = _date.fromisoformat(birth_date_str)
-    cd = _date.fromisoformat(current_date_str)
+    bd = _parse_date(birth_date_str)
+    cd = _parse_date(current_date_str)
     age = cd.year - bd.year
     if (cd.month, cd.day) < (bd.month, bd.day):
         age -= 1
@@ -190,9 +206,9 @@ def get_dasha_timeline(birth_date: str, current_date: str) -> Dict[str, Any]:
             past_periods:      [{age, year, planet, planet_hi}, ...]  # 3 entries
         }
     """
-    bd = _date.fromisoformat(birth_date)
+    bd = _parse_date(birth_date)
     age = _calc_age(birth_date, current_date)
-    cd = _date.fromisoformat(current_date)
+    cd = _parse_date(current_date)
 
     # ── Current Saala Grah ───────────────────────────────────────────────────
     csg_data = get_saala_grah(age)

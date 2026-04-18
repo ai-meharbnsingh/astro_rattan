@@ -923,7 +923,15 @@ def build_prediction_studio(
           ...
         ]
       }
+
+    Raises:
+        TypeError: when planet_positions is not a dict.
     """
+    if not isinstance(planet_positions, dict):
+        raise TypeError(
+            f"planet_positions must be a dict mapping planet names to LK house numbers "
+            f"(e.g. {{'Sun': 5, 'Moon': 8}}), got {type(planet_positions).__name__}."
+        )
     areas_out: List[Dict[str, Any]] = []
     for area in PREDICTION_AREAS:
         # P2.3 — score + evidence trail (explainable prediction engine)
