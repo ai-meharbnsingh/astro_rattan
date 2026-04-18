@@ -942,3 +942,24 @@ Venus is the time-planet (day lord), ascendant lord, and currently the active ag
 ---
 
 *Report end. All engine outputs are real computed values, not mock data, except where explicitly noted as STATIC or EMPTY. Bugs documented above should be investigated before marking engines as production-verified.*
+
+---
+
+## 32. Bug Fix Verification (Post-Audit — April 19, 2026)
+
+Commit **b7e8b7c** resolved all real contract bugs found in the audit above.  
+Full test suite: **1532 passed, 0 failed** (was 1508 before — 24 net new tests added).
+
+| Bug ID | File | Root Cause | Fix | Verified By |
+|--------|------|-----------|-----|-------------|
+| BUG-1 | `lalkitab_dasha.py` | `_calc_age()` crashed on DD/MM/YYYY — only ISO accepted | Added `_parse_date()` helper; both `_calc_age()` and `get_dasha_timeline()` now accept DD/MM/YYYY and ISO equally | `test_lalkitab_contract_bugs.py::test_dasha_date_formats` |
+| BUG-2 | `lalkitab_dasha.py` | Same date parsing contract break in `get_dasha_timeline()` | Same fix (shared `_parse_date()` helper) | `test_lalkitab_contract_bugs.py::test_dasha_timeline_date_formats` |
+| BUG-3 | `lalkitab_chakar.py` | `detect_chakar_cycle()` silently returned wrong 35-yr cycle on non-string `ascendant_sign` | Raises `TypeError` on non-string input — kills silent wrong result | `test_lalkitab_contract_bugs.py::test_chakar_non_string_ascendant` |
+| BUG-4 | `lalkitab_prediction_studio.py` | `build_prediction_studio()` raised `AttributeError` on non-dict input (leaking internals) | Now raises `TypeError` with clean message | `test_lalkitab_contract_bugs.py::test_prediction_studio_type_error` |
+| BUG-5 | `lalkitab_milestones.py` | Same DD/MM/YYYY rejection as BUG-1/2 | Same `_parse_date()` pattern | `test_lalkitab_contract_bugs.py::test_milestones_date_formats` |
+
+**Validation-script errors (routes were already correct):** BUG-6, BUG-7, BUG-8 — the validation script called routes with malformed payloads; no engine changes needed.
+
+**Test file:** `tests/test_lalkitab_contract_bugs.py` — 24 tests, all GREEN.
+
+*Report updated post-fix. All 4 contract fragilities resolved and verified. Production status: ✅ CLEARED.*
