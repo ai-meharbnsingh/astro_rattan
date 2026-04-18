@@ -743,7 +743,7 @@ def get_divisional_chart(
         sign_index = info["sign_index"]
         # House is relative to divisional ascendant, not absolute sign index
         house_num = sign_to_house.get(info["sign"], sign_index + 1)
-        planet_positions.append({
+        pos_entry: dict = {
             "planet": planet_name,
             "sign": info["sign"],
             "sign_degree": info["degree"],
@@ -753,7 +753,15 @@ def get_divisional_chart(
             "is_vargottama": bool(
                 chart.get("planets", {}).get(planet_name, {}).get("is_vargottama", False)
             ),
-        })
+        }
+        # Include lord significance fields when present (D2/D3/D30)
+        if "hora_lord" in info:
+            pos_entry["hora_lord"] = info["hora_lord"]
+        if "drekkana_lord" in info:
+            pos_entry["drekkana_lord"] = info["drekkana_lord"]
+        if "trimsamsha_lord" in info:
+            pos_entry["trimsamsha_lord"] = info["trimsamsha_lord"]
+        planet_positions.append(pos_entry)
 
     # Simple sign mapping for backward compat
     planet_signs = {planet: info["sign"] for planet, info in detailed.items()}

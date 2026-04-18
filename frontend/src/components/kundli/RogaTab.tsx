@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Activity, AlertTriangle, Clock, MapPin, HeartPulse, Info, BookOpen } from 'lucide-react';
+import { Loader2, Activity, AlertTriangle, Clock, MapPin, HeartPulse, Info, BookOpen, ShieldAlert, Home } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -47,6 +47,22 @@ interface RemedySuggestion {
   remedy_hi: string;
 }
 
+interface AfflictedPlanetDisease {
+  planet: string;
+  affliction_type: 'debilitated' | 'combust' | 'aspected_by_malefic';
+  diseases_en: string[];
+  diseases_hi: string[];
+  severity: 'high' | 'moderate' | 'low';
+}
+
+interface SixthHouseProfile {
+  sign: string;
+  prone_areas_en: string[];
+  prone_areas_hi: string[];
+  note_en: string;
+  note_hi: string;
+}
+
 interface RogaData {
   kundli_id?: string;
   person_name?: string;
@@ -55,6 +71,8 @@ interface RogaData {
   timing_indicators: TimingIndicator[];
   body_parts_affected: BodyPart[];
   remedy_suggestions: RemedySuggestion[];
+  afflicted_planet_diseases?: AfflictedPlanetDisease[];
+  sixth_house_disease_profile?: SixthHouseProfile | null;
   sloka_ref: string;
 }
 
@@ -218,6 +236,93 @@ export default function RogaTab({ kundliId, language, t }: Props) {
           </div>
         )}
       </section>
+
+      {/* 9-Planet Disease Matrix */}
+      {data.afflicted_planet_diseases && data.afflicted_planet_diseases.length > 0 && (
+        <section>
+          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5" />
+            {isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}
+          </h3>
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/30">
+                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'ग्रह' : 'Planet'}</th>
+                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'पीड़ा का प्रकार' : 'Affliction'}</th>
+                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'संभावित रोग' : 'Potential Diseases'}</th>
+                  <th className="text-center p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'गंभीरता' : 'Severity'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.afflicted_planet_diseases.map((apd, i) => {
+                  const afflictionLabel: Record<string, { en: string; hi: string }> = {
+                    debilitated:         { en: 'Debilitated',       hi: 'नीच राशि में' },
+                    combust:             { en: 'Combust',            hi: 'अस्त' },
+                    aspected_by_malefic: { en: 'Malefic Aspect',    hi: 'पाप ग्रह की दृष्टि' },
+                  };
+                  const aLabel = afflictionLabel[apd.affliction_type] || { en: apd.affliction_type, hi: apd.affliction_type };
+                  const diseases = isHi ? apd.diseases_hi : apd.diseases_en;
+                  return (
+                    <tr key={i} className="border-t border-sacred-gold/10 hover:bg-muted/20">
+                      <td className="p-3 font-bold text-foreground">{apd.planet}</td>
+                      <td className="p-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-orange-100 text-orange-800 border border-orange-300">
+                          {isHi ? aLabel.hi : aLabel.en}
+                        </span>
+                      </td>
+                      <td className="p-3 text-foreground text-xs leading-relaxed">
+                        {diseases.slice(0, 3).join(', ')}
+                        {diseases.length > 3 && <span className="text-muted-foreground"> +{diseases.length - 3} more</span>}
+                      </td>
+                      <td className="p-3 text-center">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${SEVERITY_COLOR[apd.severity] || SEVERITY_COLOR.moderate}`}>
+                          {t(SEVERITY_KEY[apd.severity] || 'auto.severityModerate')}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* 6th House Disease Profile */}
+      {data.sixth_house_disease_profile && (
+        <section>
+          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
+            <Home className="w-5 h-5" />
+            {isHi ? 'षष्ठ भाव रोग प्रवृत्ति' : '6th House Disease Profile'}
+          </h3>
+          <div className="p-4 rounded-xl border border-sacred-gold/25 bg-sacred-gold/5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="font-bold text-sacred-gold-dark text-lg">
+                {isHi ? 'षष्ठ भाव राशि' : '6th House Sign'}:
+              </span>
+              <span className="px-3 py-1 rounded-full bg-sacred-gold/20 border border-sacred-gold/40 font-bold text-sacred-gold-dark">
+                {data.sixth_house_disease_profile.sign}
+              </span>
+            </div>
+            <p className="text-sm text-foreground mb-3 leading-relaxed">
+              {isHi ? data.sixth_house_disease_profile.note_hi : data.sixth_house_disease_profile.note_en}
+            </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground/70 mb-1 uppercase tracking-wide">
+                {isHi ? 'प्रवृत्त क्षेत्र' : 'Prone Areas'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {(isHi ? data.sixth_house_disease_profile.prone_areas_hi : data.sixth_house_disease_profile.prone_areas_en).map((area, i) => (
+                  <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-red-50 text-red-800 border border-red-200">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Body parts */}
       {data.body_parts_affected.length > 0 && (

@@ -5,6 +5,110 @@ import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
+// ── Lord Significance sub-components ──────────────────────────
+
+function HoraLordCard({ positions, language }: { positions: any[]; language: string }) {
+  const isHi = language === 'hi';
+  // Collect unique hora lords across planets
+  const lords = positions
+    .filter((p: any) => p.hora_lord)
+    .map((p: any) => ({ planet: p.planet, ...p.hora_lord }));
+  if (!lords.length) return null;
+  return (
+    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
+      <Heading as={5} variant={5} className="text-primary mb-2">
+        {isHi ? 'होरा स्वामी का महत्व (D2)' : 'Hora Lord Significance (D2)'}
+      </Heading>
+      <div className="space-y-2">
+        {lords.map((l: any, i: number) => (
+          <div key={i} className="flex items-start gap-3 text-sm border-b border-border/20 pb-2 last:border-0">
+            <span className="font-bold text-primary w-24 shrink-0">{translatePlanet(l.planet, language)}</span>
+            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase shrink-0 ${l.planet === 'Sun' ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-blue-100 text-blue-700 border border-blue-300'}`}>
+              {isHi ? (l.planet === 'Sun' ? 'सूर्य होरा' : 'चंद्र होरा') : `${l.planet} Hora`}
+            </span>
+            <span className="text-foreground text-xs leading-relaxed">{isHi ? l.meaning_hi : l.meaning_en}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DrekkanaLordCard({ positions, language }: { positions: any[]; language: string }) {
+  const isHi = language === 'hi';
+  const lords = positions.filter((p: any) => p.drekkana_lord);
+  if (!lords.length) return null;
+  const TYPE_COLORS: Record<string, string> = {
+    Ayudha: 'bg-orange-100 text-orange-800 border-orange-300',
+    Pasa:   'bg-purple-100 text-purple-800 border-purple-300',
+    Nagala: 'bg-gray-100 text-gray-700 border-gray-300',
+    Sarpa:  'bg-green-100 text-green-800 border-green-300',
+  };
+  return (
+    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
+      <Heading as={5} variant={5} className="text-primary mb-2">
+        {isHi ? 'द्रेष्काण स्वामी और प्रकार (D3)' : 'Drekkana Lord & Decanate Type (D3)'}
+      </Heading>
+      <div className="overflow-x-auto">
+        <Table className="w-full text-sm">
+          <TableHeader>
+            <TableRow className="bg-muted/10">
+              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'ग्रह' : 'Planet'}</TableHead>
+              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'द्रेष्काण' : 'Decanate'}</TableHead>
+              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'स्वामी' : 'Lord'}</TableHead>
+              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'प्रकार' : 'Type'}</TableHead>
+              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'अर्थ' : 'Meaning'}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {lords.map((p: any, i: number) => {
+              const dl = p.drekkana_lord;
+              const colorClass = TYPE_COLORS[dl.type] || 'bg-muted text-foreground';
+              return (
+                <TableRow key={i} className="border-t border-border/20 hover:bg-muted/5">
+                  <TableCell className="p-2 font-bold">{translatePlanet(p.planet, language)}</TableCell>
+                  <TableCell className="p-2">{dl.decanate}</TableCell>
+                  <TableCell className="p-2 font-semibold text-primary">{translatePlanet(dl.lord, language)}</TableCell>
+                  <TableCell className="p-2">
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${colorClass}`}>
+                      {dl.type}
+                    </span>
+                  </TableCell>
+                  <TableCell className="p-2 text-xs text-foreground/80">{isHi ? dl.meaning_hi : dl.meaning_en}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+function TrimsamshaLordCard({ positions, language }: { positions: any[]; language: string }) {
+  const isHi = language === 'hi';
+  const lords = positions.filter((p: any) => p.trimsamsha_lord);
+  if (!lords.length) return null;
+  return (
+    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
+      <Heading as={5} variant={5} className="text-primary mb-2">
+        {isHi ? 'त्रिंशांश स्वामी (D30)' : 'Trimsamsha Lord Significance (D30)'}
+      </Heading>
+      <div className="space-y-2">
+        {lords.map((p: any, i: number) => (
+          <div key={i} className="flex items-start gap-3 text-sm border-b border-border/20 pb-2 last:border-0">
+            <span className="font-bold text-primary w-24 shrink-0">{translatePlanet(p.planet, language)}</span>
+            <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-100 text-red-700 border border-red-300 shrink-0">
+              {translatePlanet(p.trimsamsha_lord.lord, language)}
+            </span>
+            <span className="text-foreground text-xs leading-relaxed">{isHi ? p.trimsamsha_lord.meaning_hi : p.trimsamsha_lord.meaning_en}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface DivisionalTabProps {
   divisionalData: any;
   loadingDivisional: boolean;
@@ -106,6 +210,21 @@ export default function DivisionalTab({
               </Table>
             </div>
           </div>
+
+          {/* D2 Hora Lord Significance */}
+          {divisionalData.division === 2 && divisionalData.planet_positions && (
+            <HoraLordCard positions={divisionalData.planet_positions} language={language} />
+          )}
+
+          {/* D3 Drekkana Lord & Type */}
+          {divisionalData.division === 3 && divisionalData.planet_positions && (
+            <DrekkanaLordCard positions={divisionalData.planet_positions} language={language} />
+          )}
+
+          {/* D30 Trimsamsha Lord */}
+          {divisionalData.division === 30 && divisionalData.planet_positions && (
+            <TrimsamshaLordCard positions={divisionalData.planet_positions} language={language} />
+          )}
 
           {/* Varga Strength (Phaladeepika Adh. 3 — Vargadhyaya) */}
           {divisionalData.varga_strength?.planets && (
