@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Activity, AlertTriangle, CheckCircle2, Shield, Loader2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { pickLang } from './safe-render';
 
 interface Props {
   kundliId: string;
@@ -131,7 +132,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                   </div>
                   <div>
                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${cfg.badge}`}>
-                      {isHi ? cfg.hi : cfg.en}
+                      {pickLang(cfg, isHi)}
                     </span>
                     <p className="text-xs text-gray-500 mt-1">
                       {t('auto.DataVulnerableareasL')}
@@ -205,7 +206,7 @@ export default function LalKitabHealthTab({ kundliId }: Props) {
                       {i + 1}
                     </span>
                     <p className="text-sm text-foreground/80 leading-relaxed">
-                      {isHi ? p.hi : p.en}
+                      {pickLang(p, isHi)}
                     </p>
                   </li>
                 ))}

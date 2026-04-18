@@ -356,4 +356,10 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
         ),
     })
 
+    # Stamp every dosha record with a `source` tag so the frontend's
+    # LK-canon vs Vedic-overlay split (Codex R2-P2) can filter reliably.
+    # Mangal Dosh already stamps its own source (LK_CANONICAL / vedic_influenced
+    # / none) based on Mars house; the remaining doshas are classical LK canon.
+    for d in results:
+        d.setdefault("source", "LK_CANONICAL")
     return results

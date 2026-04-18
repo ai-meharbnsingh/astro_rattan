@@ -4,7 +4,7 @@ import { Info } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
-import { lkStatusString } from './safe-render';
+import { toLkPlanetList } from './lalkitab-core';
 
 interface Props {
   apiResult?: any;
@@ -81,29 +81,8 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
     const planetsRaw = apiResult?.chart_data?.planets;
     if (!planetsRaw) return null;
 
-    const planets: PlanetData[] = Array.isArray(planetsRaw)
-      ? planetsRaw.map((p: any) => ({
-          planet: p.planet,
-          sign: p.sign || 'Unknown',
-          house: p.house || 0,
-          nakshatra: p.nakshatra || '',
-          sign_degree: p.sign_degree || 0,
-          status: lkStatusString(p.status || ''),
-          is_retrograde: p.is_retrograde || false,
-          is_combust: false,  // LK does not use combustion
-          is_vargottama: p.is_vargottama || false,
-        }))
-      : Object.entries(planetsRaw).map(([name, data]: [string, any]) => ({
-          planet: name,
-          sign: data?.sign || 'Unknown',
-          house: data?.house || 0,
-          nakshatra: data?.nakshatra || '',
-          sign_degree: data?.sign_degree || 0,
-          status: lkStatusString(data?.status || ''),
-          is_retrograde: data?.is_retrograde || false,
-          is_combust: false,  // LK does not use combustion
-          is_vargottama: data?.is_vargottama || false,
-        }));
+    // LK context — uses central toLkPlanetList helper
+    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
 
     const asc = apiResult.chart_data?.ascendant;
     const ascSign = asc?.sign || 'Aries';

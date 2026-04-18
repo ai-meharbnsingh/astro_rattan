@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { Navigation, AlertTriangle, Info, Zap, RefreshCw } from 'lucide-react';
+import { pickLang } from './safe-render';
 import { apiFetch } from '@/lib/api';
 import type { LalKitabChartLite } from './lalkitab-core';
 
@@ -199,7 +200,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
               >
                 <Zap className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
                 <p className="text-sm text-foreground/80 leading-snug">
-                  {isHi ? alert.hi : alert.en}
+                  {pickLang(alert, isHi)}
                 </p>
               </div>
             ))}
@@ -274,7 +275,7 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
                     )}
 
                     <p className="text-xs text-gray-500 mt-1 leading-snug">
-                      {isHi ? transit.hi : transit.en}
+                      {pickLang(transit, isHi)}
                     </p>
 
                     {natalPlanets.length > 0 && (

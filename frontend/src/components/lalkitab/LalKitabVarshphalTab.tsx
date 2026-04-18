@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { lkStatusString } from './safe-render';
+import { toLkPlanetList } from './lalkitab-core';
 
 /** Build the current year and +/- 5 years range. */
 function getYearRange(): number[] {
@@ -56,17 +56,7 @@ export default function LalKitabVarshphalTab() {
     const planetsRaw = data?.chart_data?.planets;
     const asc = data?.chart_data?.ascendant;
     if (!planetsRaw) return null;
-    const planets: PlanetData[] = Object.entries(planetsRaw).map(([name, p]: [string, any]) => ({
-      planet: name,
-      sign: p?.sign || 'Unknown',
-      house: p?.house || 0,
-      nakshatra: p?.nakshatra || '',
-      sign_degree: p?.sign_degree || 0,
-      status: lkStatusString(p?.status || ''),
-      is_retrograde: p?.retrograde || p?.is_retrograde || false,
-      is_combust: false,  // LK does not use combustion
-      is_vargottama: p?.vargottama || p?.is_vargottama || false,
-    }));
+    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
 
     // InteractiveKundli expects a list of houses with sign labels. For Varshphal, we can
     // derive a simple sign progression from the ascendant sign.

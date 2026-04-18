@@ -3,7 +3,7 @@ import { LayoutGrid, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useLalKitab } from './LalKitabContext';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { lkStatusString } from './safe-render';
+import { toLkPlanetList } from './lalkitab-core';
 
 const ZODIAC_SIGNS = [
   'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
@@ -28,31 +28,9 @@ export default function LalKitabKundliTab() {
     const planetsRaw = apiResult?.chart_data?.planets;
     if (!planetsRaw) return null;
 
-    // LK context — strip Vedic-only tokens (Combust/Sandhi) and force
-    // is_combust=false so the LK chart doesn't append Vedic combust marks.
-    const planets: PlanetData[] = Array.isArray(planetsRaw)
-      ? planetsRaw.map((p: any) => ({
-          planet: p.planet,
-          sign: p.sign || 'Unknown',
-          house: p.house || 0,
-          nakshatra: p.nakshatra || '',
-          sign_degree: p.sign_degree || 0,
-          status: lkStatusString(p.status || ''),
-          is_retrograde: p.is_retrograde || false,
-          is_combust: false,  // LK does not use combustion
-          is_vargottama: p.is_vargottama || false,
-        }))
-      : Object.entries(planetsRaw).map(([name, data]: [string, any]) => ({
-          planet: name,
-          sign: data?.sign || 'Unknown',
-          house: data?.house || 0,
-          nakshatra: data?.nakshatra || '',
-          sign_degree: data?.sign_degree || 0,
-          status: lkStatusString(data?.status || ''),
-          is_retrograde: data?.is_retrograde || false,
-          is_combust: false,  // LK does not use combustion
-          is_vargottama: data?.is_vargottama || false,
-        }));
+    // LK context — single source of truth in lalkitab-core.toLkPlanetList
+    // strips Combust/Sandhi tokens and forces is_combust=false.
+    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
 
     const asc = apiResult?.chart_data?.ascendant;
     const ascSign = asc?.sign || 'Aries';

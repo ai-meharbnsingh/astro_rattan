@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Briefcase, TrendingUp, Clock, Loader2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { pickLang } from './safe-render';
 
 interface Props {
   kundliId: string;
@@ -122,7 +123,7 @@ export default function LalKitabCareerTab({ kundliId }: Props) {
                     : (t('auto.jobSuited'))}
                 </h3>
                 <p className="text-sm text-foreground/70 mt-0.5">
-                  {isHi ? data.advice.hi : data.advice.en}
+                  {pickLang(data?.advice, isHi)}
                 </p>
               </div>
             </div>

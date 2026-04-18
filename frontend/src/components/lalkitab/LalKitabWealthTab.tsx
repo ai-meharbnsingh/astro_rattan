@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { Coins, TrendingUp, PiggyBank, Loader2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { pickLang } from './safe-render';
 
 interface Props {
   kundliId: string;
@@ -150,7 +151,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               { key: 'venus',   hi: 'शुक्र', house: data.venus_house,   label: { hi: 'शुक्र भाव', en: 'Venus House' } },
             ].map(({ key, hi, house, label }) => (
               <div key={key} className="card-sacred rounded-xl border border-sacred-gold/20 p-4 text-center">
-                <p className="text-xs text-gray-500 mb-1">{isHi ? label.hi : label.en}</p>
+                <p className="text-xs text-gray-500 mb-1">{pickLang(label, isHi)}</p>
                 <p className="text-3xl font-bold text-sacred-gold">{isNaN(Number(house)) ? 0 : house}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{isHi ? hi : (key || "").charAt(0).toUpperCase() + key.slice(1)}</p>
               </div>
@@ -165,7 +166,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
             ].map(({ label, planets }, idx) => (
               <div key={idx} className="card-sacred rounded-xl border border-sacred-gold/20 p-4">
                 <p className="text-xs font-semibold text-sacred-gold mb-2">
-                {isHi ? label.hi : label.en}
+                {pickLang(label, isHi)}
               </p>
                 {Array.isArray(planets) && planets.filter(Boolean).length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
@@ -198,7 +199,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
                     <span className="w-6 h-6 rounded-full bg-sacred-gold/20 text-sacred-gold text-xs font-bold flex items-center justify-center shrink-0">
                       {i + 1}
                     </span>
-                    <p className="text-sm text-foreground">{isHi ? src.hi : src.en}</p>
+                    <p className="text-sm text-foreground">{pickLang(src, isHi)}</p>
                   </div>
                 ))}
               </div>
@@ -212,7 +213,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               {t('auto.investmentAdvice')}
             </h3>
             <p className="text-sm text-foreground/80 leading-relaxed">
-              {isHi ? data.investment_advice.hi : data.investment_advice.en}
+              {pickLang(data?.investment_advice, isHi)}
             </p>
           </div>
 
@@ -223,7 +224,7 @@ export default function LalKitabWealthTab({ kundliId }: Props) {
               {t('auto.savingsTip')}
             </h3>
             <p className="text-sm text-foreground/80 leading-relaxed">
-              {isHi ? data.savings_tip.hi : data.savings_tip.en}
+              {pickLang(data?.savings_tip, isHi)}
             </p>
           </div>
         </>

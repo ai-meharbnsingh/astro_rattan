@@ -139,7 +139,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
               </div>
             </div>
             <p className="text-sm text-foreground/80 leading-relaxed">
-              {isHi ? data.compatibility_note.hi : data.compatibility_note.en}
+              {pickLang(data?.compatibility_note, isHi)}
             </p>
           </div>
 
@@ -150,7 +150,7 @@ export default function LalKitabMarriageTab({ kundliId }: Props) {
               {isHi ? 'जीवनसाथी का स्वभाव (शुक्र भाव {0})'.replace('{0}', String(data.venus_house)) : `Spouse Nature (Venus in House ${data.venus_house})`}
             </h3>
             <p className="text-sm text-foreground leading-relaxed">
-              {isHi ? data.spouse_description.hi : data.spouse_description.en}
+              {pickLang(data?.spouse_description, isHi)}
             </p>
           </div>
 

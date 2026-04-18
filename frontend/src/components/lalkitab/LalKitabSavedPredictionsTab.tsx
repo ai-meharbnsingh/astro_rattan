@@ -43,7 +43,7 @@ function PredictionSummary({ type, data, isHi }: { type: string; data: Record<st
         </div>
         {data.spouse_description && (
           <div className="line-clamp-2">
-            {isHi ? data.spouse_description.hi : data.spouse_description.en}
+            {pickLang(data?.spouse_description, isHi)}
           </div>
         )}
       </div>

@@ -211,7 +211,7 @@ export default function LalKitabPredictionTab() {
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <span className={`inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border font-bold shadow-sm ${lbl.bg} ${lbl.text} ${lbl.border}`}>
                     <LabelIcon className="w-3 h-3" />
-                    {isHi ? lbl.hi : lbl.en}
+                    {pickLang(lbl, isHi)}
                   </span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${cfg.badge}`}>
                     {a.confidence.toUpperCase()}

@@ -213,7 +213,7 @@ export default function LalKitabChandraChaalanaTab() {
                     {isHi ? `दिन ${task.day}` : `Day ${task.day}`}
                   </span>
                   <p className="text-xs text-foreground/80 leading-snug">
-                    {isHi ? task.hi : task.en}
+                    {pickLang(task, isHi)}
                   </p>
                 </div>
               ))}
@@ -333,7 +333,7 @@ export default function LalKitabChandraChaalanaTab() {
             </span>
           </div>
           <p className="text-sm text-foreground leading-relaxed mb-4">
-            {isHi ? todayTask.hi : todayTask.en}
+            {pickLang(todayTask, isHi)}
           </p>
           {isTodayDone ? (
             <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
