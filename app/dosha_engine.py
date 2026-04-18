@@ -725,6 +725,112 @@ def check_neecha_bhanga(planets: dict) -> dict:
 
 
 # ============================================================
+# NEECHA BHANGA VARIANTS — per-planet (Phaladeepika Adh. 7)
+# ============================================================
+# Per-planet Neechabhanga conditions (Phaladeepika Adh. 7 slokas 8–14):
+#   For each debilitated planet, cancellation occurs when ANY of:
+#   1. Lord of the debilitation sign is in kendra from lagna or Moon.
+#   2. Lord of the exaltation sign of the debilitated planet is in kendra from lagna or Moon.
+#   3. The planet that exalts IN the debilitation sign is in kendra from lagna or Moon.
+#   4. The debilitated planet itself is in kendra from lagna or Moon.
+_NBRY_PLANET_DATA = {
+    # planet: (debil_sign, dispositor, exalt_sign_lord, exalts_in_debil_lord)
+    "Sun":     ("Libra",     "Venus",   "Mars",    "Saturn"),   # Sun exalts in Aries (Mars); Saturn exalts in Libra
+    "Moon":    ("Scorpio",   "Mars",    "Venus",   None),       # Moon exalts in Taurus (Venus); nothing exalts in Scorpio
+    "Mars":    ("Cancer",    "Moon",    "Saturn",  "Jupiter"),  # Mars exalts in Capricorn (Saturn); Jupiter exalts in Cancer
+    "Mercury": ("Pisces",    "Jupiter", "Mercury", "Venus"),    # Mercury exalts in Virgo (itself); Venus exalts in Pisces
+    "Jupiter": ("Capricorn", "Saturn",  "Moon",    "Mars"),     # Jupiter exalts in Cancer (Moon); Mars exalts in Capricorn
+    "Venus":   ("Virgo",     "Mercury", "Jupiter", "Mercury"),  # Venus exalts in Pisces (Jupiter); Mercury exalts in Virgo
+    "Saturn":  ("Aries",     "Mars",    "Venus",   "Sun"),      # Saturn exalts in Libra (Venus); Sun exalts in Aries
+}
+
+
+def check_neecha_bhanga_variants(planets: dict, asc_sign: str) -> list:
+    """
+    Per-planet Neechabhanga Raj Yoga (Phaladeepika Adh. 7 slokas 8–14).
+
+    For each debilitated planet checks 4 cancellation conditions and returns
+    a detailed result with which specific condition(s) triggered the cancellation.
+
+    Returns list of yoga dicts (one per debilitated planet with cancellation).
+    """
+    results = []
+
+    moon_house = planets.get("Moon", {}).get("house", 0)
+    lagna_house = 1  # whole-sign lagna
+
+    def _in_kendra_from(planet_name: str, ref_house: int) -> bool:
+        ph = planets.get(planet_name, {}).get("house", 0)
+        if ph == 0 or ref_house == 0:
+            return False
+        return ((ph - ref_house) % 12) in {0, 3, 6, 9}
+
+    def _planet_in_kendra_abs(planet_name: str) -> bool:
+        """Kendra from lagna (house 1,4,7,10)."""
+        return planets.get(planet_name, {}).get("house", 0) in KENDRA_HOUSES
+
+    for planet, (debil_sign, dispositor, exalt_lord, exalts_in_debil) in _NBRY_PLANET_DATA.items():
+        p_data = planets.get(planet, {})
+        if p_data.get("sign") != debil_sign:
+            continue  # not debilitated
+
+        p_house = p_data.get("house", 0)
+        conditions_met = []
+
+        # Condition 1: Dispositor in kendra from lagna or Moon
+        if dispositor:
+            if _in_kendra_from(dispositor, lagna_house) or _in_kendra_from(dispositor, moon_house):
+                loc = planets.get(dispositor, {}).get("house", "?")
+                conditions_met.append(
+                    f"Dispositor {dispositor} in kendra from {'lagna' if _in_kendra_from(dispositor, lagna_house) else 'Moon'} (H{loc})"
+                )
+
+        # Condition 2: Exaltation sign lord in kendra from lagna or Moon
+        if exalt_lord and exalt_lord != dispositor:
+            if _in_kendra_from(exalt_lord, lagna_house) or _in_kendra_from(exalt_lord, moon_house):
+                loc = planets.get(exalt_lord, {}).get("house", "?")
+                conditions_met.append(
+                    f"Exaltation lord {exalt_lord} in kendra from {'lagna' if _in_kendra_from(exalt_lord, lagna_house) else 'Moon'} (H{loc})"
+                )
+
+        # Condition 3: Planet that exalts IN the debilitation sign is in kendra
+        if exalts_in_debil and exalts_in_debil not in (dispositor, exalt_lord):
+            if _in_kendra_from(exalts_in_debil, lagna_house) or _in_kendra_from(exalts_in_debil, moon_house):
+                loc = planets.get(exalts_in_debil, {}).get("house", "?")
+                conditions_met.append(
+                    f"{exalts_in_debil} (exalts in {debil_sign}) in kendra (H{loc})"
+                )
+
+        # Condition 4: Debilitated planet itself in kendra from lagna or Moon
+        if _in_kendra_from(planet, lagna_house) or _in_kendra_from(planet, moon_house):
+            conditions_met.append(
+                f"{planet} itself in kendra (H{p_house})"
+            )
+
+        if conditions_met:
+            results.append({
+                "name": f"Neecha Bhanga Raj Yoga ({planet})",
+                "present": True,
+                "description": (
+                    f"{planet} is debilitated in {debil_sign} (H{p_house}) but cancellation applies — "
+                    + "; ".join(conditions_met)
+                    + ". The debilitation is cancelled; the planet rises to give results exceeding a strong planet."
+                ),
+                "description_hi": (
+                    f"{planet} {debil_sign} (भाव {p_house}) में नीच है किन्तु भंग हो रहा है — "
+                    + "; ".join(conditions_met)
+                    + "। नीच-भंग से यह ग्रह उच्च ग्रह से भी उत्तम फल देता है।"
+                ),
+                "planets_involved": list({planet, dispositor, exalt_lord, exalts_in_debil} - {None}),
+                "sloka_ref": "Phaladeepika Adh. 7 slokas 8–14",
+                "category": "Raja Yoga (Neecha Bhanga)",
+                "cancellation_conditions": conditions_met,
+            })
+
+    return results
+
+
+# ============================================================
 # Sign lords (dispositors) — needed for Raja Yoga, Dhana Yoga
 # ============================================================
 SIGN_LORDS = {
@@ -1199,6 +1305,470 @@ def check_danda_yoga(planets: dict) -> dict:
 
 
 # ============================================================
+# ADH. 6 YOGAS — Items 7, 8, 9
+# ============================================================
+
+# Helpers used by the new functions
+_DUAL_SIGNS = {"Gemini", "Virgo", "Sagittarius", "Pisces"}
+
+_NATURAL_FRIENDS = {
+    "Sun":     {"Jupiter", "Mars", "Moon"},
+    "Moon":    {"Sun", "Mercury"},
+    "Mars":    {"Sun", "Moon", "Jupiter"},
+    "Mercury": {"Sun", "Venus"},
+    "Jupiter": {"Sun", "Moon", "Mars"},
+    "Venus":   {"Mercury", "Saturn"},
+    "Saturn":  {"Mercury", "Venus"},
+}
+
+_PLANET_OWN_SIGNS = {
+    "Sun":     {"Leo"},
+    "Moon":    {"Cancer"},
+    "Mars":    {"Aries", "Scorpio"},
+    "Mercury": {"Gemini", "Virgo"},
+    "Jupiter": {"Sagittarius", "Pisces"},
+    "Venus":   {"Taurus", "Libra"},
+    "Saturn":  {"Capricorn", "Aquarius"},
+}
+
+_NATURAL_MALEFICS_ADH6 = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+_NATURAL_BENEFICS_ADH6 = {"Jupiter", "Venus", "Moon", "Mercury"}
+
+_CLASSICAL_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+
+
+# ── Item 7 ────────────────────────────────────────────────────
+
+def check_chimana_yoga(planets: dict) -> dict:
+    """Chimana Yoga: Benefic planets occupy ALL four kendra houses (1, 4, 7, 10)."""
+    kendra_list = [1, 4, 7, 10]
+    benefic_planets = ["Jupiter", "Venus", "Moon", "Mercury"]
+    covered = {}
+    for p in benefic_planets:
+        ph = _h(p, planets)
+        if ph in kendra_list:
+            covered[ph] = covered.get(ph, []) + [p]
+    if set(covered.keys()) == set(kendra_list):
+        involved = [p for plist in covered.values() for p in plist]
+        detail = "; ".join(f"H{k}: {', '.join(v)}" for k, v in sorted(covered.items()))
+        return {
+            "name": "Chimana Yoga",
+            "present": True,
+            "description": (
+                f"Benefic planets in all four kendras — {detail}. "
+                "Grants wealth, fame, royal patronage, and abundant progeny."
+            ),
+            "description_hi": "चार केन्द्र भावों में शुभ ग्रह — यश, सम्पत्ति और राजकीय सम्मान।",
+            "planets_involved": involved,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 17",
+        }
+    return {
+        "name": "Chimana Yoga",
+        "present": False,
+        "description": "Benefics do not occupy all four kendra houses simultaneously.",
+        "description_hi": "चार केन्द्र भावों में शुभ ग्रह नहीं हैं।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 17",
+    }
+
+
+def check_surya_yoga(planets: dict) -> dict:
+    """Surya Yoga: Sun in 10th house in own sign (Leo) or exalted (Aries), no malefic conjunction."""
+    sun_h = _h("Sun", planets)
+    sun_sign = _sign("Sun", planets)
+    if sun_h != 10:
+        return {
+            "name": "Surya Yoga",
+            "present": False,
+            "description": "Sun not in 10th house.",
+            "description_hi": "सूर्य दशम भाव में नहीं है।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 19",
+        }
+    in_own = sun_sign == "Leo"
+    in_exalt = sun_sign == "Aries"
+    if not (in_own or in_exalt):
+        return {
+            "name": "Surya Yoga",
+            "present": False,
+            "description": "Sun in 10th but not in own sign (Leo) or exaltation (Aries).",
+            "description_hi": "सूर्य दशम भाव में है, किन्तु स्वराशि/उच्च में नहीं।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 19",
+        }
+    malefic_conj = [p for p in ["Mars", "Saturn", "Rahu", "Ketu"] if _h(p, planets) == 10]
+    if malefic_conj:
+        return {
+            "name": "Surya Yoga",
+            "present": False,
+            "description": (
+                f"Sun in 10th in {'own sign Leo' if in_own else 'exaltation Aries'} but "
+                f"afflicted by malefic conjunction: {', '.join(malefic_conj)}."
+            ),
+            "description_hi": "सूर्य दशम में शुभ है, किन्तु पापी ग्रह साथ होने से योग भंग।",
+            "planets_involved": ["Sun"] + malefic_conj,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 19",
+        }
+    label = "own sign Leo" if in_own else "exaltation Aries"
+    return {
+        "name": "Surya Yoga",
+        "present": True,
+        "description": (
+            f"Sun in 10th house in {label}, unafflicted by malefics. "
+            "Grants high authority, royal honors, government service, and fame in profession."
+        ),
+        "description_hi": "सूर्य दशम भाव में स्वराशि/उच्च — उच्च पद, राजकीय सम्मान, व्यावसायिक यश।",
+        "planets_involved": ["Sun"],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 19",
+    }
+
+
+def check_jalatha_yoga(planets: dict) -> dict:
+    """Jalatha Yoga: All 7 classical planets placed in dual (Dvisvabhava) signs."""
+    missing = [p for p in _CLASSICAL_PLANETS if _h(p, planets) == 0]
+    if missing:
+        return {
+            "name": "Jalatha Yoga",
+            "present": False,
+            "description": f"Planet data missing for: {', '.join(missing)}.",
+            "description_hi": "ग्रह डेटा अनुपलब्ध।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 21",
+        }
+    not_dual = [p for p in _CLASSICAL_PLANETS if _sign(p, planets) not in _DUAL_SIGNS]
+    if not not_dual:
+        return {
+            "name": "Jalatha Yoga",
+            "present": True,
+            "description": (
+                "All 7 classical planets are in dual signs (Gemini, Virgo, Sagittarius, Pisces). "
+                "Grants prosperity, good learning, dual income sources, and success in commerce."
+            ),
+            "description_hi": "सभी सात ग्रह द्विस्वभाव राशियों में — समृद्धि, व्यापार में सफलता।",
+            "planets_involved": _CLASSICAL_PLANETS[:],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 21",
+        }
+    return {
+        "name": "Jalatha Yoga",
+        "present": False,
+        "description": f"Not all 7 planets in dual signs. Outside dual signs: {', '.join(not_dual)}.",
+        "description_hi": "सभी ग्रह द्विस्वभाव राशियों में नहीं हैं।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 21",
+    }
+
+
+def check_chattra_yoga(planets: dict) -> dict:
+    """Chattra Yoga: All 7 classical planets exclusively in houses 1-7."""
+    missing = [p for p in _CLASSICAL_PLANETS if _h(p, planets) == 0]
+    if missing:
+        return {
+            "name": "Chattra Yoga",
+            "present": False,
+            "description": f"Planet data missing for: {', '.join(missing)}.",
+            "description_hi": "ग्रह डेटा अनुपलब्ध।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 23",
+        }
+    outside = [p for p in _CLASSICAL_PLANETS if _h(p, planets) > 7]
+    if not outside:
+        return {
+            "name": "Chattra Yoga",
+            "present": True,
+            "description": (
+                "All 7 classical planets occupy houses 1-7 (first hemisphere) — umbrella/parasol shape. "
+                "Grants protection, shelter, leadership, and support from the government."
+            ),
+            "description_hi": "सभी ग्रह प्रथम सात भावों में — संरक्षण, नेतृत्व, सरकारी सहयोग।",
+            "planets_involved": _CLASSICAL_PLANETS[:],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 23",
+        }
+    return {
+        "name": "Chattra Yoga",
+        "present": False,
+        "description": f"Planets outside houses 1-7: {', '.join(outside)}.",
+        "description_hi": "सभी ग्रह प्रथम सात भावों में नहीं हैं।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 23",
+    }
+
+
+def check_apta_yoga(planets: dict) -> dict:
+    """Apta Yoga: 3 or more planets in the sign of their natural friend."""
+    in_friend_sign = []
+    for planet in _CLASSICAL_PLANETS:
+        ph = _h(planet, planets)
+        if ph == 0:
+            continue
+        ps = _sign(planet, planets)
+        if not ps:
+            continue
+        sign_owner = next(
+            (owner for owner, signs in _PLANET_OWN_SIGNS.items() if ps in signs),
+            None,
+        )
+        if sign_owner and sign_owner != planet and sign_owner in _NATURAL_FRIENDS.get(planet, set()):
+            in_friend_sign.append(planet)
+    if len(in_friend_sign) >= 3:
+        return {
+            "name": "Apta Yoga",
+            "present": True,
+            "description": (
+                f"{', '.join(in_friend_sign)} occupy the sign of their natural friend. "
+                "Grants fulfillment of desires, support from allies, and social respect."
+            ),
+            "description_hi": "तीन या अधिक ग्रह मित्र राशि में — इच्छापूर्ति, सामाजिक प्रतिष्ठा।",
+            "planets_involved": in_friend_sign,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 25",
+        }
+    return {
+        "name": "Apta Yoga",
+        "present": False,
+        "description": (
+            f"Only {len(in_friend_sign)} planet(s) in friend's sign "
+            f"({', '.join(in_friend_sign) if in_friend_sign else 'none'}); need 3 or more."
+        ),
+        "description_hi": "मित्र राशि में तीन से कम ग्रह — अप्त योग नहीं।",
+        "planets_involved": in_friend_sign,
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 25",
+    }
+
+
+def check_rama_yoga(planets: dict) -> dict:
+    """Rama Yoga: Venus in own sign (Taurus/Libra) AND in a kendra, AND Jupiter aspects or is in kendra."""
+    ven_h = _h("Venus", planets)
+    ven_sign = _sign("Venus", planets)
+    in_own = ven_sign in {"Taurus", "Libra"}
+    in_kendra = ven_h in KENDRA_HOUSES
+    if not (in_own and in_kendra):
+        return {
+            "name": "Rama Yoga",
+            "present": False,
+            "description": "Venus must be in own sign (Taurus/Libra) and in a kendra house.",
+            "description_hi": "शुक्र स्वराशि और केन्द्र में नहीं — राम योग नहीं।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 27",
+        }
+    jup_h = _h("Jupiter", planets)
+    # Jupiter aspects Venus: conjunction (0), 5th (4), 7th (6), or 9th (8) counted from Venus house
+    jup_aspects_venus = jup_h > 0 and (jup_h - ven_h) % 12 in {0, 4, 6, 8}
+    jup_in_kendra = jup_h in KENDRA_HOUSES
+    if jup_aspects_venus or jup_in_kendra:
+        jup_detail = "Jupiter aspects Venus" if jup_aspects_venus else f"Jupiter in kendra (H{jup_h})"
+        return {
+            "name": "Rama Yoga",
+            "present": True,
+            "description": (
+                f"Venus in own sign ({ven_sign}) in kendra H{ven_h}, and {jup_detail}. "
+                "Grants prosperity, beautiful spouse, artistic talent, and fame."
+            ),
+            "description_hi": "शुक्र स्वराशि केन्द्र में, बृहस्पति की दृष्टि — समृद्धि, कला, सुंदर जीवनसाथी।",
+            "planets_involved": ["Venus", "Jupiter"],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 27",
+        }
+    return {
+        "name": "Rama Yoga",
+        "present": False,
+        "description": (
+            f"Venus in own sign in kendra (H{ven_h}) but Jupiter neither aspects Venus nor is in kendra."
+        ),
+        "description_hi": "शुक्र स्वराशि केन्द्र में है, किन्तु बृहस्पति की दृष्टि/स्थिति अनुकूल नहीं।",
+        "planets_involved": ["Venus"],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 27",
+    }
+
+
+# ── Item 8 ────────────────────────────────────────────────────
+
+def check_abhibhava_yoga(planets: dict) -> dict:
+    """Abhibhava Yoga: A stronger malefic occupies the same house as a benefic, overpowering it."""
+    found_pairs = []
+    for benefic in ["Jupiter", "Venus", "Moon", "Mercury"]:
+        bh = _h(benefic, planets)
+        if bh == 0:
+            continue
+        b_sign = _sign(benefic, planets)
+        b_strong = (b_sign in _PLANET_OWN_SIGNS.get(benefic, set())
+                    or b_sign == EXALTATION_SIGNS.get(benefic, ""))
+        for malefic in ["Saturn", "Mars", "Sun", "Rahu"]:
+            mh = _h(malefic, planets)
+            if mh != bh:
+                continue
+            m_sign = _sign(malefic, planets)
+            m_strong = (m_sign in _PLANET_OWN_SIGNS.get(malefic, set())
+                        or m_sign == EXALTATION_SIGNS.get(malefic, ""))
+            if m_strong and not b_strong:
+                found_pairs.append((malefic, benefic, bh))
+    if found_pairs:
+        desc_parts = [f"{mal} overpowers {ben} in H{h}" for mal, ben, h in found_pairs]
+        involved = list({p for pair in found_pairs for p in pair[:2]})
+        return {
+            "name": "Abhibhava Yoga",
+            "present": True,
+            "description": (
+                f"{'; '.join(desc_parts)}. "
+                "Malefic significations dominate; benefic's promises remain unfulfilled."
+            ),
+            "description_hi": "पापी ग्रह शुभ ग्रह को दबाता है — पापी फल प्रबल, शुभ-फल अवरुद्ध।",
+            "planets_involved": involved,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 31",
+        }
+    return {
+        "name": "Abhibhava Yoga",
+        "present": False,
+        "description": "No stronger malefic found conjunct a weaker benefic in the same house.",
+        "description_hi": "कोई पापी ग्रह शुभ ग्रह को नहीं दबा रहा।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 31",
+    }
+
+
+def check_papakartari_yoga(planets: dict) -> list:
+    """Papakartari Yoga: Malefics flank a planet — one in house-1 and one in house+1."""
+    results = []
+    for planet in _CLASSICAL_PLANETS:
+        ph = _h(planet, planets)
+        if ph == 0:
+            continue
+        prev_h = ((ph - 2) % 12) + 1
+        next_h = (ph % 12) + 1
+        prev_malefics = [p for p in _NATURAL_MALEFICS_ADH6 if _h(p, planets) == prev_h]
+        next_malefics = [p for p in _NATURAL_MALEFICS_ADH6 if _h(p, planets) == next_h]
+        if prev_malefics and next_malefics:
+            results.append({
+                "name": f"Papakartari Yoga ({planet})",
+                "present": True,
+                "description": (
+                    f"{planet} (H{ph}) is flanked by malefics: "
+                    f"{', '.join(prev_malefics)} in H{prev_h} and "
+                    f"{', '.join(next_malefics)} in H{next_h}. "
+                    "Causes obstruction, poverty, and struggle for this planet's significations."
+                ),
+                "description_hi": f"पापी ग्रह दोनों ओर से {planet} को घेरते हैं — बाधा, कठिनाई।",
+                "planets_involved": [planet] + prev_malefics + next_malefics,
+                "sloka_ref": "Phaladeepika Adh. 6 sloka 33",
+            })
+    return results
+
+
+def check_subhakartari_yoga(planets: dict) -> list:
+    """Subhakartari Yoga: Benefics flank a planet — one in house-1 and one in house+1."""
+    results = []
+    for planet in _CLASSICAL_PLANETS:
+        ph = _h(planet, planets)
+        if ph == 0:
+            continue
+        prev_h = ((ph - 2) % 12) + 1
+        next_h = (ph % 12) + 1
+        prev_benefics = [p for p in ["Jupiter", "Venus", "Moon", "Mercury"] if _h(p, planets) == prev_h]
+        next_benefics = [p for p in ["Jupiter", "Venus", "Moon", "Mercury"] if _h(p, planets) == next_h]
+        if prev_benefics and next_benefics:
+            results.append({
+                "name": f"Subhakartari Yoga ({planet})",
+                "present": True,
+                "description": (
+                    f"{planet} (H{ph}) is protected by benefics: "
+                    f"{', '.join(prev_benefics)} in H{prev_h} and "
+                    f"{', '.join(next_benefics)} in H{next_h}. "
+                    "Grants protection, prosperity, and fulfillment of this planet's significations."
+                ),
+                "description_hi": f"शुभ ग्रह दोनों ओर से {planet} की रक्षा करते हैं — समृद्धि, सुरक्षा।",
+                "planets_involved": [planet] + prev_benefics + next_benefics,
+                "sloka_ref": "Phaladeepika Adh. 6 sloka 35",
+            })
+    return results
+
+
+# ── Item 9 ────────────────────────────────────────────────────
+
+def check_subhamala_yoga(planets: dict) -> dict:
+    """Subhamala Yoga: Benefic planets occupy all three of houses 6, 7, and 8."""
+    needed = {6, 7, 8}
+    covered = {}
+    for p in ["Jupiter", "Venus", "Moon", "Mercury"]:
+        ph = _h(p, planets)
+        if ph in needed:
+            covered[ph] = covered.get(ph, []) + [p]
+    if set(covered.keys()) == needed:
+        involved = [p for plist in covered.values() for p in plist]
+        detail = "; ".join(f"H{k}: {', '.join(v)}" for k, v in sorted(covered.items()))
+        return {
+            "name": "Subhamala Yoga",
+            "present": True,
+            "description": (
+                f"Benefics form a garland around the descendant axis — {detail}. "
+                "Grants protection from enemies, good marriage, longevity, and protection from chronic illness."
+            ),
+            "description_hi": "भाव 6, 7, 8 में शुभ ग्रह — शत्रु-नाश, विवाह-सुख, दीर्घायु।",
+            "planets_involved": involved,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 37",
+        }
+    return {
+        "name": "Subhamala Yoga",
+        "present": False,
+        "description": "Benefics do not occupy all three of houses 6, 7, and 8 simultaneously.",
+        "description_hi": "भाव 6, 7, 8 में शुभ ग्रह नहीं हैं।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 37",
+    }
+
+
+def check_arabha_yoga(planets: dict) -> dict:
+    """
+    Arabha Yoga: Two variants.
+    Variant 1: 5+ planets in houses 1-6 — entrepreneurial drive, early success.
+    Variant 2: All 7 planets in houses 7-12 — success after relocation, recognition abroad.
+    """
+    missing = [p for p in _CLASSICAL_PLANETS if _h(p, planets) == 0]
+    if missing:
+        return {
+            "name": "Arabha Yoga",
+            "present": False,
+            "description": f"Planet data missing for: {', '.join(missing)}.",
+            "description_hi": "ग्रह डेटा अनुपलब्ध।",
+            "planets_involved": [],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 39",
+        }
+    in_first_six = [p for p in _CLASSICAL_PLANETS if 1 <= _h(p, planets) <= 6]
+    if len(in_first_six) >= 5:
+        return {
+            "name": "Arabha Yoga",
+            "present": True,
+            "description": (
+                f"{len(in_first_six)} planets ({', '.join(in_first_six)}) in houses 1-6 "
+                "(Arabha Yoga, Variant 1). Grants entrepreneurial drive, initiative, and early success in life."
+            ),
+            "description_hi": "पाँच या अधिक ग्रह प्रथम 6 भावों में — उद्यमशीलता, जल्दी सफलता।",
+            "planets_involved": in_first_six,
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 39",
+        }
+    above_horizon = [p for p in _CLASSICAL_PLANETS if _h(p, planets) >= 7]
+    if len(above_horizon) == 7:
+        return {
+            "name": "Arabha Yoga",
+            "present": True,
+            "description": (
+                "All 7 planets above the horizon (houses 7-12) "
+                "(Arabha Yoga, Variant 2). Grants recognition in foreign lands and success after relocation."
+            ),
+            "description_hi": "सभी ग्रह सप्तम से द्वादश भाव में — विदेश में सफलता, स्थानांतरण के बाद यश।",
+            "planets_involved": _CLASSICAL_PLANETS[:],
+            "sloka_ref": "Phaladeepika Adh. 6 sloka 39",
+        }
+    return {
+        "name": "Arabha Yoga",
+        "present": False,
+        "description": (
+            f"Arabha Yoga absent: {len(in_first_six)} planets in H1-6 (need 5+); "
+            f"{len(above_horizon)} planets in H7-12 (need all 7)."
+        ),
+        "description_hi": "अरब योग नहीं — न पर्याप्त ग्रह प्रथम छह भावों में, न सभी ऊपरी भावों में।",
+        "planets_involved": [],
+        "sloka_ref": "Phaladeepika Adh. 6 sloka 39",
+    }
+
+
+# ============================================================
 # NEW DOSHAS
 # ============================================================
 
@@ -1342,14 +1912,35 @@ def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
 
     # Raja Yogas (need ascendant)
     yogas.append(check_neecha_bhanga(planets))
+    yogas.extend(check_neecha_bhanga_variants(planets, asc_sign))  # per-planet Adh. 7 variants
     yogas.extend(check_viparita_raja_yoga(planets, asc_sign))
     yogas.append(check_raja_yoga(planets, asc_sign))
     yogas.append(check_lakshmi_yoga(planets, asc_sign))
     yogas.extend(check_dhana_yogas(planets, asc_sign))
 
+    # Adhyaya 7 Raja Yogas (12 additional)
+    try:
+        from app.raja_yoga_engine import detect_adh7_raja_yogas
+        yogas.extend(detect_adh7_raja_yogas(planets, asc_sign))
+    except Exception:
+        pass
+
     # Special Yogas
     yogas.append(check_saraswati_yoga(planets))
     yogas.append(check_danda_yoga(planets))
+
+    # Adh. 6 Special Yogas (Items 7, 8, 9)
+    yogas.append(check_chimana_yoga(planets))
+    yogas.append(check_surya_yoga(planets))
+    yogas.append(check_jalatha_yoga(planets))
+    yogas.append(check_chattra_yoga(planets))
+    yogas.append(check_apta_yoga(planets))
+    yogas.append(check_rama_yoga(planets))
+    yogas.append(check_subhamala_yoga(planets))
+    yogas.append(check_arabha_yoga(planets))
+    yogas.append(check_abhibhava_yoga(planets))
+    yogas.extend(check_papakartari_yoga(planets))
+    yogas.extend(check_subhakartari_yoga(planets))
 
     # ── Doshas ──
     doshas = []
