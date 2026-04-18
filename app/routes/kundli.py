@@ -2691,10 +2691,19 @@ def free_kundli_preview(
                 })
 
         moon_sign = moon_info.get("sign", "")
-        saturn_sign = planets.get("Saturn", {}).get("sign", "")
+        # Use current transit Saturn, not natal Saturn, for Sade Sati check
+        from datetime import timezone as _tz2
+        _now2 = datetime.now(_tz2.utc)
+        _transit2 = calculate_planet_positions(
+            _now2.strftime("%Y-%m-%d"), _now2.strftime("%H:%M:%S"),
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+            tz_offset=round(row.get("longitude", 0.0) / 15.0 * 2) / 2,
+        )
+        saturn_sign = _transit2.get("planets", {}).get("Saturn", {}).get("sign", "")
         if moon_sign and saturn_sign:
             sade_sati = check_sade_sati(moon_sign, saturn_sign)
-            if sade_sati and sade_sati.get("active"):
+            if sade_sati and sade_sati.get("has_sade_sati"):
                 problems.append({
                     "title": {"en": "Sade Sati active", "hi": "साढ़े साती चल रही है"},
                     "detail": "Saturn transiting near Moon — period of challenges",

@@ -533,9 +533,11 @@ def _planet_strength_ratio(planet: str, planets: Dict[str, Dict[str, Any]]) -> f
         base = 0.1
 
     h = _house_of(planet, planets)
-    if h in KENDRAS:
+    # Exaltation/own-sign immunity: house penalties don't reduce an already-strong planet
+    is_dignity = _is_exalted(planet, sign) or _is_own_sign(planet, sign)
+    if h in KENDRAS and not is_dignity:
         base = min(1.0, base + 0.1)
-    elif h in DUSTHANAS:
+    elif h in DUSTHANAS and not is_dignity:
         base = max(0.1, base - 0.1)
     return base
 
@@ -755,16 +757,18 @@ def apply_haranas(raw_years: float, chart_data: Dict[str, Any]) -> Dict[str, Any
     planets = chart_data.get("planets", {}) or {}
     current = raw_years
 
-    # 1. RAJA-HARANA — Lagna lord in Dusthana or debilitated without benefic aspect → 1/3
+    # 1. RAJA-HARANA — Lagna lord debilitated or in Dusthana without benefic aspect → 1/3
+    # Exaltation cancels this harana (classical rule: exalted strength overrides placement)
     ll = _lagna_lord(chart_data)
     if ll and ll in planets:
         ll_sign = _sign_of(ll, planets)
         ll_house = _house_of(ll, planets)
         afflicted = _is_debilitated(ll, ll_sign) or ll_house in DUSTHANAS
+        exalted_or_own = _is_exalted(ll, ll_sign) or _is_own_sign(ll, ll_sign)
         benefic_on_ll = any(
             b != ll and b in planets and _aspects_planet(b, ll, planets) for b in BENEFICS
         )
-        if afflicted and not benefic_on_ll:
+        if afflicted and not exalted_or_own and not benefic_on_ll:
             red = current / 3.0
             current -= red
             applied.append({
@@ -775,7 +779,8 @@ def apply_haranas(raw_years: float, chart_data: Dict[str, Any]) -> Dict[str, Any
                 "reduction_years": round(red, 2),
             })
 
-    # 2. BHUPA-HARANA — 10th lord weak → 1/4
+    # 2. BHUPA-HARANA — 10th lord debilitated or in Dusthana → 1/4
+    # Exaltation/own-sign cancels this harana
     asc_sign = (chart_data.get("ascendant") or {}).get("sign", "")
     if asc_sign in ZODIAC:
         tenth_sign = ZODIAC[(ZODIAC.index(asc_sign) + 9) % 12]
@@ -783,7 +788,8 @@ def apply_haranas(raw_years: float, chart_data: Dict[str, Any]) -> Dict[str, Any
         if tenth_lord and tenth_lord in planets:
             tl_sign = _sign_of(tenth_lord, planets)
             tl_house = _house_of(tenth_lord, planets)
-            if _is_debilitated(tenth_lord, tl_sign) or tl_house in DUSTHANAS:
+            tl_dignified = _is_exalted(tenth_lord, tl_sign) or _is_own_sign(tenth_lord, tl_sign)
+            if not tl_dignified and (_is_debilitated(tenth_lord, tl_sign) or tl_house in DUSTHANAS):
                 red = current / 4.0
                 current -= red
                 applied.append({

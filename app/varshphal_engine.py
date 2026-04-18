@@ -256,6 +256,20 @@ def calculate_varshphal(
             current_mudda = md["planet"]
             break
 
+    # If today is before this year's solar return, the active varshphal is the previous year's.
+    # Find the active mudda dasha from the previous solar year.
+    active_solar_year = target_year
+    if current_mudda is None and today_str < sr_date_str:
+        active_solar_year = target_year - 1
+        prev_sr_jd = find_solar_return_jd(natal_sun_lon, active_solar_year, birth_month, birth_day)
+        prev_sr_date = _jd_to_datetime(prev_sr_jd).strftime("%Y-%m-%d")
+        prev_year_lord = calculate_year_lord(prev_sr_jd)
+        prev_mudda = calculate_mudda_dasha(prev_year_lord, prev_sr_date)
+        for md in prev_mudda:
+            if md["start_date"] <= today_str <= md["end_date"]:
+                current_mudda = md["planet"]
+                break
+
     return {
         "year": target_year,
         "completed_years": completed_years,
@@ -273,4 +287,5 @@ def calculate_varshphal(
         "year_lord": year_lord,
         "mudda_dasha": mudda_dasha,
         "current_mudda_dasha": current_mudda,
+        "active_solar_year": active_solar_year,
     }
