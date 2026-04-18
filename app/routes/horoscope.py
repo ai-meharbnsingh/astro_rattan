@@ -92,21 +92,12 @@ def get_daily_horoscope(
         from app.transit_engine import generate_transit_horoscope
         result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date)
         if result and result.get("sections"):
-            # Flatten sections to selected language for backward compat
-            sections_bilingual = result.get("sections", {})
-            sections_flat = {}
-            for k, v in sections_bilingual.items():
-                if isinstance(v, dict):
-                    sections_flat[k] = v.get(lang, v.get("en", ""))
-                else:
-                    sections_flat[k] = v
-
+            # Return bilingual sections — frontend txt() helper handles language selection
             return {
                 **_sign_meta(sign),
                 "period": "daily",
                 "date": target_date,
-                "sections": sections_flat,
-                "sections_bilingual": sections_bilingual,
+                "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
                 "lucky": result.get("lucky", {}),
@@ -169,21 +160,13 @@ def get_weekly_horoscope(
         from app.transit_engine import generate_transit_horoscope
         result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date)
         if result and result.get("sections"):
-            sections_bilingual = result.get("sections", {})
-            sections_flat = {}
-            for k, v in sections_bilingual.items():
-                if isinstance(v, dict):
-                    sections_flat[k] = v.get(lang, v.get("en", ""))
-                else:
-                    sections_flat[k] = v
-
+            # Return bilingual sections — frontend txt() helper handles language selection
             return {
                 **_sign_meta(sign),
                 "period": "weekly",
                 "week_start": week_date,
                 "week_end": week_end,
-                "sections": sections_flat,
-                "sections_bilingual": sections_bilingual,
+                "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
                 "lucky": result.get("lucky", {}),
@@ -245,20 +228,12 @@ def get_monthly_horoscope(
         from app.transit_engine import generate_transit_horoscope
         result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start)
         if result and result.get("sections"):
-            sections_bilingual = result.get("sections", {})
-            sections_flat = {}
-            for k, v in sections_bilingual.items():
-                if isinstance(v, dict):
-                    sections_flat[k] = v.get(lang, v.get("en", ""))
-                else:
-                    sections_flat[k] = v
-
+            # Return bilingual sections — frontend txt() helper handles language selection
             response = {
                 **_sign_meta(sign),
                 "period": "monthly",
                 "month_start": month_start,
-                "sections": sections_flat,
-                "sections_bilingual": sections_bilingual,
+                "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
                 "lucky": result.get("lucky", {}),
@@ -330,20 +305,12 @@ def get_yearly_horoscope(
         from app.transit_engine import generate_transit_horoscope
         result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start)
         if result and result.get("sections"):
-            sections_bilingual = result.get("sections", {})
-            sections_flat = {}
-            for k, v in sections_bilingual.items():
-                if isinstance(v, dict):
-                    sections_flat[k] = v.get(lang, v.get("en", ""))
-                else:
-                    sections_flat[k] = v
-
+            # Return bilingual sections — frontend txt() helper handles language selection
             response = {
                 **_sign_meta(sign),
                 "period": "yearly",
                 "year_start": year_start,
-                "sections": sections_flat,
-                "sections_bilingual": sections_bilingual,
+                "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
                 "lucky": result.get("lucky", {}),
