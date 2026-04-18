@@ -499,6 +499,143 @@ def _detect_sevaka(chart: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 
 # ───────────────────────────────────────────────────────────────
+# Sprint F additions — Phaladeepika Adh. 11 completion
+# ───────────────────────────────────────────────────────────────
+
+def _detect_shubha_shila(chart: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Shubha-Shila Yoga — chastity / virtuous conduct (item 14, expanded).
+
+    Distinct from the existing Pativrata Yoga: focuses on BENEFIC-dominated
+    7th-axis + Venus strength, rather than Jupiter-in-Kendra.
+
+    Conditions (classical composite):
+      1. Benefic (Jupiter / Venus / waxing-Moon / Mercury unafflicted) in 7th
+         OR 7th lord in own / exalted sign.
+      2. Venus strong (own / exalted / friendly sign AND NOT in dusthana).
+      3. 9th lord benefic OR 9th house occupied by benefic (dharma support).
+    """
+    planets = _planets_dict(chart)
+    asc_sign = _ascendant_sign(chart)
+
+    benefics = {"Jupiter", "Venus", "Moon", "Mercury"}
+    # Condition 1
+    seventh_occ = _planets_in_house(planets, 7)
+    seventh_has_benefic = any(p in benefics for p in seventh_occ)
+    seventh_sign = _sign_at_house(asc_sign, 7)
+    seventh_lord = SIGN_LORD.get(seventh_sign, "")
+    seventh_lord_sign = _sign_of_planet(seventh_lord, planets) if seventh_lord else ""
+    seventh_lord_dignified = bool(seventh_lord) and (
+        _is_own_sign(seventh_lord, seventh_lord_sign)
+        or _is_exalted(seventh_lord, seventh_lord_sign)
+    )
+    cond1 = seventh_has_benefic or seventh_lord_dignified
+    if not cond1:
+        return None
+
+    # Condition 2 — Venus strong
+    venus_sign = _sign_of_planet("Venus", planets)
+    venus_house = _house_of_planet("Venus", planets)
+    venus_strong = (
+        (_is_own_sign("Venus", venus_sign) or _is_exalted("Venus", venus_sign))
+        and venus_house not in DUSTHANAS
+    )
+    if not venus_strong:
+        return None
+
+    # Condition 3 — 9th support
+    ninth_sign = _sign_at_house(asc_sign, 9)
+    ninth_lord = SIGN_LORD.get(ninth_sign, "")
+    ninth_occ = _planets_in_house(planets, 9)
+    ninth_lord_benefic = ninth_lord in benefics
+    ninth_benefic_occupant = any(p in benefics for p in ninth_occ)
+    cond3 = ninth_lord_benefic or ninth_benefic_occupant
+    if not cond3:
+        return None
+
+    factors = []
+    if seventh_has_benefic:
+        factors.append(f"Benefic(s) in 7th: {', '.join(p for p in seventh_occ if p in benefics)}")
+    if seventh_lord_dignified:
+        factors.append(f"7th lord {seventh_lord} dignified in {seventh_lord_sign}")
+    factors.append(
+        f"Venus strong in {venus_sign}"
+        + (" (exalted)" if _is_exalted("Venus", venus_sign) else " (own sign)")
+    )
+    if ninth_lord_benefic:
+        factors.append(f"9th lord {ninth_lord} is benefic")
+    if ninth_benefic_occupant:
+        factors.append(f"Benefic(s) in 9th: {', '.join(p for p in ninth_occ if p in benefics)}")
+
+    return {
+        "key": "shubha_shila",
+        "name_en": "Shubha-Shila Yoga",
+        "name_hi": "शुभशील योग",
+        "effect_en": "Auspicious character and virtuous conduct. Native is gentle, trustworthy, and known for her grace; naturally attracts good company and ethical partnerships.",
+        "effect_hi": "शुभ आचरण एवं चरित्र। जातिका सहज, विश्वसनीय एवं शिष्ट है; उसे स्वाभाविक रूप से सज्जनों का सहयोग एवं धार्मिक साहचर्य प्राप्त होता है।",
+        "severity": "auspicious",
+        "sloka_ref": "Phaladeepika Adh. 11 — Stri-Jataka virtue yogas",
+        "supporting_factors": factors,
+    }
+
+
+def _detect_ruler_of_queens(chart: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Rajarani Yoga — "Ruler of Queens" (item 15).
+
+    Per Phaladeepika Adh. 11: if Lagna lord is in Kendra from Moon,
+    Venus is in own / exalted sign, and the 9th lord is benefic (or in
+    Kendra / Trikona), the native commands respect among women of
+    stature — she will hold a distinguished position.
+    """
+    planets = _planets_dict(chart)
+    asc_sign = _ascendant_sign(chart)
+
+    lagna_lord = SIGN_LORD.get(asc_sign, "")
+    if not lagna_lord:
+        return None
+    lagna_lord_house = _house_of_planet(lagna_lord, planets)
+    moon_house = _house_of_planet("Moon", planets)
+    if not moon_house or not lagna_lord_house:
+        return None
+
+    # Compute house-from-Moon of the Lagna lord
+    house_from_moon = ((lagna_lord_house - moon_house) % 12) + 1
+    if house_from_moon not in KENDRAS:
+        return None
+
+    venus_sign = _sign_of_planet("Venus", planets)
+    if not (_is_own_sign("Venus", venus_sign) or _is_exalted("Venus", venus_sign)):
+        return None
+
+    ninth_sign = _sign_at_house(asc_sign, 9)
+    ninth_lord = SIGN_LORD.get(ninth_sign, "")
+    benefics = {"Jupiter", "Venus", "Moon", "Mercury"}
+    ninth_lord_benefic = ninth_lord in benefics
+    ninth_lord_house = _house_of_planet(ninth_lord, planets) if ninth_lord else 0
+    ninth_lord_placed = ninth_lord_house in KENDRA_TRIKONA
+    if not (ninth_lord_benefic or ninth_lord_placed):
+        return None
+
+    factors = [
+        f"Lagna lord {lagna_lord} is in house {house_from_moon} from Moon (Kendra)",
+        f"Venus dignified in {venus_sign}",
+        f"9th lord {ninth_lord}"
+        + (" is benefic" if ninth_lord_benefic else "")
+        + (f" in house {ninth_lord_house}" if ninth_lord_placed else ""),
+    ]
+
+    return {
+        "key": "rajarani",
+        "name_en": "Rajarani Yoga (Ruler of Queens)",
+        "name_hi": "राजरानी योग",
+        "effect_en": "The native holds a distinguished position among women of stature — she commands respect, leads circles of influence, and is honoured like a queen in her domain.",
+        "effect_hi": "जातिका को उच्च-वर्गीय स्त्रियों में प्रतिष्ठित स्थान प्राप्त होगा — वह अपने क्षेत्र में रानी-समान पूजित एवं आदरणीय होती है।",
+        "severity": "auspicious",
+        "sloka_ref": "Phaladeepika Adh. 11 — Rajarani classical conditions",
+        "supporting_factors": factors,
+    }
+
+
+# ───────────────────────────────────────────────────────────────
 # 7th-house overview
 # ───────────────────────────────────────────────────────────────
 
@@ -658,6 +795,9 @@ def analyze_stri_jataka(chart_data: Dict[str, Any], gender: str = "female") -> D
         _detect_putravati,
         _detect_pativrata,
         _detect_sevaka,
+        # Sprint F — Adh. 11 completion
+        _detect_shubha_shila,
+        _detect_ruler_of_queens,
     )
 
     yogas_detected: List[Dict[str, Any]] = []

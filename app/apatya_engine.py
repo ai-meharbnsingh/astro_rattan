@@ -838,6 +838,321 @@ def _children_timing_section(
     }
 
 
+def estimate_child_count(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Sprint E item 10 — quantified child count estimate per Phaladeepika Adh. 12.
+
+    Encoding (pragmatic derivation from the classical rules):
+      base_count :   3 if 5th lord strong + Jupiter strong + no malefic in 5
+                     2 if 5th lord moderate or only one of the above holds
+                     1 if 5th lord or Jupiter afflicted
+                     0 if 5th house heavily afflicted (malefics in 5 + weak lord + Jupiter afflicted)
+
+      modifiers (integer deltas applied to base):
+        - Benefic in 5th:                    +1 (max once)
+        - Jupiter in own sign / exalted:     +1
+        - 5th lord in Kendra / Trikona:      +1
+        - Aspect of benefic on 5th:          +1 (Mercury/Venus)
+        - Malefic in 5th (each):             −1
+        - 5th lord in dusthana (6/8/12):     −1
+        - Debilitated 5th lord:              −1
+
+    Returns {count_low, count_high, point_estimate, method_en/hi,
+             supporting_factors, sloka_ref, source}.
+    """
+    planets = chart_data.get("planets", {}) or {}
+    fl = _fifth_lord_info(chart_data)
+    ju = _jupiter_info(chart_data)
+    in5 = _planets_in_house(planets, 5)
+    benefics_in_5 = [p for p in in5 if p in BENEFICS]
+    malefics_in_5 = [p for p in in5 if p in MALEFICS]
+
+    fl_strength = fl.get("strength", "moderate")
+    ju_strength = ju.get("strength", "moderate")
+
+    # Base count
+    if fl_strength == "strong" and ju_strength == "strong" and not malefics_in_5:
+        base = 3
+    elif fl_strength == "strong" or ju_strength == "strong":
+        base = 2
+    elif fl_strength == "weak" and ju_strength == "weak":
+        base = 0
+    elif fl_strength == "weak" or ju_strength == "weak":
+        base = 1
+    else:
+        base = 2
+
+    delta = 0
+    factors: list[str] = [f"Base count: {base} (5th lord {fl_strength}, Jupiter {ju_strength})"]
+
+    if benefics_in_5:
+        delta += 1
+        factors.append(f"Benefic(s) in 5th: {', '.join(benefics_in_5)} (+1)")
+    ju_sign = ju.get("sign", "")
+    if _is_exalted("Jupiter", ju_sign) or _is_own_sign("Jupiter", ju_sign):
+        delta += 1
+        factors.append(f"Jupiter {'exalted' if _is_exalted('Jupiter', ju_sign) else 'in own sign'} (+1)")
+    fl_house = fl.get("placement", 0)
+    if fl_house in {1, 4, 5, 7, 9, 10}:
+        delta += 1
+        factors.append(f"5th lord in Kendra/Trikona (house {fl_house}) (+1)")
+
+    for m in malefics_in_5:
+        delta -= 1
+    if malefics_in_5:
+        factors.append(f"Malefic(s) in 5th: {', '.join(malefics_in_5)} (−{len(malefics_in_5)})")
+
+    if fl_house in {6, 8, 12}:
+        delta -= 1
+        factors.append(f"5th lord in dusthana (house {fl_house}) (−1)")
+
+    fl_sign = fl.get("sign", "")
+    fl_lord = fl.get("lord", "")
+    if fl_lord and _is_debilitated(fl_lord, fl_sign):
+        delta -= 1
+        factors.append(f"5th lord {fl_lord} debilitated (−1)")
+
+    point = max(0, base + delta)
+    # Range: ±1 for MVP (reflects the inherent imprecision of quantified
+    # child counts in classical texts — "few/several/many" bucketing).
+    low = max(0, point - 1)
+    high = point + 1 if point > 0 else (1 if base + delta > -2 else 0)
+
+    return {
+        "point_estimate": point,
+        "count_low": low,
+        "count_high": high,
+        "label_en": (
+            "No children expected" if point == 0 else
+            f"Approximately {low}–{high} children expected"
+        ),
+        "label_hi": (
+            "संतान योग नहीं" if point == 0 else
+            f"लगभग {low}–{high} संतान की सम्भावना"
+        ),
+        "method_en": (
+            "Base count derived from 5th-lord + Jupiter strength. Modifiers applied "
+            "for benefics/malefics in 5th, dignity of 5th lord, and Jupiter's own "
+            "condition. Range widened ±1 to reflect classical imprecision."
+        ),
+        "method_hi": (
+            "पंचमेश एवं गुरु की स्थिति से आधार संख्या। पंचम में शुभ/पाप ग्रह, "
+            "पंचमेश की दिग्बलादि, गुरु की स्वगृह/उच्च स्थिति के आधार पर संशोधन। "
+            "शास्त्रीय अनिश्चितता को दर्शाने हेतु ±1 विस्तार।"
+        ),
+        "supporting_factors": factors,
+        "sloka_ref": "Phaladeepika Adh. 12 — santati quantification",
+        "source": "LK_DERIVED",
+    }
+
+
+def detect_gender_yogas(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Sprint E item 11 — gender-specific child yogas per Phaladeepika Adh. 12.
+
+    Classical correlations:
+      - Male-children yoga:
+          5th lord is a male planet (Sun / Mars / Jupiter)
+          AND in a male sign (Aries / Gemini / Leo / Libra / Sagittarius / Aquarius)
+          AND Jupiter aspects 5th (or sits in 5th).
+
+      - Female-children yoga:
+          5th lord is a female planet (Moon / Venus)
+          AND in a female sign (Taurus / Cancer / Virgo / Scorpio / Capricorn / Pisces)
+          AND Venus / Moon aspects 5th (or sits in 5th).
+
+      - Mixed / neutral:
+          5th lord is Mercury or Saturn (neutral),
+          OR only one criterion meets — return "mixed".
+
+    Returns {dominant_gender, male_score, female_score, yogas, rationale_en/hi}.
+    """
+    planets = chart_data.get("planets", {}) or {}
+    fl = _fifth_lord_info(chart_data)
+
+    MALE_PLANETS = {"Sun", "Mars", "Jupiter"}
+    FEMALE_PLANETS = {"Moon", "Venus"}
+    MALE_SIGNS = {"Aries", "Gemini", "Leo", "Libra", "Sagittarius", "Aquarius"}
+
+    male_score = 0
+    female_score = 0
+    yogas: list[dict] = []
+    rationale: list[str] = []
+
+    lord = fl.get("lord", "")
+    lord_sign = fl.get("sign", "")
+
+    if lord in MALE_PLANETS:
+        male_score += 2
+        rationale.append(f"5th lord {lord} is a male planet (+2 male)")
+    if lord in FEMALE_PLANETS:
+        female_score += 2
+        rationale.append(f"5th lord {lord} is a female planet (+2 female)")
+    if lord_sign in MALE_SIGNS:
+        male_score += 1
+        rationale.append(f"5th lord in male sign {lord_sign} (+1 male)")
+    elif lord_sign:
+        female_score += 1
+        rationale.append(f"5th lord in female sign {lord_sign} (+1 female)")
+
+    # Jupiter / Venus influence on 5th
+    jup_house = _house_of_planet("Jupiter", planets)
+    ven_house = _house_of_planet("Venus", planets)
+    moon_house = _house_of_planet("Moon", planets)
+    if jup_house == 5 or _aspects_house("Jupiter", 5, planets):
+        male_score += 1
+        rationale.append("Jupiter in/aspects 5th (+1 male)")
+    if ven_house == 5 or _aspects_house("Venus", 5, planets):
+        female_score += 1
+        rationale.append("Venus in/aspects 5th (+1 female)")
+    if moon_house == 5 or _aspects_house("Moon", 5, planets):
+        female_score += 1
+        rationale.append("Moon in/aspects 5th (+1 female)")
+
+    if male_score >= 3 and male_score > female_score + 1:
+        dominant = "male_predominant"
+        yogas.append({
+            "key": "putra_pradhana",
+            "name_en": "Putra-Pradhana Yoga (Male-children dominant)",
+            "name_hi": "पुत्र-प्रधान योग",
+            "effect_en": "Male children predominate; sons are favoured by the configuration.",
+            "effect_hi": "पुत्र-पक्ष की प्रबलता; पुत्रों का योग अधिक।",
+            "severity": "auspicious",
+            "sloka_ref": "Phaladeepika Adh. 12",
+        })
+    elif female_score >= 3 and female_score > male_score + 1:
+        dominant = "female_predominant"
+        yogas.append({
+            "key": "kanya_pradhana",
+            "name_en": "Kanya-Pradhana Yoga (Female-children dominant)",
+            "name_hi": "कन्या-प्रधान योग",
+            "effect_en": "Female children predominate; daughters are favoured by the configuration.",
+            "effect_hi": "कन्या-पक्ष की प्रबलता; पुत्रियों का योग अधिक।",
+            "severity": "auspicious",
+            "sloka_ref": "Phaladeepika Adh. 12",
+        })
+    else:
+        dominant = "mixed"
+        yogas.append({
+            "key": "ubhaya",
+            "name_en": "Mixed gender indication",
+            "name_hi": "मिश्रित लिंग योग",
+            "effect_en": "Balanced indicators — children of both genders likely.",
+            "effect_hi": "संतुलित योग — दोनों लिंग की संतान सम्भव।",
+            "severity": "neutral",
+            "sloka_ref": "Phaladeepika Adh. 12",
+        })
+
+    return {
+        "dominant_gender": dominant,
+        "male_score": male_score,
+        "female_score": female_score,
+        "yogas": yogas,
+        "rationale_en": " · ".join(rationale) if rationale else "Insufficient data for gender inference.",
+        "rationale_hi": " · ".join(rationale) if rationale else "लिंग-निर्धारण हेतु पर्याप्त संकेत नहीं।",
+        "sloka_ref": "Phaladeepika Adh. 12",
+        "source": "LK_DERIVED",
+    }
+
+
+def score_fecundity(chart_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Sprint E item 12 — 0-100 fecundity score.
+
+    Components (weights sum to 100):
+      5th lord strength:               30 pts
+      Jupiter strength:                25 pts
+      5th house condition:             25 pts   (benefic/malefic occupancy + aspects)
+      Panchama (5th from Moon):        10 pts
+      Beeja-Sphuta surrogate:          10 pts   (Jupiter + 5th lord dignity combined)
+
+    Returns {score, band, components, sloka_ref, source}.
+    """
+    planets = chart_data.get("planets", {}) or {}
+    fl = _fifth_lord_info(chart_data)
+    ju = _jupiter_info(chart_data)
+
+    # Component 1 — 5th lord strength (30)
+    c1 = {"strong": 30, "moderate": 18, "weak": 6}.get(fl.get("strength", "moderate"), 15)
+
+    # Component 2 — Jupiter strength (25)
+    c2 = {"strong": 25, "moderate": 15, "weak": 5}.get(ju.get("strength", "moderate"), 12)
+
+    # Component 3 — 5th house condition (25)
+    in5 = _planets_in_house(planets, 5)
+    benefics_in_5 = [p for p in in5 if p in BENEFICS]
+    malefics_in_5 = [p for p in in5 if p in MALEFICS]
+    c3 = 12  # baseline
+    c3 += 5 * len(benefics_in_5)
+    c3 -= 5 * len(malefics_in_5)
+    # Benefic aspect on 5th
+    for b in ("Jupiter", "Venus", "Mercury"):
+        if _aspects_house(b, 5, planets):
+            c3 += 2
+    c3 = max(0, min(25, c3))
+
+    # Component 4 — Panchama from Moon (10)
+    moon_house = _house_of_planet("Moon", planets)
+    panchama_from_moon = ((moon_house + 3) % 12) + 1 if moon_house else 0
+    p5_occupants = _planets_in_house(planets, panchama_from_moon) if panchama_from_moon else []
+    c4 = 5
+    for p in p5_occupants:
+        if p in BENEFICS:
+            c4 += 2
+        elif p in MALEFICS:
+            c4 -= 2
+    c4 = max(0, min(10, c4))
+
+    # Component 5 — Beeja-Sphuta surrogate (10)
+    # Combined dignity of Jupiter + 5th lord.
+    ju_sign = ju.get("sign", "")
+    fl_sign = fl.get("sign", "")
+    fl_lord = fl.get("lord", "")
+    c5 = 5
+    if _is_exalted("Jupiter", ju_sign) or _is_own_sign("Jupiter", ju_sign):
+        c5 += 3
+    if _is_debilitated("Jupiter", ju_sign):
+        c5 -= 2
+    if fl_lord and (_is_exalted(fl_lord, fl_sign) or _is_own_sign(fl_lord, fl_sign)):
+        c5 += 2
+    if fl_lord and _is_debilitated(fl_lord, fl_sign):
+        c5 -= 2
+    c5 = max(0, min(10, c5))
+
+    total = c1 + c2 + c3 + c4 + c5
+    if total >= 75:
+        band = "excellent"
+        band_hi = "उत्तम"
+    elif total >= 55:
+        band = "good"
+        band_hi = "अच्छा"
+    elif total >= 35:
+        band = "moderate"
+        band_hi = "मध्यम"
+    elif total >= 20:
+        band = "weak"
+        band_hi = "दुर्बल"
+    else:
+        band = "very_weak"
+        band_hi = "अत्यंत दुर्बल"
+
+    return {
+        "score": total,
+        "band": band,
+        "band_hi": band_hi,
+        "components": {
+            "fifth_lord_strength": c1,
+            "jupiter_strength": c2,
+            "fifth_house_condition": c3,
+            "panchama_from_moon": c4,
+            "beeja_sphuta_surrogate": c5,
+        },
+        "max_score": 100,
+        "sloka_ref": "Phaladeepika Adh. 12 — composite fecundity scoring",
+        "source": "LK_DERIVED",
+    }
+
+
 def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Apatyadhyaya — classical progeny analysis per Phaladeepika Adhyaya 12.
@@ -879,11 +1194,29 @@ def analyze_apatya(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     rems = _remedies(prospect, yogas)
     timing = _children_timing_section(chart_data, fifth, yogas)
 
+    # Sprint E — deeper progeny metrics per Phaladeepika Adh. 12.
+    try:
+        child_count = estimate_child_count(chart_data)
+    except Exception:
+        child_count = None
+    try:
+        gender_analysis = detect_gender_yogas(chart_data)
+    except Exception:
+        gender_analysis = None
+    try:
+        fecundity = score_fecundity(chart_data)
+    except Exception:
+        fecundity = None
+
     return {
         "fifth_house_analysis": fifth,
         "yogas_detected": yogas,
         "progeny_prospect": prospect,
         "children_timing": timing,
+        # Sprint E additions:
+        "child_count_estimate": child_count,
+        "gender_analysis": gender_analysis,
+        "fecundity_score": fecundity,
         "recommendations_en": recs["en"],
         "recommendations_hi": recs["hi"],
         "remedies_en": rems["en"],
