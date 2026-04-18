@@ -27,15 +27,22 @@ export default function AdvancedTab({ panchang, language, t }: Props) {
               <Shield className="h-5 w-5 text-sacred-gold" />
               {l('Mantri Mandala (Planetary Cabinet)', 'मन्त्री मण्डल (ग्रह मण्डल)')}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               {mantriMandala.map((item: any, idx: number) => (
-                <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-card/50 border border-border/40">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">
-                    {language === 'hi' ? item.role_hindi : item.role}
-                  </span>
-                  <span className="text-sm font-bold text-sacred-gold-dark">
-                    {language === 'hi' ? item.planet_hindi : item.planet}
-                  </span>
+                <div key={idx} className="p-3 rounded-lg bg-card/50 border border-border/40 hover:border-sacred-gold/40 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase">
+                      {language === 'hi' ? item.role_hindi : item.role}
+                    </span>
+                    <span className="text-sm font-bold text-sacred-gold-dark">
+                      {language === 'hi' ? item.planet_hindi : item.planet}
+                    </span>
+                  </div>
+                  {item.significance && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {language === 'hi' ? item.significance_hindi : item.significance}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

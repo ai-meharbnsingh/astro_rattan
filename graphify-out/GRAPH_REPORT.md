@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-04-18)
 
 ## Corpus Check
-- 522 files · ~5,241,387 words
+- 522 files · ~5,243,816 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -489,7 +489,7 @@ Nodes (17): calculate_forecast(), calculate_personal_day(), calculate_personal_m
 
 ### Community 113 - "Community 113"
 Cohesion: 0.15
-Nodes (17): calculate_all_misc(), calculate_astronomical_data(), calculate_chaturmasa(), calculate_mantri_mandala(), calculate_panchaka_rahita(), _minutes_to_time(), panchang_misc.py -- Miscellaneous Panchang Calculations ========================, Compute astronomical epoch values for a Gregorian date string (YYYY-MM-DD). (+9 more)
+Nodes (17): calculate_all_misc(), calculate_astronomical_data(), calculate_chaturmasa(), calculate_mantri_mandala(), calculate_panchaka_rahita(), _minutes_to_time(), panchang_misc.py -- Miscellaneous Panchang Calculations ========================, Return the 10-member planetary cabinet for *vikram_samvat_year*.      Each entry (+9 more)
 
 ### Community 114 - "Community 114"
 Cohesion: 0.13
