@@ -656,6 +656,45 @@ CREATE TABLE IF NOT EXISTS lk_farmaan_annotations (
 CREATE INDEX IF NOT EXISTS idx_farmaan_ann_farmaan ON lk_farmaan_annotations(farmaan_id);
 CREATE INDEX IF NOT EXISTS idx_farmaan_ann_accepted ON lk_farmaan_annotations(is_accepted);
     """),
+    (20, "P3.5 — Astrologer Dashboard: extend consultations table", """
+-- P3.5 — Professional client management dashboard needs a richer
+-- consultations shape: link to the astrologer's own `clients` record,
+-- track duration, and carry an updated_at for activity-feed ordering.
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS client_id TEXT;
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS duration_minutes INTEGER DEFAULT 30;
+ALTER TABLE consultations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
+-- Point `astrologer_id` at the users table directly (simpler routing — the
+-- previous FK pointed at astrologers(id) which required a join to resolve
+-- the logged-in user). We keep old rows working by dropping + re-adding
+-- the FK to users(id) with ON DELETE SET NULL.
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE table_name = 'consultations' AND constraint_name = 'consultations_astrologer_id_fkey'
+  ) THEN
+    EXECUTE 'ALTER TABLE consultations DROP CONSTRAINT consultations_astrologer_id_fkey';
+  END IF;
+END $$;
+ALTER TABLE consultations ADD CONSTRAINT consultations_astrologer_id_fkey
+  FOREIGN KEY (astrologer_id) REFERENCES users(id) ON DELETE SET NULL;
+
+-- FK for the new client_id column.
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE table_name = 'consultations' AND constraint_name = 'consultations_client_id_fkey'
+  ) THEN
+    EXECUTE 'ALTER TABLE consultations ADD CONSTRAINT consultations_client_id_fkey
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL';
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_consultations_astrologer ON consultations(astrologer_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_client ON consultations(client_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_scheduled ON consultations(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_consultations_status ON consultations(status);
+    """),
 ]
 
 

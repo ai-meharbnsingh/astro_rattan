@@ -18,6 +18,8 @@ from app.routes.astro_map import router as astro_map_router
 from app.routes.dasha import router as dasha_router
 from app.routes.interpretations import router as interpretations_router
 from app.routes.lalkitab_farmaan import router as lalkitab_farmaan_router
+# P3.5 — Astrologer professional dashboard
+from app.routes.astrologer_dashboard import router as astrologer_dashboard_router
 
 all_routers = [
     auth_router,
@@ -39,4 +41,5 @@ all_routers = [
     dasha_router,
     interpretations_router,
     lalkitab_farmaan_router,
+    astrologer_dashboard_router,
 ]

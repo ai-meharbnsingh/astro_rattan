@@ -57,6 +57,8 @@ const LalKitabPage    = lazyWithReload(() => import('./sections/LalKitabPage'));
 const AdminDashboard  = lazyWithReload(() => import('./sections/AdminDashboard'));
 const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
 const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
+// P3.5 — Professional client management dashboard (astrologer role)
+const AstrologerDashboard = lazyWithReload(() => import('./sections/AstrologerDashboard'));
 const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
 const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
 const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
@@ -185,6 +187,9 @@ function AppInner() {
           <Route path="/" element={<SmartHome />} />
           <Route path="/about" element={<HomePage />} />
           <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
+          {/* P3.5 — Professional client management dashboard for astrologers */}
+          <Route path="/astrologer" element={<RequireAuth><ErrorBoundary><AstrologerDashboard /></ErrorBoundary></RequireAuth>} />
+          <Route path="/astrologer/dashboard" element={<RequireAuth><ErrorBoundary><AstrologerDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
           <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
           <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
