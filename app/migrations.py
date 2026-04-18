@@ -588,6 +588,74 @@ CREATE TABLE IF NOT EXISTS lk_prediction_feedback (
 );
 CREATE INDEX IF NOT EXISTS idx_lk_pred_feedback_user_kundli ON lk_prediction_feedback(user_id, kundli_id);
     """),
+    (19, "P2.1/P2.7/P2.8 — Farmaan DB + Source library + Rights provenance", """
+CREATE TABLE IF NOT EXISTS lk_source_library (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    edition_year INTEGER NOT NULL,
+    edition_label TEXT NOT NULL,
+    volume TEXT,
+    chapter TEXT,
+    section_ref TEXT,
+    page_number INTEGER,
+    language TEXT NOT NULL,
+    script TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    body TEXT NOT NULL,
+    body_normalised TEXT,
+    scan_url TEXT,
+    contributor TEXT,
+    verification_status TEXT NOT NULL DEFAULT 'unverified',
+    rights_status TEXT NOT NULL DEFAULT 'commercial_unclear',
+    rights_note TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_source_lib_edition ON lk_source_library(edition_year);
+CREATE INDEX IF NOT EXISTS idx_source_lib_section ON lk_source_library(section_ref);
+CREATE INDEX IF NOT EXISTS idx_source_lib_lang_script ON lk_source_library(language, script);
+CREATE INDEX IF NOT EXISTS idx_source_lib_rights ON lk_source_library(rights_status);
+
+CREATE TABLE IF NOT EXISTS lk_farmaan (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    farmaan_number INTEGER UNIQUE,
+    urdu_script TEXT NOT NULL,
+    urdu_latin TEXT,
+    hindi TEXT,
+    english TEXT,
+    traditional_commentary_en TEXT,
+    traditional_commentary_hi TEXT,
+    modern_commentary_en TEXT,
+    modern_commentary_hi TEXT,
+    confidence_level TEXT NOT NULL DEFAULT 'undeciphered',
+    planet_tags TEXT[],
+    house_tags INTEGER[],
+    debt_tags TEXT[],
+    remedy_category TEXT,
+    rights_status TEXT NOT NULL DEFAULT 'commercial_unclear',
+    source_library_id TEXT REFERENCES lk_source_library(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_farmaan_number ON lk_farmaan(farmaan_number);
+CREATE INDEX IF NOT EXISTS idx_farmaan_planets ON lk_farmaan USING GIN(planet_tags);
+CREATE INDEX IF NOT EXISTS idx_farmaan_houses ON lk_farmaan USING GIN(house_tags);
+CREATE INDEX IF NOT EXISTS idx_farmaan_debts ON lk_farmaan USING GIN(debt_tags);
+CREATE INDEX IF NOT EXISTS idx_farmaan_confidence ON lk_farmaan(confidence_level);
+
+CREATE TABLE IF NOT EXISTS lk_farmaan_annotations (
+    id TEXT PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+    farmaan_id TEXT NOT NULL REFERENCES lk_farmaan(id) ON DELETE CASCADE,
+    contributor_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+    annotation_type TEXT NOT NULL,
+    language TEXT NOT NULL,
+    body TEXT NOT NULL,
+    upvotes INTEGER NOT NULL DEFAULT 0,
+    is_accepted BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_farmaan_ann_farmaan ON lk_farmaan_annotations(farmaan_id);
+CREATE INDEX IF NOT EXISTS idx_farmaan_ann_accepted ON lk_farmaan_annotations(is_accepted);
+    """),
 ]
 
 
