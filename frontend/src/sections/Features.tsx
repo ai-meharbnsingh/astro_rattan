@@ -1136,6 +1136,64 @@ export default function Features() {
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes Tithi, Nakshatra, Yoga, Karana end times using Swiss Ephemeris for YOUR exact coordinates', 'Astro Rattan आपके सटीक निर्देशांकों के लिए स्विस एफेमेरिस का उपयोग करके तिथि, नक्षत्र, योग, करण के अंत समय की गणना करता है')}</strong>{l(' — with 12+ Muhurat windows, Hora table, Choghadiya, and Hindu calendar.', ' — 12+ मुहूर्त, होरा तालिका, चौघड़िया और हिंदू कैलेंडर के साथ।')}</p>
           </div>
 
+          {/* Compact Daily Snapshot — best time, avoid time, tip + planetary influence */}
+          {(panchangData || currentSky) && (() => {
+            const bestTime = panchangData?.abhijit_muhurat || panchangData?.brahma_muhurat;
+            const rahuKaal = panchangData?.rahu_kaal;
+            const tithi = (panchangData?.tithi?.name || '').toLowerCase();
+            const tip = tithi.includes('ekadashi')
+              ? l('Fasting Day', 'व्रत का दिन')
+              : tithi.includes('chaturthi')
+              ? l('Ganesha Worship', 'गणेश पूजा')
+              : tithi.includes('purnima') || tithi.includes('amavasya')
+              ? l('Ancestor Worship', 'पितृ पूजन')
+              : tithi.includes('pradosh')
+              ? l('Shiva Worship', 'शिव पूजा')
+              : l('Good for Regular Work', 'सामान्य कार्यों के लिए अच्छा');
+            const insights = computeDailyInsights(currentSky?.planets || [], language);
+            if (!bestTime && !rahuKaal && insights.length === 0) return null;
+            return (
+              <div className="mb-6 rounded-xl border border-sacred-gold/20 bg-sacred-gold/[0.02] p-4">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {bestTime && (bestTime.start !== '--:--') && (
+                    <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 text-sm">
+                      <span className="text-green-600 font-bold text-base leading-none">✓</span>
+                      <span className="text-green-800 font-medium">{l('Best Time', 'सर्वश्रेष्ठ')}: {bestTime.start}–{bestTime.end}</span>
+                    </div>
+                  )}
+                  {rahuKaal && (rahuKaal.start !== '--:--') && (
+                    <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 rounded-lg px-3 py-1.5 text-sm">
+                      <span className="text-orange-500 font-bold text-base leading-none">⚠</span>
+                      <span className="text-orange-800 font-medium">{l('Avoid', 'बचें')} (Rahu Kaal): {rahuKaal.start}–{rahuKaal.end}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 text-sm">
+                    <span className="text-blue-600 font-bold text-base leading-none">→</span>
+                    <span className="text-blue-800 font-medium">{tip}</span>
+                  </div>
+                </div>
+                {insights.length > 0 && (
+                  <>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Sparkles className="w-3.5 h-3.5 text-sacred-gold-dark shrink-0" />
+                      <span className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wide">
+                        {l("Today's Planetary Influence", 'आज का ग्रह प्रभाव')}
+                      </span>
+                    </div>
+                    <ul className="flex flex-wrap gap-x-5 gap-y-1">
+                      {insights.map((insight, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 text-xs text-foreground">
+                          <span className="text-sacred-gold-dark shrink-0 mt-0.5">•</span>
+                          <span>{insight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            );
+          })()}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:h-[620px]">
             <div className="w-full max-w-none h-full rounded-xl border border-sacred-gold/20 bg-transparent backdrop-blur-[1px] shadow-sm overflow-hidden flex flex-col">
               <div className="bg-sacred-gold-dark text-white px-3 py-2 text-[15px] font-semibold leading-tight">
