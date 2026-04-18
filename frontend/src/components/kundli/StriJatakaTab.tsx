@@ -21,6 +21,7 @@ interface SeventhHouseAnalysis {
   seventh_lord_sign?: string;
   seventh_lord_dignity?: string;
   seventh_lord_strength?: string;
+  seventh_lord_nakshatra?: string;
   malefics_in_7th?: string[];
   benefics_in_7th?: string[];
   jupiter_aspects_7th?: boolean;
@@ -40,6 +41,9 @@ interface StriJatakaData {
   sloka_ref: string;
   gender?: string;
   person_name?: string;
+  mars_house?: number;
+  female_mangal_note_en?: string;
+  female_mangal_note_hi?: string;
 }
 
 interface Props {
@@ -177,6 +181,14 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
             </p>
             <p className="font-medium capitalize">{sa.seventh_lord_strength || '—'}</p>
           </div>
+          {sa.seventh_lord_nakshatra && (
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {isHi ? 'नक्षत्र' : 'Nakshatra'}
+              </p>
+              <p className="font-medium">{sa.seventh_lord_nakshatra}</p>
+            </div>
+          )}
           <div>
             <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
               {t('auto.maleficsIn7th')}
@@ -202,6 +214,25 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
           {isHi ? sa.interpretation_hi : sa.interpretation_en}
         </p>
       </div>
+
+      {/* Female Mangal Dosha (Phaladeepika Adh. 11) */}
+      {data.female_mangal_note_en && (
+        <div className={`p-4 rounded-xl border flex items-start gap-3 ${
+          data.mars_house === 8 ? 'bg-red-50 border-red-300 text-red-900' :
+          data.mars_house === 7 ? 'bg-orange-50 border-orange-300 text-orange-900' :
+          'bg-amber-50 border-amber-300 text-amber-900'
+        }`}>
+          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-1">
+              {isHi ? 'मांगलिक दोष — स्त्री-जातक विशेष (अध्याय 11)' : 'Mangal Dosha — Female Chart (Adh. 11)'}
+            </p>
+            <p className="text-sm leading-relaxed">
+              {isHi ? data.female_mangal_note_hi : data.female_mangal_note_en}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Detected yogas */}
       {data.yogas_detected.length > 0 ? (

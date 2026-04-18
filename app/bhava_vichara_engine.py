@@ -554,6 +554,8 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
     destruction_risk = False
     flourishing = False
     malefic_in_dusthana_strengthens = False
+    bhava_kamanda = False
+    malefic_in_kendra_harms = False
 
     # ── Destruction checks ────────────────────────────────────
     if lord and lord_house in DUSTHANAS:
@@ -649,6 +651,33 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
             f"(फलदीपिका अ. 15 — दुःस्थान में पापग्रह उस भाव के फल को बलवान बनाता है)।"
         )
 
+    # Bhava Kamanda: lord placed in its own house — self-encumbering (Adh. 15-16)
+    if lord and lord_house == house:
+        bhava_kamanda = True
+        reasons_en.append(
+            f"Bhava Kamanda: Lord {lord} occupies its own bhava {house} — "
+            f"classical rule indicates the lord becomes self-absorbed, causing distress to this house's affairs "
+            f"(Phaladeepika Adh. 15-16)."
+        )
+        reasons_hi.append(
+            f"भावकामण्ड: भावेश {lord} अपने ही भाव {house} में स्थित है — "
+            f"जातक के इस भाव-सम्बन्धी मामलों में व्यवधान आता है (फलदीपिका अ. 15-16)।"
+        )
+
+    # Malefic in Kendra/Trikona harms that bhava (Adh. 15)
+    if house in (KENDRAS | TRIKONAS) and house not in DUSTHANAS and has_malefic_occupant:
+        malefic_in_kendra_harms = True
+        malefics_in_house = [o for o in occupants if o in NATURAL_MALEFICS]
+        kt_label = "Kendra" if house in KENDRAS else "Trikona"
+        reasons_en.append(
+            f"Malefic {', '.join(malefics_in_house)} in {kt_label} house {house} — "
+            f"harms this house's significations (Phaladeepika Adh. 15 — malefic in good house afflicts its matters)."
+        )
+        reasons_hi.append(
+            f"पापग्रह {', '.join(malefics_in_house)} {kt_label} भाव {house} में स्थित — "
+            f"इस भाव के फल को हानि पहुँचाता है (फलदीपिका अ. 15 — शुभ भाव में पापग्रह उसे पीड़ित करता है)।"
+        )
+
     # If conflicting: destruction takes precedence
     if destruction_risk:
         flourishing = False
@@ -678,6 +707,8 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
         "flourishing": flourishing,
         "destruction_risk": destruction_risk,
         "malefic_in_dusthana_strengthens": malefic_in_dusthana_strengthens,
+        "bhava_kamanda": bhava_kamanda,
+        "malefic_in_kendra_harms": malefic_in_kendra_harms,
         "reasons_en": reasons_en,
         "reasons_hi": reasons_hi,
         "karaka_as_lagna_analysis_en": k_en,

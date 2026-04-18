@@ -13,6 +13,8 @@ interface BhavaAssessment {
   flourishing: boolean;
   destruction_risk: boolean;
   malefic_in_dusthana_strengthens?: boolean;
+  bhava_kamanda?: boolean;
+  malefic_in_kendra_harms?: boolean;
   reasons_en: string[];
   reasons_hi: string[];
   karaka_as_lagna_analysis_en: string;
@@ -219,6 +221,32 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                     </div>
                   </div>
                 </div>
+
+                {/* Bhava Kamanda callout */}
+                {b.bhava_kamanda && (
+                  <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 flex items-start gap-2 text-xs text-amber-800">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-600" />
+                    <span>
+                      <strong>{isHi ? 'भावकामण्ड' : 'Bhava Kamanda'}:</strong>{' '}
+                      {isHi
+                        ? 'भावेश स्व-भाव में स्थित — जातक के इस भाव-सम्बन्धी मामलों में व्यवधान (फलदीपिका अ. 15-16)'
+                        : 'House lord occupies its own bhava — self-encumbering, causes distress to this house\'s affairs (Phaladeepika Adh. 15-16)'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Malefic in Kendra/Trikona callout */}
+                {b.malefic_in_kendra_harms && (
+                  <div className="mb-3 rounded-lg border border-orange-300 bg-orange-50 px-3 py-2 flex items-start gap-2 text-xs text-orange-800">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-orange-600" />
+                    <span>
+                      <strong>{isHi ? 'शुभ भाव में पापग्रह' : 'Malefic in Good House'}:</strong>{' '}
+                      {isHi
+                        ? 'केन्द्र/त्रिकोण में पापग्रह — इस भाव के फल को पीड़ा (फलदीपिका अ. 15)'
+                        : 'Malefic in Kendra/Trikona harms this house\'s significations (Phaladeepika Adh. 15)'}
+                    </span>
+                  </div>
+                )}
 
                 {/* Dusthana-strengthened callout */}
                 {b.malefic_in_dusthana_strengthens && (

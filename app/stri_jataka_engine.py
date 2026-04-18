@@ -178,6 +178,8 @@ def _seventh_lord_info(chart: Dict[str, Any]) -> Dict[str, Any]:
     else:
         strength = "moderate"
 
+    lord_nakshatra = str(planets.get(lord, {}).get("nakshatra", "")) if lord else ""
+
     return {
         "seventh_sign": seventh_sign,
         "seventh_lord": lord,
@@ -185,6 +187,7 @@ def _seventh_lord_info(chart: Dict[str, Any]) -> Dict[str, Any]:
         "seventh_lord_placement": lord_house,
         "seventh_lord_dignity": dignity,
         "seventh_lord_strength": strength,
+        "seventh_lord_nakshatra": lord_nakshatra,
     }
 
 
@@ -531,6 +534,7 @@ def _seventh_house_analysis(chart: Dict[str, Any]) -> Dict[str, Any]:
         "seventh_lord_sign": info.get("seventh_lord_sign", ""),
         "seventh_lord_dignity": info.get("seventh_lord_dignity", "unknown"),
         "seventh_lord_strength": info.get("seventh_lord_strength", "unknown"),
+        "seventh_lord_nakshatra": info.get("seventh_lord_nakshatra", ""),
         "malefics_in_7th": malefics_in_7th,
         "benefics_in_7th": benefics_in_7th,
         "jupiter_aspects_7th": bool(jupiter_aspects_7th),
@@ -669,6 +673,24 @@ def analyze_stri_jataka(chart_data: Dict[str, Any], gender: str = "female") -> D
     prospect = _score_prospect(yogas_detected, sa)
     rec_en, rec_hi = _recommendations(yogas_detected, prospect)
 
+    planets_dict = _planets_dict(chart_data)
+    mars_house = _house_of_planet("Mars", planets_dict) or 0
+    if mars_house == 8:
+        female_mangal_note_en = "Mars in 8th house (Randhra) — per Phaladeepika Adh. 11, the most severe Mangal Dosha for female charts: widowhood yoga, significant affliction to marital harmony."
+        female_mangal_note_hi = "मंगल अष्टम भाव में — फलदीपिका अध्याय 11 के अनुसार स्त्री-जातक में यह सर्वाधिक गंभीर मांगलिक दोष है — वैधव्य-योग तथा दाम्पत्य-बाधा का प्रबल संकेत।"
+    elif mars_house == 7:
+        female_mangal_note_en = "Mars in 7th house — per Phaladeepika Adh. 11, adversely impacts the husband's vitality and marital harmony. Severe Mangal Dosha for female charts."
+        female_mangal_note_hi = "मंगल सप्तम भाव में — फलदीपिका अध्याय 11 के अनुसार पति की जीवन-शक्ति एवं दाम्पत्य-सुख पर प्रतिकूल प्रभाव। स्त्री-जातक में गंभीर मांगलिक दोष।"
+    elif mars_house in {1, 4, 12}:
+        female_mangal_note_en = f"Mars in house {mars_house} — per Phaladeepika Adh. 11, Mangal Dosha present in female chart (moderate severity). Compatibility matching strongly recommended before marriage."
+        female_mangal_note_hi = f"मंगल {mars_house}वें भाव में — फलदीपिका अध्याय 11 के अनुसार मांगलिक दोष विद्यमान (मध्यम तीव्रता)। विवाह से पूर्व कुंडली-मिलान अत्यावश्यक है।"
+    elif mars_house == 2:
+        female_mangal_note_en = "Mars in 2nd house — per Phaladeepika Adh. 11, affects family peace and speech; counted as Mangal Dosha for female charts."
+        female_mangal_note_hi = "मंगल द्वितीय भाव में — फलदीपिका अध्याय 11 के अनुसार पारिवारिक शांति एवं वाणी पर प्रभाव। स्त्री-जातक में मांगलिक दोष गिना जाता है।"
+    else:
+        female_mangal_note_en = ""
+        female_mangal_note_hi = ""
+
     return {
         "applicable": True,
         "yogas_detected": yogas_detected,
@@ -676,5 +698,8 @@ def analyze_stri_jataka(chart_data: Dict[str, Any], gender: str = "female") -> D
         "marital_prospect": prospect,
         "recommendations_en": rec_en,
         "recommendations_hi": rec_hi,
+        "mars_house": mars_house,
+        "female_mangal_note_en": female_mangal_note_en,
+        "female_mangal_note_hi": female_mangal_note_hi,
         "sloka_ref": "Phaladeepika Adh. 11",
     }

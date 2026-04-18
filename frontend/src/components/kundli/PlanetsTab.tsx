@@ -112,6 +112,18 @@ function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; lang
   );
 }
 
+const PARAMOCHHA: Record<string, { sign: string; deg: number }> = {
+  Sun:     { sign: 'Aries',      deg: 10 },
+  Moon:    { sign: 'Taurus',     deg: 3  },
+  Mars:    { sign: 'Capricorn',  deg: 28 },
+  Mercury: { sign: 'Virgo',      deg: 15 },
+  Jupiter: { sign: 'Cancer',     deg: 5  },
+  Venus:   { sign: 'Pisces',     deg: 27 },
+  Saturn:  { sign: 'Libra',      deg: 20 },
+};
+
+const NATURAL_BENEFICS_SET = new Set(['Jupiter', 'Venus', 'Moon', 'Mercury']);
+
 interface PlanetsTabProps {
   planets: any[];
   result: any;
@@ -162,8 +174,22 @@ export default function PlanetsTab({
             {sidePanel.type === 'planet' && sidePanel.planet && (() => {
               const p = sidePanel.planet;
               const status = p.status?.toLowerCase() || '';
-              const strengthLabel = status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || t('kundli.transit');
-              const strengthColor = status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-foreground';
+              const pmo = PARAMOCHHA[p.planet];
+              const isParamochha = !!pmo && p.sign === pmo.sign && p.sign_degree != null && Math.abs(p.sign_degree - pmo.deg) <= 1;
+              const strengthLabel = isParamochha
+                ? 'Paramochha ★'
+                : status.includes('exalted') ? 'Exalted' : status.includes('debilitated') ? 'Debilitated' : status.includes('own') ? 'Own Sign' : p.status || t('kundli.transit');
+              const strengthColor = isParamochha
+                ? 'text-yellow-600 font-bold'
+                : status.includes('exalted') ? 'text-green-500' : status.includes('debilitated') ? 'text-red-500' : status.includes('own') ? 'text-blue-500' : 'text-foreground';
+              const moonAspectors = p.planet === 'Moon'
+                ? planets.filter(op =>
+                    op.planet !== 'Moon' &&
+                    (PLANET_ASPECTS[op.planet] || [7]).some(offset =>
+                      ((op.house - 1 + offset) % 12) + 1 === p.house
+                    )
+                  )
+                : [];
               const aspects = (PLANET_ASPECTS[p.planet] || [7]).map((offset) => {
                 const targetHouse = ((p.house - 1 + offset) % 12) + 1;
                 return `${t('table.house')} ${targetHouse}`;
@@ -195,11 +221,33 @@ export default function PlanetsTab({
                   <div className="bg-card rounded-lg p-3">
                     <p className="text-sm text-foreground">{t('kundli.strength')}</p>
                     <p className={`font-semibold ${strengthColor}`}>{translateLabel(strengthLabel, language)}</p>
+                    {isParamochha && (
+                      <p className="text-[10px] text-yellow-600 italic mt-0.5">
+                        {language === 'hi' ? 'परमोच्च — अधिकतम उच्च बल' : 'Paramochha — maximum exaltation degree (Phaladeepika Adh. 1)'}
+                      </p>
+                    )}
                   </div>
                   <div className="bg-card rounded-lg p-3">
                     <p className="text-sm text-foreground">{t('kundli.aspects')}</p>
                     <p className="font-semibold text-foreground text-sm">{aspects.join(', ')}</p>
                   </div>
+                  {moonAspectors.length > 0 && (
+                    <div className="bg-card rounded-lg p-3 col-span-2">
+                      <p className="text-sm text-foreground mb-2">
+                        {language === 'hi' ? 'चन्द्र पर ग्रह-दृष्टि (फलदीपिका अ. 18)' : 'Planets aspecting Moon (Phaladeepika Adh. 18)'}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {moonAspectors.map(op => {
+                          const isBen = NATURAL_BENEFICS_SET.has(op.planet);
+                          return (
+                            <span key={op.planet} className={`text-[10px] font-semibold px-2 py-0.5 rounded ${isBen ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                              {translatePlanet(op.planet, language)} {isBen ? '✦' : '✗'}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   <div className="bg-card rounded-lg p-3">
                     <p className="text-sm text-foreground">{t('kundli.housePlacement')}</p>
                     <p className="text-sm text-foreground">
