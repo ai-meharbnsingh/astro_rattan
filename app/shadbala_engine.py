@@ -953,10 +953,16 @@ def calculate_shadbala(
         ratio = round(total / required, 2) if required > 0 else 0.0
 
         # Ishta/Kashta Phala — Phaladeepika Adh. 4 sloka 26
-        # Ishta Phala = √(cheshta × sthana), capped at 60
-        # Kashta Phala = √(max(0, 60-cheshta) × max(0, 60-sthana)), capped at 60
-        ishta = round(min(60.0, math.sqrt(max(0.0, cheshta) * max(0.0, sthana))), 2)
-        kashta = round(min(60.0, math.sqrt(max(0.0, 60.0 - cheshta) * max(0.0, 60.0 - sthana))), 2)
+        # Formula uses Uchcha Bala (not total Sthana) × Cheshta Bala.
+        # Sun/Moon have no Cheshta Bala; use Ayana×2 (Sun) or Paksha (Moon) as substitutes.
+        uchcha_bala = sthana_detail.get("uchcha", 0.0)
+        effective_cheshta = cheshta
+        if planet == "Sun":
+            effective_cheshta = min(60.0, kala_detail.get("ayana", 0.0) * 2)
+        elif planet == "Moon":
+            effective_cheshta = kala_detail.get("paksha", 0.0)
+        ishta = round(min(60.0, math.sqrt(max(0.0, effective_cheshta) * max(0.0, uchcha_bala))), 2)
+        kashta = round(min(60.0, math.sqrt(max(0.0, 60.0 - effective_cheshta) * max(0.0, 60.0 - uchcha_bala))), 2)
 
         planet_entry: Dict[str, Any] = {
             "sthana": sthana,

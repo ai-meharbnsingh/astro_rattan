@@ -604,20 +604,32 @@ def derive_lucky_time(sign: str, ruler: str) -> Dict[str, str]:
     return _HORA_TIMES[hora_index]
 
 
-def derive_gemstone(ruler: str) -> Dict[str, Any]:
+def derive_gemstone(ruler: str, planet_dignities: Dict[str, str] = None) -> Dict[str, Any]:
     """
-    Return gemstone recommendation data for the given ruling planet.
+    Return gemstone recommendation data based on ruling planet and current transits.
+
+    When planet_dignities is provided, checks if natural benefics (Jupiter, Venus)
+    are exalted or in own sign — if so, recommends their gemstone for the transit
+    period (secondary gemstone boost) instead of the default sign ruler.
 
     Parameters
     ----------
     ruler : str
         Planet name, e.g. "Venus".
+    planet_dignities : dict, optional
+        Current transit dignities per planet, e.g. {"Jupiter": "exalted", ...}.
 
     Returns
     -------
     dict
         Full gemstone data: gem, metal, finger, day (all bilingual).
     """
+    if planet_dignities:
+        # Natural benefics in peak dignity override the default ruler's gemstone
+        for benefic in ["Jupiter", "Venus"]:
+            dignity = planet_dignities.get(benefic, "neutral")
+            if dignity in ("exalted", "own_sign") and benefic != ruler:
+                return GEMSTONE_DATA.get(benefic, GEMSTONE_DATA.get(ruler, GEMSTONE_DATA["Sun"]))
     return GEMSTONE_DATA.get(ruler, GEMSTONE_DATA["Sun"])
 
 
@@ -690,7 +702,7 @@ def get_all_lucky_metadata(
         "lucky_time": derive_lucky_time(sign, ruler),
         "compatible_sign": derive_compatible_sign(sign, transit_dignities),
         "mood": derive_mood(overall_score),
-        "gemstone": derive_gemstone(ruler),
+        "gemstone": derive_gemstone(ruler, planet_dignities),
         "mantra": derive_mantra(ruler),
         "dos": derive_dos(planet_houses, planet_dignities),
         "donts": derive_donts(planet_houses, planet_dignities),

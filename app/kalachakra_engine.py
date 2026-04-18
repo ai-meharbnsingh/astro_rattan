@@ -510,12 +510,15 @@ def calculate_kalachakra_dasha(
 
             end_dt = _add_years(current_start, effective_years)
 
+            p_start_dt = current_start
+            p_end_dt = end_dt
             mahadasha_periods.append(_enrich_period({
                 "sign": sign,
                 "duration_years": round(effective_years, 4),
-                "start": current_start.strftime("%Y-%m-%d"),
-                "end": end_dt.strftime("%Y-%m-%d"),
+                "start": p_start_dt.strftime("%Y-%m-%d"),
+                "end": p_end_dt.strftime("%Y-%m-%d"),
                 "type": half_types[i],
+                "is_current": p_start_dt <= now <= p_end_dt,
             }))
 
             current_start = end_dt

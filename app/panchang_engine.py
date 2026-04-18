@@ -483,7 +483,7 @@ _YAMAGANDA_SLOT = {
     3: 1,  # Thursday
     4: 6,  # Friday
     5: 5,  # Saturday
-    6: 8,  # Sunday (some traditions say 5)
+    6: 5,  # Sunday — corrected from 8 (was colliding with Rahu Kaal slot 8)
 }
 
 # ============================================================
@@ -862,17 +862,10 @@ def _compute_karana_end(jd_sunrise: float, tz_offset: float) -> str:
 
 def _compute_second_karana_end(jd_sunrise: float, tz_offset: float, tithi_end_str: str) -> str:
     """
-    Calculate the end time of the second karana.
-    The second karana ends when the tithi ends (at the tithi boundary).
-    We estimate this as halfway between first karana end and tithi end,
-    or more precisely, the tithi end time itself since second karana ends with the tithi.
+    The second karana ends at the tithi boundary (same as tithi_end_str).
+    Reuse the already-computed value to avoid a redundant binary search.
     """
-    # The second karana ends at the tithi boundary
-    # First, find when the current tithi ends (same as _compute_tithi_end)
-    jd_tithi_end = _find_boundary_time(jd_sunrise, _get_elongation, 0.0, 12.0)
-    if jd_tithi_end is None:
-        return "--:--"
-    return _jd_to_local_time_str(jd_tithi_end, tz_offset)
+    return tithi_end_str
 
 
 NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333 degrees
@@ -1610,8 +1603,8 @@ def calculate_panchang(
     day_duration_mins = dinamana_mins
     muhurta_duration = day_duration_mins / 15  # each muhurta = 1/15th of day
 
-    # Godhuli Muhurta: ~24 min around sunset
-    godhuli = {"start": _minutes_to_time(sunset_mins - 24), "end": _minutes_to_time(sunset_mins)}
+    # Godhuli Muhurta: 30 min before sunset (classical = dust-of-cattle-hooves window)
+    godhuli = {"start": _minutes_to_time(sunset_mins - 30), "end": _minutes_to_time(sunset_mins)}
     # Sayahna Sandhya: sunset to sunset+48min
     sayahna = {"start": sunset_str, "end": _minutes_to_time(sunset_mins + 48)}
     # Nishita Muhurta: midnight ± 24min
@@ -1626,16 +1619,28 @@ def calculate_panchang(
     vijaya_start = sunrise_mins + muhurta_duration * 6
     vijaya = {"start": _minutes_to_time(vijaya_start), "end": _minutes_to_time(vijaya_start + muhurta_duration)}
 
-    # 20. Dur Muhurtam (8th muhurta on most days)
-    dur_start = sunrise_mins + muhurta_duration * 7
+    # 20. Dur Muhurtam — weekday-specific per Muhurta Chintamani (0-based muhurta index)
+    # Sun=4th, Mon=5th, Tue=7th, Wed=8th, Thu=5th, Fri=8th, Sat=4th
+    _DUR_MUHURTAM_IDX = {0: 5, 1: 7, 2: 8, 3: 5, 4: 8, 5: 4, 6: 4}
+    dur_idx = _DUR_MUHURTAM_IDX.get(weekday, 7)
+    dur_start = sunrise_mins + muhurta_duration * dur_idx
     dur_muhurtam = {"start": _minutes_to_time(dur_start), "end": _minutes_to_time(dur_start + muhurta_duration)}
 
-    # 21. Varjyam (inauspicious period based on nakshatra)
-    # Simplified: ~1.5 hours, position depends on nakshatra number
-    nak_num = nakshatra.get("index", 0) % 9
-    varjyam_offset = (nak_num * 2 + 1) * 60  # rough calculation
-    varjyam_start = sunrise_mins + varjyam_offset % (dinamana_mins * 0.8)
-    varjyam = {"start": _minutes_to_time(varjyam_start), "end": _minutes_to_time(varjyam_start + 90)}
+    # 21. Varjyam — classical ghati-based calculation (Muhurta Chintamani)
+    # Each nakshatra has a fixed ghati offset from sunrise; duration = 4 ghatis (96 min)
+    _VARJYAM_GHATI_OFFSET = [
+        17, 4, 25, 47, 11, 33, 20,  2, 15,  # Ashwini–Ashlesha   (0–8)
+        28, 38, 14, 24, 30, 35,  8, 17,  4,  # Magha–Jyeshtha     (9–17)
+         7, 40, 22, 35, 50, 26, 14, 23, 30,  # Mula–Revati        (18–26)
+    ]
+    _VARJYAM_DURATION_MINS = 96  # 4 ghatis × 24 min/ghati
+    nak_idx = nakshatra.get("index", 0) % 27
+    varjyam_ghati = _VARJYAM_GHATI_OFFSET[nak_idx]
+    varjyam_start_mins = (sunrise_mins + varjyam_ghati * 24) % 1440
+    varjyam = {
+        "start": _minutes_to_time(int(varjyam_start_mins)),
+        "end": _minutes_to_time(int((varjyam_start_mins + _VARJYAM_DURATION_MINS) % 1440)),
+    }
 
     # 22. Hora Table (planetary hours — 24 horas, day + night)
     hora_sequence_day = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]
@@ -1884,11 +1889,45 @@ def calculate_panchang(
             "quality": "good" if i in [0, 2, 3, 4, 6, 7, 10, 13, 14, 19, 25, 26, 28] else "neutral",
         })
 
-    # 28. Panchaka check (5 elements — inauspicious when Moon in certain nakshatras)
+    # 28. Panchaka check — include type (Mrityu/Agni/Raja/Chora/Roga)
     # 0-based: Dhanishta=22, Shatabhisha=23, P.Bhadrapada=24, U.Bhadrapada=25, Revati=26
-    panchaka_nakshatras = [22, 23, 24, 25, 26]  # Dhanishta, Shatabhisha, P.Bhadrapada, U.Bhadrapada, Revati
+    panchaka_nakshatras = [22, 23, 24, 25, 26]
     is_panchaka = moon_nak_idx in panchaka_nakshatras
-    panchaka = {"active": is_panchaka, "rahita": not is_panchaka}
+    panchaka: Dict[str, Any] = {"active": is_panchaka, "rahita": not is_panchaka}
+    if is_panchaka and nakshatra_end:
+        try:
+            from app.panchang_misc import calculate_panchaka_rahita as _calc_panchaka
+            _pk = _calc_panchaka(nakshatra.get("name", ""), nakshatra_end, sunrise_str, sunset_str)
+            if _pk:
+                panchaka.update(_pk)
+        except Exception:
+            pass
+
+    # 28a. Active-now flags for inauspicious/auspicious periods
+    # Compare current IST wall-clock time against each window
+    try:
+        _now_ist = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
+        _now_m = _now_ist.hour * 60 + _now_ist.minute
+        _today_str = _now_ist.strftime("%Y-%m-%d")
+
+        def _active_now(window: Dict[str, str]) -> bool:
+            if date != _today_str:
+                return False
+            s = _time_to_minutes(window.get("start", "0:0"))
+            e = _time_to_minutes(window.get("end", "0:0"))
+            if e < s:  # crosses midnight
+                return _now_m >= s or _now_m < e
+            return s <= _now_m < e
+
+        rahu_kaal["active_now"] = _active_now(rahu_kaal)
+        gulika_kaal["active_now"] = _active_now(gulika_kaal)
+        yamaganda["active_now"] = _active_now(yamaganda)
+        dur_muhurtam["active_now"] = _active_now(dur_muhurtam)
+        varjyam["active_now"] = _active_now(varjyam)
+        abhijit["active_now"] = _active_now(abhijit)
+        brahma["active_now"] = _active_now(brahma)
+    except Exception:
+        pass
 
     # 29. Panchanga Shuddhi — composite day-quality score (0-100)
     panchanga_shuddhi = _compute_panchanga_shuddhi(
@@ -1907,6 +1946,13 @@ def calculate_panchang(
             "lord_hi": TITHI_LORD_HI.get(tithi["number"], ""),
             "phala_en": (TITHI_PHALA.get(tithi["number"]) or {}).get("en", ""),
             "phala_hi": (TITHI_PHALA.get(tithi["number"]) or {}).get("hi", ""),
+            # Tithi type per Muhurta Chintamani (normalised 1-15)
+            "type": ["Nanda", "Bhadra", "Jaya", "Rikta", "Purna"][
+                ((tithi["number"] - 1) % 15) % 5
+            ],
+            "type_hi": ["नन्दा", "भद्रा", "जया", "रिक्ता", "पूर्णा"][
+                ((tithi["number"] - 1) % 15) % 5
+            ],
         },
         "nakshatra": {
             **nakshatra,

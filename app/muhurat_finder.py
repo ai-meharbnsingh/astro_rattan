@@ -298,6 +298,26 @@ def find_muhurat_dates(
                     return p
             return {}
 
+        # ── Chaturmasa block (Ashadh Shukla 11 → Kartik Shukla 11)
+        # Prohibits major samskaras (marriage, griha_pravesh, upanayana, etc.)
+        _SAMSKARA_ACTIVITIES = {
+            "marriage", "griha_pravesh", "upanayana", "mundan", "annaprashan",
+            "vidyarambha", "nama_karana", "karnavedha", "nishkramana",
+            "garbha_dhana", "jatakarma",
+        }
+        if activity_key in _SAMSKARA_ACTIVITIES:
+            _chaturmasa_months = {"Ashadha", "Shravana", "Bhadrapada", "Ashwin", "Kartik"}
+            if hindu_month in _chaturmasa_months:
+                _cm_blocked = True
+                if hindu_month == "Ashadha":
+                    # Only blocked from Shukla Ekadashi (tithi_index 10) onward
+                    _cm_blocked = paksha == "Shukla" and tithi_index >= 10
+                elif hindu_month == "Kartik":
+                    # Lifted on Shukla Ekadashi (tithi_index 10)
+                    _cm_blocked = not (paksha == "Shukla" and tithi_index >= 10)
+                if _cm_blocked:
+                    continue  # skip entire day — Chaturmasa block
+
         # ── basic favorability (tithi / nakshatra / weekday / month) ──
         result = check_day_favorable(
             activity_key, tithi_index, paksha, nak_name, weekday, hindu_month,
@@ -491,10 +511,10 @@ def find_muhurat_dates(
         yoga_number_val = (panchang.get("yoga") or {}).get("number", 0)
         # Yoga is auspicious if not Vyatipata(17) or Vaidhriti(27) and yoga_number >= 1
         yoga_is_auspicious = bool(yoga_number_val and yoga_number_val not in (17, 27))
-        # Rahu Kaal active check: compare current time window? We use a heuristic —
-        # rahu_kaal dict present and non-empty means it's a day-time slot consideration.
-        rahu_kaal_dict = panchang.get("rahu_kaal", {}) or {}
-        rahu_kaal_active_flag = bool(rahu_kaal_dict.get("start") and rahu_kaal_dict.get("end"))
+        # Rahu Kaal is a day-level avoidance already enforced in check_day_favorable.
+        # At the day-scoring level we do not penalise because we have no proposed
+        # muhurat time to compare against the window — so the flag is False here.
+        rahu_kaal_active_flag = False
 
         _avoid_tithis_norm = [normalize_tithi_for_rules(t) for t in [4, 8, 9, 14, 15, 30]]
         _avoid_weekdays_map: Dict[str, int] = {

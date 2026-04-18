@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date, timedelta
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -22,6 +22,31 @@ from app.horoscope_generator import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["horoscope"])
+
+
+def _resolve_native_lagna(
+    birth_date: Optional[str],
+    birth_time: Optional[str],
+    birth_lat: Optional[float],
+    birth_lon: Optional[float],
+    birth_tz: Optional[float],
+) -> Optional[str]:
+    """
+    Compute the natal ascendant (Janma Lagna) sign from birth data.
+    Returns None if any required field is missing or calculation fails.
+    """
+    if not (birth_date and birth_time and birth_lat is not None and birth_lon is not None):
+        return None
+    try:
+        from app.astro_engine import calculate_planet_positions
+        tz = birth_tz if birth_tz is not None else round(birth_lon / 15.0, 1)
+        result = calculate_planet_positions(birth_date, birth_time, birth_lat, birth_lon, tz)
+        asc = result.get("ascendant", {})
+        lagna = asc.get("sign", "").lower()
+        return lagna if lagna in SIGNS else None
+    except Exception:
+        logger.exception("Failed to resolve natal lagna from birth data")
+        return None
 
 # Hindi sign names for bilingual support
 SIGN_HINDI = {
@@ -74,9 +99,19 @@ def get_daily_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
     target_date: str = Query(None, alias="date", description="Date YYYY-MM-DD (default today)"),
     lang: str = Query("en", description="Language: en or hi"),
+    birth_date: str = Query(None, description="Birth date YYYY-MM-DD for Janma Lagna personalization"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS for Janma Lagna personalization"),
+    birth_lat: float = Query(None, description="Birth latitude"),
+    birth_lon: float = Query(None, description="Birth longitude"),
+    birth_tz: float = Query(None, description="Birth timezone offset (e.g. 5.5 for IST)"),
     db: Any = Depends(get_db),
 ):
-    """Get daily horoscope for a specific sign and date."""
+    """Get daily horoscope for a specific sign and date.
+
+    Optionally accepts birth_date, birth_time, birth_lat, birth_lon to compute
+    Janma Lagna (natal ascendant) and use it for house calculation instead of
+    the Moon sign (Chandra Lagna).
+    """
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
@@ -87,16 +122,19 @@ def get_daily_horoscope(
     if not target_date:
         target_date = date.today().isoformat()
 
+    native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date)
+        result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date, native_lagna=native_lagna)
         if result and result.get("sections"):
-            # Return bilingual sections — frontend txt() helper handles language selection
             return {
                 **_sign_meta(sign),
                 "period": "daily",
                 "date": target_date,
+                "lagna": native_lagna or sign,
+                "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -131,6 +169,63 @@ def get_daily_horoscope(
         **_sign_meta(sign),
         "period": "daily",
         "date": target_date,
+        "lagna": sign,
+        "lagna_type": "chandra_lagna",
+        "sections": generated.get("sections", {}),
+        "source": generated.get("source", "template"),
+    }
+
+
+@router.get("/api/horoscope/tomorrow", status_code=status.HTTP_200_OK)
+def get_tomorrow_horoscope(
+    sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
+    lang: str = Query("en", description="Language: en or hi"),
+    birth_date: str = Query(None, description="Birth date YYYY-MM-DD for Janma Lagna personalization"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS for Janma Lagna personalization"),
+    birth_lat: float = Query(None, description="Birth latitude"),
+    birth_lon: float = Query(None, description="Birth longitude"),
+    birth_tz: float = Query(None, description="Birth timezone offset"),
+    db: Any = Depends(get_db),
+):
+    """Get tomorrow's horoscope for a specific sign."""
+    sign = sign.strip().lower()
+    if sign not in SIGNS:
+        raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
+    lang = lang.strip().lower() if lang else "en"
+    if lang not in ("en", "hi"):
+        lang = "en"
+
+    tomorrow = (date.today() + timedelta(days=1)).isoformat()
+    native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+
+    try:
+        from app.transit_engine import generate_transit_horoscope
+        result = generate_transit_horoscope(sign=sign, period="daily", target_date=tomorrow, native_lagna=native_lagna)
+        if result and result.get("sections"):
+            return {
+                **_sign_meta(sign),
+                "period": "tomorrow",
+                "date": tomorrow,
+                "lagna": native_lagna or sign,
+                "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "sections": result.get("sections", {}),
+                "scores": result.get("scores", {}),
+                "mood": result.get("mood", {}),
+                "lucky": result.get("lucky", {}),
+                "dos": result.get("dos", []),
+                "donts": result.get("donts", []),
+                "source": result.get("source", "transit_engine"),
+            }
+    except Exception:
+        logger.exception("Transit engine failed for tomorrow %s", sign)
+
+    generated = generate_ai_horoscope(sign=sign, period="daily")
+    return {
+        **_sign_meta(sign),
+        "period": "tomorrow",
+        "date": tomorrow,
+        "lagna": sign,
+        "lagna_type": "chandra_lagna",
         "sections": generated.get("sections", {}),
         "source": generated.get("source", "template"),
     }
@@ -140,6 +235,11 @@ def get_daily_horoscope(
 def get_weekly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
     lang: str = Query("en", description="Language: en or hi"),
+    birth_date: str = Query(None, description="Birth date YYYY-MM-DD for Janma Lagna personalization"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS for Janma Lagna personalization"),
+    birth_lat: float = Query(None, description="Birth latitude"),
+    birth_lon: float = Query(None, description="Birth longitude"),
+    birth_tz: float = Query(None, description="Birth timezone offset"),
     db: Any = Depends(get_db),
 ):
     """Get weekly horoscope for a specific sign."""
@@ -155,17 +255,20 @@ def get_weekly_horoscope(
     week_date = monday.isoformat()
     week_end = (monday + timedelta(days=6)).isoformat()
 
+    native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date)
+        result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date, native_lagna=native_lagna)
         if result and result.get("sections"):
-            # Return bilingual sections — frontend txt() helper handles language selection
             return {
                 **_sign_meta(sign),
                 "period": "weekly",
                 "week_start": week_date,
                 "week_end": week_end,
+                "lagna": native_lagna or sign,
+                "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -210,6 +313,11 @@ def get_weekly_horoscope(
 def get_monthly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
     lang: str = Query("en", description="Language: en or hi"),
+    birth_date: str = Query(None, description="Birth date YYYY-MM-DD for Janma Lagna personalization"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS for Janma Lagna personalization"),
+    birth_lat: float = Query(None, description="Birth latitude"),
+    birth_lon: float = Query(None, description="Birth longitude"),
+    birth_tz: float = Query(None, description="Birth timezone offset"),
     db: Any = Depends(get_db),
 ):
     """Get monthly horoscope for a specific sign."""
@@ -223,16 +331,19 @@ def get_monthly_horoscope(
     today = date.today()
     month_start = today.replace(day=1).isoformat()
 
+    native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start)
+        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start, native_lagna=native_lagna)
         if result and result.get("sections"):
-            # Return bilingual sections — frontend txt() helper handles language selection
             response = {
                 **_sign_meta(sign),
                 "period": "monthly",
                 "month_start": month_start,
+                "lagna": native_lagna or sign,
+                "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -288,9 +399,19 @@ def get_monthly_horoscope(
 def get_yearly_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),
     lang: str = Query("en", description="Language: en or hi"),
+    birth_date: str = Query(None, description="Birth date YYYY-MM-DD — enables Janma Lagna + Vimshottari Dasha"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS for Janma Lagna personalization"),
+    birth_lat: float = Query(None, description="Birth latitude"),
+    birth_lon: float = Query(None, description="Birth longitude"),
+    birth_tz: float = Query(None, description="Birth timezone offset"),
     db: Any = Depends(get_db),
 ):
-    """Get yearly horoscope for a specific sign."""
+    """Get yearly horoscope for a specific sign.
+
+    When birth_date, birth_time, birth_lat, birth_lon are provided, the response
+    includes Vimshottari Dasha (current mahadasha/antardasha) and uses Janma
+    Lagna for house calculation.
+    """
     sign = sign.strip().lower()
     if sign not in SIGNS:
         raise HTTPException(status_code=400, detail=f"Invalid sign: {sign}")
@@ -300,16 +421,19 @@ def get_yearly_horoscope(
 
     year_start = date.today().replace(month=1, day=1).isoformat()
 
+    native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start)
+        result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start, native_lagna=native_lagna)
         if result and result.get("sections"):
-            # Return bilingual sections — frontend txt() helper handles language selection
             response = {
                 **_sign_meta(sign),
                 "period": "yearly",
                 "year_start": year_start,
+                "lagna": native_lagna or sign,
+                "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -331,6 +455,27 @@ def get_yearly_horoscope(
                 response["quarters"] = []
                 response["best_months"] = {}
                 response["annual_theme"] = {}
+
+            # Vimshottari Dasha — only when birth data provided
+            if birth_date:
+                try:
+                    from app.astro_engine import calculate_planet_positions
+                    from app.dasha_engine import calculate_dasha
+                    tz = birth_tz if birth_tz is not None else (round(birth_lon / 15.0, 1) if birth_lon else 5.5)
+                    bt = birth_time or "12:00:00"
+                    natal = calculate_planet_positions(birth_date, bt, birth_lat or 28.6, birth_lon or 77.2, tz)
+                    moon_info = natal.get("planets", {}).get("Moon", {})
+                    moon_nak = moon_info.get("nakshatra", "Ashwini")
+                    moon_lon = moon_info.get("longitude", None)
+                    dasha = calculate_dasha(moon_nak, birth_date, moon_lon)
+                    response["dasha"] = {
+                        "current_mahadasha": dasha.get("current_dasha", "Unknown"),
+                        "current_antardasha": dasha.get("current_antardasha", "Unknown"),
+                        "moon_nakshatra": moon_nak,
+                    }
+                except Exception:
+                    logger.exception("Dasha calculation failed for birth_date=%s", birth_date)
+                    response["dasha"] = None
 
             return response
     except Exception:

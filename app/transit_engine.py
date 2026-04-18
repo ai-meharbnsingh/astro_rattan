@@ -416,6 +416,7 @@ def assemble_section(
     planet_data: Dict[str, Dict],
     period: str,
     language: str,
+    fragment_offset: int = 0,
 ) -> str:
     """
     Combine relevant interpretation fragments into a coherent 3-5 sentence paragraph
@@ -471,8 +472,9 @@ def assemble_section(
     # Sort descending by score
     scored_fragments.sort(key=lambda x: x[0], reverse=True)
 
-    # Pick top N
-    selected = scored_fragments[:pick_count]
+    # Pick top N, with optional offset to avoid repetition across monthly phases
+    start = min(fragment_offset, max(0, len(scored_fragments) - pick_count))
+    selected = scored_fragments[start:start + pick_count]
     if not selected:
         return _default_section_text(sign, area, language)
 
@@ -570,6 +572,7 @@ def generate_transit_horoscope(
     sign: str,
     period: str,
     target_date: str = None,
+    native_lagna: str = None,
 ) -> Dict[str, Any]:
     """
     Generate a complete bilingual horoscope response for a given sign and period.
@@ -578,6 +581,8 @@ def generate_transit_horoscope(
         sign: Zodiac sign (lowercase, e.g. "aries").
         period: "daily", "weekly", "monthly", or "yearly".
         target_date: ISO date string. Defaults to today.
+        native_lagna: Optional natal ascendant sign (lowercase). When provided,
+            houses are counted from the Janma Lagna instead of the Moon sign.
 
     Returns:
         Complete horoscope dict with sections, scores, mood, lucky info, dos/donts.
@@ -590,19 +595,20 @@ def generate_transit_horoscope(
     if not planet_data:
         return _fallback_horoscope(sign_lower, period_lower)
 
-    # Calculate houses from native sign
-    planet_houses = calculate_transit_houses(sign_lower, planet_data)
+    # Use natal lagna for house calculation when provided, else use moon sign (chandralagna)
+    lagna_sign = native_lagna.lower() if native_lagna and native_lagna.lower() in SIGN_INDEX else sign_lower
+    planet_houses = calculate_transit_houses(lagna_sign, planet_data)
 
-    # Assemble sections (bilingual)
+    # Assemble sections (bilingual) — use lagna_sign for sign-display context
     sections: Dict[str, Dict[str, str]] = {}
     for area in AREAS:
         sections[area] = {
-            "en": assemble_section(sign_lower, area, planet_houses, planet_data, period_lower, "en"),
-            "hi": assemble_section(sign_lower, area, planet_houses, planet_data, period_lower, "hi"),
+            "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en"),
+            "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi"),
         }
 
     # Compute scores
-    scores = compute_scores(sign_lower, planet_houses, planet_data)
+    scores = compute_scores(lagna_sign, planet_houses, planet_data)
 
     # Extract Moon nakshatra data for lucky derivations
     moon_info = planet_data.get("Moon", {})
@@ -694,8 +700,9 @@ def generate_monthly_extras(sign: str, target_date: str = None) -> Dict[str, Any
             planet_houses = calculate_transit_houses(sign_lower, planet_data)
             scores = compute_scores(sign_lower, planet_houses, planet_data)
 
-            summary_en = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "en")
-            summary_hi = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "hi")
+            # Use phase index as fragment_offset so each phase leads with a different planet's fragment
+            summary_en = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "en", fragment_offset=i)
+            summary_hi = assemble_section(sign_lower, "general", planet_houses, planet_data, "monthly", "hi", fragment_offset=i)
         except Exception:
             logger.exception("Monthly extras: failed for %s", date_str)
             scores = {"overall": 5}

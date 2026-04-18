@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-19)
 
 ## Corpus Check
-- 538 files · ~5,322,094 words
+- 538 files · ~5,325,915 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8366 nodes · 14624 edges · 280 communities detected
+- 8370 nodes · 14632 edges · 280 communities detected
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 908 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -420,64 +420,64 @@ Cohesion: 0.12
 Nodes (23): _classify_house(), derive_compatible_sign(), derive_donts(), derive_dos(), derive_gemstone(), derive_lucky_color(), derive_lucky_number(), derive_lucky_time() (+15 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.09
-Nodes (22): calculate_gun_milan(), _normalize_nakshatra(), _rashi_lord(), matching_engine.py — Kundli Gun Milan (Ashtakoota) Matching Engine =============, Varna koot: groom's varna should be >= bride's. Max 1 point., Vasya koot: mutual influence/attraction based on Moon rashi. Max 2 points., Tara koot: based on nakshatra distance (bidirectional). Max 3 points.     Standa, Yoni koot: sexual/physical compatibility. Max 4 points.     Same=4, Friendly=3, (+14 more)
+Cohesion: 0.16
+Nodes (23): get_all_signs_horoscope(), get_daily_horoscope(), get_monthly_horoscope(), get_tomorrow_horoscope(), get_transit_insights(), get_weekly_horoscope(), get_yearly_horoscope(), _has_meaningful_sections() (+15 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.09
-Nodes (22): calculate_baladi(), calculate_deeptadi(), calculate_jagradadi(), calculate_shyanadi(), _fetch_chart(), get_dasha_interpretation(), get_full_interpretations(), get_lagna_interpretation() (+14 more)
+Nodes (22): calculate_gun_milan(), _normalize_nakshatra(), _rashi_lord(), matching_engine.py — Kundli Gun Milan (Ashtakoota) Matching Engine =============, Varna koot: groom's varna should be >= bride's. Max 1 point., Vasya koot: mutual influence/attraction based on Moon rashi. Max 2 points., Tara koot: based on nakshatra distance (bidirectional). Max 3 points.     Standa, Yoni koot: sexual/physical compatibility. Max 4 points.     Same=4, Friendly=3, (+14 more)
 
 ### Community 98 - "Community 98"
+Cohesion: 0.09
+Nodes (22): calculate_baladi(), calculate_deeptadi(), calculate_jagradadi(), calculate_shyanadi(), _fetch_chart(), get_dasha_interpretation(), get_full_interpretations(), get_lagna_interpretation() (+14 more)
+
+### Community 99 - "Community 99"
 Cohesion: 0.11
 Nodes (21): _build_ai_horoscope_prompt(), generate_ai_horoscope(), generate_daily_horoscopes(), _generate_template_horoscope(), _get_current_transits(), _get_current_transits_full(), _parse_ai_sections(), H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes. (+13 more)
 
-### Community 99 - "Community 99"
+### Community 100 - "Community 100"
 Cohesion: 0.18
 Nodes (18): a(), at(), be(), e(), Ee(), Fe(), Le(), o() (+10 more)
 
-### Community 100 - "Community 100"
+### Community 101 - "Community 101"
 Cohesion: 0.14
 Nodes (20): _add_lagna_warnings(), _check_dosha_cancellations(), find_muhurat_dates(), _find_sankranti_times(), find_travel_muhurat(), _is_sankranti_restricted(), _normalize_direction(), _quality_label() (+12 more)
 
-### Community 101 - "Community 101"
+### Community 102 - "Community 102"
 Cohesion: 0.16
 Nodes (16): _mkplanet(), Tests for Pravrajya (ascetic) yogas — Phaladeepika Adh. 27., test_bhrugukachcha_detected(), test_bhrugukachcha_rejected_when_one_not_in_kendra(), test_charaka_detected(), test_missing_ascendant(), test_missing_planets(), test_normal_chart_no_yogas() (+8 more)
 
-### Community 102 - "Community 102"
+### Community 103 - "Community 103"
 Cohesion: 0.1
 Nodes (10): Tests for Ekadashi Parana calculation., When next tithi is Dwadashi and it ends before window closes, note it., Parana window must start at or after sunrise., If Dwadashi starts after sunrise, parana waits for Dwadashi., Parana end must be within ~4 hours of sunrise., Core behaviour: returns dict for Ekadashi, None otherwise., All required fields must be present and correct., TestEkadashiParanaBasic (+2 more)
 
-### Community 103 - "Community 103"
+### Community 104 - "Community 104"
 Cohesion: 0.15
 Nodes (18): build_prediction_studio(), _build_specific_text(), compute_area_score(), compute_area_score_with_evidence(), _dignity_phrase(), _dignity_phrase_hi(), _house_strength(), _navamsa_dignity_adjustment() (+10 more)
 
-### Community 104 - "Community 104"
+### Community 105 - "Community 105"
 Cohesion: 0.15
 Nodes (19): _build_explanation(), calculate_rectification(), _get_dasha_at_date(), _get_event_signatures(), _get_house_lord(), _get_planets_in_house(), _get_transit_at_date(), _ordinal() (+11 more)
 
-### Community 105 - "Community 105"
+### Community 106 - "Community 106"
 Cohesion: 0.15
 Nodes (19): _ayana_info(), build_sankranti_payload(), find_sankranti_times(), _makar_special(), Sankranti engine — compute Sun ingress times into sidereal rashis.  This module, Return sidereal Sun rashi index (0=Mesha…11=Meena) at UTC datetime., Find 12 sankranti ingress instants for the given year (UTC), ordered from Mesha., Return the classical Sankranti type based on the vara (weekday) at local ingress (+11 more)
 
-### Community 106 - "Community 106"
+### Community 107 - "Community 107"
 Cohesion: 0.14
 Nodes (19): _atom(), build_atom_vector(), _generate_iogita_insight(), _generate_normal_insights(), _get_dignity_label(), get_planet_strength(), identify_basin(), _print_report() (+11 more)
 
-### Community 107 - "Community 107"
+### Community 108 - "Community 108"
 Cohesion: 0.16
 Nodes (19): analyze_bhava_phala(), _build_lordship_effect(), _build_lordship_effect_hi(), _get_owned_houses(), _house(), _house_strength(), _is_strong_planet(), _is_weak_planet() (+11 more)
 
-### Community 108 - "Community 108"
+### Community 109 - "Community 109"
 Cohesion: 0.14
 Nodes (19): calculate_avakhada(), _calculate_ghatak(), _compute_good_years(), _get_gana(), _get_nadi(), _get_nakshatra_index(), _get_nakshatra_lord(), _get_pada() (+11 more)
 
-### Community 109 - "Community 109"
+### Community 110 - "Community 110"
 Cohesion: 0.15
 Nodes (19): analyze_janma_predictions(), analyze_lagna_profile(), analyze_moon_nakshatra(), _combined_narrative_en(), _combined_narrative_hi(), _extract_moon_longitude(), get_nakshatra_index(), get_pada() (+11 more)
-
-### Community 110 - "Community 110"
-Cohesion: 0.18
-Nodes (19): get_all_signs_horoscope(), get_daily_horoscope(), get_monthly_horoscope(), get_transit_insights(), get_weekly_horoscope(), get_yearly_horoscope(), _has_meaningful_sections(), _parse_content_to_sections() (+11 more)
 
 ### Community 111 - "Community 111"
 Cohesion: 0.13
@@ -1156,7 +1156,7 @@ Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **2034 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+2029 more)
+- **2036 isolated node(s):** `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.`, `Exactly ONE day period must have vaar_vela=True for each weekday.`, `Exactly ONE day period must have kaal_vela=True for each weekday.`, `Exactly ONE night period must have kaal_ratri=True for each weekday.` (+2031 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **Thin community `Community 209`** (2 nodes): `scratch_check_i18n.py`, `check_file()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
