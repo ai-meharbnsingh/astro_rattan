@@ -49,6 +49,12 @@ interface EnrichedRemedy {
     lk_ref?: string;
     adjacent_to_blind?: string[];
   };
+  // P1.11 — LK 1952 remedy tier (trial / remedy / good_conduct)
+  classification?: 'trial' | 'remedy' | 'good_conduct' | string;
+  classification_en?: string;
+  classification_hi?: string;
+  classification_desc_en?: string;
+  classification_desc_hi?: string;
 }
 
 interface ValidatedRemedy {
@@ -79,6 +85,13 @@ const DAY_COLORS: Record<string, string> = {
   Saturday: 'text-gray-700',
 };
 
+// P1.11 — LK 1952 remedy-tier badge styling
+const CLASSIFICATION_STYLES: Record<string, string> = {
+  trial:        'bg-cyan-100 text-cyan-800 border-cyan-300',
+  remedy:       'bg-sacred-gold/15 text-sacred-gold-dark border-sacred-gold/40',
+  good_conduct: 'bg-violet-100 text-violet-800 border-violet-300',
+};
+
 function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
   const [open, setOpen] = useState(r.urgency === 'high');
   const style = URGENCY_STYLES[r.urgency] ?? URGENCY_STYLES.low;
@@ -105,6 +118,16 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
             <span className="text-xs text-muted-foreground">
               {isHi ? `भाव ${r.lk_house}` : `H${r.lk_house}`} · {typeof r.sign === 'string' ? r.sign : pickLang(r.sign, false)}
             </span>
+            {r.classification && (
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold uppercase tracking-wide ${
+                  CLASSIFICATION_STYLES[r.classification] ?? CLASSIFICATION_STYLES.remedy
+                }`}
+                title={isHi ? r.classification_desc_hi : r.classification_desc_en}
+              >
+                {isHi ? r.classification_hi : r.classification_en}
+              </span>
+            )}
             <span className={`ml-auto text-xs px-2 py-0.5 rounded-full border font-medium ${badge}`}>
               {urgencyLabel}
             </span>

@@ -366,6 +366,46 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                     {t('auto.houseMHouseoverride')}
                   </p>
                 )}
+                {/* P1.6 — LK 1952 removal mechanics */}
+                {m.removal_guidance && (
+                  <div className="mt-3 pt-2 border-t border-sacred-gold/10 space-y-1.5">
+                    <p className="text-[10px] font-bold text-sacred-gold-dark uppercase tracking-widest flex items-center gap-1.5">
+                      {isHi ? 'हटाने की विधि (लाल किताब 1952)' : 'Removal Rule (LK 1952)'}
+                    </p>
+                    <p className="text-xs text-foreground/80 leading-snug">
+                      {isHi ? m.removal_guidance.rule_hi : m.removal_guidance.rule_en}
+                    </p>
+                    {m.removal_guidance.recommended_target?.planet ? (
+                      <div className="mt-1.5 flex items-start gap-2 p-2 rounded-lg bg-red-500/5 border border-red-300/30">
+                        <span className="text-[10px] font-bold text-red-700 uppercase shrink-0 mt-0.5">
+                          {isHi ? 'लक्ष्य' : 'Target'}
+                        </span>
+                        <div className="flex-1">
+                          <span className="text-sm font-bold text-red-700">
+                            {translatePlanet(m.removal_guidance.recommended_target.planet, language)}
+                          </span>
+                          <p className="text-[11px] text-foreground/70 mt-0.5 leading-snug">
+                            {isHi
+                              ? m.removal_guidance.recommended_target.reason_hi
+                              : m.removal_guidance.recommended_target.reason_en}
+                          </p>
+                        </div>
+                      </div>
+                    ) : m.removal_guidance.cannot_remove ? (
+                      <p className="text-[11px] text-indigo-700 bg-indigo-500/5 border border-indigo-300/30 rounded-lg p-2 mt-1.5">
+                        {isHi
+                          ? m.removal_guidance.recommended_target?.reason_hi
+                          : m.removal_guidance.recommended_target?.reason_en}
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-green-700 bg-green-500/5 border border-green-300/30 rounded-lg p-2 mt-1.5">
+                        {isHi
+                          ? m.removal_guidance.recommended_target?.reason_hi
+                          : m.removal_guidance.recommended_target?.reason_en}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
             {masnuiList.length === 0 && (

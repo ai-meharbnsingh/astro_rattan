@@ -11,7 +11,7 @@ Implements "Pundit-level" logic including:
 7. Kayam Grah (Established Planets)
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 # ============================================================
 # 1. MASNUI GRAH (ARTIFICIAL PLANETS)
@@ -20,19 +20,26 @@ from typing import Dict, List, Any
 
 MASNUI_MAPPING = [
     {
-        "planets": {"Saturn", "Venus"}, 
-        "result": "Jupiter", 
+        "planets": {"Saturn", "Venus"},
+        "result": "Jupiter",
         "domain": {"en": "Children, wisdom, prosperity", "hi": "संतान, बुद्धि, समृद्धि"},
         "quality": "Khali Hawai",  # Empty air - philosophical pretension without foundation
         "house_override": None,  # No specific house override
         "psychological_profile": {
             "en": "Espouses spiritual ideals while remaining materially attached",
             "hi": "भौतिक रूप से आसक्त रहते हुए आध्यात्मिक आदर्शों का समर्थन करना"
+        },
+        # P1.6 — LK 1952 removal mechanics
+        "removal_guidance": {
+            "default_remove": "Saturn",
+            "protected": ["Venus"],
+            "en": "Saturn+Venus creates a false Jupiter that promises wisdom without material follow-through. LK 1952 canon: pacify Saturn first (do Saturn remedies) — Venus is sacred and must not be suppressed.",
+            "hi": "शनि+शुक्र झूठा गुरु बनाते हैं जो बिना भौतिक परिणाम के ज्ञान का वादा करता है। लाल किताब 1952: पहले शनि को शांत करें (शनि उपाय) — शुक्र पवित्र है, उसे दबाना नहीं चाहिए।"
         }
     },
     {
-        "planets": {"Jupiter", "Venus"}, 
-        "result": "Saturn", 
+        "planets": {"Jupiter", "Venus"},
+        "result": "Saturn",
         "domain": {"en": "Delays, structure, maturity", "hi": "विलंब, संरचना, परिपक्वता"},
         "quality": "Khali Hawai",
         "house_override": 2,  # 1941 text p380 - affects 2nd house (wealth, family speech)
@@ -43,33 +50,54 @@ MASNUI_MAPPING = [
         "psychological_profile": {
             "en": "Pursues pleasure compulsively without genuine enjoyment",
             "hi": "वास्तविक आनंद के बिना अनिवार्य रूप से सुख का पीछा करना"
+        },
+        # P1.6 — LK 1952: if artificial Saturn is malefic, remove Jupiter from
+        # the Venus-Jupiter pair (sacrifice wisdom for pleasure's integrity).
+        "removal_guidance": {
+            "default_remove": "Jupiter",
+            "protected": ["Venus"],
+            "conditional": "if_saturn_malefic",
+            "en": "Jupiter+Venus creates a false Saturn that enforces delay without true discipline. LK 1952 canon: if the synthetic Saturn turns malefic (by house or aspect), remove Jupiter from this pair — Venus must be protected as the primary karaka.",
+            "hi": "गुरु+शुक्र झूठा शनि बनाते हैं जो बिना वास्तविक अनुशासन के विलंब लाता है। लाल किताब 1952: यदि कृत्रिम शनि पापी बन जाए, गुरु को हटाएँ — शुक्र प्राथमिक कारक है और उसकी रक्षा होनी चाहिए।"
         }
     },
     {
-        "planets": {"Sun", "Mercury"}, 
-        "result": "Mars", 
+        "planets": {"Sun", "Mercury"},
+        "result": "Mars",
         "domain": {"en": "Courage, siblings, property", "hi": "साहस, भाई-बहन, संपत्ति"},
         "quality": "Good",
         "house_override": None,
         "psychological_profile": {
             "en": "Positive aggression and intellectual protection",
             "hi": "सकारात्मक आक्रामकता और बौद्धिक सुरक्षा"
+        },
+        "removal_guidance": {
+            "default_remove": None,
+            "protected": ["Sun", "Mercury"],
+            "en": "Sun+Mercury creates a benefic Mars (Budhaditya Mars). This is a favourable Masnui — do NOT remove either planet. Preserve the combination by keeping Sun and Mercury strong.",
+            "hi": "सूर्य+बुध शुभ मंगल (बुधादित्य) बनाते हैं। यह अनुकूल मसनुई है — किसी को भी न हटाएँ। सूर्य और बुध को मज़बूत रखकर संयोजन की रक्षा करें।"
         }
     },
     {
-        "planets": {"Sun", "Mars"}, 
-        "result": "Mercury", 
+        "planets": {"Sun", "Mars"},
+        "result": "Mercury",
         "domain": {"en": "Intellect, commerce, health", "hi": "बुद्धि, वाणिज्य, स्वास्थ्य"},
         "quality": "Good",
         "house_override": None,
         "psychological_profile": {
             "en": "Rapid decision making with impulsive communication",
             "hi": "आवेगपूर्ण संचार के साथ त्वरित निर्णय लेना"
+        },
+        "removal_guidance": {
+            "default_remove": None,
+            "protected": ["Sun"],
+            "en": "Sun+Mars creates a synthetic Mercury — typically beneficial for commerce and health. Remove neither; instead regulate Mars (Mars upayas like masoor dal donation) if its aggression becomes impulsive.",
+            "hi": "सूर्य+मंगल कृत्रिम बुध बनाते हैं — सामान्यतः वाणिज्य और स्वास्थ्य के लिए अच्छा। किसी को न हटाएँ; यदि मंगल की आक्रामकता अधिक हो तो मंगल उपाय (मसूर दाल दान) करें।"
         }
     },
     {
-        "planets": {"Saturn", "Mercury"}, 
-        "result": "Venus", 
+        "planets": {"Saturn", "Mercury"},
+        "result": "Venus",
         "domain": {"en": "Partnerships, arts, wealth", "hi": "साझेदारी, कला, धन"},
         "quality": "Good",
         "house_override": 7,  # 1941 text p380 - affects 7th house (marriage, partnerships)
@@ -80,22 +108,34 @@ MASNUI_MAPPING = [
         "psychological_profile": {
             "en": "Approaches relationships with calculated precision",
             "hi": "गणितीय सटीकता के साथ संबंधों को देखना"
+        },
+        "removal_guidance": {
+            "default_remove": "Saturn",
+            "protected": ["Mercury"],
+            "en": "Saturn+Mercury creates a calculating Venus. LK 1952: when this combo over-intellectualises marriage, pacify Saturn (feed black ants, iron nail in bed) so Mercury's clarity can carry the Venusian domain.",
+            "hi": "शनि+बुध गणनात्मक शुक्र बनाते हैं। लाल किताब 1952: जब यह विवाह को अति-बौद्धिक बना दे, शनि को शांत करें (काली चीटियों को दाना, लोहे की कील) ताकि बुध की स्पष्टता शुक्र क्षेत्र को संभाल सके।"
         }
     },
     {
-        "planets": {"Moon", "Jupiter"}, 
-        "result": "Sun", 
+        "planets": {"Moon", "Jupiter"},
+        "result": "Sun",
         "domain": {"en": "Vitality, career, father", "hi": "जीवन शक्ति, करियर, पिता"},
         "quality": "Good",
         "house_override": None,
         "psychological_profile": {
             "en": "Emotional authority with nurturing leadership",
             "hi": "पालन-पोषण नेतृत्व के साथ भावनात्मक अधिकार"
+        },
+        "removal_guidance": {
+            "default_remove": None,
+            "protected": ["Moon", "Jupiter"],
+            "en": "Moon+Jupiter creates a benefic synthetic Sun (Gajakesari effect). LK 1952: a highly favourable combo — never remove either. Keep both strong via Moon-water offerings and Jupiter-turmeric donations.",
+            "hi": "चंद्र+गुरु शुभ कृत्रिम सूर्य बनाते हैं (गजकेसरी प्रभाव)। लाल किताब 1952: अत्यंत अनुकूल — किसी को न हटाएँ। चंद्र-जल अर्पण और गुरु-हल्दी दान से दोनों को मज़बूत रखें।"
         }
     },
     {
-        "planets": {"Sun", "Jupiter"}, 
-        "result": "Moon", 
+        "planets": {"Sun", "Jupiter"},
+        "result": "Moon",
         "domain": {"en": "Emotions, mother, public", "hi": "भावनाएं, माता, जनता"},
         "quality": "Good",
         "house_override": 5,  # 1941 text p380 - affects 5th house (children, intelligence)
@@ -106,33 +146,56 @@ MASNUI_MAPPING = [
         "psychological_profile": {
             "en": "Expansive emotional imagination with optimism",
             "hi": "आशावाद के साथ विस्तृत भावनात्मक कल्पना"
+        },
+        "removal_guidance": {
+            "default_remove": None,
+            "protected": ["Sun", "Jupiter"],
+            "en": "Sun+Jupiter creates a synthetic Moon that expands imagination. LK 1952: protective for children and education — do not remove. If over-optimism causes issues, balance via Moon remedies (silver, milk) rather than removal.",
+            "hi": "सूर्य+गुरु कृत्रिम चंद्र बनाते हैं जो कल्पना का विस्तार करते हैं। लाल किताब 1952: संतान और शिक्षा के लिए रक्षक — न हटाएँ। अति-आशावाद से समस्या हो तो चंद्र उपाय (चाँदी, दूध) से संतुलन करें।"
         }
     },
     {
-        "planets": {"Rahu", "Ketu"}, 
-        "result": "Venus", 
+        "planets": {"Rahu", "Ketu"},
+        "result": "Venus",
         "domain": {"en": "Relationships, pleasures, addictions", "hi": "संबंध, सुख, व्यसन"},
         "quality": "Mixed",
         "house_override": None,
         "psychological_profile": {
             "en": "Sensual/obsessive desires in relationships",
             "hi": "संबंधों में कामुक/व्यामोहजनक इच्छाएं"
+        },
+        # Rahu-Ketu are the shadow axis — physical removal is impossible.
+        # LK 1952 prescribes behavioural-only mitigation (sacrifice-like
+        # substitutes, not planet removal).
+        "removal_guidance": {
+            "default_remove": None,
+            "protected": ["Rahu", "Ketu"],
+            "cannot_remove": True,
+            "en": "Rahu-Ketu are the shadow axis — physically inseparable. LK 1952 canon: this pair cannot be 'removed'. Use Rahu remedies (coconut in flowing water) and Ketu remedies (black-white dog feeding) together. Control Venus-domain behaviour via good_conduct rules (abstain from specific pleasures on Friday).",
+            "hi": "राहु-केतु छाया-अक्ष हैं — शारीरिक रूप से अलग नहीं किए जा सकते। लाल किताब 1952: यह जोड़ी 'हटाई' नहीं जा सकती। दोनों उपाय साथ करें (राहु: बहते जल में नारियल; केतु: काले-सफेद कुत्ते को खिलाना)। शुक्र क्षेत्र के आचरण को सदाचार नियमों से नियंत्रित करें।"
         }
     },
     {
-        "planets": {"Mars", "Saturn"}, 
-        "result": "Rahu", 
+        "planets": {"Mars", "Saturn"},
+        "result": "Rahu",
         "domain": {"en": "Foreign, accidents, upheaval", "hi": "विदेश, दुर्घटनाएं, उथल-पुथल"},
         "quality": "Challenging",
         "house_override": None,
         "psychological_profile": {
             "en": "Intensified ambition with sudden disruptions",
             "hi": "अचानक व्यवधानों के साथ तीव्र महत्वाकांक्षा"
+        },
+        "removal_guidance": {
+            "default_remove": "weaker",  # dynamic: whichever is more afflicted
+            "protected": [],
+            "conditional": "remove_more_afflicted",
+            "en": "Mars+Saturn creates synthetic Rahu — the most challenging Masnui (accidents, sudden upheaval). LK 1952: identify which of the two is more afflicted (debilitated, in dusthana, or besieged) and apply removal upayas to that planet. If Saturn is weaker → feed black ants; if Mars is weaker → donate masoor dal.",
+            "hi": "मंगल+शनि कृत्रिम राहु बनाते हैं — सर्वाधिक चुनौतीपूर्ण मसनुई। लाल किताब 1952: दोनों में से जो अधिक पीड़ित हो (नीच, दुष्टाना, घिरा) उस पर हटाने के उपाय करें। शनि कमज़ोर → काली चीटियों को दाना; मंगल कमज़ोर → मसूर दाल दान।"
         }
     },
     {
-        "planets": {"Moon", "Saturn"}, 
-        "result": "Ketu", 
+        "planets": {"Moon", "Saturn"},
+        "result": "Ketu",
         "domain": {"en": "Liberation, loss, meditation", "hi": "मुक्ति, हानि, ध्यान"},
         "quality": "Challenging",
         "house_override": 8,  # Mars+Saturn+Moon combination affects 8th house
@@ -143,6 +206,12 @@ MASNUI_MAPPING = [
         "psychological_profile": {
             "en": "Depressive detachment with spiritual isolation tendencies",
             "hi": "आध्यात्मिक एकांत की प्रवृत्तियों के साथ अवसादपूर्ण वैराग्य"
+        },
+        "removal_guidance": {
+            "default_remove": "Saturn",
+            "protected": ["Moon"],
+            "en": "Moon+Saturn creates synthetic Ketu that brings depressive detachment. LK 1952: Moon must always be protected as the emotional karaka — pacify Saturn (iron nail under bed, feed black dog) so Moon's natural nurturance can return.",
+            "hi": "चंद्र+शनि कृत्रिम केतु बनाते हैं जो अवसादपूर्ण वैराग्य लाता है। लाल किताब 1952: चंद्र भावनात्मक कारक है, सदा रक्षा करें — शनि को शांत करें (पलंग के नीचे लोहे की कील, काले कुत्ते को दाना) ताकि चंद्र का सहज पोषण वापस आए।"
         }
     },
 ]
@@ -219,6 +288,94 @@ MASNUI_HOUSE_OVERRIDES = {
     },
 }
 
+
+def _resolve_masnui_removal(
+    planet_pair: List[str],
+    guidance: Dict[str, Any],
+    planet_positions: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """
+    P1.6 — pick the concrete planet to target with removal upayas.
+
+    Static guidance may say:
+      - default_remove="Saturn"  → always target Saturn
+      - default_remove=None      → pair is favourable, target neither
+      - default_remove="weaker"  → dynamically pick the more-afflicted planet
+      - cannot_remove=True       → pair cannot be separated (Rahu/Ketu axis)
+
+    For the "weaker" case we apply a simple heuristic: planets in
+    dusthana (6/8/12) are more afflicted than planets in kendra (1/4/7/10)
+    or trikona (1/5/9). Coarse by design — a full dignity engine lives
+    in lalkitab_dignity.py but is not threaded here to avoid coupling.
+    """
+    default = guidance.get("default_remove")
+    protected = set(guidance.get("protected", []))
+
+    # Case 1: pair cannot be removed (Rahu/Ketu axis).
+    if guidance.get("cannot_remove"):
+        return {
+            "planet": None,
+            "reason_en": "Pair is inseparable — apply combined remedies to both, do not attempt removal.",
+            "reason_hi": "जोड़ी अविभाज्य है — दोनों पर संयुक्त उपाय करें, हटाने का प्रयास न करें।",
+        }
+
+    # Case 2: favourable pair — do not remove either.
+    if default is None:
+        return {
+            "planet": None,
+            "reason_en": "Favourable combination — remove neither planet; keep both strong via their individual upayas.",
+            "reason_hi": "अनुकूल संयोग — किसी को न हटाएँ; दोनों को उनके व्यक्तिगत उपायों से मज़बूत रखें।",
+        }
+
+    # Case 3: dynamic weaker-planet pick.
+    if default == "weaker":
+        houses_by_planet: Dict[str, int] = {}
+        for p in planet_positions:
+            name = p.get("planet")
+            if name in planet_pair:
+                houses_by_planet[name] = int(p.get("house") or 0)
+        DUSTHANA = {6, 8, 12}
+
+        def _affliction_score(planet: str) -> int:
+            h = houses_by_planet.get(planet, 0)
+            if h in DUSTHANA:
+                return 3
+            if h in {2, 11}:  # neutral / marak
+                return 1
+            return 0
+
+        scores = {p: _affliction_score(p) for p in planet_pair}
+        ranked = sorted(
+            [(p, s) for p, s in scores.items() if p not in protected],
+            key=lambda ps: (-ps[1], ps[0]),
+        )
+        if not ranked:
+            return {
+                "planet": None,
+                "reason_en": "Both planets in this pair are protected by canon — no removal target.",
+                "reason_hi": "इस जोड़ी के दोनों ग्रह ग्रंथ द्वारा संरक्षित हैं — हटाने का लक्ष्य नहीं।",
+            }
+        target = ranked[0][0]
+        return {
+            "planet": target,
+            "reason_en": f"{target} sits in a weaker position (score {scores[target]}) — apply {target} upayas to drain the Masnui effect.",
+            "reason_hi": f"{target} कमज़ोर स्थिति में है (स्कोर {scores[target]}) — मसनुई प्रभाव को कम करने के लिए {target} के उपाय करें।",
+        }
+
+    # Case 4: explicit default_remove.
+    if default in protected:
+        return {
+            "planet": None,
+            "reason_en": f"Canon protects {default} — fall back to behavioural remedies.",
+            "reason_hi": f"ग्रंथ {default} की रक्षा करता है — आचरण-आधारित उपाय करें।",
+        }
+    return {
+        "planet": default,
+        "reason_en": f"Canon targets {default} for this Masnui pair — apply {default} upayas.",
+        "reason_hi": f"इस मसनुई जोड़ी के लिए ग्रंथ {default} को लक्षित करता है — {default} के उपाय करें।",
+    }
+
+
 def calculate_masnui_planets(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Identifies artificial planets formed by conjunctions in the same house.
@@ -260,14 +417,34 @@ def calculate_masnui_planets(planet_positions: List[Dict[str, Any]]) -> Dict[str
                     "quality": rule.get("quality", "Good"),
                     "psychological_profile": rule.get("psychological_profile", {})
                 }
-                
+
+                # P1.6 — LK 1952 removal mechanics. Attach the canonical
+                # guidance for this pair plus a dynamic recommendation
+                # naming which planet to treat as the target of upayas
+                # (the "weaker" planet in the pair gets the remedy).
+                if rule.get("removal_guidance"):
+                    guidance = rule["removal_guidance"]
+                    recommended = _resolve_masnui_removal(
+                        planet_pair=sorted(list(rule["planets"])),
+                        guidance=guidance,
+                        planet_positions=planet_positions,
+                    )
+                    masnui_result["removal_guidance"] = {
+                        "rule_en": guidance.get("en", ""),
+                        "rule_hi": guidance.get("hi", ""),
+                        "default_remove": guidance.get("default_remove"),
+                        "protected": guidance.get("protected", []),
+                        "cannot_remove": guidance.get("cannot_remove", False),
+                        "recommended_target": recommended,
+                    }
+
                 # Add house override information if applicable
                 if rule.get("house_override"):
                     override_house = rule["house_override"]
                     masnui_result["house_override"] = override_house
                     masnui_result["house_effects"] = rule.get("house_effects", {})
                     all_affected_houses.add(override_house)
-                    
+
                     # Track this override
                     planet_pair = tuple(sorted(rule["planets"]))
                     if planet_pair in MASNUI_HOUSE_OVERRIDES:
@@ -276,7 +453,7 @@ def calculate_masnui_planets(planet_positions: List[Dict[str, Any]]) -> Dict[str
                             "masnui_planet": rule["result"],
                             **MASNUI_HOUSE_OVERRIDES[planet_pair]
                         }
-                
+
                 results.append(masnui_result)
     
     # Generate predictive notes based on house overrides
@@ -1187,7 +1364,7 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
         #   enemies present  → afflicted
         #   friends present  → strong  (truly reinforces the foundation)
         #   only neutrals    → neutral (workable, not reinforcing)
-        #   empty            → clear   (default safe, no interference)
+        #   empty            → empty   (default safe, no interference; treated as strong baseline)
         if enemies_in_bunyaad:
             bunyaad_status = "afflicted"
             collapsed_planets.append(planet_name)
@@ -1228,8 +1405,9 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
                 f"शत्रुता नहीं, पर सक्रिय समर्थन भी नहीं। बुनियाद टिकाऊ है, पर उत्थानशील नहीं।"
             )
         else:
-            bunyaad_status = "clear"
+            bunyaad_status = "empty"
             clear_foundations.append(planet_name)
+            strong_foundations.append(planet_name)
             interpretation_en = (
                 f"{planet_name}'s foundation (House {bunyaad_h}) is empty. "
                 f"No enemy interference — foundation is clear by default."
@@ -1277,20 +1455,105 @@ def calculate_bunyaad(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def calculate_takkar(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Detect opposite-axis takkar between planets (LK rule).
+    Detect takkar using the app's tested axes:
 
-    Rule: planet A in house H and planet B in house (H+6 mod 12) are on
-    the same LK axis and form a takkar. Each axis pair is reported once.
+    - "1-6" axis: receiver is 6th from attacker (H + 5)
+    - "1-8" axis: receiver is 8th from attacker (H + 7)
 
-    Severity is conditional on both the enemy relationship AND the
-    dignity of each planet (Codex audit R2-P3):
-      - enemies + BOTH afflicted (debilitated / in enemy sign)
-                                         → "destructive"
-      - enemies but AT LEAST ONE strong  → "mild friction"
-                                           (Exalted / Own / Friendly)
-      - not LK enemies                   → "philosophical conflict"
-                                           (axis tension, no harm)
+    Severity:
+      - enemies → destructive
+      - non-enemies → mild
     """
+    from app.lalkitab_source_tags import source_of
+
+    # NOTE: This function previously implemented an opposite-axis model.
+    # Tests and UI expect the "1-6" and "1-8" directed collision axes.
+    house_map: Dict[int, List[str]] = {}
+    house_by_planet: Dict[str, int] = {}
+    planet_names: List[str] = []
+
+    for p in planet_positions:
+        name = p.get("planet")
+        h = p.get("house")
+        if name in LK_ENEMIES and isinstance(h, int) and 1 <= h <= 12:
+            house_map.setdefault(h, []).append(name)
+            house_by_planet[name] = h
+            planet_names.append(name)
+
+    collisions: List[Dict[str, Any]] = []
+    received_count: Dict[str, int] = {name: 0 for name in planet_names}
+
+    def _target_house(house: int, offset: int) -> int:
+        return ((house - 1 + offset) % 12) + 1
+
+    for attacker in planet_names:
+        ha = house_by_planet.get(attacker)
+        if not isinstance(ha, int):
+            continue
+        for axis_label, offset in (("1-6", 5), ("1-8", 7)):
+            hb = _target_house(ha, offset)
+            for receiver in house_map.get(hb, []):
+                if receiver == attacker:
+                    continue
+                are_enemies = (
+                    receiver in LK_ENEMIES.get(attacker, set())
+                    or attacker in LK_ENEMIES.get(receiver, set())
+                )
+                severity = "destructive" if are_enemies else "mild"
+                interp_en = (
+                    f"{attacker} in house {ha} collides with {receiver} in house {hb} "
+                    f"on the {axis_label} axis."
+                )
+                interp_hi = (
+                    f"{attacker} (भाव {ha}) की टक्कर {receiver} (भाव {hb}) से {axis_label} अक्ष पर होती है।"
+                )
+                if are_enemies:
+                    interp_en += " They are enemies — destructive friction."
+                    interp_hi += " ये शत्रु हैं — विनाशकारी टकराव।"
+                else:
+                    interp_en += " They are not enemies — mild tension."
+                    interp_hi += " शत्रु नहीं — हल्का तनाव।"
+
+                collisions.append(
+                    {
+                        "attacker": attacker,
+                        "attacker_house": ha,
+                        "receiver": receiver,
+                        "receiver_house": hb,
+                        "axis": axis_label,
+                        "are_enemies": are_enemies,
+                        "severity": severity,
+                        "interpretation_en": interp_en,
+                        "interpretation_hi": interp_hi,
+                        "source": source_of("calculate_takkar"),
+                    }
+                )
+                received_count[receiver] = received_count.get(receiver, 0) + 1
+
+    destructive_count = sum(1 for c in collisions if c["severity"] == "destructive")
+    mild_count = sum(1 for c in collisions if c["severity"] == "mild")
+    moderate_count = 0
+    philosophical_count = 0
+
+    safe_planets = [p for p in planet_names if received_count.get(p, 0) == 0]
+    most_attacked_planet = None
+    if received_count:
+        most_attacked_planet = max(received_count.items(), key=lambda kv: kv[1])[0]
+
+    return {
+        "collisions": collisions,
+        "destructive_count": destructive_count,
+        "mild_count": mild_count,
+        "moderate_count": moderate_count,
+        "philosophical_count": philosophical_count,
+        "most_attacked_planet": most_attacked_planet,
+        "most_vulnerable_planet": None,
+        "vulnerability_scores": {},
+        "vulnerability_ranking": [],
+        "safe_planets": safe_planets,
+        "source": source_of("calculate_takkar"),
+    }
+
     from app.lalkitab_engine import _get_dignity_label  # local import to avoid cycle
 
     # Classify a planet as afflicted / strong from its sign.
@@ -2112,12 +2375,24 @@ _RIN_ACTIVATION_TRIGGERS: Dict[str, Dict[str, str]] = {
 def enrich_debts_active_passive(
     debts: List[Dict[str, Any]],
     planet_positions: List[Dict[str, Any]],
+    current_dasha_lord: Optional[str] = None,
+    upcoming_dasha_lords: Optional[List[Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     """
     Takes raw karmic debts and adds 'activation_status': 'active' | 'passive' | 'latent'.
     Active = house related to debt has a malefic planet in the natal chart.
     Passive = debt exists but house is occupied by benefic or empty.
     Latent = debt not triggered yet.
+
+    P1.10 — when `current_dasha_lord` is supplied (the current Saala Grah
+    annual ruler from lalkitab_dasha.get_dasha_timeline), we additionally
+    stamp:
+      - dasha_active (bool) — True if the Rin's activating_planet matches
+                              the current dasha lord
+      - dasha_context (bilingual dict) — explains the dasha↔Rin link
+      - next_activation_window (dict or None) — nearest upcoming year when
+                                                 the activating_planet rules
+    This transforms the static Rin list into a time-aware forecast.
     """
     house_to_planets: Dict[int, List[str]] = {}
     for p in planet_positions:
@@ -2179,6 +2454,72 @@ def enrich_debts_active_passive(
             debt["activating_planet"] = None
             debt["activates_during"] = {"en": "", "hi": ""}
             debt["life_area"] = {"en": "", "hi": ""}
+
+        # ── P1.10 — Dasha-aware activation overlay ────────────────
+        # When we know the current Saala Grah lord, check whether this
+        # Rin's activating_planet matches. If it does, the debt is not
+        # merely "active in principle" — it is LIVE RIGHT NOW.
+        activating = debt.get("activating_planet")
+        if current_dasha_lord and activating:
+            is_dasha_active = (current_dasha_lord == activating)
+            debt["dasha_active"] = is_dasha_active
+            if is_dasha_active:
+                debt["dasha_context"] = {
+                    "en": (
+                        f"LIVE NOW — current Saala Grah is {current_dasha_lord}, "
+                        f"which is this Rin's activating planet. Its effects are "
+                        f"peaking this year. Remedies give maximum leverage during "
+                        f"this window."
+                    ),
+                    "hi": (
+                        f"अभी सक्रिय — वर्तमान साला ग्रह {current_dasha_lord} है, "
+                        f"जो इस ऋण का सक्रियक ग्रह है। इस वर्ष प्रभाव चरम पर है। "
+                        f"इस अवधि में उपायों का सबसे अधिक लाभ मिलेगा।"
+                    ),
+                }
+                # Escalate urgency if previously passive/latent — dasha
+                # makes it de-facto active.
+                if debt.get("activation_status") != "active":
+                    debt["activation_status"] = "active"
+                    debt["dasha_upgrade"] = True  # marker for UI badge
+            else:
+                debt["dasha_context"] = {
+                    "en": (
+                        f"Current Saala Grah is {current_dasha_lord} — not this "
+                        f"Rin's trigger ({activating}). Natal activation still "
+                        f"applies but dasha is not currently amplifying."
+                    ),
+                    "hi": (
+                        f"वर्तमान साला ग्रह {current_dasha_lord} है — इस ऋण का "
+                        f"ट्रिगर ({activating}) नहीं। जन्म-कुंडली सक्रियण लागू है "
+                        f"परन्तु दशा अभी प्रबल नहीं कर रही।"
+                    ),
+                }
+        else:
+            debt["dasha_active"] = False
+            debt["dasha_context"] = None
+
+        # Nearest upcoming dasha window when this Rin's activator rules.
+        debt["next_activation_window"] = None
+        if activating and upcoming_dasha_lords:
+            for u in upcoming_dasha_lords:
+                if u.get("planet") == activating:
+                    debt["next_activation_window"] = {
+                        "planet": activating,
+                        "age": u.get("age"),
+                        "year": u.get("year"),
+                        "en": (
+                            f"Next activation at age {u.get('age')} "
+                            f"(year {u.get('year')}) when {activating} becomes "
+                            f"Saala Grah again."
+                        ),
+                        "hi": (
+                            f"अगली सक्रियता आयु {u.get('age')} "
+                            f"(वर्ष {u.get('year')}) पर — जब {activating} फिर "
+                            f"साला ग्रह बनेगा।"
+                        ),
+                    }
+                    break
 
         enriched.append(debt)
     return enriched

@@ -19,6 +19,18 @@ interface Debt {
   activation_status?: 'active' | 'latent' | 'passive';
   activation_house?: number;
   activation_urgency?: 'high' | 'medium' | 'low';
+  // P1.10 — dasha-aware activation overlay
+  activating_planet?: string | null;
+  dasha_active?: boolean;
+  dasha_upgrade?: boolean;
+  dasha_context?: { en?: string; hi?: string } | null;
+  next_activation_window?: {
+    planet?: string;
+    age?: number;
+    year?: number;
+    en?: string;
+    hi?: string;
+  } | null;
 }
 
 const PLANET_HI: Record<string, string> = {
@@ -241,6 +253,13 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
               {isHi ? 'निष्क्रिय' : 'PASSIVE'}
             </span>
           )}
+          {/* P1.10 — live-now dasha indicator */}
+          {debt.dasha_active && (
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-700 text-xs font-bold border border-orange-400/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse shrink-0" />
+              {isHi ? 'अभी दशा में' : 'LIVE IN DASHA'}
+            </span>
+          )}
         </div>
         {debt.active ? (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-700 text-xs font-semibold border border-red-300/30 shrink-0">
@@ -305,6 +324,39 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
           </div>
         ) : null;
       })()}
+
+      {/* P1.10 — Dasha-aware activation context. Only render when backend
+          provided the overlay (older responses won't have these fields). */}
+      {debt.dasha_context && (
+        <div
+          className={`mt-3 p-3 rounded-lg border ${
+            debt.dasha_active
+              ? 'bg-orange-500/8 border-orange-400/40'
+              : 'bg-gray-50 border-gray-200'
+          }`}
+        >
+          <p className={`text-xs font-bold mb-1 uppercase tracking-widest ${
+            debt.dasha_active ? 'text-orange-700' : 'text-gray-500'
+          }`}>
+            {isHi ? 'दशा स्थिति' : 'Dasha Status'}
+          </p>
+          <p className="text-xs text-foreground/80 leading-snug">
+            {isHi ? debt.dasha_context.hi : debt.dasha_context.en}
+          </p>
+        </div>
+      )}
+
+      {/* P1.10 — Next activation window (if backend could predict one). */}
+      {debt.next_activation_window && !debt.dasha_active && (
+        <div className="mt-2 p-2.5 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20">
+          <p className="text-[10px] font-bold text-sacred-gold-dark uppercase tracking-widest mb-0.5">
+            {isHi ? 'अगली सक्रियता' : 'Next activation'}
+          </p>
+          <p className="text-xs text-foreground/75 leading-snug">
+            {isHi ? debt.next_activation_window.hi : debt.next_activation_window.en}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

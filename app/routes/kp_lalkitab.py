@@ -993,6 +993,8 @@ def get_remedies_master(
         # alongside remedies from any endpoint, not just /enriched.
         from app.lalkitab_savdhaniyan import get_remedy_precautions
         from app.lalkitab_andhe_grah import detect_andhe_grah
+        # P1.11 — Trial / Remedy / Good Conduct tier classification
+        from app.lalkitab_remedy_classifier import classify_remedy, classification_label, classification_description
 
         # Build planet_positions list for the blind-planet detector
         pp_list = [
@@ -1021,6 +1023,15 @@ def get_remedies_master(
                         "hi": blind_info.get("warning_hi"),
                         "lk_ref": "4.14",
                     }
+                # P1.11 — classify this remedy. The classifier reads from
+                # the `en` text, so synthesise a dict that looks like the
+                # stamped remedy shape used in lalkitab_engine.
+                cls_input = {
+                    "en": r.get("remedy_text") or r.get("instructions") or "",
+                    "hi": "",
+                    "material": r.get("remedy_type") or "",
+                }
+                cls = classify_remedy(cls_input)
                 remedies.append({
                     "planet": r["planet"],
                     "house": r["house"],
@@ -1034,6 +1045,12 @@ def get_remedies_master(
                     "time_rule": precaution_bundle["time_rule"],
                     "reversal_risk": precaution_bundle["reversal_risk"],
                     "andhe_grah_warning": andhe_warning,
+                    # P1.11 tier classification
+                    "classification": cls,
+                    "classification_en": classification_label(cls, is_hi=False),
+                    "classification_hi": classification_label(cls, is_hi=True),
+                    "classification_desc_en": classification_description(cls, is_hi=False),
+                    "classification_desc_hi": classification_description(cls, is_hi=True),
                 })
 
     return {"remedies": remedies}
@@ -1359,12 +1376,28 @@ def lk_validated_remedies(
                 "hi": blind_info.get("warning_hi"),
                 "lk_ref": "4.14",
             }
+        # P1.11 — classify the remedy tier (trial / remedy / good_conduct).
+        from app.lalkitab_remedy_classifier import (
+            classify_remedy, classification_label, classification_description,
+        )
+        cls_input = {
+            "en": r.get("en") or r.get("text") or r.get("remedy_text") or "",
+            "hi": r.get("hi") or "",
+            "material": r.get("material") or r.get("remedy_type") or "",
+        }
+        cls = classify_remedy(cls_input)
         return {
             **r,
             "savdhaniyan": precaution_bundle,
             "time_rule": precaution_bundle["time_rule"],
             "reversal_risk": precaution_bundle["reversal_risk"],
             "andhe_grah_warning": andhe_warning,
+            # P1.11 tier classification
+            "classification": cls,
+            "classification_en": classification_label(cls, is_hi=False),
+            "classification_hi": classification_label(cls, is_hi=True),
+            "classification_desc_en": classification_description(cls, is_hi=False),
+            "classification_desc_hi": classification_description(cls, is_hi=True),
         }
 
     remedies = [_enrich(r) for r in (remedies or [])]
@@ -1902,11 +1935,46 @@ def get_active_rin(
     user: dict = Depends(get_current_user),
     db: Any = Depends(get_db),
 ):
-    """Returns karmic debts with active/passive activation status."""
+    """Returns karmic debts with active/passive activation status.
+
+    P1.10 — now also consults the current Saala Grah (annual ruling
+    planet) via lalkitab_dasha.get_dasha_timeline so Rins whose
+    activating_planet matches the current dasha get a dasha_active=True
+    overlay with urgency escalation.
+    """
     from app.lalkitab_advanced import calculate_karmic_debts, enrich_debts_active_passive
-    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    from app.lalkitab_dasha import get_dasha_timeline
+    from datetime import date as _date
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
     debts = calculate_karmic_debts(positions)
-    return {"debts": enrich_debts_active_passive(debts, positions)}
+
+    # ── P1.10 — resolve current Saala Grah if birth_date is available ──
+    current_dasha_lord = None
+    upcoming_dasha_lords = None
+    try:
+        birth_date = str(row.get("birth_date") or row.get("dob") or "").strip()
+        if not birth_date:
+            raw = row.get("chart_data")
+            cd = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            birth_date = cd.get("birth_date", "")
+        if birth_date:
+            timeline = get_dasha_timeline(birth_date, _date.today().isoformat())
+            current_dasha_lord = (timeline.get("current_saala_grah") or {}).get("planet")
+            upcoming_dasha_lords = timeline.get("upcoming_periods") or []
+    except Exception:
+        # If anything in the dasha lookup fails we still return the
+        # natal-only enrichment — the dasha overlay is additive.
+        current_dasha_lord = None
+        upcoming_dasha_lords = None
+
+    return {
+        "debts": enrich_debts_active_passive(
+            debts, positions,
+            current_dasha_lord=current_dasha_lord,
+            upcoming_dasha_lords=upcoming_dasha_lords,
+        ),
+        "current_dasha_lord": current_dasha_lord,
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════
