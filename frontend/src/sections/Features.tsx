@@ -1212,7 +1212,7 @@ export default function Features() {
             {/* Three cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-sacred-gold/15">
               {/* Moon Kundli */}
-              <a href="/kundli" className="p-6 hover:bg-amber-50/60 transition-colors group block">
+              <a href="/kundli?mode=moon" className="p-6 hover:bg-amber-50/60 transition-colors group block">
                 <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
                   <Moon className="w-5 h-5" />
                 </div>
@@ -1230,8 +1230,8 @@ export default function Features() {
               </a>
 
               {/* Ask a Question */}
-              <button onClick={() => { const el = document.getElementById('prashna-section'); if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({ top: y, behavior: 'smooth' }); }}}
-                className="p-6 hover:bg-amber-50/60 transition-colors group text-left w-full block">
+              <a href="/kundli?mode=horary"
+                className="p-6 hover:bg-amber-50/60 transition-colors group block">
                 <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-3">
                   <MessageCircle className="w-5 h-5" />
                 </div>
@@ -1246,10 +1246,10 @@ export default function Features() {
                 <span className="text-sacred-gold-dark text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
                   {l('Ask Now', 'अभी पूछें')} →
                 </span>
-              </button>
+              </a>
 
               {/* Birth Rectification */}
-              <a href="/kundli" className="p-6 hover:bg-amber-50/60 transition-colors group block">
+              <a href="/kundli?mode=rectification" className="p-6 hover:bg-amber-50/60 transition-colors group block">
                 <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-3">
                   <Clock className="w-5 h-5" />
                 </div>

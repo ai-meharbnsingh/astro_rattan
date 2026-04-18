@@ -71,6 +71,7 @@ interface KundliFormProps {
   onGenerate: () => void;
   onPrashnaKundli: () => void;
   onBackToList: () => void;
+  timeOptional?: boolean;
 }
 
 export default function KundliForm({
@@ -81,6 +82,7 @@ export default function KundliForm({
   onGenerate,
   onPrashnaKundli,
   onBackToList,
+  timeOptional = false,
 }: KundliFormProps) {
   const { t, language } = useTranslation();
   const { user } = useAuth();
@@ -142,7 +144,7 @@ export default function KundliForm({
     if (!formData.date) {
       errors.date = t('auto.birthDateIsRequired');
     }
-    if (!formData.time) {
+    if (!formData.time && !timeOptional) {
       errors.time = t('auto.birthTimeIsRequired');
     }
     if (!formData.place.trim()) {
@@ -174,6 +176,12 @@ export default function KundliForm({
       <div className="text-center mb-6">
         <Heading as={3} variant={3} className="sm:">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</Heading>
       </div>
+      {timeOptional && (
+        <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-start gap-2">
+          <span className="text-base leading-none mt-0.5">🌙</span>
+          <span>{hi ? 'चंद्र कुंडली के लिए जन्म समय जरूरी नहीं — समय खाली छोड़ें या अनुमानित डालें।' : 'Birth time is not required for Moon Kundli — leave it blank or enter an approximate time.'}</span>
+        </div>
+      )}
       
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
         {savedKundlisCount > 0 && (

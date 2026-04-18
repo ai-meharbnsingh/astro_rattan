@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
 import { formatDate, api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -177,6 +177,8 @@ export default function KundliGenerator() {
   const language = langFromHook || langDirect;
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlMode = searchParams.get('mode') ?? '';
   const [activeTab, setActiveTab] = useState('report');
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showMobileMoreSheet, setShowMobileMoreSheet] = useState(false);
@@ -197,6 +199,13 @@ export default function KundliGenerator() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Auto-activate rectification tab when result arrives in rectification mode
+  useEffect(() => {
+    if (urlMode === 'rectification' && step === 'result') {
+      setActiveTab('rectification');
+    }
+  }, [step, urlMode]);
 
   // Fetch Sarvatobhadra Chakra data
   const fetchSarvatobhadra = async () => {
@@ -838,6 +847,20 @@ export default function KundliGenerator() {
   }
 
   // --- FORM VIEW ---
+  // mode=horary: show KP Horary standalone (no birth data needed)
+  if (urlMode === 'horary') {
+    return (
+      <div className="max-w-3xl mx-auto pt-32 pb-10 px-4">
+        <div className="mb-6 flex items-center gap-3">
+          <button onClick={() => navigate('/kundli')} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+            ← {language === 'hi' ? 'कुंडली पर वापस जाएं' : 'Back to Kundli'}
+          </button>
+        </div>
+        <KPHorary language={language} t={t} />
+      </div>
+    );
+  }
+
   return (
     <>
       <KundliForm
@@ -848,6 +871,7 @@ export default function KundliGenerator() {
         onGenerate={handleGenerate}
         onPrashnaKundli={handlePrashnaKundli}
         onBackToList={() => setStep('list')}
+        timeOptional={urlMode === 'moon'}
       />
 
       {/* -- What's inside: tab preview --------------------------------- */}
