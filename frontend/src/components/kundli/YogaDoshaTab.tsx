@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, BookOpen, Star, Clock, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, BookOpen, Star, Clock, Sparkles, Crown } from 'lucide-react';
 import { translateName, translateLabel, translateRemedy, translateBackend, translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
@@ -52,6 +52,8 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
 
   const [mahaData, setMahaData] = useState<any>(null);
   const [loadingMaha, setLoadingMaha] = useState(false);
+  const [rajaData, setRajaData] = useState<any>(null);
+  const [loadingRaja, setLoadingRaja] = useState(false);
 
   useEffect(() => {
     if (!kundliId) return;
@@ -60,6 +62,15 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       .then((res: any) => setMahaData(res.data ?? res))
       .catch(() => setMahaData(null))
       .finally(() => setLoadingMaha(false));
+  }, [kundliId]);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    setLoadingRaja(true);
+    api.get(`/api/kundli/${kundliId}/raja-yogas`)
+      .then((res: any) => setRajaData(res.data ?? res))
+      .catch(() => setRajaData(null))
+      .finally(() => setLoadingRaja(false));
   }, [kundliId]);
 
   if (loadingYogaDosha) {
@@ -467,6 +478,97 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             <p className="text-[10px] text-muted-foreground text-right italic">{mahaData.sloka_ref}</p>
           </div>
         )}
+      </div>
+
+      {/* Raja Yogas — Phaladeepika Adhyaya 7 */}
+      <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <Crown className="w-4 h-4 text-violet-600" />
+            <Heading as={4} variant={4}>
+              {hi ? 'राज योग — अध्याय ७' : 'Raja Yogas — Adhyaya 7'}
+            </Heading>
+          </div>
+          {rajaData && (
+            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-violet-100 text-violet-800">
+              {(rajaData.yogas || []).filter((y: any) => y.present).length} / {(rajaData.yogas || []).length} {hi ? 'सक्रिय' : 'active'}
+            </span>
+          )}
+        </div>
+
+        {loadingRaja ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+            <span className="ml-2 text-foreground text-sm">{hi ? 'राज योग विश्लेषण...' : 'Analyzing Raja Yogas...'}</span>
+          </div>
+        ) : !rajaData ? (
+          <p className="text-center text-foreground text-sm py-4">
+            {hi ? 'राज योग डेटा उपलब्ध नहीं।' : 'Raja Yoga data unavailable.'}
+          </p>
+        ) : (() => {
+          const allYogas: any[] = rajaData.yogas || [];
+          const present = allYogas.filter((y) => y.present);
+          const absent = allYogas.filter((y) => !y.present);
+          return (
+            <div className="space-y-4">
+              {present.length === 0 ? (
+                <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-slate-600 text-center">
+                  {hi ? 'इस कुंडली में कोई राज योग सक्रिय नहीं है।' : 'No Raja Yogas active in this chart.'}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table className="w-full text-xs">
+                    <TableHeader className="bg-muted/50">
+                      <TableRow>
+                        <TableHead className="text-left p-1.5 text-primary font-medium w-44">{hi ? 'योग' : 'Yoga'}</TableHead>
+                        <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'फल' : 'Effect'}</TableHead>
+                        <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'श्लोक' : 'Sloka'}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {present.map((yoga: any, idx: number) => (
+                        <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
+                          <TableCell className="p-1.5 align-top">
+                            <p className="font-semibold text-violet-800 leading-tight">{yoga.name}</p>
+                            {yoga.planets_involved && yoga.planets_involved.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {yoga.planets_involved.map((p: string) => (
+                                  <span key={p} className="px-1 py-0.5 rounded bg-violet-100 text-violet-700 font-medium text-[10px]">
+                                    {translatePlanet(p, language)}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="p-1.5 align-top text-foreground/90 leading-relaxed">
+                            {hi ? yoga.description_hi : yoga.description}
+                          </TableCell>
+                          <TableCell className="p-1.5 align-top">
+                            {yoga.sloka_ref && (
+                              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                <BookOpen className="w-3 h-3 shrink-0" />
+                                <span className="italic">{yoga.sloka_ref}</span>
+                              </div>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+
+              {absent.length > 0 && (
+                <p className="text-[10px] text-muted-foreground italic">
+                  {hi
+                    ? `${absent.length} राज योग इस कुंडली में अनुपस्थित हैं (${absent.map((y) => y.name).join(', ')})`
+                    : `${absent.length} yogas absent: ${absent.map((y) => y.name).join(', ')}`}
+                </p>
+              )}
+              <p className="text-[10px] text-muted-foreground text-right italic">{rajaData.sloka_ref}</p>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
