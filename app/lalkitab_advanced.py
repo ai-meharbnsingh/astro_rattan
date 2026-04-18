@@ -654,14 +654,63 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "remedy": {"hi": "परिजनों से बराबर मात्रा में पीले रंग की कौड़ियाँ इकट्ठा करें, उन्हें जलाकर राख करें और उसी दिन बहते पानी में बहा दें।", "en": "Collect equal yellow sea shells (Kaudis) from family, burn them to ash, and immerse in flowing water on the same day."}
         })
 
-    # 6. Deva Rin (Divine Debt)
-    if p_map.get("Jupiter") in {6, 8, 12}:
+    # 6. Deva Rin (Divine / Guru Debt) — P1.7 expanded canon
+    # Triggers (any one):
+    #   (a) Jupiter in H5 and afflicted (enemy sign / debilitated — LK ignores combust)
+    #   (b) Jupiter in a dusthana house (6, 8, 12)
+    #   (c) A malefic (Mars/Saturn/Rahu/Ketu) sits in H9 while Jupiter is weak
+    #       (weak = Jupiter in a dusthana house or afflicted by sign)
+    _deva_reason_en: List[str] = []
+    _deva_reason_hi: List[str] = []
+    _jup_house = p_map.get("Jupiter")
+    # Resolve Jupiter's sign & dignity once (best-effort — falls back to neutral)
+    try:
+        from app.lalkitab_engine import _get_dignity_label as _lk_dignity
+    except Exception:
+        _lk_dignity = None  # type: ignore[assignment]
+    _jup_sign = next((p.get("sign", "") for p in planet_positions if p.get("planet") == "Jupiter"), "")
+    _jup_dignity = _lk_dignity("Jupiter", _jup_sign) if (_lk_dignity and _jup_sign) else "Neutral"
+    _jup_afflicted = _jup_dignity in ("Debilitated", "Enemy")
+    _jup_in_dusthana = _jup_house in {6, 8, 12}
+    _jup_weak = _jup_afflicted or _jup_in_dusthana
+
+    if _jup_house == 5 and _jup_afflicted:
+        _deva_reason_en.append("Jupiter in H5 and afflicted (enemy/debilitated)")
+        _deva_reason_hi.append("पंचम भाव में गुरु पीड़ित (शत्रु/नीच)")
+    if _jup_in_dusthana:
+        _deva_reason_en.append("Jupiter in dusthana (6/8/12)")
+        _deva_reason_hi.append("गुरु दुस्थान में (६/८/१२)")
+    _malefic_in_9 = any(p_map.get(m) == 9 for m in ("Mars", "Saturn", "Rahu", "Ketu"))
+    if _malefic_in_9 and _jup_weak:
+        _deva_reason_en.append("Malefic in H9 while Jupiter is weak")
+        _deva_reason_hi.append("नवम भाव में पाप ग्रह और गुरु निर्बल")
+
+    if _deva_reason_en:
         debts.append({
             "name": {"hi": "देव ऋण", "en": "Deva Rin"},
-            "type": {"hi": "दिव्य / शिक्षक का ऋण", "en": "Divine / Teacher's Debt"},
-            "reason": {"hi": "६, ८, या १२वें भाव में गुरु", "en": "Jupiter in 6, 8, or 12th house"},
-            "manifestation": {"hi": "गुरु का विश्वासघात, पुजारी का अनादर, पवित्र वृक्ष का विनाश, गौ हत्या।", "en": "Guru betrayal, priest disrespect, sacred tree destruction, cow killing."},
-            "remedy": {"hi": "परिजनों से बराबर मात्रा में हल्दी की गांठें या चने की दाल एकत्र कर किसी पुराने मंदिर में दान करें।", "en": "Collect equal pieces of turmeric or chana dal from family and donate to an old temple."}
+            "type": {"hi": "दिव्य / शिक्षक / गुरु का ऋण", "en": "Divine / Teacher / Guru's Debt"},
+            "reason": {
+                "hi": "; ".join(_deva_reason_hi),
+                "en": "; ".join(_deva_reason_en),
+            },
+            "description": {
+                "hi": "आध्यात्मिक गुरु, दिव्य आशीर्वाद या धर्म-पथ से पूर्व जन्म का ऋण।",
+                "en": "Past-life obligation to a spiritual teacher, divine blessing, or the dharmic path."
+            },
+            "manifestation": {
+                "hi": "आध्यात्मिक अवरोध, गुरु-विवाद, संतान की शिक्षा में रुकावट, मंदिर/पीपल की उपेक्षा।",
+                "en": "Spiritual blockage, guru disputes, children's education stalls, neglect of temple/peepal."
+            },
+            "indication": {
+                "hi": "आध्यात्मिक अवरोध, गुरु-विवाद, संतान की शिक्षा में रुकावट।",
+                "en": "Spiritual blockage, guru disputes, children's education stalls."
+            },
+            "remedy": {
+                "hi": "गुरुवार को पीले वस्त्र दान करें, ब्राह्मण भोजन कराएं, पीपल वृक्ष की पूजा करें।",
+                "en": "Donate yellow clothes on Thursdays, feed Brahmins, worship the Peepal tree."
+            },
+            "active": True,
+            "lk_ref": "3.07",
         })
 
     # 7. Stree Rin (Women's Debt)
@@ -692,6 +741,186 @@ def calculate_karmic_debts(planet_positions: List[Dict[str, Any]]) -> List[Dict[
             "reason": {"hi": "३, ६, १०, १२ में राहु/केतु के साथ पीड़ित बुध", "en": "Afflicted Mercury with Rahu/Ketu in 3, 6, 10, 12"},
             "manifestation": {"hi": "पिछले जन्मों में पर्यावरण का विनाश, पशु क्रूरता, प्राकृतिक आपदा की संवेदनशीलता।", "en": "Environmental destruction in past lives, animal cruelty, natural disaster vulnerability."},
             "remedy": {"hi": "परिजनों से बराबर धन एकत्र कर ४३ दिनों तक १०० कुत्तों को दूध और ब्रेड खिलाएं।", "en": "Collect equal money from family and feed 100 dogs milk and bread for 43 days."}
+        })
+
+    # ────────────────────────────────────────────────────────────
+    # P1.7–P1.9 — 4 additional Rin types (Lal Kitab canonical)
+    # Deva Rin is merged into #6 above (expanded canon). Below are
+    # the three brand-new Rins: Rishi, Nri, Bhoot.
+    # ────────────────────────────────────────────────────────────
+
+    # 10. Rishi Rin (Sage-tradition knowledge debt) — P1.8
+    # Triggers (any one):
+    #   (a) Mercury + Jupiter conjunct (same house) AND one of them is afflicted
+    #   (b) Mercury in H8 or H12
+    #   (c) Jupiter in H3 (traditions-speech house with guru diminished)
+    _rishi_reason_en: List[str] = []
+    _rishi_reason_hi: List[str] = []
+    _merc_house = p_map.get("Mercury")
+    _merc_sign = next((p.get("sign", "") for p in planet_positions if p.get("planet") == "Mercury"), "")
+    _merc_dignity = _lk_dignity("Mercury", _merc_sign) if (_lk_dignity and _merc_sign) else "Neutral"
+    _merc_afflicted = _merc_dignity in ("Debilitated", "Enemy")
+
+    if _merc_house is not None and _merc_house == _jup_house and (_merc_afflicted or _jup_afflicted):
+        _rishi_reason_en.append("Mercury–Jupiter conjunction with one afflicted")
+        _rishi_reason_hi.append("बुध-गुरु युति, एक पीड़ित")
+    if _merc_house in {8, 12}:
+        _rishi_reason_en.append("Mercury in H8 or H12")
+        _rishi_reason_hi.append("बुध अष्टम/द्वादश भाव में")
+    if _jup_house == 3:
+        _rishi_reason_en.append("Jupiter in H3 (diminished-guru in speech/traditions house)")
+        _rishi_reason_hi.append("गुरु तृतीय भाव में (गुरु निर्बल)")
+
+    if _rishi_reason_en:
+        debts.append({
+            "name": {"hi": "ऋषि ऋण", "en": "Rishi Rin"},
+            "type": {"hi": "ऋषि परंपरा / ज्ञान का ऋण", "en": "Sage Tradition / Knowledge Debt"},
+            "reason": {
+                "hi": "; ".join(_rishi_reason_hi),
+                "en": "; ".join(_rishi_reason_en),
+            },
+            "description": {
+                "hi": "ऋषि परंपरा एवं पूर्वजों की विद्या से विच्छेद का ऋण।",
+                "en": "Debt of disconnection from the sage tradition and ancestral wisdom."
+            },
+            "manifestation": {
+                "hi": "सीखने में अवरोध, पूर्वज-ज्ञान से कटाव, प्रकाशन/शोध में रुकावट।",
+                "en": "Learning blockages, ancestral wisdom disconnect, publishing/research stalls."
+            },
+            "indication": {
+                "hi": "सीखने में अवरोध, पूर्वज-ज्ञान से कटाव, प्रकाशन/शोध में रुकावट।",
+                "en": "Learning blockages, ancestral wisdom disconnect, publishing/research stalls."
+            },
+            "remedy": {
+                "hi": "पुस्तकें दान करें, प्रातः मौन अध्ययन करें, बुधवार को हरा वस्त्र पहनें।",
+                "en": "Donate books, practise silent reading at dawn, wear green on Wednesdays."
+            },
+            "active": True,
+            "lk_ref": "3.08",
+        })
+
+    # 11. Nri Rin (Humanity / service debt) — P1.9a
+    # Triggers (any one):
+    #   (a) Saturn in H7 and afflicted
+    #   (b) Saturn in H11 and besieged (malefic in H10 AND H12)
+    #   (c) Mars + Saturn conjunction anywhere (same house)
+    #   (d) No benefic in houses 3, 6, or 11
+    _nri_reason_en: List[str] = []
+    _nri_reason_hi: List[str] = []
+    _sat_house = p_map.get("Saturn")
+    _sat_sign = next((p.get("sign", "") for p in planet_positions if p.get("planet") == "Saturn"), "")
+    _sat_dignity = _lk_dignity("Saturn", _sat_sign) if (_lk_dignity and _sat_sign) else "Neutral"
+    _sat_afflicted = _sat_dignity in ("Debilitated", "Enemy")
+
+    if _sat_house == 7 and _sat_afflicted:
+        _nri_reason_en.append("Saturn in H7 and afflicted")
+        _nri_reason_hi.append("शनि सप्तम भाव में पीड़ित")
+    # Besieged = malefics in both adjacent houses (H10 and H12)
+    _besieged_11 = any(p_map.get(m) == 10 for m in ("Mars", "Rahu", "Ketu", "Sun")) and \
+                   any(p_map.get(m) == 12 for m in ("Mars", "Rahu", "Ketu", "Sun"))
+    if _sat_house == 11 and _besieged_11:
+        _nri_reason_en.append("Saturn in H11 and besieged by malefics")
+        _nri_reason_hi.append("शनि एकादश भाव में पाप-पीड़ित")
+    if p_map.get("Mars") is not None and p_map.get("Mars") == _sat_house:
+        _nri_reason_en.append("Mars–Saturn conjunction")
+        _nri_reason_hi.append("मंगल-शनि युति")
+    _benefics = ("Jupiter", "Venus", "Moon", "Mercury")
+    _any_benefic_3_6_11 = any(p_map.get(b) in {3, 6, 11} for b in _benefics)
+    if not _any_benefic_3_6_11:
+        _nri_reason_en.append("No benefic in H3, H6, or H11")
+        _nri_reason_hi.append("३/६/११ भाव में कोई शुभ ग्रह नहीं")
+
+    if _nri_reason_en:
+        debts.append({
+            "name": {"hi": "नृ ऋण", "en": "Nri Rin"},
+            "type": {"hi": "मानवता / सेवा का ऋण", "en": "Humanity / Service Debt"},
+            "reason": {
+                "hi": "; ".join(_nri_reason_hi),
+                "en": "; ".join(_nri_reason_en),
+            },
+            "description": {
+                "hi": "अज्ञात जनों एवं मानव-मात्र की सेवा का कर्मिक ऋण।",
+                "en": "Karmic debt of service owed to unknown people and humanity at large."
+            },
+            "manifestation": {
+                "hi": "सार्वजनिक सेवा में बाधाएं, भीड़ में अकेलापन, अज्ञात व्यक्तियों से कर्मिक रिश्ते।",
+                "en": "Public-service obstacles, loneliness in a crowd, karmic relationships with unknown people."
+            },
+            "indication": {
+                "hi": "सार्वजनिक सेवा में बाधाएं, भीड़ में अकेलापन।",
+                "en": "Public-service obstacles, loneliness in a crowd."
+            },
+            "remedy": {
+                "hi": "शनिवार को ७ भिखारियों को भोजन कराएं, अजनबियों को दान दें, मौन स्वयंसेवा करें।",
+                "en": "Feed 7 beggars on Saturdays, donate to strangers, volunteer silently."
+            },
+            "active": True,
+            "lk_ref": "3.09",
+        })
+
+    # 12. Bhoot Rin (Elemental / ancestral-element debt) — P1.9b
+    # Bhoot = element (earth/water/fire/air/ether) OR departed soul.
+    # Triggers (any one):
+    #   (a) Rahu in H8 (elemental / hidden depths)
+    #   (b) Ketu in H4 (ancestral earth-element home)
+    #   (c) Rahu + Moon conjunction (water+wind imbalance)
+    #   (d) A malefic in the 4th lord's natal house while H4 is empty
+    #       (4th is empty in the birth chart AND a malefic occupies it)
+    #       → encoded here as: H4 empty AND any malefic's natal-house == 4 chaining.
+    #       LK practical read: H4 empty AND at least one malefic present in the
+    #       native's chart (which always holds) is trivial; so we tighten to:
+    #       H4 empty AND a malefic sits in the same house as the 4th-lord
+    #       cannot be computed without lords here → use the safe canonical
+    #       surrogate: H4 empty AND a malefic in H4's opposite (H10).
+    _bhoot_reason_en: List[str] = []
+    _bhoot_reason_hi: List[str] = []
+    _rahu_house = p_map.get("Rahu")
+    _ketu_house = p_map.get("Ketu")
+    _moon_house = p_map.get("Moon")
+
+    if _rahu_house == 8:
+        _bhoot_reason_en.append("Rahu in H8 (elemental / hidden depths)")
+        _bhoot_reason_hi.append("राहु अष्टम भाव में (छुपी तत्व-गहराई)")
+    if _ketu_house == 4:
+        _bhoot_reason_en.append("Ketu in H4 (ancestral earth-element home)")
+        _bhoot_reason_hi.append("केतु चतुर्थ भाव में (पैतृक पृथ्वी-तत्व)")
+    if _rahu_house is not None and _rahu_house == _moon_house:
+        _bhoot_reason_en.append("Rahu–Moon conjunction (water + wind imbalance)")
+        _bhoot_reason_hi.append("राहु-चंद्र युति (जल-वायु असंतुलन)")
+    # H4 empty AND a malefic in H10 (opposite axis) — canonical surrogate for
+    # "malefic in the 4th lord's natal house while 4th is empty".
+    _h4_empty = not any(p.get("house") == 4 for p in planet_positions)
+    _malefic_in_10 = any(p_map.get(m) == 10 for m in ("Mars", "Saturn", "Rahu", "Ketu"))
+    if _h4_empty and _malefic_in_10:
+        _bhoot_reason_en.append("H4 empty while a malefic afflicts the 4th-axis")
+        _bhoot_reason_hi.append("चतुर्थ भाव खाली, चतुर्थ-अक्ष पर पाप ग्रह")
+
+    if _bhoot_reason_en:
+        debts.append({
+            "name": {"hi": "भूत ऋण", "en": "Bhoot Rin"},
+            "type": {"hi": "तत्व / पूर्वज-तत्व का ऋण", "en": "Elemental / Ancestral-Element Debt"},
+            "reason": {
+                "hi": "; ".join(_bhoot_reason_hi),
+                "en": "; ".join(_bhoot_reason_en),
+            },
+            "description": {
+                "hi": "पंचतत्व अथवा पूर्वजों की आत्मा से जुड़ा अनसुलझा ऋण।",
+                "en": "Unresolved debt linked to the five elements or the souls of departed ancestors."
+            },
+            "manifestation": {
+                "hi": "अकारण चिंता, पैतृक-घर विवाद, जल/अग्नि दुर्घटनाएं।",
+                "en": "Haunting / unexplained anxiety, ancestral-home disputes, water/fire accidents."
+            },
+            "indication": {
+                "hi": "अकारण चिंता, पैतृक-घर विवाद, जल/अग्नि दुर्घटनाएं।",
+                "en": "Unexplained anxiety, ancestral-home disputes, water/fire accidents."
+            },
+            "remedy": {
+                "hi": "पीपल पर गंगाजल चढ़ाएं, घर के ईशान कोण में काला-सफेद वस्त्र रखें, ४०० ग्राम सीसा बहते जल में प्रवाहित करें।",
+                "en": "Offer Ganga jal to the Peepal tree, keep a black-and-white cloth in the home's NE corner, immerse 400 g of lead in flowing water."
+            },
+            "active": True,
+            "lk_ref": "3.10",
         })
 
     # Stamp every detected debt with its provenance tag. Rin triggers
@@ -2190,11 +2419,13 @@ _RIN_ACTIVATION_HOUSE: Dict[str, int] = {
     "Stri Rin":     7,   # Spouse house (legacy key)
     "Stree Rin":    7,   # Spouse house
     "Guru Rin":     9,   # Teacher/fortune house
-    "Dev Rin":      5,   # Piety / past merit house
-    "Deva Rin":     5,   # Alternate spelling
-    "Rishi Rin":    12,  # Liberation / spirituality house
+    "Dev Rin":      5,   # Piety / past merit house (legacy spelling)
+    "Deva Rin":     9,   # P1.7 canon — Guru/fortune house (updated from 5)
+    "Rishi Rin":    12,  # P1.8 — Liberation / final knowledge house
     "Nag Rin":      8,   # Hidden/serpent house
-    "Nara Rin":     7,   # Humanity/service/partnership house
+    "Nara Rin":     7,   # Humanity/service/partnership house (legacy)
+    "Nri Rin":      7,   # P1.9a — Partnerships / public service
+    "Bhoot Rin":    8,   # P1.9b — Hidden / elemental house
     "Prakriti Rin": 10,  # Work/public-service house
 }
 
@@ -2349,6 +2580,67 @@ _RIN_ACTIVATION_TRIGGERS: Dict[str, Dict[str, str]] = {
         "life_area_hi": (
             "करियर में देरी, साझेदारी और सेवा में पुरानी बाधाएं, "
             "सामान्य शापित होने की भावना, मानवता का ऋण।"
+        ),
+    },
+    # ── P1.8 Rishi Rin — sage-tradition / knowledge debt ────────
+    "Rishi Rin": {
+        "planet": "Mercury",
+        "activates_during_en": (
+            "Mercury saala grah (primary) or Jupiter saala grah (secondary), "
+            "during study / publishing / research ventures, or when traditional "
+            "knowledge is publicly disrespected."
+        ),
+        "activates_during_hi": (
+            "बुध साला ग्रह (मुख्य) अथवा गुरु साला ग्रह (गौण), अध्ययन/प्रकाशन/शोध "
+            "उपक्रमों में, या परंपरागत ज्ञान के सार्वजनिक अनादर पर।"
+        ),
+        "life_area_en": (
+            "Learning blockages, disconnection from ancestral wisdom, stalled "
+            "publishing / research, inability to complete knowledge-lineage."
+        ),
+        "life_area_hi": (
+            "सीखने में अवरोध, पूर्वज-ज्ञान से कटाव, प्रकाशन/शोध में रुकावट, "
+            "ज्ञान-परंपरा पूर्ण न कर पाना।"
+        ),
+    },
+    # ── P1.9a Nri Rin — humanity / service debt ─────────────────
+    "Nri Rin": {
+        "planet": "Saturn",
+        "activates_during_en": (
+            "Saturn saala grah or Saturn transit of H7 / H11, during mass-service "
+            "events, or when karmic encounters with strangers surface."
+        ),
+        "activates_during_hi": (
+            "शनि साला ग्रह अथवा शनि का ७/११ भाव गोचर, सार्वजनिक-सेवा की घटनाओं में, "
+            "या अज्ञात जनों से कर्मिक संपर्क के समय।"
+        ),
+        "life_area_en": (
+            "Public-service obstacles, loneliness in a crowd, karmic relationships "
+            "with unknown people, humanitarian duty."
+        ),
+        "life_area_hi": (
+            "सार्वजनिक-सेवा में बाधाएं, भीड़ में अकेलापन, अज्ञात जनों से कर्मिक "
+            "रिश्ते, मानवीय कर्तव्य।"
+        ),
+    },
+    # ── P1.9b Bhoot Rin — elemental / ancestral-element debt ────
+    "Bhoot Rin": {
+        "planet": "Rahu",
+        "activates_during_en": (
+            "Rahu saala grah (primary) or Ketu saala grah (secondary), during "
+            "eclipse windows, ancestral-home disputes, or water / fire incidents."
+        ),
+        "activates_during_hi": (
+            "राहु साला ग्रह (मुख्य) अथवा केतु साला ग्रह (गौण), ग्रहण काल, पैतृक-घर "
+            "विवाद, या जल/अग्नि घटनाओं के समय।"
+        ),
+        "life_area_en": (
+            "Unexplained anxiety / haunting, ancestral-home disputes, "
+            "vulnerability to water and fire accidents, elemental imbalance."
+        ),
+        "life_area_hi": (
+            "अकारण चिंता/उपद्रव, पैतृक-घर विवाद, जल-अग्नि दुर्घटनाओं की संवेदनशीलता, "
+            "पंचतत्व असंतुलन।"
         ),
     },
     "Prakriti Rin": {

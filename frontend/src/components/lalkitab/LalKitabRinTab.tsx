@@ -38,16 +38,25 @@ const PLANET_HI: Record<string, string> = {
   jupiter: 'गुरु', venus: 'शुक्र', saturn: 'शनि', rahu: 'राहु', ketu: 'केतु',
 };
 
-// English translations for the 8 debt types (DB data is Hindi-only)
+// English translations for the debt types (DB data is Hindi-only).
+// P1.7–P1.9 appends 4 new Rin types (Deva / Rishi / Nri / Bhoot) — the
+// Hindi key 'देव ऋण' is shared with the legacy Dev Rin entry; the
+// updated copy reflects the expanded Deva Rin canon.
 const DEBT_EN: Record<string, { type: string; description: string; indication: string; remedy: string }> = {
   'पितृ ऋण':      { type: "Pitru Rin (Father's Debt)",          description: 'Karmic debt related to father or ancestors',          indication: 'Sun afflicted, conflict with father, eye problems',           remedy: 'Keep Gangajal in a copper vessel, seek father\'s blessings' },
   'मातृ ऋण':      { type: "Matru Rin (Mother's Debt)",           description: 'Karmic debt related to mother',                       indication: 'Moon afflicted, conflict with mother, mental stress',          remedy: 'Keep a square piece of silver, serve and care for mother' },
   'भ्रातृ ऋण':    { type: "Bhratu Rin (Sibling's Debt)",         description: 'Karmic debt related to brothers and sisters',         indication: 'Mars afflicted, disputes with brothers, blood ailments',      remedy: 'Donate red lentils (masoor dal), respect siblings' },
-  'देव ऋण':       { type: "Dev Rin (Divine/Guru's Debt)",        description: 'Karmic debt to deities or spiritual teacher',         indication: 'Jupiter afflicted, issues related to children',               remedy: 'Worship the Peepal tree, feed a Brahmin' },
+  'देव ऋण':       { type: "Deva Rin (Divine / Guru's Debt)",     description: 'Past-life obligation to a spiritual teacher, divine blessing, or the dharmic path', indication: "Spiritual blockage, guru disputes, children's education stalls", remedy: 'Donate yellow clothes on Thursdays, feed Brahmins, worship the Peepal tree' },
   'स्त्री ऋण':   { type: "Stri Rin (Women's Debt)",             description: 'Karmic debt related to women',                        indication: 'Venus afflicted, marital problems',                           remedy: 'Serve a cow, respect and honour your wife' },
   'शत्रु ऋण':    { type: "Shatru Rin (Enemy's Debt)",           description: 'Karmic debt related to enemies or past actions',      indication: 'Saturn afflicted, delayed success, physical pain',            remedy: 'Donate oil on Saturdays, feed roti to a black dog' },
   'पितामह ऋण':   { type: "Pitamah Rin (Grandfather's Debt)",    description: 'Karmic debt to ancestors or maternal grandfather',    indication: 'Rahu afflicted, hidden enemies, addiction tendencies',        remedy: 'Drop 400g lead into flowing water, respect maternal grandfather' },
   'प्रपितामह ऋण':{ type: "Prapitamah Rin (Great-Grandfather's Debt)", description: 'Karmic debt to great-grandparents or ancestors', indication: 'Ketu afflicted, spiritual confusion, fear of untimely events', remedy: 'Feed jaggery to monkeys, apply saffron tilak' },
+  // P1.8 — Rishi Rin (sage-tradition / knowledge debt)
+  'ऋषि ऋण':     { type: "Rishi Rin (Sage-Tradition Debt)",      description: 'Debt of disconnection from the sage tradition and ancestral wisdom', indication: 'Learning blockages, ancestral wisdom disconnect, publishing / research stalls', remedy: 'Donate books, practise silent reading at dawn, wear green on Wednesdays' },
+  // P1.9a — Nri Rin (humanity / service debt)
+  'नृ ऋण':       { type: "Nri Rin (Humanity / Service Debt)",    description: 'Karmic debt of service owed to unknown people and humanity at large', indication: 'Public-service obstacles, loneliness in a crowd, karmic relationships with unknown people', remedy: 'Feed 7 beggars on Saturdays, donate to strangers, volunteer silently' },
+  // P1.9b — Bhoot Rin (elemental / ancestral-element debt)
+  'भूत ऋण':     { type: "Bhoot Rin (Elemental / Ancestral-Element Debt)", description: 'Unresolved debt linked to the five elements or the souls of departed ancestors', indication: 'Unexplained anxiety, ancestral-home disputes, water / fire accidents', remedy: "Offer Ganga jal to the Peepal tree, keep a black-and-white cloth in the home's NE corner, immerse 400 g of lead in flowing water" },
 };
 
 const PLANET_COLOR: Record<string, string> = {
