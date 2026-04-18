@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet } from '@/lib/backend-translations';
-import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
@@ -237,8 +236,6 @@ export default function DashaTab({
           <SookshmaSection kundliId={extendedDashaData.kundli_id} language={language} t={t} />
         )}
 
-        {/* General Remedies */}
-        <GeneralRemedies language={language} t={t} kundliId={extendedDashaData.kundli_id} />
       </div>
     );
   }
@@ -288,8 +285,6 @@ export default function DashaTab({
           </div>
         </div>
 
-        {/* General Remedies */}
-        <GeneralRemedies language={language} t={t} kundliId={dashaData.kundli_id} />
       </div>
     );
   }

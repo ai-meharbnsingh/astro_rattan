@@ -1,7 +1,6 @@
 import { Loader2, Star, Crown, Eye, Clock, Wallet, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
-import GeneralRemedies from './GeneralRemedies';
 import { useState, Fragment } from 'react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
@@ -453,7 +452,6 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
         </div>
       )}
 
-      <GeneralRemedies language={language} kundliId={data.kundli_id} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
-import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
@@ -145,7 +144,6 @@ export default function VarshphalTab({
       ) : (
         <p className="text-center text-foreground py-8">{t('varshphal.clickTab')}</p>
       )}
-      <GeneralRemedies language={language} kundliId={varshphalData?.kundli_id} />
     </div>
   );
 }

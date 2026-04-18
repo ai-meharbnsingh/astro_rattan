@@ -1549,7 +1549,7 @@ def detect_gender_yogas(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "rationale_en": " · ".join(rationale) if rationale else "Insufficient data for gender inference.",
         "rationale_hi": " · ".join(rationale) if rationale else "लिंग-निर्धारण हेतु पर्याप्त संकेत नहीं।",
         "sloka_ref": "Phaladeepika Adh. 12",
-        "source": "LK_DERIVED",
+        "source": "PHALADEEPIKA",
     }
 
 
@@ -1647,7 +1647,7 @@ def score_fecundity(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         },
         "max_score": 100,
         "sloka_ref": "Phaladeepika Adh. 12 — composite fecundity scoring",
-        "source": "LK_DERIVED",
+        "source": "PHALADEEPIKA",
     }
 
 

@@ -1,7 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
-import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
@@ -240,7 +239,6 @@ export default function KPTab(props: KPTabProps) {
       ) : (
         <p className="text-center text-foreground py-8">{t('kundli.clickKPTab')}</p>
       )}
-      <GeneralRemedies language={language} kundliId={kpData?.kundli_id} />
     </div>
   );
 }

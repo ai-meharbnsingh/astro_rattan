@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
-import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
@@ -482,8 +481,6 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <HorasaraPhalaSection kundliId={ashtakvargaData.kundli_id} language={language} t={t} />
           )}
 
-          {/* General Remedies */}
-          <GeneralRemedies language={language} t={t} kundliId={ashtakvargaData.kundli_id} />
         </div>
       ) : (
         <p className="text-center text-foreground py-8">{t('kundli.clickAshtakvargaTab')}</p>
