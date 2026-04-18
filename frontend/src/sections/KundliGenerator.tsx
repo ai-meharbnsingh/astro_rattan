@@ -54,6 +54,16 @@ import VrittiTab from '@/components/kundli/VrittiTab';
 import BhavaVicharaTab from '@/components/kundli/BhavaVicharaTab';
 import LongevityTab from '@/components/kundli/LongevityTab';
 import JanmaPredictionsTab from '@/components/kundli/JanmaPredictionsTab';
+import KalachakraTab from '@/components/kundli/KalachakraTab';
+import NavamshaCareerTab from '@/components/kundli/NavamshaCareerTab';
+import GrahaSambandhaTab from '@/components/kundli/GrahaSambandhaTab';
+import PanchadhaMaitriTab from '@/components/kundli/PanchadhaMaitriTab';
+import FamilyDemiseTab from '@/components/kundli/FamilyDemiseTab';
+import GochaVedhaTab from '@/components/kundli/GochaVedhaTab';
+import NadiAnalysisTab from '@/components/kundli/NadiAnalysisTab';
+import TransitLuckyTab from '@/components/kundli/TransitLuckyTab';
+import TransitInterpretationsTab from '@/components/kundli/TransitInterpretationsTab';
+import AstroMapTab from '@/components/kundli/AstroMapTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -89,6 +99,10 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
   { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
   { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing' },
+  { value: 'kalachakra',   labelEn: 'Kalachakra Dasha', labelHi: 'कालचक्र दशा',      primary: false, category: 'timing' },
+  { value: 'gochara-vedha', labelEn: 'Gochara Vedha',  labelHi: 'गोचर वेध',         primary: false, category: 'timing' },
+  { value: 'transit-interp', labelEn: 'Transit Interpretations', labelHi: 'गोचर व्याख्या', primary: false, category: 'timing' },
+  { value: 'transit-lucky', labelEn: 'Lucky Indicators', labelHi: 'शुभ संकेतक',       primary: false, category: 'timing' },
   // Analysis
   { value: 'shadbala',      labelEn: 'Shadbala',       labelHi: 'षड्बल',            primary: false, category: 'analysis' },
   { value: 'kp',            labelEn: 'KP System',      labelHi: 'केपी सिस्टम',      primary: false, category: 'analysis' },
@@ -105,6 +119,10 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'janma-predictions', labelEn: 'Janma Predictions', labelHi: 'जन्म फल',       primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
+  { value: 'navamsha-career', labelEn: 'Navamsha Career', labelHi: 'नवांश करियर',     primary: false, category: 'analysis' },
+  { value: 'graha-sambandha', labelEn: 'Graha Sambandha', labelHi: 'ग्रह सम्बन्ध',   primary: false, category: 'analysis' },
+  { value: 'panchadha-maitri', labelEn: 'Panchadha Maitri', labelHi: 'पंचधा मैत्री',  primary: false, category: 'analysis' },
+  { value: 'nadi-analysis', labelEn: 'Nadi Analysis',  labelHi: 'नाड़ी विश्लेषण',    primary: false, category: 'analysis' },
   // Advanced
   { value: 'bhava-vichara', labelEn: 'Bhava Analysis', labelHi: 'भाव विचार',        primary: false, category: 'advanced' },
   { value: 'longevity',     labelEn: 'Longevity Indicators', labelHi: 'आयु संकेतक',  primary: false, category: 'advanced' },
@@ -115,6 +133,8 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'details',       labelEn: 'Birth Details',   labelHi: 'विवरण',            primary: false, category: 'advanced' },
   { value: 'avakhada',      labelEn: 'Avakhada',       labelHi: 'अवखड़ा',           primary: false, category: 'advanced' },
   { value: 'milan',         labelEn: 'Kundli Milan',   labelHi: 'कुंडली मिलान',     primary: false, category: 'advanced' },
+  { value: 'family-demise', labelEn: 'Family Longevity', labelHi: 'परिवार आयु विचार', primary: false, category: 'advanced' },
+  { value: 'astro-map',    labelEn: 'Astro Map',       labelHi: 'ज्योतिष मानचित्र', primary: false, category: 'advanced' },
 ];
 
 const CATEGORY_LABELS: Record<string, { en: string; hi: string }> = {
@@ -740,6 +760,46 @@ export default function KundliGenerator() {
 
           <TabsContent value="kp-horary" className="min-h-[300px]">
             <KPHorary language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="kalachakra" className="min-h-[300px]">
+            <KalachakraTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="gochara-vedha" className="min-h-[300px]">
+            <GochaVedhaTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="transit-interp" className="min-h-[300px]">
+            <TransitInterpretationsTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="transit-lucky" className="min-h-[300px]">
+            <TransitLuckyTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="navamsha-career" className="min-h-[300px]">
+            <NavamshaCareerTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="graha-sambandha" className="min-h-[300px]">
+            <GrahaSambandhaTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="panchadha-maitri" className="min-h-[300px]">
+            <PanchadhaMaitriTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="nadi-analysis" className="min-h-[300px]">
+            <NadiAnalysisTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="family-demise" className="min-h-[300px]">
+            <FamilyDemiseTab kundliId={result?.id || ''} language={language} />
+          </TabsContent>
+
+          <TabsContent value="astro-map" className="min-h-[300px]">
+            <AstroMapTab kundliId={result?.id || ''} kundliData={result} language={language} />
           </TabsContent>
 
           <TabsContent value="sarvatobhadra" className="min-h-[300px]">

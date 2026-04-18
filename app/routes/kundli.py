@@ -3172,3 +3172,199 @@ def get_graha_sambandha(
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
+
+
+# ─────────────────────────────────────────────────────────────
+# Gochara Vedha — Vedha obstruction + Latta enrichment on transits
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/gochara-vedha", status_code=status.HTTP_200_OK)
+def get_gochara_vedha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Gochara Vedha + Latta enrichment — Phaladeepika Adh. 26 classical modifiers."""
+    try:
+        from app.gochara_vedha_engine import enrich_transits
+        row = _fetch_kundli(db, kundli_id, current_user["sub"])
+        chart = _chart_data(row)
+        transit_result = calculate_transits(
+            chart,
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+        )
+        raw_transits = transit_result.get("transits", [])
+        enriched = enrich_transits(raw_transits, chart)
+        return {
+            "kundli_id": kundli_id,
+            "person_name": row["person_name"],
+            "transits": enriched,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Gochara Vedha error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Gochara Vedha calculation failed: {exc}",
+        )
+
+
+# ─────────────────────────────────────────────────────────────
+# Nadi Analysis — Nadi yoga insights from natal chart
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/nadi-analysis", status_code=status.HTTP_200_OK)
+def get_nadi_analysis(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Nadi Astrology — conjunction-based yoga insights from natal chart."""
+    try:
+        from app.nadi_engine import calculate_nadi_insights
+        row = _fetch_kundli(db, kundli_id, current_user["sub"])
+        chart = _chart_data(row)
+        insights = calculate_nadi_insights(chart)
+        return {
+            "kundli_id": kundli_id,
+            "person_name": row["person_name"],
+            "insights": insights,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Nadi analysis error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Nadi analysis failed: {exc}",
+        )
+
+
+# ─────────────────────────────────────────────────────────────
+# Transit Interpretations — bilingual planet-house fragments
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/transit-interpretations", status_code=status.HTTP_200_OK)
+def get_transit_interpretations(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Bilingual transit interpretations per planet/house — 5 life areas each."""
+    try:
+        from app.transit_interpretations import TRANSIT_FRAGMENTS
+        row = _fetch_kundli(db, kundli_id, current_user["sub"])
+        chart = _chart_data(row)
+        transit_result = calculate_transits(
+            chart,
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+        )
+        _AREAS = ["general", "love", "career", "finance", "health"]
+        interpretations = []
+        for t in transit_result.get("transits", []):
+            planet = t.get("planet", "")
+            # Prefer house_from_moon; fall back to current_house or house
+            house = t.get("natal_house_from_moon") or t.get("house_from_moon") or t.get("current_house") or t.get("house")
+            if not house or planet not in TRANSIT_FRAGMENTS:
+                continue
+            house_int = int(house)
+            planet_frags = TRANSIT_FRAGMENTS[planet]
+            if house_int not in planet_frags:
+                continue
+            house_frags = planet_frags[house_int]
+            interp = {area: house_frags.get(area, {}) for area in _AREAS}
+            interpretations.append({
+                "planet": planet,
+                "house": house_int,
+                "interpretation": interp,
+            })
+        return {
+            "kundli_id": kundli_id,
+            "person_name": row["person_name"],
+            "interpretations": interpretations,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Transit interpretations error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Transit interpretations failed: {exc}",
+        )
+
+
+# ─────────────────────────────────────────────────────────────
+# Transit Lucky Metadata — deterministic lucky numbers/colors/times
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/transit-lucky", status_code=status.HTTP_200_OK)
+def get_transit_lucky(
+    kundli_id: str,
+    transit_date: str = None,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Deterministic lucky metadata (number, color, time, gemstone, mantra) from transits."""
+    try:
+        from app.transit_lucky import get_all_lucky_metadata
+        row = _fetch_kundli(db, kundli_id, current_user["sub"])
+        chart = _chart_data(row)
+
+        # Extract Moon info from natal chart
+        moon_info = chart.get("planets", {}).get("Moon", {})
+        sign = moon_info.get("sign", "Aries").lower()
+        moon_nakshatra_index = moon_info.get("nakshatra_index", 0)
+        # Derive nakshatra_index from longitude if not stored directly
+        if not moon_nakshatra_index:
+            moon_lon = moon_info.get("longitude", 0.0)
+            moon_nakshatra_index = int(moon_lon / (360.0 / 27)) % 27
+        moon_pada = moon_info.get("pada", 1) or 1
+
+        # Compute transits
+        transit_result = calculate_transits(
+            chart,
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+            transit_date=transit_date,
+        )
+
+        # Build planet_houses dict: planet -> house from Moon
+        planet_houses: dict = {}
+        planet_dignities: dict = {}
+        transit_dignities: dict = {}
+        for t in transit_result.get("transits", []):
+            p = t.get("planet", "")
+            if not p:
+                continue
+            planet_houses[p] = t.get("natal_house_from_moon") or t.get("house_from_moon") or t.get("house") or 1
+            dignity = t.get("dignity", "") or t.get("effect", "")
+            planet_dignities[p] = dignity
+            transit_dignities[p] = t.get("current_sign", "")
+
+        overall_score = max(1, min(10, int(transit_result.get("daily_score", 50) / 10)))
+        date_str = transit_result.get("transit_date") or (transit_date or "")
+
+        lucky = get_all_lucky_metadata(
+            sign=sign,
+            moon_nakshatra_index=moon_nakshatra_index,
+            moon_pada=moon_pada,
+            date_str=date_str,
+            overall_score=overall_score,
+            planet_houses=planet_houses,
+            planet_dignities=planet_dignities,
+            transit_dignities=transit_dignities,
+        )
+        lucky["kundli_id"] = kundli_id
+        lucky["person_name"] = row["person_name"]
+        return lucky
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Transit lucky error: %s", exc, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Transit lucky metadata failed: {exc}",
+        )

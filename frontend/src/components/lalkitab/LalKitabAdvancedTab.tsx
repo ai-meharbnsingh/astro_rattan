@@ -619,6 +619,82 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         </div>
       </section>
 
+      {/* Chakar Cycle (35/36-Sala Chakar, LK 3.04) */}
+      {data?.chakar_cycle && (
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <History className="w-5 h-5 text-sacred-gold" />
+            <h3 className="text-xl font-sans font-bold text-foreground">
+              {isHi ? '35/36-साला चक्र' : '35/36-Sala Chakar'}
+            </h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" lkRef="3.04" />
+          </div>
+          <div className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-white to-sacred-gold/5">
+            {/* Cycle length hero */}
+            <div className="flex items-center gap-6 mb-5">
+              <div className="text-center">
+                <p className="text-6xl font-black text-sacred-gold leading-none">
+                  {data.chakar_cycle.cycle_length}
+                </p>
+                <p className="text-xs font-semibold text-sacred-gold/70 uppercase tracking-wide mt-1">
+                  {isHi ? 'साला चक्र' : 'Sala Chakar'}
+                </p>
+              </div>
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-wide mb-1">
+                    {isHi ? 'लग्न राशि' : 'Ascendant Sign'}
+                  </p>
+                  <p className="text-base font-bold text-foreground">
+                    {isHi ? data.chakar_cycle.ascendant_sign_hi : data.chakar_cycle.ascendant_sign}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-foreground/50 uppercase tracking-wide mb-1">
+                    {isHi ? 'लग्नेश' : 'Ascendant Lord'}
+                  </p>
+                  <p className="text-base font-bold text-foreground">
+                    {isHi ? data.chakar_cycle.ascendant_lord_hi : data.chakar_cycle.ascendant_lord}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Trigger badge */}
+            <div className="mb-4">
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                data.chakar_cycle.trigger === 'visible_lord'
+                  ? 'bg-green-100 text-green-800 border border-green-300'
+                  : data.chakar_cycle.trigger === 'shadow_in_h1'
+                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                  : 'bg-gray-100 text-gray-600 border border-gray-300'
+              }`}>
+                {data.chakar_cycle.trigger === 'visible_lord'
+                  ? (isHi ? 'दृश्य स्वामी' : 'Visible Lord')
+                  : data.chakar_cycle.trigger === 'shadow_in_h1'
+                  ? (isHi ? 'छाया ग्रह भाव-1 में' : 'Shadow in House 1')
+                  : (isHi ? 'अज्ञात राशि' : 'Unknown Sign')}
+              </span>
+            </div>
+
+            {/* Reason */}
+            <p className="text-sm text-foreground/80 leading-relaxed mb-4">
+              {isHi ? data.chakar_cycle.reason_hi : data.chakar_cycle.reason_en}
+            </p>
+
+            {/* Shadow year note */}
+            {data.chakar_cycle.shadow_year_en && (
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-amber-900 leading-relaxed">
+                  {isHi ? data.chakar_cycle.shadow_year_hi : data.chakar_cycle.shadow_year_en}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* P1.4 — Time Planet (non-remediable fate signature, LK 2.16) */}
       {data?.time_planet && (
         <section>
@@ -704,6 +780,111 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               </p>
             </div>
           </div>
+        </section>
+      )}
+
+      {/* Andhe Grah — Blind Planets (LK 2.12 / 4.14) */}
+      {data?.andhe && (
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <EyeOff className="w-5 h-5 text-red-600" />
+            <h3 className="text-xl font-sans font-bold text-foreground">
+              {isHi ? 'अंधे ग्रह (दृष्टि-हीन ग्रह)' : 'Andhe Grah (Blind Planets)'}
+            </h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" lkRef="2.12 / 4.14" />
+          </div>
+          <p className="text-sm text-foreground/70 mb-4">
+            {isHi
+              ? 'लाल किताब 4.14: अंधे ग्रह के लिए किए गए उपाय उल्टे पड़ते हैं। उपाय बताने से पहले यह सूची जांचें।'
+              : 'Per LK 4.14, remedies targeting a blind planet backfire. Always check this list before prescribing any remedy.'}
+          </p>
+
+          {data.andhe.blind_planets.length === 0 ? (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200">
+              <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+              <p className="text-sm font-medium text-green-800">
+                {isHi
+                  ? 'सभी ग्रह दृष्टिसंपन्न हैं — अंधे ग्रह की कोई सावधानी आवश्यक नहीं।'
+                  : 'All planets have clear sight — no blind-planet precautions required.'}
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Summary banner */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-300 mb-4">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+                <p className="text-sm font-bold text-amber-900">
+                  {isHi
+                    ? `${data.andhe.blind_planets.length} अंधा ग्रह पाया गया — उपाय में सावधानी आवश्यक`
+                    : `${data.andhe.blind_planets.length} blind planet${data.andhe.blind_planets.length > 1 ? 's' : ''} detected — remedy caution required`}
+                </p>
+              </div>
+
+              {/* Per-planet cards */}
+              <div className="grid gap-3 mb-4">
+                {Object.entries(data.andhe.per_planet as Record<string, any>)
+                  .filter(([, info]) => info.is_blind)
+                  .map(([planet, info]: [string, any]) => (
+                    <div key={planet} className="p-4 rounded-xl border border-red-200 bg-red-50">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="font-bold text-foreground text-base">
+                          {translatePlanet(planet, language)}
+                        </span>
+                        <span className="text-xs text-foreground/60">
+                          {isHi ? `भाव ${info.house}` : `House ${info.house}`}
+                        </span>
+                        <span className={`ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${
+                          info.severity === 'high'
+                            ? 'bg-red-200 text-red-800 border border-red-300'
+                            : 'bg-amber-100 text-amber-800 border border-amber-300'
+                        }`}>
+                          {info.severity === 'high'
+                            ? (isHi ? 'उच्च' : 'High')
+                            : (isHi ? 'मध्यम' : 'Medium')}
+                        </span>
+                      </div>
+                      {info.reasons && info.reasons.length > 0 && (
+                        <ul className="list-disc list-inside mb-2 space-y-0.5">
+                          {info.reasons.map((r: string, ri: number) => (
+                            <li key={ri} className="text-xs text-foreground/70">{r}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {(info.warning_en || info.warning_hi) && (
+                        <p className="text-xs italic text-red-700 leading-relaxed">
+                          {isHi ? info.warning_hi : info.warning_en}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+
+              {/* Adjacency warnings */}
+              {data.andhe.adjacency_warnings && data.andhe.adjacency_warnings.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-foreground mb-2">
+                    {isHi ? 'निकटवर्ती ग्रह सावधानी' : 'Adjacent Planet Cautions'}
+                  </h4>
+                  <div className="grid gap-2">
+                    {data.andhe.adjacency_warnings.map((aw: any, i: number) => (
+                      <div key={i} className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="text-xs font-bold text-foreground">
+                            {translatePlanet(aw.planet, language)}
+                            {' '}({isHi ? `भाव ${aw.house}` : `House ${aw.house}`})
+                          </span>
+                          <p className="text-xs text-foreground/70 mt-0.5">
+                            {isHi ? aw.note_hi : aw.note_en}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </section>
       )}
 
