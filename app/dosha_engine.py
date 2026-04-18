@@ -267,18 +267,21 @@ def check_kaal_sarp(rahu_house: int, ketu_house: int, planet_houses: dict) -> di
 def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
     """
     Check for Sade Sati — Saturn transiting over natal Moon sign (+/- 1 sign).
+    Also checks for Ashtam Shani (Saturn in 8th house from Moon — Panauti).
 
     Sade Sati is active when Saturn is in:
     - The sign before the Moon sign (12th from Moon)
     - The Moon sign itself (1st from Moon / Janma Sade Sati)
     - The sign after the Moon sign (2nd from Moon)
 
+    Ashtam Shani is active when Saturn is in the 8th house from Moon sign.
+
     Args:
         moon_sign: Natal Moon sign (e.g. "Aries", "Scorpio")
         saturn_sign: Current transit sign of Saturn
 
     Returns:
-        {has_sade_sati: bool, phase: str, description: str, severity: str, remedies: [str]}
+        {has_sade_sati: bool, phase: str, description: str, severity: str, remedies: [str], ashtam_shani: bool, ashtam_effects: [str] (if applicable)}
     """
     if moon_sign not in ZODIAC_INDEX or saturn_sign not in ZODIAC_INDEX:
         return {
@@ -287,6 +290,7 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
             "description": f"Invalid sign provided: moon_sign={moon_sign}, saturn_sign={saturn_sign}",
             "severity": "none",
             "remedies": [],
+            "ashtam_shani": False,
         }
 
     moon_idx = ZODIAC_INDEX[moon_sign]
@@ -298,8 +302,32 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
     same_idx = moon_idx
     # 2nd from Moon (sign after)
     sign_after_idx = (moon_idx + 1) % 12
+    # 8th from Moon (Ashtam Shani / Panauti)
+    ashtam_idx = (moon_idx + 7) % 12
 
-    if saturn_idx == sign_before_idx:
+    # Check for Ashtam Shani first (more severe)
+    ashtam_shani = saturn_idx == ashtam_idx
+    if ashtam_shani:
+        phase = "Ashtam Shani (8th from Moon)"
+        severity = "extreme"
+        description = (
+            f"⚠️ ASHTAM SHANI ACTIVE — Saturn in {saturn_sign} "
+            f"is transiting the 8th house from natal Moon in {moon_sign}. "
+            "This is the most challenging Saturn transit (Panauti). "
+            "Long-term ailments, accidents, wealth loss, and separation are possible. "
+            "Full aspect on 2nd (finances), 5th (children), and 10th (career) houses."
+        )
+        ashtam_effects = [
+            "Called Laghu Kalyani Dhayya along with 4th house transit",
+            "Full aspect on 2nd, 5th and 10th house from Moon sign",
+            "Possibility of long term ailments and accidents",
+            "Fear of being insulted; pain from government servants",
+            "Chance of change in work-sphere; business may suffer",
+            "Wealth may diminish significantly",
+            "Children may suffer pain; possibilities of separation from children",
+            "Most challenging period among all Saturn transits"
+        ]
+    elif saturn_idx == sign_before_idx:
         phase = "Rising (12th from Moon)"
         severity = "medium"
         description = (
@@ -308,6 +336,7 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
             "This phase brings financial pressures and health concerns. "
             "The beginning of the 7.5-year Saturn transit over the Moon."
         )
+        ashtam_effects = []
     elif saturn_idx == same_idx:
         phase = "Peak (over Moon sign)"
         severity = "high"
@@ -317,6 +346,7 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
             "This is the most intense phase — emotional turbulence, career challenges, "
             "and major life restructuring are common."
         )
+        ashtam_effects = []
     elif saturn_idx == sign_after_idx:
         phase = "Setting (2nd from Moon)"
         severity = "medium"
@@ -326,6 +356,7 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
             "This phase affects family, finances, and speech. "
             "The final stretch before Sade Sati ends."
         )
+        ashtam_effects = []
     else:
         return {
             "has_sade_sati": False,
@@ -336,6 +367,7 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
             ),
             "severity": "none",
             "remedies": [],
+            "ashtam_shani": False,
         }
 
     remedies = [
@@ -347,13 +379,27 @@ def check_sade_sati(moon_sign: str, saturn_sign: str) -> dict:
         "Practice patience, discipline, and service — Saturn rewards hard work.",
     ]
 
-    return {
+    if ashtam_shani:
+        # Add Ashtam-specific remedies
+        remedies.extend([
+            "Recite Mahamrityunjaya Mantra 108 times daily for protection.",
+            "Perform regular Hanuman Puja for strength during this period.",
+            "Practice strict discipline and austerity during this period.",
+        ])
+
+    result = {
         "has_sade_sati": True,
         "phase": phase,
         "description": description,
         "severity": severity,
         "remedies": remedies,
+        "ashtam_shani": ashtam_shani,
     }
+
+    if ashtam_shani:
+        result["ashtam_effects"] = ashtam_effects
+
+    return result
 
 
 # ============================================================
