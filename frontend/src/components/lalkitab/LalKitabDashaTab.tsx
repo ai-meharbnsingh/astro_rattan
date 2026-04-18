@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, Star, ChevronRight, ChevronLeft, Clock } from 'lucide-react';
 
 interface SaalaPeriod {
@@ -122,7 +123,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
               {isHi ? current.planet_hi : current.planet} &bull; {isHi ? 'क्रम स्थान' : 'Sequence'} {current.sequence_position}/9 &bull; {isHi ? 'चक्र वर्ष' : 'Cycle year'} {current.cycle_year}
             </div>
             <p className="text-sm leading-relaxed">
-              {isHi ? current.hi_desc : current.en_desc}
+              {pickLang({ en: current.en_desc, hi: current.hi_desc }, isHi)}
             </p>
           </div>
           <Star className="w-8 h-8 opacity-40 flex-shrink-0 mt-1" />
@@ -148,7 +149,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
         </div>
         <div className="font-semibold">{isHi ? next.planet_hi : next.planet}</div>
         <p className="text-xs mt-1 opacity-70 leading-relaxed">
-          {isHi ? next.hi_desc : next.en_desc}
+          {pickLang({ en: next.en_desc, hi: next.hi_desc }, isHi)}
         </p>
       </div>
 
@@ -166,7 +167,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
                 <div key={p.age} className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-xs ${c} opacity-60`}>
                   <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${isNaN(Number(p.age)) ? 0 : p.age}` : `Age ${isNaN(Number(p.age)) ? 0 : p.age}`}</span>
                   <span className="font-medium">{isHi ? p.planet_hi : p.planet}</span>
-                  <span className="opacity-70 line-clamp-1">{isHi ? p.hi_desc : p.en_desc}</span>
+                  <span className="opacity-70 line-clamp-1">{pickLang({ en: p.en_desc, hi: p.hi_desc }, isHi)}</span>
                 </div>
               );
             })}
@@ -187,7 +188,7 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
                 <div key={p.age} className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-xs ${c}`} style={{ opacity: 1 - i * 0.12 }}>
                   <span className="font-semibold w-16 shrink-0">{isHi ? `आयु ${isNaN(Number(p.age)) ? 0 : p.age}` : `Age ${isNaN(Number(p.age)) ? 0 : p.age}`}</span>
                   <span className="font-medium">{isHi ? p.planet_hi : p.planet}</span>
-                  <span className="opacity-70 leading-relaxed">{isHi ? p.hi_desc : p.en_desc}</span>
+                  <span className="opacity-70 leading-relaxed">{pickLang({ en: p.en_desc, hi: p.hi_desc }, isHi)}</span>
                 </div>
               );
             })}

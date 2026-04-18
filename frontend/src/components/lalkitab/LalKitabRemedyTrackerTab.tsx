@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
+import { pickLang } from './safe-render';
 import { Loader2, Plus, CheckCircle2, XCircle, RotateCcw, Trash2, Calendar, X, AlertTriangle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -299,7 +300,7 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
               {hi ? '43-दिन की श्रृंखला टूटी (लाल किताब 4.10)' : '43-Day Chain Broken (LK 4.10)'}
             </p>
             <p className="text-sm text-red-900 leading-relaxed">
-              {hi ? restartAlert.hi : restartAlert.en}
+              {pickLang(restartAlert, hi)}
             </p>
             {restartAlert.broken_reason && (
               <p className="text-[11px] text-red-700/70 mt-1.5 font-mono">

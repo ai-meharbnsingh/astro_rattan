@@ -393,7 +393,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
             {isHi ? 'दशा स्थिति' : 'Dasha Status'}
           </p>
           <p className="text-xs text-foreground/80 leading-snug">
-            {isHi ? debt.dasha_context.hi : debt.dasha_context.en}
+            {pickLang(debt.dasha_context, isHi)}
           </p>
         </div>
       )}
@@ -405,7 +405,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
             {isHi ? 'अगली सक्रियता' : 'Next activation'}
           </p>
           <p className="text-xs text-foreground/75 leading-snug">
-            {isHi ? debt.next_activation_window.hi : debt.next_activation_window.en}
+            {pickLang(debt.next_activation_window, isHi)}
           </p>
         </div>
       )}
@@ -419,9 +419,7 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
               {isHi ? 'पहले यह उपाय अवरुद्ध' : 'Gated by canon'}
             </p>
             <p className="text-xs text-foreground/80 leading-snug">
-              {isHi
-                ? (debt.blocked_reason?.hi || `पहले ${debt.blocked_by} का उपाय करें।`)
-                : (debt.blocked_reason?.en || `Work ${debt.blocked_by} first.`)}
+              {pickLang(debt.blocked_reason || { hi: `पहले ${debt.blocked_by} का उपाय करें।`, en: `Work ${debt.blocked_by} first.` }, isHi)}
             </p>
           </div>
         </div>
