@@ -332,13 +332,14 @@ def _strongest_luminary(chart: Dict[str, Any]) -> Dict[str, Any]:
     strongest = max(ranking, key=lambda x: x[1])[0]
 
     reasoning_en = (
-        f"Sun={sun_score}, Moon={moon_score}, Lagna(lord={lagna_lord or 'n/a'})"
-        f"={lagna_score}. Winner: {strongest}."
+        f"Sun (H{sun_house}, {sun_sign}) = {sun_score} pts | "
+        f"Moon (H{moon_house}, {moon_sign}) = {moon_score} pts | "
+        f"Lagna lord {lagna_lord or '—'} = {lagna_score} pts"
     )
     reasoning_hi = (
-        f"सूर्य={sun_score}, चन्द्र={moon_score}, "
-        f"लग्न(लग्नेश={lagna_lord or 'अज्ञात'})={lagna_score}। "
-        f"सर्वाधिक बली: {strongest}।"
+        f"सूर्य (भाव {sun_house}, {sun_sign}) = {sun_score} | "
+        f"चन्द्र (भाव {moon_house}, {moon_sign}) = {moon_score} | "
+        f"लग्नेश {lagna_lord or '—'} = {lagna_score}"
     )
 
     return {

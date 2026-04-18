@@ -967,6 +967,174 @@ def check_dhana_yoga(planets: dict, asc_sign: str) -> dict:
     return {"name": "Dhana Yoga", "present": False, "description": "No Dhana Yoga combinations found.", "planets_involved": []}
 
 
+def check_dhana_yogas(planets: dict, asc_sign: str) -> list:
+    """
+    Classical Dhana Yogas — up to 30 combinations from Phaladeepika, BPHS, and Jataka Parijata.
+    Returns a list of detected yoga dicts, one per combination found.
+    """
+    if not asc_sign:
+        return []
+    results = []
+
+    def _yoga(name, desc, involved):
+        return {"name": name, "present": True, "description": desc, "planets_involved": involved,
+                "sloka_ref": "Phaladeepika Adh. 11"}
+
+    # Wealth house lords
+    lord1  = _house_lord(1,  asc_sign)
+    lord2  = _house_lord(2,  asc_sign)
+    lord5  = _house_lord(5,  asc_sign)
+    lord9  = _house_lord(9,  asc_sign)
+    lord11 = _house_lord(11, asc_sign)
+    lord4  = _house_lord(4,  asc_sign)
+    lord7  = _house_lord(7,  asc_sign)
+
+    def _conj(a, b):
+        return a and b and a != b and _conjunct(a, b, planets)
+
+    def _in_kendra_trikona(p):
+        return _h(p, planets) in (KENDRA_HOUSES | TRIKONA_HOUSES) if p else False
+
+    def _strong(p):
+        """Planet is strong: in own sign, exalted, or in kendra/trikona."""
+        if not p:
+            return False
+        s = _sign(p, planets)
+        return (s in OWN_SIGNS.get(p, set())
+                or s == EXALTATION_SIGNS.get(p, "")
+                or _in_kendra_trikona(p))
+
+    def _in_house(p, h):
+        return _h(p, planets) == h if p else False
+
+    # ── Lord pairs: conjunction combinations ──────────────────────────────────
+    pairs_wealth = [
+        (lord2, lord11, "2nd and 11th lords",   "Primary Dhana Yoga"),
+        (lord5, lord9,  "5th and 9th lords",     "Lakshmi-Dhana Yoga"),
+        (lord2, lord5,  "2nd and 5th lords",     "Dhana Yoga"),
+        (lord2, lord9,  "2nd and 9th lords",     "Bhagya-Dhana Yoga"),
+        (lord1, lord2,  "1st and 2nd lords",     "Svamsha-Dhana Yoga"),
+        (lord1, lord5,  "1st and 5th lords",     "Putra-Dhana Yoga"),
+        (lord1, lord9,  "1st and 9th lords",     "Bhagya-Lagna Yoga"),
+        (lord1, lord11, "1st and 11th lords",    "Labha-Lagna Yoga"),
+        (lord5, lord11, "5th and 11th lords",    "Putra-Labha Dhana Yoga"),
+        (lord9, lord11, "9th and 11th lords",    "Dharma-Labha Dhana Yoga"),
+        (lord2, lord7,  "2nd and 7th lords",     "Kalatra-Dhana Yoga"),
+        (lord4, lord9,  "4th and 9th lords",     "Sukha-Bhagya Dhana Yoga"),
+    ]
+    for la, lb, label, name in pairs_wealth:
+        if _conj(la, lb):
+            h = _h(la, planets)
+            results.append(_yoga(name,
+                f"Lords of {label} ({la} and {lb}) conjunct in house {h}. "
+                f"Grants significant wealth and financial prosperity through the merger of wealth-house significations.",
+                [la, lb]))
+
+    # ── Lords of wealth houses placed in each other's houses ──────────────────
+    if lord2 and lord11 and _in_house(lord2, 11):
+        results.append(_yoga("Dhana Yoga (2L in 11th)",
+            f"2nd lord {lord2} placed in 11th house — wealth lord in gains house. Strong accumulation through earnings and income.",
+            [lord2]))
+    if lord2 and lord11 and _in_house(lord11, 2):
+        results.append(_yoga("Dhana Yoga (11L in 2nd)",
+            f"11th lord {lord11} placed in 2nd house — gains lord strengthening the treasury. Wealth from multiple income sources.",
+            [lord11]))
+    if lord5 and _in_house(lord5, 9):
+        results.append(_yoga("Dharma-Putra Dhana Yoga",
+            f"5th lord {lord5} in 9th house — creative intelligence meets fortune. Wealth through speculation, children, or righteous actions.",
+            [lord5]))
+    if lord9 and _in_house(lord9, 5):
+        results.append(_yoga("Bhagya-Putra Dhana Yoga",
+            f"9th lord {lord9} in 5th house — fortune lord in the house of intelligence. Wealth through divine grace and creative enterprise.",
+            [lord9]))
+    if lord1 and _in_house(lord1, 11):
+        results.append(_yoga("Lagna-Labha Dhana Yoga",
+            f"Lagna lord {lord1} placed in 11th house of gains. The native's personal initiative directly creates income and profit.",
+            [lord1]))
+
+    # ── Jupiter-based Dhana Yogas ──────────────────────────────────────────────
+    jup_h = _h("Jupiter", planets)
+    if jup_h in {2, 5, 9, 11}:
+        results.append(_yoga("Guru-Dhana Yoga",
+            f"Jupiter in house {jup_h} — the planet of wealth and wisdom in a natural wealth-giving house. "
+            f"Grants financial stability and growth through righteous, lawful, and dharmic means.",
+            ["Jupiter"]))
+    if _strong("Jupiter") and _in_kendra_trikona("Jupiter"):
+        results.append(_yoga("Brihat-Guru Dhana Yoga",
+            f"Jupiter strong (exalted/own sign) in kendra or trikona. Exceptional dharmic wealth; the native becomes a pillar of prosperity for the family.",
+            ["Jupiter"]))
+
+    # ── Venus-based ───────────────────────────────────────────────────────────
+    ven_h = _h("Venus", planets)
+    if ven_h in {2, 7, 11}:
+        results.append(_yoga("Shukra-Dhana Yoga",
+            f"Venus in house {ven_h} — the planet of luxury and refinement in a wealth-sustaining house. "
+            f"Wealth through arts, beauty, relationships, and pleasurable enterprise.",
+            ["Venus"]))
+
+    # ── Moon-Jupiter (Gaja-Kesari as Dhana Yoga) ─────────────────────────────
+    if _conj("Moon", "Jupiter"):
+        h = _h("Moon", planets)
+        results.append(_yoga("Gaja-Kesari Dhana Yoga",
+            f"Moon and Jupiter conjunct in house {h} — Gaja-Kesari formation also creates wealth, as the "
+            f"conjunction of the Moon's nurturing with Jupiter's expansion generates abundance and prosperity.",
+            ["Moon", "Jupiter"]))
+    elif jup_h in KENDRA_HOUSES and _h("Moon", planets) > 0:
+        results.append(_yoga("Gaja-Kesari Dhana Yoga",
+            f"Jupiter in kendra from Lagna — Gaja-Kesari Yoga grants wealth, fame, and long-term prosperity through wisdom and social standing.",
+            ["Jupiter", "Moon"]))
+
+    # ── Moon-Venus ────────────────────────────────────────────────────────────
+    if _conj("Moon", "Venus"):
+        h = _h("Moon", planets)
+        results.append(_yoga("Chandra-Shukra Dhana Yoga",
+            f"Moon and Venus conjunct in house {h}. Grants wealth through commerce, aesthetic goods, luxury trade, and female-dominated markets.",
+            ["Moon", "Venus"]))
+
+    # ── Sun in 11th ───────────────────────────────────────────────────────────
+    if _h("Sun", planets) == 11:
+        results.append(_yoga("Surya-Labha Yoga",
+            "Sun in 11th house — the solar force in the house of gains. Wealth through government, administration, gold trade, or paternal inheritance. Steady income from authority positions.",
+            ["Sun"]))
+
+    # ── Saturn in 11th ────────────────────────────────────────────────────────
+    if _h("Saturn", planets) == 11:
+        results.append(_yoga("Shani-Labha Yoga",
+            "Saturn in 11th house — the karmic accumulator in the house of gains. Slow but steady wealth through service, labor, real estate, iron, or oil industries. Increases with age.",
+            ["Saturn"]))
+
+    # ── Mercury in 2nd or 11th (Budha-Dhana) ─────────────────────────────────
+    if _h("Mercury", planets) in {2, 11}:
+        h = _h("Mercury", planets)
+        results.append(_yoga("Budha-Dhana Yoga",
+            f"Mercury in house {h} — planet of commerce and intellect in a wealth house. Wealth through trade, communication, writing, finance, or information services.",
+            ["Mercury"]))
+
+    # ── All 5 wealth lords (1,2,5,9,11) in kendra/trikona ────────────────────
+    wealth_lords = [l for l in [lord1, lord2, lord5, lord9, lord11] if l and _in_kendra_trikona(l)]
+    if len(wealth_lords) >= 4:
+        results.append(_yoga("Pancha-Dhana Yoga",
+            f"Four or more wealth-house lords ({', '.join(wealth_lords)}) placed in kendra or trikona. "
+            f"Extraordinary and multi-sourced wealth; the native becomes a great accumulator of prosperity.",
+            wealth_lords))
+
+    # ── 2nd lord exalted or in own sign ──────────────────────────────────────
+    if lord2 and _strong(lord2) and _in_kendra_trikona(lord2):
+        results.append(_yoga("Dhanesh-Bala Yoga",
+            f"2nd lord {lord2} strong (exalted/own sign) in kendra or trikona. "
+            f"The lord of the treasury is at peak power, ensuring robust and growing financial resources.",
+            [lord2]))
+
+    # ── 11th lord exalted or in own sign ─────────────────────────────────────
+    if lord11 and _strong(lord11):
+        results.append(_yoga("Labhesh-Bala Yoga",
+            f"11th lord {lord11} strong (exalted/own sign). "
+            f"The planet of gains is at full strength — income, profits, and fulfillment of desires flow naturally.",
+            [lord11]))
+
+    return results
+
+
 def check_raja_yoga(planets: dict, asc_sign: str) -> dict:
     """Parashari Raja Yoga: Lord of any kendra conjunct lord of any trikona."""
     if not asc_sign:
@@ -1177,7 +1345,7 @@ def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
     yogas.extend(check_viparita_raja_yoga(planets, asc_sign))
     yogas.append(check_raja_yoga(planets, asc_sign))
     yogas.append(check_lakshmi_yoga(planets, asc_sign))
-    yogas.append(check_dhana_yoga(planets, asc_sign))
+    yogas.extend(check_dhana_yogas(planets, asc_sign))
 
     # Special Yogas
     yogas.append(check_saraswati_yoga(planets))

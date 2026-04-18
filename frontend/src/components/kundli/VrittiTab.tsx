@@ -224,6 +224,13 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
               {t('auto.luminaryStrength')}
             </h3>
           </div>
+          {/* Winner badge */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30 mb-3">
+            <span className="text-base font-bold text-sacred-gold-dark">{strongestKey}</span>
+            {lum.lagna_lord && lum.strongest === 'lagna' && (
+              <span className="text-xs text-muted-foreground">({lum.lagna_lord})</span>
+            )}
+          </div>
           <div className="space-y-3">
             {[
               { key: 'sun', label: 'Sun / सूर्य', icon: Sun, score: lum.sun_score },
@@ -253,14 +260,16 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
             })}
           </div>
           <div className="mt-3 pt-3 border-t border-sacred-gold/15">
-            <p className="text-[11px] font-semibold text-sacred-gold-dark mb-1 uppercase tracking-wide">
-              {strongestKey}
-            </p>
             {implication && (
               <p className="text-sm text-foreground/90 leading-relaxed">{implication}</p>
             )}
             {reasoning && (
-              <p className="text-[11px] text-muted-foreground mt-2 font-mono">{reasoning}</p>
+              <div className="mt-2">
+                <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-0.5">
+                  {isHi ? 'बल-स्कोर विश्लेषण' : 'Strength Analysis'}
+                </p>
+                <p className="text-[11px] text-muted-foreground font-mono">{reasoning}</p>
+              </div>
             )}
             {lum.sloka_ref && (
               <div className="flex items-center gap-1.5 pt-2 mt-2 text-[11px] text-muted-foreground">
