@@ -1,7 +1,8 @@
 import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote, Pencil, Save, Loader2, Check, X } from 'lucide-react';
+import { ArrowLeft, Star, BookOpen, Hash, User, Calendar, MapPin, Phone, Plus, StickyNote, Pencil, Save, Loader2, Check, X, Clock, Activity as ActivityIcon, CheckCircle2, XCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { api, formatDate, formatDateTime } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
@@ -18,13 +19,42 @@ interface KundliSummary {
   birth_place: string; chart_type: string; created_at: string;
 }
 
+interface ConsultationLite {
+  id: string;
+  type: string;
+  status: string;
+  scheduled_at: string | null;
+  duration_minutes: number | null;
+  notes: string | null;
+  created_at: string | null;
+}
+
+interface TimelineEvent {
+  kind: 'note' | 'kundli' | 'consultation';
+  timestamp: string | null;
+  content?: string;
+  chart_type?: string;
+  person_name?: string;
+  type?: string;
+  status?: string;
+  scheduled_at?: string | null;
+  duration_minutes?: number | null;
+  notes?: string | null;
+  ref_id: string;
+}
+
 export default function ClientProfile() {
   const { clientId } = useParams<{ clientId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const isAstrologer = user?.role === 'astrologer' || user?.role === 'admin';
   const [client, setClient] = useState<Client | null>(null);
   const [kundlis, setKundlis] = useState<KundliSummary[]>([]);
   const [notes, setNotes] = useState<Array<{ id: string; content: string; chart_type: string; created_at: string }>>([]);
+  // P3.5 — CRM enhancements (astrologer surfaces only)
+  const [consultations, setConsultations] = useState<ConsultationLite[]>([]);
+  const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Edit mode state
@@ -44,10 +74,56 @@ export default function ClientProfile() {
           const n = await api.get(`/api/clients/${clientId}/notes`);
           setNotes(n);
         } catch { /* notes may not exist yet */ }
+        // P3.5 — load consultations + unified timeline for astrologers.
+        if (isAstrologer) {
+          try {
+            const c: any = await api.get(`/api/astrologer/consultations?client_id=${clientId}`);
+            setConsultations(Array.isArray(c?.consultations) ? c.consultations : []);
+          } catch { /* non-fatal */ }
+          try {
+            const tl: any = await api.get(`/api/astrologer/client-timeline/${clientId}`);
+            setTimeline(Array.isArray(tl?.events) ? tl.events : []);
+          } catch { /* non-fatal */ }
+        }
       } catch { /* ignored */ }
       setLoading(false);
     })();
-  }, [clientId]);
+  }, [clientId, isAstrologer]);
+
+  // P3.5 — quick-schedule a consultation from client profile.
+  const [schedOpen, setSchedOpen] = useState(false);
+  const [schedForm, setSchedForm] = useState<{ type: string; scheduled_at: string; duration_minutes: number; notes: string }>({
+    type: 'chat', scheduled_at: '', duration_minutes: 30, notes: '',
+  });
+  const [schedSaving, setSchedSaving] = useState(false);
+  const bookConsultation = async () => {
+    if (!clientId) return;
+    setSchedSaving(true);
+    try {
+      await api.post('/api/astrologer/consultations', {
+        client_id: clientId,
+        type: schedForm.type,
+        scheduled_at: schedForm.scheduled_at || null,
+        duration_minutes: schedForm.duration_minutes,
+        notes: schedForm.notes || null,
+        status: 'scheduled',
+      });
+      // refresh
+      const c: any = await api.get(`/api/astrologer/consultations?client_id=${clientId}`);
+      setConsultations(Array.isArray(c?.consultations) ? c.consultations : []);
+      setSchedOpen(false);
+      setSchedForm({ type: 'chat', scheduled_at: '', duration_minutes: 30, notes: '' });
+    } catch { /* ignored */ }
+    setSchedSaving(false);
+  };
+  const updateConsultationStatus = async (id: string, status: string) => {
+    if (!clientId) return;
+    try {
+      await api.patch(`/api/astrologer/consultations/${id}`, { status });
+      const c: any = await api.get(`/api/astrologer/consultations?client_id=${clientId}`);
+      setConsultations(Array.isArray(c?.consultations) ? c.consultations : []);
+    } catch { /* ignored */ }
+  };
 
   const startEdit = () => {
     if (!client) return;
@@ -86,8 +162,8 @@ export default function ClientProfile() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 max-w-4xl mx-auto">
-      {/* Back */}
-      <button onClick={() => navigate('/dashboard')} className="flex items-center gap-1 text-sm text-foreground hover:text-sacred-gold-dark mb-6">
+      {/* Back — astrologers land on /astrologer CRM; everyone else /dashboard */}
+      <button onClick={() => navigate(isAstrologer ? '/astrologer' : '/dashboard')} className="flex items-center gap-1 text-sm text-foreground hover:text-sacred-gold-dark mb-6">
         <ArrowLeft className="w-4 h-4" /> {t('client.backToDashboard')}
       </button>
 
@@ -231,6 +307,189 @@ export default function ClientProfile() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* P3.5 — Consultations (astrologer surface) */}
+      {isAstrologer && (
+        <>
+          <div className="mb-4 mt-8 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-sacred-gold-dark" />
+              <Heading as={2} variant={6} className="uppercase tracking-wider">
+                {t('client.consultations') || 'Consultations'} ({consultations.length})
+              </Heading>
+            </div>
+            <button
+              onClick={() => setSchedOpen((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              {schedOpen ? 'Close' : 'Schedule'}
+            </button>
+          </div>
+
+          {schedOpen && (
+            <div className="rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 p-4 mb-4 space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">Type</label>
+                  <select
+                    value={schedForm.type}
+                    onChange={(e) => setSchedForm((f) => ({ ...f, type: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+                  >
+                    <option value="chat">Chat</option>
+                    <option value="audio">Audio</option>
+                    <option value="video">Video</option>
+                    <option value="in_person">In Person</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">When</label>
+                  <input
+                    type="datetime-local"
+                    value={schedForm.scheduled_at}
+                    onChange={(e) => setSchedForm((f) => ({ ...f, scheduled_at: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">Duration (min)</label>
+                  <input
+                    type="number" min={5} max={480} step={5}
+                    value={schedForm.duration_minutes}
+                    onChange={(e) => setSchedForm((f) => ({ ...f, duration_minutes: parseInt(e.target.value) || 30 }))}
+                    className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
+                  />
+                </div>
+              </div>
+              <textarea
+                value={schedForm.notes}
+                onChange={(e) => setSchedForm((f) => ({ ...f, notes: e.target.value }))}
+                rows={2}
+                placeholder="Agenda, questions, topic…"
+                className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm resize-none"
+              />
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setSchedOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">Cancel</button>
+                <button
+                  onClick={bookConsultation}
+                  disabled={schedSaving}
+                  className="px-4 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {schedSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  Book
+                </button>
+              </div>
+            </div>
+          )}
+
+          {consultations.length === 0 ? (
+            <div className="text-sm text-muted-foreground border border-dashed border-sacred-gold/30 rounded-xl p-6 text-center mb-4">
+              No consultations yet.
+            </div>
+          ) : (
+            <div className="space-y-2 mb-4">
+              {consultations.map((c) => {
+                const when = c.scheduled_at ? new Date(c.scheduled_at) : null;
+                const statusCls: Record<string, string> = {
+                  scheduled: 'bg-sacred-gold/15 text-sacred-gold-dark border-sacred-gold/40',
+                  confirmed: 'bg-blue-100 text-blue-800 border-blue-300',
+                  active: 'bg-emerald-100 text-emerald-800 border-emerald-400 animate-pulse',
+                  completed: 'bg-green-100 text-green-800 border-green-300',
+                  cancelled: 'bg-gray-100 text-gray-600 border-gray-300',
+                  no_show: 'bg-red-100 text-red-700 border-red-300',
+                };
+                return (
+                  <div key={c.id} className="border border-sacred-gold/30 rounded-xl p-3 flex items-start justify-between gap-3 flex-wrap">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold uppercase ${statusCls[c.status] ?? 'bg-gray-100 border-gray-300'}`}>
+                          {c.status}
+                        </span>
+                        <span className="text-xs uppercase text-muted-foreground">{c.type}</span>
+                        {when && (
+                          <span className="text-xs text-foreground/75 inline-flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {when.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
+                        {c.duration_minutes && <span className="text-xs text-muted-foreground">· {c.duration_minutes}min</span>}
+                      </div>
+                      {c.notes && <p className="text-sm text-foreground/80 mt-1">{c.notes}</p>}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {c.status === 'scheduled' && (
+                        <button onClick={() => updateConsultationStatus(c.id, 'confirmed')} className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200">Confirm</button>
+                      )}
+                      {(c.status === 'scheduled' || c.status === 'confirmed') && (
+                        <button onClick={() => updateConsultationStatus(c.id, 'active')} className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200">Start</button>
+                      )}
+                      {c.status === 'active' && (
+                        <button onClick={() => updateConsultationStatus(c.id, 'completed')} className="text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 inline-flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Complete
+                        </button>
+                      )}
+                      {c.status !== 'completed' && c.status !== 'cancelled' && (
+                        <button onClick={() => updateConsultationStatus(c.id, 'cancelled')} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-red-100 hover:text-red-700 inline-flex items-center gap-1">
+                          <XCircle className="w-3 h-3" /> Cancel
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Timeline — unified notes + kundlis + consultations */}
+          {timeline.length > 0 && (
+            <>
+              <div className="mb-4 mt-8 flex items-center gap-2">
+                <ActivityIcon className="w-4 h-4 text-sacred-gold-dark" />
+                <Heading as={2} variant={6} className="uppercase tracking-wider">
+                  {t('client.timeline') || 'Timeline'} ({timeline.length})
+                </Heading>
+              </div>
+              <ol className="relative border-l-2 border-sacred-gold/20 space-y-3 ml-2 mb-6">
+                {timeline.map((ev, i) => {
+                  const ts = ev.timestamp ? new Date(ev.timestamp) : null;
+                  const tint =
+                    ev.kind === 'kundli' ? 'bg-sacred-gold/15 text-sacred-gold-dark' :
+                    ev.kind === 'note' ? 'bg-violet-100 text-violet-700' :
+                    'bg-blue-100 text-blue-700';
+                  const Icon = ev.kind === 'kundli' ? BookOpen : ev.kind === 'note' ? StickyNote : Clock;
+                  const title =
+                    ev.kind === 'kundli' ? `Generated ${ev.chart_type ?? 'chart'} for ${ev.person_name ?? client.name}` :
+                    ev.kind === 'note' ? `Note added${ev.chart_type ? ` (${ev.chart_type})` : ''}` :
+                    `Consultation ${ev.status ?? ''} (${ev.type ?? ''})`;
+                  const detail =
+                    ev.kind === 'note' ? ev.content :
+                    ev.kind === 'consultation' ? (ev.notes || ev.scheduled_at) :
+                    null;
+                  return (
+                    <li key={`${ev.kind}-${ev.ref_id}-${i}`} className="ml-4">
+                      <span className={`absolute -left-[13px] w-6 h-6 rounded-full flex items-center justify-center ${tint} border-2 border-background`}>
+                        <Icon className="w-3 h-3" />
+                      </span>
+                      <div className="pb-2">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <p className="text-sm font-semibold text-foreground">{title}</p>
+                          {ts && (
+                            <span className="text-[11px] text-muted-foreground shrink-0">
+                              {ts.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
+                        </div>
+                        {detail && <p className="text-xs text-foreground/70 mt-0.5 line-clamp-2">{detail}</p>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </>
+          )}
+        </>
       )}
 
       {/* Notes */}
