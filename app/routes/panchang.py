@@ -642,13 +642,26 @@ def get_sankranti(
 @router.get("/api/festivals", status_code=status.HTTP_200_OK)
 def list_festivals(
     year: int = Query(default=None),
+    month: int = Query(default=None),
     category: str = Query(default=None),
+    lang: str = Query(default="en"),
     db: Any = Depends(get_db),
 ):
-    """List festivals for a given year, optionally filtered by category."""
+    """List festivals for a given year and optionally month, filtered by category."""
     target_year = year or date.today().year
 
-    if category:
+    # Build query with month filter if provided
+    if month and category:
+        rows = db.execute(
+            "SELECT * FROM festivals WHERE year = %s AND MONTH(date) = %s AND category = %s ORDER BY date",
+            (target_year, month, category),
+        ).fetchall()
+    elif month:
+        rows = db.execute(
+            "SELECT * FROM festivals WHERE year = %s AND MONTH(date) = %s ORDER BY date",
+            (target_year, month),
+        ).fetchall()
+    elif category:
         rows = db.execute(
             "SELECT * FROM festivals WHERE year = %s AND category = %s ORDER BY date",
             (target_year, category),
@@ -659,15 +672,23 @@ def list_festivals(
             (target_year,),
         ).fetchall()
 
-    return [
-        {
-            "name": r["name"],
-            "date": r["date"],
-            "description": r["description"],
-            "rituals": r["rituals"],
+    # Format response with bilingual support
+    festivals_list = []
+    for r in rows:
+        festival = {
+            "name": r.get("name", ""),
+            "name_hindi": r.get("name_hindi", r.get("name", "")),
+            "date": r.get("date"),
+            "description": r.get("description", ""),
+            "description_hindi": r.get("description_hindi", r.get("description", "")),
+            "type": r.get("category", "Festival"),
+            "type_hindi": r.get("category_hindi", r.get("category", "त्योहार")),
+            "rituals": r.get("rituals", ""),
+            "rituals_hindi": r.get("rituals_hindi", r.get("rituals", "")),
         }
-        for r in rows
-    ]
+        festivals_list.append(festival)
+
+    return {"festivals": festivals_list}
 
 
 # ============================================================
