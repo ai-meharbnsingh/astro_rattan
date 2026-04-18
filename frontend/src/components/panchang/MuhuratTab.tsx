@@ -477,34 +477,39 @@ export default function MuhuratTab({ panchang: _panchang, language, t, currentTi
       {/* ============================================================ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {/* --- Anandadi Yoga --- */}
-        {panchang.directions?.anandadi_yoga && (
-          <div className="rounded-lg border p-3">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
-              <Sparkles className="h-3.5 w-3.5" />
-              {language === 'hi' ? 'आनन्दादि योग' : 'Anandadi Yoga'}
-            </h4>
-            <p className="text-sm font-bold text-foreground">
-              {language === 'hi'
-                ? panchang.directions.anandadi_yoga.name_hindi
-                : panchang.directions.anandadi_yoga.name}
-            </p>
-            <div className="mt-1 flex items-center gap-2 text-xs">
-              <span
-                className={`inline-block h-2.5 w-2.5 rounded-full ${
-                  panchang.directions.anandadi_yoga.auspicious ? 'bg-green-500' : 'bg-red-500'
-                }`}
-              />
-              <span className={panchang.directions.anandadi_yoga.auspicious ? 'text-green-600' : 'text-red-600'}>
-                {panchang.directions.anandadi_yoga.auspicious
-                  ? (language === 'hi' ? 'शुभ' : 'Auspicious')
-                  : (language === 'hi' ? 'अशुभ' : 'Inauspicious')}
-              </span>
-              <span className="text-muted-foreground">
-                #{panchang.directions.anandadi_yoga.index}
-              </span>
+        {panchang.directions?.anandadi_yoga && (() => {
+          const ay = panchang.directions.anandadi_yoga;
+          const yogaName = language === 'hi' ? ay.name_hindi : ay.name;
+          const meaning = ANANDADI_MEANINGS[ay.name];
+          const interpretationText = meaning ? (language === 'hi' ? meaning.hi : meaning.en) : '';
+          const isAuspicious = meaning?.auspicious ?? ay.auspicious;
+          return (
+            <div className={`rounded-lg border p-3 ${isAuspicious ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'}`}>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5" />
+                {language === 'hi' ? 'आनन्दादि योग' : 'Anandadi Yoga'}
+              </h4>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-bold text-foreground">{yogaName}</p>
+                <span className={`inline-block text-[10px] font-semibold px-2 py-1 rounded-full ${
+                  isAuspicious
+                    ? 'bg-green-500/20 text-green-700'
+                    : 'bg-red-500/20 text-red-700'
+                }`}>
+                  {isAuspicious ? (language === 'hi' ? 'शुभ' : 'Auspicious') : (language === 'hi' ? 'अशुभ' : 'Inauspicious')}
+                </span>
+              </div>
+              {interpretationText && (
+                <p className="text-xs text-muted-foreground leading-relaxed mb-1">
+                  {interpretationText}
+                </p>
+              )}
+              <p className="text-[10px] text-muted-foreground/70">
+                {language === 'hi' ? 'योग #' : 'Yoga #'}{ay.index}
+              </p>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* --- Disha Shool --- */}
         {panchang.directions?.disha_shool && (
@@ -622,6 +627,11 @@ export default function MuhuratTab({ panchang: _panchang, language, t, currentTi
                   </p>
                 )}
               </div>
+              {pr.safe_for_govt !== undefined && !pr.safe_for_govt && (
+                <p className="text-xs text-orange-600 mt-2">
+                  🔔 {language === 'hi' ? 'सरकारी/आधिकारिक कार्य के लिए उपयुक्त नहीं' : 'Not suitable for government/official work'}
+                </p>
+              )}
             </div>
           </div>
         );
