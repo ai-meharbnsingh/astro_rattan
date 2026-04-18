@@ -4574,3 +4574,2755 @@ MAHADASHA_DETAILED: Dict[str, Dict[int, str]] = {
         ),
     },
 }
+
+from typing import Dict, Any, Tuple
+
+DASHA_INTERPRETATIONS: Dict[str, Dict[str, Any]] = {'Sun': {'general': [{'en': 'Rise in authority, government favour and '
+                            'recognition',
+                      'hi': 'अधिकार, सरकारी पक्ष और मान्यता में वृद्धि'},
+                     {'en': 'Improved health and vitality, recovery from '
+                            'chronic ailments',
+                      'hi': 'बेहतर स्वास्थ्य और जीवन शक्ति, पुरानी बीमारियों '
+                            'से रिकवरी'},
+                     {'en': 'Relations with father become significant (good or '
+                            'strained based on dignity)',
+                      'hi': 'पिता के साथ संबंध महत्वपूर्ण हो जाते हैं (सम्मान '
+                            'के आधार पर अच्छे या तनावपूर्ण)'},
+                     {'en': 'Career advancement, especially in leadership and '
+                            'administrative roles',
+                      'hi': 'कैरियर में उन्नति, विशेषकर नेतृत्व और प्रशासनिक '
+                            'भूमिकाओं में'},
+                     {'en': 'Increased self-confidence and assertiveness',
+                      'hi': 'आत्मविश्वास और दृढ़ता में वृद्धि'},
+                     {'en': 'Possible conflicts with authority if Sun is '
+                            'afflicted',
+                      'hi': 'सूर्य के पीड़ित होने पर अधिकारियों से टकराव संभव '
+                            'है'},
+                     {'en': 'Heart and eye health require attention',
+                      'hi': 'हृदय और नेत्र स्वास्थ्य पर ध्यान देने की आवश्यकता '
+                            'है'}],
+         'specific_good': [{'en': 'Promotion and recognition in government or '
+                                  'corporate sectors',
+                            'hi': 'सरकारी या कॉर्पोरेट क्षेत्रों में पदोन्नति '
+                                  'और मान्यता'},
+                           {'en': 'Pilgrimage and religious activities bring '
+                                  'peace',
+                            'hi': 'तीर्थयात्रा और धार्मिक गतिविधियों से शांति '
+                                  'मिलती है'},
+                           {'en': 'Children prosper and bring pride',
+                            'hi': 'बच्चे समृद्ध होते हैं और गौरव लाते हैं'},
+                           {'en': 'Political connections strengthen social '
+                                  'standing',
+                            'hi': 'राजनीतिक संबंध सामाजिक प्रतिष्ठा को मजबूत '
+                                  'करते हैं'}],
+         'specific_bad': [{'en': 'Ego conflicts with superiors and father',
+                           'hi': 'वरिष्ठजनों एवं पिता से अहंकार का टकराव होता '
+                                 'है'},
+                          {'en': 'Eye problems, heart ailments, bone weakness',
+                           'hi': 'आंखों की समस्या, हृदय रोग, हड्डियों की '
+                                 'कमजोरी'},
+                          {'en': 'Government penalties or tax issues if Sun is '
+                                 'afflicted',
+                           'hi': 'सूर्य के पीड़ित होने पर सरकारी जुर्माना या '
+                                 'कर संबंधी समस्याएं आती हैं'},
+                          {'en': 'Separation from family or loss of position '
+                                 'in extreme cases',
+                           'hi': 'चरम मामलों में परिवार से अलगाव या पद की '
+                                 'हानि'}]},
+ 'Moon': {'general': [{'en': 'Emotional sensitivity heightened, mood '
+                             'fluctuations increase',
+                       'hi': 'भावनात्मक संवेदनशीलता बढ़ जाती है, मनोदशा में '
+                             'उतार-चढ़ाव बढ़ जाता है'},
+                      {'en': "Mother's influence and well-being become central "
+                             'themes',
+                       'hi': 'माँ का प्रभाव और कल्याण केंद्रीय विषय बन जाते '
+                             'हैं'},
+                      {'en': 'Travel, especially overseas or to water bodies',
+                       'hi': 'यात्रा, विशेषकर विदेश या जलाशयों की यात्रा'},
+                      {'en': "Mental peace depends on Moon's dignity -- calm "
+                             'if strong, anxious if weak',
+                       'hi': 'मानसिक शांति चंद्रमा की गरिमा पर निर्भर करती है '
+                             '- मजबूत होने पर शांत, कमजोर होने पर चिंतित'},
+                      {'en': 'Gains through public, women, and liquid-related '
+                             'businesses',
+                       'hi': 'सार्वजनिक, महिलाओं और तरल-संबंधी व्यवसायों से '
+                             'लाभ'},
+                      {'en': 'Interest in agriculture, hospitality, nursing, '
+                             'or caregiving',
+                       'hi': 'कृषि, आतिथ्य, नर्सिंग या देखभाल में रुचि'},
+                      {'en': 'Dreams become vivid and psychic sensitivity '
+                             'increases',
+                       'hi': 'सपने ज्वलंत हो जाते हैं और मानसिक संवेदनशीलता '
+                             'बढ़ जाती है'}],
+          'specific_good': [{'en': 'Happy domestic life, property and vehicle '
+                                   'acquisition',
+                             'hi': 'सुखी घरेलू जीवन, संपत्ति और वाहन की '
+                                   'प्राप्ति'},
+                            {'en': "Mother's blessings and support",
+                             'hi': 'माँ का आशीर्वाद और सहयोग'},
+                            {'en': 'Popularity with masses, public-facing '
+                                   'success',
+                             'hi': 'जनता के बीच लोकप्रियता, जनता के सामने '
+                                   'सफलता'},
+                            {'en': 'Marriage and romantic fulfilment if of '
+                                   'marriageable age',
+                             'hi': 'यदि विवाह योग्य उम्र हो तो विवाह और '
+                                   'रोमांटिक संतुष्टि'}],
+          'specific_bad': [{'en': 'Anxiety, depression, insomnia if Moon is '
+                                  'weak or afflicted',
+                            'hi': 'चंद्रमा के कमजोर या पीड़ित होने पर चिंता, '
+                                  'अवसाद, अनिद्रा होती है'},
+                           {'en': 'Cold, cough, water-borne diseases',
+                            'hi': 'सर्दी, खांसी, जल जनित रोग'},
+                           {'en': "Mother's health may decline",
+                            'hi': 'माता के स्वास्थ्य में गिरावट आ सकती है'},
+                           {'en': 'Emotional instability leading to poor '
+                                  'decisions',
+                            'hi': 'भावनात्मक अस्थिरता के कारण ग़लत निर्णय लिए '
+                                  'जा सकते हैं'}]},
+ 'Mars': {'general': [{'en': 'Energy and courage increase dramatically',
+                       'hi': 'ऊर्जा और साहस में नाटकीय रूप से वृद्धि होती है'},
+                      {'en': 'Property and land transactions become prominent',
+                       'hi': 'संपत्ति और भूमि लेनदेन प्रमुख हो जाते हैं'},
+                      {'en': 'Brothers and siblings come into focus (support '
+                             'or conflict)',
+                       'hi': 'भाई-बहन फोकस में आते हैं (समर्थन या संघर्ष)'},
+                      {'en': 'Career in technical, military, police, surgery, '
+                             'or engineering thrives',
+                       'hi': 'तकनीकी, सैन्य, पुलिस, सर्जरी या इंजीनियरिंग में '
+                             'करियर फलता-फूलता है'},
+                      {'en': 'Physical activity increases; sports and exercise '
+                             'benefit',
+                       'hi': 'शारीरिक गतिविधि बढ़ जाती है; खेल और व्यायाम से '
+                             'लाभ'},
+                      {'en': 'Risk of accidents, surgery, and injuries rises',
+                       'hi': 'दुर्घटनाओं, सर्जरी और चोटों का खतरा बढ़ जाता है'},
+                      {'en': 'Legal disputes and conflicts with authority '
+                             'possible',
+                       'hi': 'कानूनी विवाद और अधिकारियों से टकराव संभव'}],
+          'specific_good': [{'en': 'Property purchase, construction, or land '
+                                   'deals succeed',
+                             'hi': 'संपत्ति खरीद, निर्माण या भूमि सौदे सफल '
+                                   'होते हैं'},
+                            {'en': 'Victory over enemies and competitors',
+                             'hi': 'शत्रुओं और प्रतिस्पर्धियों पर विजय'},
+                            {'en': 'Technical and engineering projects produce '
+                                   'results',
+                             'hi': 'तकनीकी और इंजीनियरिंग परियोजनाएँ परिणाम '
+                                   'देती हैं'},
+                            {'en': 'Blood disorders resolve, physical fitness '
+                                   'improves',
+                             'hi': 'रक्त विकार दूर होते हैं, शारीरिक स्वस्थता '
+                                   'बढ़ती है'}],
+          'specific_bad': [{'en': 'Accidents, burns, cuts, or surgery',
+                            'hi': 'दुर्घटनाएँ, जलना, कटना, या सर्जरी'},
+                           {'en': 'Marital conflicts and aggression at home',
+                            'hi': 'वैवाहिक कलह और घर में आक्रामकता'},
+                           {'en': 'Blood pressure, fevers, and inflammatory '
+                                  'conditions',
+                            'hi': 'रक्तचाप, बुखार और सूजन की स्थिति'},
+                           {'en': 'Legal battles, property disputes, or police '
+                                  'trouble',
+                            'hi': 'कानूनी लड़ाई, संपत्ति विवाद, या पुलिस '
+                                  'परेशानी'}]},
+ 'Mercury': {'general': [{'en': 'Intellectual pursuits, education and '
+                                'communication highlighted',
+                          'hi': 'बौद्धिक गतिविधियों, शिक्षा और संचार पर प्रकाश '
+                                'डाला गया'},
+                         {'en': 'Business and trade opportunities expand',
+                          'hi': 'व्यवसाय और व्यापार के अवसरों का विस्तार होता '
+                                'है'},
+                         {'en': 'Writing, media, IT and analytical careers '
+                                'flourish',
+                          'hi': 'लेखन, मीडिया, आईटी और विश्लेषणात्मक करियर '
+                                'फलते-फूलते हैं'},
+                         {'en': 'Nervous system and skin health need attention',
+                          'hi': 'तंत्रिका तंत्र और त्वचा के स्वास्थ्य पर ध्यान '
+                                'देने की आवश्यकता है'},
+                         {'en': 'Short travels, networking and social '
+                                'interactions increase',
+                          'hi': 'छोटी यात्राएँ, नेटवर्किंग और सामाजिक संपर्क '
+                                'बढ़ते हैं'},
+                         {'en': 'Maternal uncle and friends become important',
+                          'hi': 'मामा और मित्र महत्वपूर्ण हो जाते हैं'},
+                         {'en': 'Financial acumen sharpens -- good for '
+                                'investments',
+                          'hi': 'वित्तीय कौशल तेज होता है--निवेश के लिए अच्छा '
+                                'है'}],
+             'specific_good': [{'en': 'Academic success, degrees, and '
+                                      'certifications',
+                                'hi': 'शैक्षणिक सफलता, डिग्री और प्रमाणपत्र'},
+                               {'en': 'New business ventures and trade '
+                                      'partnerships',
+                                'hi': 'नए व्यावसायिक उद्यम और व्यापार '
+                                      'साझेदारी'},
+                               {'en': 'Writing, publishing, or media '
+                                      'recognition',
+                                'hi': 'लेखन, प्रकाशन, या मीडिया मान्यता'},
+                               {'en': 'Children excel in education',
+                                'hi': 'बच्चे शिक्षा में उत्कृष्टता प्राप्त '
+                                      'करते हैं'}],
+             'specific_bad': [{'en': 'Nervous disorders, skin allergies, '
+                                     'speech problems',
+                               'hi': 'तंत्रिका संबंधी विकार, त्वचा की एलर्जी, '
+                                     'बोलने में समस्या'},
+                              {'en': 'Overthinking leads to anxiety and '
+                                     'insomnia',
+                               'hi': 'ज़्यादा सोचने से चिंता और अनिद्रा होती '
+                                     'है'},
+                              {'en': 'Business fraud or deception from '
+                                     'partners',
+                               'hi': 'व्यापारिक धोखाधड़ी या साझेदारों से धोखा'},
+                              {'en': 'Cousin or friend betrayals',
+                               'hi': 'चचेरे भाई या मित्र से विश्वासघात'}]},
+ 'Jupiter': {'general': [{'en': 'Wisdom, spirituality and fortune increase '
+                                'markedly',
+                          'hi': 'बुद्धि, आध्यात्मिकता और भाग्य में उल्लेखनीय '
+                                'वृद्धि होती है'},
+                         {'en': 'Marriage, children, and family expansion',
+                          'hi': 'विवाह, बच्चे और परिवार का विस्तार'},
+                         {'en': 'Guru or teacher enters life with significant '
+                                'guidance',
+                          'hi': 'गुरु या शिक्षक महत्वपूर्ण मार्गदर्शन लेकर '
+                                'जीवन में प्रवेश करते हैं'},
+                         {'en': 'Wealth accumulation through ethical means',
+                          'hi': 'नैतिक साधनों से धन संचय'},
+                         {'en': 'Higher education, law, religion, or '
+                                'philosophy become central',
+                          'hi': 'उच्च शिक्षा, कानून, धर्म या दर्शन केंद्र बन '
+                                'जाते हैं'},
+                         {'en': 'Liver and weight gain need monitoring',
+                          'hi': 'लीवर और वजन बढ़ने पर निगरानी की जरूरत है'},
+                         {'en': 'Charitable disposition and religious '
+                                'activities increase',
+                          'hi': 'दानशील प्रवृत्ति और धार्मिक गतिविधियों में '
+                                'वृद्धि होती है'}],
+             'specific_good': [{'en': 'Marriage, birth of children, and family '
+                                      'celebrations',
+                                'hi': 'विवाह, बच्चों का जन्म और पारिवारिक '
+                                      'उत्सव'},
+                               {'en': 'Professional promotion and financial '
+                                      'prosperity',
+                                'hi': 'व्यावसायिक पदोन्नति और वित्तीय समृद्धि'},
+                               {'en': 'Spiritual initiation or deepening of '
+                                      'religious practice',
+                                'hi': 'आध्यात्मिक दीक्षा या धार्मिक अभ्यास को '
+                                      'गहरा करना'},
+                               {'en': 'Foreign travel for education or '
+                                      'pilgrimage',
+                                'hi': 'शिक्षा या तीर्थयात्रा के लिए विदेश '
+                                      'यात्रा'}],
+             'specific_bad': [{'en': 'Over-optimism leads to poor financial '
+                                     'decisions',
+                               'hi': 'अति-आशावाद खराब वित्तीय निर्णयों की ओर '
+                                     'ले जाता है'},
+                              {'en': 'Liver disorders, diabetes, obesity, or '
+                                     'cholesterol issues',
+                               'hi': 'लीवर विकार, मधुमेह, मोटापा, या '
+                                     'कोलेस्ट्रॉल संबंधी समस्याएं'},
+                              {'en': 'Conflicts with religious figures or '
+                                     'teachers',
+                               'hi': 'धार्मिक हस्तियों या शिक्षकों के साथ '
+                                     'संघर्ष'},
+                              {'en': 'Legal issues related to education or '
+                                     'religious institutions',
+                               'hi': 'शिक्षा या धार्मिक संस्थानों से संबंधित '
+                                     'कानूनी मुद्दे'}]},
+ 'Venus': {'general': [{'en': 'Love, marriage, and romantic relationships are '
+                              'central themes',
+                        'hi': 'प्रेम, विवाह और रोमांटिक रिश्ते केंद्रीय विषय '
+                              'हैं'},
+                       {'en': 'Material comforts, luxury, and aesthetic '
+                              'pleasures increase',
+                        'hi': 'भौतिक सुख-सुविधाएं, विलासिता और सौंदर्य संबंधी '
+                              'सुखों में वृद्धि होती है'},
+                       {'en': 'Artistic and creative talents flourish',
+                        'hi': 'कलात्मक एवं रचनात्मक प्रतिभाएँ निखरती हैं'},
+                       {'en': 'Vehicles, jewellery, and fine clothing acquired',
+                        'hi': 'वाहन, आभूषण और बढ़िया वस्त्र प्राप्त हुए'},
+                       {'en': 'Women play significant roles in life events',
+                        'hi': 'महिलाएं जीवन की घटनाओं में महत्वपूर्ण भूमिका '
+                              'निभाती हैं'},
+                       {'en': 'Reproductive health requires attention',
+                        'hi': 'प्रजनन स्वास्थ्य पर ध्यान देने की आवश्यकता है'},
+                       {'en': 'Social life becomes vibrant and enjoyable',
+                        'hi': 'सामाजिक जीवन जीवंत और आनंददायक हो जाता है'}],
+           'specific_good': [{'en': 'Happy marriage, romantic fulfilment, and '
+                                    'partnership harmony',
+                              'hi': 'सुखी विवाह, रोमांटिक संतुष्टि, और '
+                                    'साझेदारी में सामंजस्य'},
+                             {'en': 'Wealth through arts, fashion, beauty, or '
+                                    'luxury goods',
+                              'hi': 'कला, फैशन, सौंदर्य, या विलासिता की '
+                                    'वस्तुओं के माध्यम से धन'},
+                             {'en': 'Acquisition of vehicles, property, and '
+                                    'ornaments',
+                              'hi': 'वाहन, संपत्ति और आभूषणों का अधिग्रहण'},
+                             {'en': 'Travel to beautiful destinations',
+                              'hi': 'सुंदर स्थलों की यात्रा करें'}],
+           'specific_bad': [{'en': 'Overindulgence in sensual pleasures',
+                             'hi': 'कामुक सुखों में अत्यधिक लिप्त होना'},
+                            {'en': 'Reproductive and urinary health issues',
+                             'hi': 'प्रजनन और मूत्र संबंधी स्वास्थ्य संबंधी '
+                                   'समस्याएं'},
+                            {'en': 'Marital discord if Venus is afflicted or '
+                                   'in dusthana',
+                             'hi': 'यदि शुक्र पीड़ित हो या दुःस्थान में हो तो '
+                                   'वैवाहिक कलह होती है'},
+                            {'en': 'Financial loss through luxury spending or '
+                                   'women-related matters',
+                             'hi': 'विलासितापूर्ण खर्च या महिला संबंधी मामलों '
+                                   'से वित्तीय हानि'}]},
+ 'Saturn': {'general': [{'en': 'Hard work, discipline and perseverance define '
+                               'this period',
+                         'hi': 'कड़ी मेहनत, अनुशासन और दृढ़ता इस अवधि को '
+                               'परिभाषित करती है'},
+                        {'en': 'Karma manifests -- rewards for past effort or '
+                               'consequences of neglect',
+                         'hi': 'कर्म प्रकट होता है - पिछले प्रयास का पुरस्कार '
+                               'या उपेक्षा का परिणाम'},
+                        {'en': 'Career in service, manufacturing, mining, '
+                               'agriculture, or law',
+                         'hi': 'सेवा, विनिर्माण, खनन, कृषि, या कानून में '
+                               'करियर'},
+                        {'en': 'Chronic health issues surface; joints, bones, '
+                               'and teeth affected',
+                         'hi': 'पुरानी स्वास्थ्य समस्याएं सतह पर; जोड़, '
+                               'हड्डियाँ और दाँत प्रभावित'},
+                        {'en': 'Delays and obstacles test patience and '
+                               'endurance',
+                         'hi': 'देरी और बाधाएँ धैर्य और सहनशक्ति की परीक्षा '
+                               'लेती हैं'},
+                        {'en': 'Separation from family or loved ones possible',
+                         'hi': 'परिवार या प्रियजनों से अलगाव संभव'},
+                        {'en': 'Spiritual maturity through suffering and '
+                               'discipline',
+                         'hi': 'कष्ट और अनुशासन के माध्यम से आध्यात्मिक '
+                               'परिपक्वता'},
+                        {'en': 'Democratic or servant-leadership roles emerge',
+                         'hi': 'लोकतांत्रिक या सेवक-नेतृत्व की भूमिकाएँ उभरती '
+                               'हैं'}],
+            'specific_good': [{'en': 'Lasting career achievements after '
+                                     'initial struggle',
+                               'hi': 'शुरुआती संघर्ष के बाद करियर में स्थायी '
+                                     'उपलब्धियां'},
+                              {'en': 'Property from sustained effort or '
+                                     'inheritance',
+                               'hi': 'निरंतर प्रयास या विरासत से प्राप्त '
+                                     'संपत्ति'},
+                              {'en': 'Spiritual depth and philosophical '
+                                     'maturity',
+                               'hi': 'आध्यात्मिक गहराई और दार्शनिक परिपक्वता'},
+                              {'en': 'Service to society brings recognition',
+                               'hi': 'समाज की सेवा से पहचान मिलती है'}],
+            'specific_bad': [{'en': 'Chronic ailments: arthritis, knee pain, '
+                                    'dental problems',
+                              'hi': 'पुरानी बीमारियाँ: गठिया, घुटने का दर्द, '
+                                    'दाँत की समस्याएँ'},
+                             {'en': 'Depression, loneliness, and pessimism',
+                              'hi': 'अवसाद, अकेलापन और निराशावाद'},
+                             {'en': 'Financial losses through litigation or '
+                                    'government penalties',
+                              'hi': 'मुकदमेबाजी या सरकारी दंड के माध्यम से '
+                                    'वित्तीय हानि'},
+                             {'en': 'Separation from family, exile, or '
+                                    'demotion',
+                              'hi': 'परिवार से अलगाव, निर्वासन, या पदावनति'}]},
+ 'Rahu': {'general': [{'en': 'Unconventional path, breaking from tradition',
+                       'hi': 'अपरंपरागत मार्ग, परंपरा से हटकर'},
+                      {'en': 'Foreign connections, travel, or residence abroad',
+                       'hi': 'विदेशी संबंध, यात्रा, या विदेश में निवास'},
+                      {'en': 'Technology, media, and modern industries offer '
+                             'success',
+                       'hi': 'प्रौद्योगिकी, मीडिया और आधुनिक उद्योग सफलता '
+                             'प्रदान करते हैं'},
+                      {'en': 'Confusion, deception, and illusion test '
+                             'discernment',
+                       'hi': 'भ्रम, धोखा और भ्रम विवेक का परीक्षण करते हैं'},
+                      {'en': 'Obsessive desires and worldly ambitions '
+                             'intensify',
+                       'hi': 'जुनूनी इच्छाएं और सांसारिक महत्वाकांक्षाएं तीव्र '
+                             'हो जाती हैं'},
+                      {'en': 'Health: mysterious ailments, poisoning risk, '
+                             'mental fog',
+                       'hi': 'स्वास्थ्य: रहस्यमय बीमारियाँ, जहर का खतरा, '
+                             'मानसिक कोहरा'},
+                      {'en': 'Sudden rise or fall in status possible',
+                       'hi': 'पद में अचानक वृद्धि या गिरावट संभव'}],
+          'specific_good': [{'en': 'Breakthrough in technology, media, or '
+                                   'foreign business',
+                             'hi': 'प्रौद्योगिकी, मीडिया, या विदेशी व्यापार '
+                                   'में सफलता'},
+                            {'en': 'Political power or public influence '
+                                   'through unconventional means',
+                             'hi': 'अपरंपरागत तरीकों से राजनीतिक शक्ति या '
+                                   'सार्वजनिक प्रभाव'},
+                            {'en': 'Foreign travel and settlement',
+                             'hi': 'विदेश यात्रा एवं निपटान'},
+                            {'en': 'Gains through speculation or stock market',
+                             'hi': 'सट्टेबाजी या शेयर बाज़ार से लाभ'}],
+          'specific_bad': [{'en': 'Deception, fraud, or scandal involving '
+                                  'others or self',
+                            'hi': 'दूसरों या स्वयं से जुड़ा धोखा, धोखाधड़ी या '
+                                  'घोटाला'},
+                           {'en': 'Mysterious diseases, food poisoning, snake '
+                                  'bite',
+                            'hi': 'रहस्यमय बीमारियाँ, भोजन विषाक्तता, साँप का '
+                                  'काटना'},
+                           {'en': 'Family estrangement, marital breakdown',
+                            'hi': 'पारिवारिक अलगाव, वैवाहिक विघटन'},
+                           {'en': 'Sudden loss of reputation or wealth',
+                            'hi': 'अचानक प्रतिष्ठा या धन की हानि'}]},
+ 'Ketu': {'general': [{'en': 'Spiritual awakening and detachment from material '
+                             'world',
+                       'hi': 'आध्यात्मिक जागृति और भौतिक संसार से वैराग्य'},
+                      {'en': 'Past-life karmas manifest -- sudden events '
+                             'without clear cause',
+                       'hi': 'पिछले जीवन के कर्म प्रकट होते हैं - बिना किसी '
+                             'स्पष्ट कारण के अचानक होने वाली घटनाएँ'},
+                      {'en': 'Interest in meditation, yoga, moksha, and occult '
+                             'sciences',
+                       'hi': 'ध्यान, योग, मोक्ष और गुप्त विज्ञान में रुचि'},
+                      {'en': 'Health: digestive issues, mysterious fevers, '
+                             'wounds',
+                       'hi': 'स्वास्थ्य: पाचन संबंधी समस्याएं, रहस्यमय बुखार, '
+                             'घाव'},
+                      {'en': 'Loss of worldly comforts pushes toward inner '
+                             'growth',
+                       'hi': 'सांसारिक सुख-सुविधाओं की हानि आंतरिक विकास की ओर '
+                             'धकेलती है'},
+                      {'en': 'Isolation, introspection, and withdrawal from '
+                             'society',
+                       'hi': 'अलगाव, आत्मनिरीक्षण और समाज से अलगाव'},
+                      {'en': 'Technical and research skills sharpen',
+                       'hi': 'तकनीकी और अनुसंधान कौशल तेज होते हैं'}],
+          'specific_good': [{'en': 'Spiritual enlightenment and liberation '
+                                   'experiences',
+                             'hi': 'आध्यात्मिक ज्ञान और मुक्ति के अनुभव'},
+                            {'en': 'Success in research, technology, and '
+                                   'occult sciences',
+                             'hi': 'अनुसंधान, प्रौद्योगिकी और गुप्त विज्ञान '
+                                   'में सफलता'},
+                            {'en': 'Past-life skills (healing, languages, '
+                                   'arts) reawaken',
+                             'hi': 'पिछले जीवन के कौशल (उपचार, भाषाएँ, कला) '
+                                   'पुनः जागृत होते हैं'},
+                            {'en': 'Detachment resolves long-standing material '
+                                   'problems',
+                             'hi': 'वैराग्य लंबे समय से चली आ रही भौतिक '
+                                   'समस्याओं का समाधान करता है'}],
+          'specific_bad': [{'en': 'Mysterious chronic ailments, surgery, or '
+                                  'accidents',
+                            'hi': 'रहस्यमय पुरानी बीमारियाँ, सर्जरी, या '
+                                  'दुर्घटनाएँ'},
+                           {'en': 'Loss of position, wealth, or family support',
+                            'hi': 'पद, धन, या पारिवारिक समर्थन की हानि'},
+                           {'en': 'Mental confusion, hallucinations if '
+                                  'afflicted',
+                            'hi': 'पीड़ित होने पर मानसिक भ्रम, मतिभ्रम'},
+                           {'en': 'Scandal or disgrace from past actions '
+                                  'surfacing',
+                            'hi': 'पिछले कार्यों से लांछन या अपमान सामने '
+                                  'आना'}]}}
+
+ANTARDASHA_INTERPRETATIONS: Dict[Tuple[str, str], Any] = {('Sun', 'Sun'): {'en': 'Peak of self-expression and authority. Government '
+                        "favour. Father's role is significant. Health "
+                        'generally good if Sun is strong.',
+                  'hi': 'आत्म-अभिव्यक्ति और अधिकार का शिखर। सरकारी मेहरबानी. '
+                        'पिता की भूमिका अहम है. यदि सूर्य मजबूत हो तो '
+                        'स्वास्थ्य आमतौर पर अच्छा रहता है।'},
+ ('Sun', 'Moon'): {'en': 'Emotional sensitivity rises. Mother and public '
+                         'relations become important. Travel for work. Mood '
+                         'fluctuations affect authority.',
+                   'hi': 'भावनात्मक संवेदनशीलता बढ़ती है. माँ और जनसंपर्क '
+                         'महत्वपूर्ण हो जाते हैं। काम के सिलसिले में यात्रा '
+                         'करें। मनोदशा में उतार-चढ़ाव अधिकार को प्रभावित करता '
+                         'है।'},
+ ('Sun', 'Mars'): {'en': 'Courage and energy combine with authority. Property '
+                         'gains, technical projects succeed. Risk of conflicts '
+                         'with authority and blood-related health issues.',
+                   'hi': 'साहस और ऊर्जा अधिकार के साथ जुड़ते हैं। संपत्ति लाभ, '
+                         'तकनीकी परियोजनाएं सफल होती हैं। अधिकारियों के साथ '
+                         'संघर्ष और रक्त संबंधी स्वास्थ्य समस्याओं का जोखिम।'},
+ ('Sun', 'Mercury'): {'en': 'Intellectual pursuits shine. Business acumen '
+                            'combines with authority. Good for examinations, '
+                            'writing, and trade. Skin or nervous issues '
+                            'possible.',
+                      'hi': 'बौद्धिक गतिविधियाँ चमकती हैं। व्यावसायिक कौशल '
+                            'अधिकार के साथ जुड़ता है। परीक्षा, लेखन और व्यापार '
+                            'के लिए अच्छा है। त्वचा या तंत्रिका संबंधी समस्या '
+                            'संभव।'},
+ ('Sun', 'Jupiter'): {'en': 'Highly auspicious -- wisdom, wealth and '
+                            "recognition. Guru's blessings. Promotion, "
+                            'children prosper. Spiritual and material growth '
+                            'together.',
+                      'hi': 'अत्यधिक शुभ--बुद्धि, धन और पहचान। गुरु का '
+                            'आशीर्वाद. पदोन्नति, संतान की उन्नति. आध्यात्मिक '
+                            'और भौतिक विकास एक साथ।'},
+ ('Sun', 'Venus'): {'en': 'Luxury, comfort and romantic fulfilment. Creative '
+                          'expression enhanced. Vehicles and ornaments '
+                          'acquired. Reproductive health needs attention.',
+                    'hi': 'विलासिता, आराम और रोमांटिक पूर्ति। रचनात्मक '
+                          'अभिव्यक्ति बढ़ी. वाहन एवं आभूषण प्राप्त हुए। प्रजनन '
+                          'स्वास्थ्य पर ध्यान देने की जरूरत है.'},
+ ('Sun', 'Saturn'): {'en': 'Hard work meets authority. Delays in recognition. '
+                           "Father's health may suffer. Bone, joint, or eye "
+                           'ailments possible. Karmic lessons.',
+                     'hi': 'कड़ी मेहनत से अधिकार मिलते हैं। पहचान में देरी. '
+                           'पिता का स्वास्थ्य खराब हो सकता है। हड्डी, जोड़ या '
+                           'नेत्र रोग संभव। कर्म पाठ.'},
+ ('Sun', 'Rahu'): {'en': 'Unconventional rise in authority. Foreign '
+                         'connections benefit career. Risk of ego-driven '
+                         'mistakes and sudden reputation damage.',
+                   'hi': 'अधिकार में अपरंपरागत वृद्धि. विदेशी संपर्कों से '
+                         'करियर में लाभ होता है। अहंकार से प्रेरित गलतियों और '
+                         'अचानक प्रतिष्ठा को नुकसान पहुंचने का जोखिम।'},
+ ('Sun', 'Ketu'): {'en': 'Spiritual introspection during authoritative period. '
+                         'Detachment from ego. Father faces challenges. '
+                         'Mysterious health issues possible.',
+                   'hi': 'आधिकारिक काल के दौरान आध्यात्मिक आत्मनिरीक्षण। '
+                         'अहंकार से वैराग्य. पिता को चुनौतियों का सामना करना '
+                         'पड़ता है. रहस्यमय स्वास्थ्य समस्याएं संभव।'},
+ ('Moon', 'Moon'): {'en': "Peak emotional period. Mother's role is central. "
+                          'Mental peace if Moon is strong; anxiety if weak. '
+                          'Property and public gains.',
+                    'hi': 'चरम भावनात्मक अवधि. माँ की भूमिका केन्द्रीय है। '
+                          'चंद्रमा मजबूत हो तो मानसिक शांति मिलती है। चिंता '
+                          'अगर कमजोर है. संपत्ति और सार्वजनिक लाभ.'},
+ ('Moon', 'Mars'): {'en': 'Emotional energy channelled into action. Property '
+                          'deals and courage. Emotional conflicts at home. '
+                          'Blood pressure and stomach issues.',
+                    'hi': 'भावनात्मक ऊर्जा को क्रियान्वित किया गया। संपत्ति के '
+                          'सौदे एवं साहस। घर में भावनात्मक संघर्ष। रक्तचाप और '
+                          'पेट की समस्या.'},
+ ('Moon', 'Mercury'): {'en': 'Intellectual clarity improves. Good for '
+                             'business, communication and education. '
+                             'Mother-related travel. Mental agility is sharp.',
+                       'hi': 'बौद्धिक स्पष्टता में सुधार होता है। व्यवसाय, '
+                             'संचार और शिक्षा के लिए अच्छा है। माता संबंधी '
+                             'यात्रा. मानसिक चपलता तीव्र होती है.'},
+ ('Moon', 'Jupiter'): {'en': 'Very auspicious -- emotional wisdom, family '
+                             'expansion. Marriage or childbirth likely. Mother '
+                             'is well. Spiritual contentment.',
+                       'hi': 'अत्यंत शुभ--भावनात्मक बुद्धि, पारिवारिक विस्तार। '
+                             'विवाह या संतानोत्पत्ति की संभावना। मां ठीक हैं. '
+                             'आध्यात्मिक संतुष्टि.'},
+ ('Moon', 'Venus'): {'en': 'Romantic fulfilment, luxury and aesthetic '
+                           'pleasures. Emotional bond with partner deepens. '
+                           'Women play beneficial roles.',
+                     'hi': 'रोमांटिक संतुष्टि, विलासिता और सौंदर्य सुख। '
+                           'पार्टनर के साथ भावनात्मक रिश्ता गहरा होता है। '
+                           'महिलाएं लाभकारी भूमिका निभाती हैं।'},
+ ('Moon', 'Saturn'): {'en': 'Emotional heaviness, depression tendency. '
+                            "Mother's health may suffer. Delays in domestic "
+                            'matters. Hard work needed for peace.',
+                      'hi': 'भावनात्मक भारीपन, अवसाद की प्रवृत्ति। माता का '
+                            'स्वास्थ्य ख़राब हो सकता है। घरेलू मामलों में '
+                            'देरी. शांति के लिए कड़ी मेहनत की जरूरत.'},
+ ('Moon', 'Rahu'): {'en': 'Mental confusion and emotional turbulence. Foreign '
+                          'travel. Mother faces unusual challenges. Nightmares '
+                          'and anxiety increase.',
+                    'hi': 'मानसिक भ्रम और भावनात्मक उथल-पुथल. विदेश यात्रा. '
+                          'माँ को असामान्य चुनौतियों का सामना करना पड़ता है। '
+                          'बुरे सपने और चिंता बढ़ जाती है।'},
+ ('Moon', 'Ketu'): {'en': 'Emotional detachment, spiritual seeking. Mother '
+                          'faces health issues. Psychic experiences intensify. '
+                          'Stomach and chest ailments.',
+                    'hi': 'भावनात्मक वैराग्य, आध्यात्मिक खोज। माता को '
+                          'स्वास्थ्य संबंधी परेशानियां रहती हैं। मानसिक अनुभव '
+                          'तीव्र हो जाते हैं। पेट और छाती के रोग।'},
+ ('Moon', 'Sun'): {'en': 'Authority and emotions intersect. Public '
+                         'recognition. Father and mother both influential. '
+                         'Health and vitality improve.',
+                   'hi': 'अधिकार और भावनाएँ प्रतिच्छेद करती हैं। सार्वजनिक '
+                         'मान्यता। पिता और माता दोनों प्रभावशाली. स्वास्थ्य और '
+                         'जीवन शक्ति में सुधार होता है।'},
+ ('Mars', 'Mars'): {'en': 'Peak energy and courage. Property transactions. '
+                          'Risk of accidents, cuts, burns. Victory over '
+                          'enemies. Physical fitness improves.',
+                    'hi': 'चरम ऊर्जा और साहस. संपत्ति लेनदेन. दुर्घटना, कटने, '
+                          'जलने का खतरा। शत्रुओं पर विजय. शारीरिक फिटनेस में '
+                          'सुधार होता है।'},
+ ('Mars', 'Mercury'): {'en': 'Technical intellect shines. Property deals '
+                             'through negotiation. Business partnerships in '
+                             'engineering or technology.',
+                       'hi': 'तकनीकी बुद्धि चमकती है. संपत्ति का सौदा बातचीत '
+                             'से होता है। इंजीनियरिंग या प्रौद्योगिकी में '
+                             'व्यावसायिक साझेदारी।'},
+ ('Mars', 'Jupiter'): {'en': 'Auspicious -- dharmic courage. Property through '
+                             'fortune. Brothers prosper. Children and '
+                             'education benefit. Legal victory.',
+                       'hi': 'शुभ--धार्मिक साहस. भाग्य से संपत्ति. भाइयों की '
+                             'उन्नति हो. संतान और शिक्षा से लाभ होता है। '
+                             'कानूनी जीत.'},
+ ('Mars', 'Venus'): {'en': 'Passion and luxury combine. Romantic relationships '
+                           'intensify. Property acquisition. Reproductive '
+                           'health needs attention.',
+                     'hi': 'जुनून और विलासिता का मेल। रोमांटिक रिश्ते प्रगाढ़ '
+                           'होते हैं। संपत्ति अधिग्रहण. प्रजनन स्वास्थ्य पर '
+                           'ध्यान देने की जरूरत है.'},
+ ('Mars', 'Saturn'): {'en': 'Conflict between energy and restriction. '
+                            'Accidents or surgery risk. Property disputes. '
+                            'Joint and bone injuries possible.',
+                      'hi': 'ऊर्जा और प्रतिबंध के बीच संघर्ष. दुर्घटना या '
+                            'सर्जरी का जोखिम. संपत्ति विवाद. जोड़ एवं हड्डी '
+                            'में चोट संभव।'},
+ ('Mars', 'Rahu'): {'en': 'Reckless courage and unconventional action. Foreign '
+                          'property dealings. Risk of explosions, accidents, '
+                          'or deception.',
+                    'hi': 'लापरवाह साहस और अपरंपरागत कार्रवाई. विदेशी संपत्ति '
+                          'का लेन-देन. विस्फोट, दुर्घटना या धोखे का जोखिम।'},
+ ('Mars', 'Ketu'): {'en': 'Spiritual warrior energy. Past-life martial skills '
+                          'resurface. Surgery or accident risk. Detachment '
+                          'from material aggression.',
+                    'hi': 'आध्यात्मिक योद्धा ऊर्जा. पिछले जीवन का मार्शल कौशल '
+                          'फिर से उभर आया है। सर्जरी या दुर्घटना का जोखिम. '
+                          'भौतिक आक्रामकता से अलगाव.'},
+ ('Mars', 'Sun'): {'en': 'Authority and courage combine. Government property. '
+                         'Father and brothers interact. Leadership in '
+                         'competitive fields.',
+                   'hi': 'अधिकार और साहस का मेल है। सरकारी संपत्ति. पिता और '
+                         'भाई आपस में बातचीत करते हैं. प्रतिस्पर्धी क्षेत्रों '
+                         'में नेतृत्व.'},
+ ('Mars', 'Moon'): {'en': 'Emotional courage. Mother and property connected. '
+                          'Domestic energy high. Stomach and blood pressure '
+                          'issues possible.',
+                    'hi': 'भावनात्मक साहस. माँ और संपत्ति जुड़े हुए हैं. घरेलू '
+                          'ऊर्जा उच्च. पेट एवं रक्तचाप की समस्या संभव।'},
+ ('Mercury', 'Mercury'): {'en': 'Peak intellectual period. Business '
+                                'flourishes. Communication and networking at '
+                                'their best. Skin and nervous health need '
+                                'care.',
+                          'hi': 'चरम बौद्धिक काल. व्यापार फलता-फूलता है. संचार '
+                                'और नेटवर्किंग अपने सर्वोत्तम स्तर पर। त्वचा '
+                                'और तंत्रिका स्वास्थ्य को देखभाल की ज़रूरत '
+                                'है।'},
+ ('Mercury', 'Jupiter'): {'en': 'Wisdom and intellect combine beautifully. '
+                                'Education, publishing, legal success. '
+                                'Financial growth through ethical business.',
+                          'hi': 'बुद्धि और बुद्धि का सुन्दर मेल होता है। '
+                                'शिक्षा, प्रकाशन, कानूनी सफलता। नैतिक व्यवसाय '
+                                'के माध्यम से वित्तीय विकास।'},
+ ('Mercury', 'Venus'): {'en': 'Creative communication and artistic business. '
+                              'Fashion, media, and design succeed. Romantic '
+                              'correspondence. Social life vibrant.',
+                        'hi': 'रचनात्मक संचार और कलात्मक व्यवसाय। फ़ैशन, '
+                              'मीडिया और डिज़ाइन सफल हैं। रोमांटिक पत्राचार. '
+                              'सामाजिक जीवन जीवंत.'},
+ ('Mercury', 'Saturn'): {'en': 'Disciplined intellect. Serious study and '
+                               'long-term business planning. Nervous '
+                               'exhaustion possible. Dental issues.',
+                         'hi': 'अनुशासित बुद्धि. गंभीर अध्ययन और दीर्घकालिक '
+                               'व्यापार योजना। घबराहट संबंधी थकावट संभव। दंत '
+                               'संबंधी समस्याएं.'},
+ ('Mercury', 'Rahu'): {'en': 'Unconventional business opportunities. '
+                             'Technology and foreign trade. Risk of fraud or '
+                             'deception. Mental confusion if afflicted.',
+                       'hi': 'अपरंपरागत व्यावसायिक अवसर. प्रौद्योगिकी और '
+                             'विदेशी व्यापार. धोखाधड़ी या धोखे का जोखिम. '
+                             'पीड़ित होने पर मानसिक भ्रम।'},
+ ('Mercury', 'Ketu'): {'en': 'Spiritual intellect, interest in astrology and '
+                             'occult study. Communication breakdowns. Skin '
+                             'ailments and nervous disorders.',
+                       'hi': 'आध्यात्मिक बुद्धि, ज्योतिष और गुप्त अध्ययन में '
+                             'रुचि। संचार टूटना. त्वचा रोग और तंत्रिका संबंधी '
+                             'विकार।'},
+ ('Mercury', 'Sun'): {'en': 'Authority through intellect. Government business. '
+                            'Father supports education. Speech commands '
+                            'respect.',
+                      'hi': 'बुद्धि द्वारा अधिकार। सरकारी कामकाज. पिता शिक्षा '
+                            'का समर्थन करते हैं। वाणी सम्मान दिलाती है.'},
+ ('Mercury', 'Moon'): {'en': 'Emotional intelligence sharpens. Public '
+                             'communication roles. Mother supports business. '
+                             'Travel for trade.',
+                       'hi': 'भावनात्मक बुद्धिमत्ता तीव्र होती है। सार्वजनिक '
+                             'संचार भूमिकाएँ. मां बिजनेस में सहयोग करती हैं. '
+                             'व्यापार के लिए यात्रा करें।'},
+ ('Mercury', 'Mars'): {'en': 'Technical communication and engineering '
+                             'intellect. Property negotiations. Sibling '
+                             'business partnerships. Arguments possible.',
+                       'hi': 'तकनीकी संचार और इंजीनियरिंग बुद्धि। संपत्ति '
+                             'वार्ता. भाई-बहन की व्यावसायिक साझेदारी। '
+                             'तर्क-वितर्क संभव.'},
+ ('Jupiter', 'Jupiter'): {'en': 'Peak of wisdom, fortune and expansion. '
+                                'Marriage, children, wealth all prosper. '
+                                "Guru's grace is strongest. Spiritual growth.",
+                          'hi': 'ज्ञान, भाग्य और विस्तार का शिखर। विवाह, '
+                                'बच्चे, धन सभी समृद्ध होते हैं। गुरु की कृपा '
+                                'सबसे प्रबल है. आध्यात्मिक विकास.'},
+ ('Jupiter', 'Venus'): {'en': 'Wealth and luxury through wisdom. Happy '
+                              'marriage. Artistic and creative prosperity. '
+                              'Vehicles and ornaments. Social prestige.',
+                        'hi': 'बुद्धि से धन और विलासिता। शुभ विवाह। कलात्मक '
+                              'एवं रचनात्मक समृद्धि. वाहन और आभूषण. सामाजिक '
+                              'प्रतिष्ठा.'},
+ ('Jupiter', 'Saturn'): {'en': 'Disciplined wisdom. Long-term investments '
+                               'mature. Health caution needed -- liver and '
+                               'joints. Spiritual lessons through hardship.',
+                         'hi': 'अनुशासित बुद्धि. लंबी अवधि के निवेश परिपक्व '
+                               'होते हैं. स्वास्थ्य संबंधी सावधानी '
+                               'आवश्यक--यकृत और जोड़। कठिनाई के माध्यम से '
+                               'आध्यात्मिक शिक्षा.'},
+ ('Jupiter', 'Rahu'): {'en': 'Unconventional expansion. Foreign guru or '
+                             'education. Risk of misplaced faith. Technology '
+                             'and modern ventures through wisdom.',
+                       'hi': 'अपरंपरागत विस्तार. विदेशी गुरु या शिक्षा. ग़लत '
+                             'विश्वास का ख़तरा. ज्ञान के माध्यम से '
+                             'प्रौद्योगिकी और आधुनिक उद्यम।'},
+ ('Jupiter', 'Ketu'): {'en': 'Deep spiritual awakening. Detachment from '
+                             'material wealth. Meditation and moksha '
+                             'practices. Health fluctuations.',
+                       'hi': 'गहरी आध्यात्मिक जागृति. भौतिक संपदा से विरक्ति. '
+                             'ध्यान और मोक्ष अभ्यास. स्वास्थ्य में '
+                             'उतार-चढ़ाव.'},
+ ('Jupiter', 'Sun'): {'en': 'Authority blessed by wisdom. Government '
+                            'recognition and honour. Father prospers. Career '
+                            'promotion through merit.',
+                      'hi': 'प्राधिकरण को बुद्धि का आशीर्वाद प्राप्त है। '
+                            'सरकारी मान्यता और सम्मान. पिता की उन्नति होती है. '
+                            'योग्यता के माध्यम से करियर में उन्नति.'},
+ ('Jupiter', 'Moon'): {'en': 'Emotional wisdom and family happiness. Mother is '
+                             'well. Property and domestic expansion. Public '
+                             'favour.',
+                       'hi': 'भावनात्मक ज्ञान और पारिवारिक खुशी। मां ठीक हैं. '
+                             'संपत्ति एवं घरेलू विस्तार. जनता का उपकार.'},
+ ('Jupiter', 'Mars'): {'en': 'Courageous wisdom. Property through fortune. '
+                             'Brothers benefit. Legal and dharmic victories. '
+                             'Technical education.',
+                       'hi': 'साहसी बुद्धि. भाग्य से संपत्ति. भाइयों से लाभ '
+                             'होता है. कानूनी और धार्मिक जीत. तकनीकी शिक्षा।'},
+ ('Jupiter', 'Mercury'): {'en': 'Intellectual fortune. Business and education '
+                                'prosper simultaneously. Publishing success. '
+                                'Children excel academically.',
+                          'hi': 'बौद्धिक भाग्य. व्यवसाय और शिक्षा एक साथ '
+                                'समृद्ध होते हैं। प्रकाशन सफलता. बच्चे '
+                                'शैक्षणिक रूप से उत्कृष्ट होते हैं।'},
+ ('Venus', 'Venus'): {'en': 'Peak of luxury, romance, and artistic expression. '
+                            'Marriage or renewal of vows. Vehicles, property, '
+                            'and wealth. Social prominence.',
+                      'hi': 'विलासिता, रोमांस और कलात्मक अभिव्यक्ति का शिखर। '
+                            'विवाह या प्रतिज्ञा का नवीनीकरण। वाहन, संपत्ति और '
+                            'धन. सामाजिक प्रमुखता.'},
+ ('Venus', 'Saturn'): {'en': 'Disciplined luxury. Long-term artistic projects. '
+                             'Reproductive and urinary health issues. Delayed '
+                             'romantic fulfilment.',
+                       'hi': 'अनुशासित विलासिता. दीर्घकालिक कलात्मक '
+                             'परियोजनाएँ। प्रजनन और मूत्र संबंधी स्वास्थ्य '
+                             'संबंधी समस्याएं. रोमांटिक पूर्ति में देरी।'},
+ ('Venus', 'Rahu'): {'en': 'Unconventional romance and foreign luxury. '
+                           'Technology in arts. Risk of scandalous affairs. '
+                           'Skin and allergy issues.',
+                     'hi': 'अपरंपरागत रोमांस और विदेशी विलासिता। कला में '
+                           'प्रौद्योगिकी. निंदनीय मामलों का जोखिम. त्वचा और '
+                           'एलर्जी संबंधी समस्याएं.'},
+ ('Venus', 'Ketu'): {'en': 'Spiritual detachment from pleasures. Past-life '
+                           'artistic talents resurface. Romantic '
+                           'disappointments lead to growth.',
+                     'hi': 'सुखों से आध्यात्मिक वैराग्य. पिछले जीवन की कलात्मक '
+                           'प्रतिभाएँ फिर से उभर कर सामने आती हैं। रोमांटिक '
+                           'निराशाएँ विकास की ओर ले जाती हैं।'},
+ ('Venus', 'Sun'): {'en': 'Authority in creative fields. Government arts '
+                          'funding. Glamorous public role. Father and spouse '
+                          'dynamics.',
+                    'hi': 'रचनात्मक क्षेत्रों में प्राधिकार. सरकारी कला निधि. '
+                          'ग्लैमरस सार्वजनिक भूमिका. पिता और जीवनसाथी की '
+                          'गतिशीलता.'},
+ ('Venus', 'Moon'): {'en': 'Emotional romance and domestic beauty. Mother and '
+                           'spouse connected. Home decoration. Water travel.',
+                     'hi': 'भावनात्मक रोमांस और घरेलू सुंदरता। माँ और जीवनसाथी '
+                           'जुड़े हुए हैं। घर की सजावट. जल यात्रा.'},
+ ('Venus', 'Mars'): {'en': 'Passionate romance, bold artistic expression. '
+                           'Property acquisition. Reproductive health needs '
+                           'care. Energy in creative projects.',
+                     'hi': 'भावुक रोमांस, साहसिक कलात्मक अभिव्यक्ति। संपत्ति '
+                           'अधिग्रहण. प्रजनन स्वास्थ्य को देखभाल की आवश्यकता '
+                           'है। रचनात्मक परियोजनाओं में ऊर्जा.'},
+ ('Venus', 'Mercury'): {'en': 'Creative business and artistic communication. '
+                              'Fashion, media, and design prosper. Social '
+                              'networking expands.',
+                        'hi': 'रचनात्मक व्यवसाय और कलात्मक संचार। फैशन, मीडिया '
+                              'और डिज़ाइन समृद्ध हुए। सोशल नेटवर्किंग का '
+                              'विस्तार हो रहा है.'},
+ ('Venus', 'Jupiter'): {'en': 'Wisdom and luxury combined. Happy marriage and '
+                              'family expansion. Wealth through ethical '
+                              'creative enterprise.',
+                        'hi': 'बुद्धि और विलासिता संयुक्त। शुभ विवाह एवं '
+                              'परिवार विस्तार। नैतिक रचनात्मक उद्यम के माध्यम '
+                              'से धन.'},
+ ('Saturn', 'Saturn'): {'en': 'Peak of karma manifestation. Hard work defines '
+                              'life. Chronic health issues surface. Lasting '
+                              'achievements through discipline.',
+                        'hi': 'कर्म अभिव्यक्ति का चरम. कड़ी मेहनत जीवन को '
+                              'परिभाषित करती है। पुरानी स्वास्थ्य समस्याएं सतह '
+                              'पर। अनुशासन के माध्यम से स्थायी उपलब्धियाँ।'},
+ ('Saturn', 'Rahu'): {'en': 'Unconventional hardship. Foreign obstacles. '
+                            'Technology and modern challenges. Risk of '
+                            'deception during difficult times.',
+                      'hi': 'अपरंपरागत कठिनाई. विदेशी बाधाएँ. प्रौद्योगिकी और '
+                            'आधुनिक चुनौतियाँ। कठिन समय में धोखे का जोखिम.'},
+ ('Saturn', 'Ketu'): {'en': 'Spiritual suffering and deep karmic clearing. '
+                            'Health crises lead to detachment. Past-life '
+                            'karmas resolve painfully.',
+                      'hi': 'आध्यात्मिक पीड़ा और गहन कर्म शुद्धि। स्वास्थ्य '
+                            'संकट वैराग्य की ओर ले जाता है। पिछले जीवन के कर्म '
+                            'कष्टदायक ढंग से हल होते हैं।'},
+ ('Saturn', 'Sun'): {'en': 'Authority restricted by karma. Government '
+                           "obstacles. Father's health declines. Eye and bone "
+                           'issues. Frustration with hierarchy.',
+                     'hi': 'प्राधिकार कर्म द्वारा प्रतिबंधित है। सरकारी '
+                           'बाधाएँ. पिता के स्वास्थ्य में गिरावट. आंख और हड्डी '
+                           'संबंधी समस्या. पदानुक्रम से निराशा.'},
+ ('Saturn', 'Moon'): {'en': "Emotional heaviness and depression. Mother's "
+                            'suffering. Domestic hardship. Mental health needs '
+                            'serious attention.',
+                      'hi': 'भावनात्मक भारीपन और अवसाद. माँ की पीड़ा. घरेलू '
+                            'कठिनाई. मानसिक स्वास्थ्य पर गंभीरता से ध्यान देने '
+                            'की जरूरत है।'},
+ ('Saturn', 'Mars'): {'en': 'Accidents, surgery, and conflicts during '
+                            'difficult period. Property disputes. Joint and '
+                            'bone injuries. Legal battles.',
+                      'hi': 'कठिन अवधि के दौरान दुर्घटनाएं, सर्जरी और संघर्ष। '
+                            'संपत्ति विवाद. जोड़ और हड्डी में चोट. कानूनी '
+                            'लड़ाई.'},
+ ('Saturn', 'Mercury'): {'en': 'Intellectual discipline and serious study. '
+                               'Business requires patience. Nervous '
+                               'exhaustion. Delayed results.',
+                         'hi': 'बौद्धिक अनुशासन और गंभीर अध्ययन. व्यवसाय के '
+                               'लिए धैर्य की आवश्यकता होती है। घबराहट भरी '
+                               'थकावट. विलंबित परिणाम.'},
+ ('Saturn', 'Jupiter'): {'en': 'Wisdom through suffering. Spiritual maturity. '
+                               'Financial stability slowly returns. Guru helps '
+                               'through hardship.',
+                         'hi': 'दुख के माध्यम से बुद्धि. आध्यात्मिक परिपक्वता. '
+                               'वित्तीय स्थिरता धीरे-धीरे लौट आती है। गुरु '
+                               'कठिनाई में सहायता करते हैं।'},
+ ('Saturn', 'Venus'): {'en': 'Artistic discipline bears fruit. Late romantic '
+                             'fulfilment. Chronic reproductive issues. '
+                             'Vehicles and luxury delayed.',
+                       'hi': 'कलात्मक अनुशासन फल देता है. देर से रोमांटिक '
+                             'पूर्ति. जीर्ण प्रजनन संबंधी समस्याएं. वाहन एवं '
+                             'विलासिता में विलंब।'},
+ ('Rahu', 'Rahu'): {'en': 'Peak of worldly obsession and unconventional path. '
+                          'Foreign connections strongest. Maximum confusion '
+                          'and ambition. Sudden changes.',
+                    'hi': 'सांसारिक जुनून और अपरंपरागत पथ का चरम. विदेशी संबंध '
+                          'सबसे मजबूत. अधिकतम भ्रम और महत्वाकांक्षा. अचानक '
+                          'परिवर्तन.'},
+ ('Rahu', 'Ketu'): {'en': 'Spiritual crisis within material obsession. Axis of '
+                          'karma activates. Sudden events without logic. '
+                          'Health disturbances.',
+                    'hi': 'भौतिक जुनून के भीतर आध्यात्मिक संकट। कर्म की धुरी '
+                          'सक्रिय हो जाती है. बिना तर्क के अचानक घटनाएँ। '
+                          'स्वास्थ्य में गड़बड़ी.'},
+ ('Rahu', 'Sun'): {'en': 'Unconventional authority. Foreign government roles. '
+                         'Father faces unusual challenges. Ego-driven ambition '
+                         'peaks.',
+                   'hi': 'अपरंपरागत अधिकार. विदेशी सरकार की भूमिकाएँ. पिता को '
+                         'असामान्य चुनौतियों का सामना करना पड़ता है। अहंकार से '
+                         'प्रेरित महत्वाकांक्षा चरम पर है।'},
+ ('Rahu', 'Moon'): {'en': 'Mental turbulence and emotional confusion. Mother '
+                          'faces foreign challenges. Nightmares and psychic '
+                          'disturbances.',
+                    'hi': 'मानसिक अशांति और भावनात्मक भ्रम। माँ को विदेशी '
+                          'चुनौतियों का सामना करना पड़ता है। बुरे सपने और '
+                          'मानसिक अशांति.'},
+ ('Rahu', 'Mars'): {'en': 'Reckless action and unconventional courage. '
+                          'Accidents, explosions, surgery risk. Foreign '
+                          'property. Violent disputes.',
+                    'hi': 'लापरवाह कार्रवाई और अपरंपरागत साहस. दुर्घटनाएँ, '
+                          'विस्फोट, सर्जरी का जोखिम। विदेशी संपत्ति. हिंसक '
+                          'विवाद.'},
+ ('Rahu', 'Mercury'): {'en': 'Technology and foreign business flourish. Risk '
+                             'of intellectual fraud. Media and communication '
+                             'breakthroughs.',
+                       'hi': 'प्रौद्योगिकी और विदेशी व्यापार फलता-फूलता है। '
+                             'बौद्धिक धोखाधड़ी का खतरा. मीडिया और संचार की '
+                             'सफलताएँ।'},
+ ('Rahu', 'Jupiter'): {'en': 'Unconventional wisdom. Foreign education or '
+                             'guru. Expansion through modern means. Risk of '
+                             'misplaced faith.',
+                       'hi': 'अपरंपरागत ज्ञान. विदेशी शिक्षा या गुरु. आधुनिक '
+                             'तरीकों से विस्तार. ग़लत विश्वास का ख़तरा.'},
+ ('Rahu', 'Venus'): {'en': 'Foreign romance and unconventional luxury. '
+                           'Technology in arts. Scandalous relationships if '
+                           'afflicted. Material obsession.',
+                     'hi': 'विदेशी रोमांस और अपरंपरागत विलासिता। कला में '
+                           'प्रौद्योगिकी. पीड़ित होने पर निंदनीय रिश्ते। भौतिक '
+                           'जुनून.'},
+ ('Rahu', 'Saturn'): {'en': 'Double malefic period. Extreme hardship and '
+                            'karmic lessons. Foreign exile. Chronic ailments '
+                            'worsen. Perseverance essential.',
+                      'hi': 'दोहरा अशुभ काल. अत्यधिक कठिनाई और कर्म पाठ। '
+                            'विदेशी निर्वासन. पुरानी बीमारियाँ बिगड़ जाती हैं। '
+                            'दृढ़ता आवश्यक.'},
+ ('Ketu', 'Ketu'): {'en': 'Peak of spiritual detachment. Past-life karmas '
+                          'culminate. Mysterious events and health issues. '
+                          'Moksha-oriented period.',
+                    'hi': 'आध्यात्मिक वैराग्य का चरम. पिछले जीवन के कर्म '
+                          'समाप्त हो जाते हैं। रहस्यमय घटनाएँ और स्वास्थ्य '
+                          'संबंधी समस्याएँ। मोक्षोन्मुख काल।'},
+ ('Ketu', 'Sun'): {'en': 'Detachment from authority and ego. Father faces '
+                         'spiritual crisis. Loss of position leads to inner '
+                         'growth.',
+                   'hi': 'अधिकार और अहंकार से अलगाव. पिता को आध्यात्मिक संकट '
+                         'का सामना करना पड़ा. पद की हानि से आंतरिक विकास होता '
+                         'है।'},
+ ('Ketu', 'Moon'): {'en': 'Emotional detachment and psychic sensitivity. '
+                          "Mother's health. Mental disturbances. Vivid dreams "
+                          'and visions.',
+                    'hi': 'भावनात्मक वैराग्य और मानसिक संवेदनशीलता. माता का '
+                          'स्वास्थ्य. मानसिक अशांति. ज्वलंत सपने और दर्शन.'},
+ ('Ketu', 'Mars'): {'en': 'Spiritual warrior mode. Surgery or accident risk. '
+                          'Past-life martial energy surfaces. Detachment from '
+                          'aggression.',
+                    'hi': 'आध्यात्मिक योद्धा मोड. सर्जरी या दुर्घटना का जोखिम. '
+                          'पिछले जीवन की मार्शल ऊर्जा सतह पर है। आक्रामकता से '
+                          'अलगाव.'},
+ ('Ketu', 'Mercury'): {'en': 'Interest in occult study, astrology, and ancient '
+                             'languages. Communication breakdowns. Nervous and '
+                             'skin issues.',
+                       'hi': 'गुप्त अध्ययन, ज्योतिष एवं प्राचीन भाषाओं में '
+                             'रुचि। संचार टूटना. तंत्रिका और त्वचा संबंधी '
+                             'समस्याएं.'},
+ ('Ketu', 'Jupiter'): {'en': 'Deep spiritual wisdom manifests. Guru appears. '
+                             'Detachment brings unexpected fortune. Meditation '
+                             'bears fruit.',
+                       'hi': 'गहन आध्यात्मिक ज्ञान प्रकट होता है। गुरु प्रकट '
+                             'होते हैं. वैराग्य अप्रत्याशित भाग्य लाता है। '
+                             'ध्यान फलीभूत होता है.'},
+ ('Ketu', 'Venus'): {'en': 'Detachment from romantic and material pleasures. '
+                           'Artistic spirituality. Past-life creative talents '
+                           'resurface.',
+                     'hi': 'रोमांटिक और भौतिक सुखों से अलगाव। कलात्मक '
+                           'आध्यात्मिकता. पिछले जीवन की रचनात्मक प्रतिभाएँ फिर '
+                           'से उभर कर सामने आती हैं।'},
+ ('Ketu', 'Saturn'): {'en': 'Extreme karmic clearing. Health crises and '
+                            'isolation. Spiritual suffering has deep purpose. '
+                            'Joint and skin ailments.',
+                      'hi': 'अत्यधिक कर्म समाशोधन. स्वास्थ्य संकट और अलगाव. '
+                            'आध्यात्मिक पीड़ा का गहरा उद्देश्य है. जोड़ों और '
+                            'त्वचा के रोग.'},
+ ('Ketu', 'Rahu'): {'en': 'Karmic axis fully activated. Confusion between '
+                          'spirit and matter. Sudden reversals. Health '
+                          'disturbances. Transformation.',
+                    'hi': 'कार्मिक अक्ष पूरी तरह से सक्रिय है। आत्मा और पदार्थ '
+                          'के बीच भ्रम. अचानक उलटफेर. स्वास्थ्य में गड़बड़ी. '
+                          'परिवर्तन.'}}
+
+MANGALA_DOSHA_TEXT: Dict[str, Any] = {'classical_shlokas': [{'source': {'en': 'Agastya Samhita',
+                                   'hi': 'अगस्त्य संहिता'},
+                        'text': {'en': 'If Mars is placed in the 1st, 4th, '
+                                       '7th, 8th, or 12th house from the '
+                                       'Lagna, Moon, or Venus, the native is '
+                                       'said to have Mangala Dosha (Kuja '
+                                       'Dosha). Such placement causes '
+                                       'disturbance in marital life and '
+                                       'discord with the spouse.',
+                                 'hi': 'यदि मंगल लग्न, चंद्रमा या शुक्र से 1, '
+                                       '4, 7, 8, या 12वें भाव में स्थित हो, तो '
+                                       'जातक को मंगल दोष (कुजा दोष) कहा जाता '
+                                       'है। ऐसा स्थान वैवाहिक जीवन में अशांति '
+                                       'और जीवनसाथी के साथ कलह का कारण बनता '
+                                       'है।'}},
+                       {'source': {'en': 'Maanasagari', 'hi': 'मानसागरी'},
+                        'text': {'en': 'Mars in the 1st house destroys the '
+                                       'spouse. In the 4th, it causes loss of '
+                                       'domestic happiness. In the 7th, there '
+                                       'is constant strife. In the 8th, the '
+                                       'spouse faces chronic illness. In the '
+                                       '12th, there is loss of marital bliss.',
+                                 'hi': 'प्रथम भाव में मंगल जीवनसाथी को नष्ट कर '
+                                       'देता है। चतुर्थ भाव में घरेलू सुख की '
+                                       'हानि होती है। 7वें भाव में निरंतर कलह '
+                                       'बनी रहती है। 8वें भाव में जीवनसाथी को '
+                                       'दीर्घकालिक बीमारी का सामना करना पड़ता '
+                                       'है। 12वें भाव में वैवाहिक सुख में कमी '
+                                       'आती है।'}},
+                       {'source': {'en': 'Brihat Jyotishasara',
+                                   'hi': 'बृहत् ज्योतिषसार'},
+                        'text': {'en': 'When Mars occupies the said houses '
+                                       'from Lagna, Moon or Venus, the native '
+                                       'faces widowhood or widowerhood, '
+                                       'separation, or chronic marital '
+                                       'suffering. Matching charts of both '
+                                       'partners is essential.',
+                                 'hi': 'जब मंगल लग्न, चंद्रमा या शुक्र से उक्त '
+                                       'घरों में होता है, तो जातक को वैधव्य या '
+                                       'विधवापन, अलगाव, या दीर्घकालिक वैवाहिक '
+                                       'पीड़ा का सामना करना पड़ता है। दोनों '
+                                       'भागीदारों के चार्ट का मिलान आवश्यक '
+                                       'है।'}},
+                       {'source': {'en': 'Bhava Deepika', 'hi': 'भव दीपिका'},
+                        'text': {'en': 'Kuja Dosha is neutralized when both '
+                                       'partners have Mars in the specified '
+                                       'houses. Also cancelled if Mars is in '
+                                       'its own sign (Aries, Scorpio), exalted '
+                                       '(Capricorn), or aspected by benefics '
+                                       '(Jupiter, Venus).',
+                                 'hi': 'जब दोनों साझेदारों के निर्दिष्ट घरों '
+                                       'में मंगल हो तो कुजा दोष निष्प्रभावी हो '
+                                       'जाता है। यदि मंगल अपनी ही राशि (मेष, '
+                                       'वृश्चिक), उच्च राशि (मकर) में हो, या '
+                                       'शुभ ग्रह (बृहस्पति, शुक्र) से दृष्ट हो '
+                                       'तो भी रद्द कर दिया जाता है।'}},
+                       {'source': {'en': 'Brihat Parashara Hora Shastra',
+                                   'hi': 'बृहत् पाराशर होरा शास्त्र'},
+                        'text': {'en': 'The wise should examine Mars from '
+                                       'Lagna, Moon, and Venus. If Kuja Dosha '
+                                       'exists from all three, it is of the '
+                                       'highest severity. From two, it is '
+                                       'medium. From one alone, it is mild.',
+                                 'hi': 'बुद्धिमानों को लग्न, चन्द्रमा और शुक्र '
+                                       'से मंगल का परीक्षण करना चाहिए। यदि '
+                                       'कुजा दोष तीनों में से मौजूद है, तो यह '
+                                       'उच्चतम गंभीरता का है। दो से यह मध्यम '
+                                       'है। एक से ही हल्का है.'}}],
+ 'results': {'en': 'Mangala Dosha indicates challenges in marital life '
+                   'including: delay in marriage, discord between spouses, '
+                   'separation or divorce, health issues of the partner, and '
+                   'in severe cases, bereavement. The severity depends on the '
+                   'house Mars occupies and whether the dosha is from Lagna, '
+                   'Moon, Venus, or multiple reference points. Cancellation '
+                   'conditions include: Mars in own sign/exalted, both '
+                   "partners having equal dosha, Jupiter's aspect on Mars, and "
+                   'Mars placed in Aries/Scorpio/Capricorn in the respective '
+                   'houses.',
+             'hi': 'मंगल दोष वैवाहिक जीवन में चुनौतियों का संकेत देता है '
+                   'जिनमें शामिल हैं: विवाह में देरी, पति-पत्नी के बीच कलह, '
+                   'अलगाव या तलाक, साथी के स्वास्थ्य संबंधी मुद्दे और गंभीर '
+                   'मामलों में, वियोग। गंभीरता इस बात पर निर्भर करती है कि '
+                   'मंगल किस घर में है और क्या दोष लग्न, चंद्रमा, शुक्र या कई '
+                   'संदर्भ बिंदुओं से है। रद्द करने की शर्तों में शामिल हैं: '
+                   'मंगल स्वराशि/उच्च में, दोनों साझेदारों में समान दोष, मंगल '
+                   'पर बृहस्पति की दृष्टि, और मंगल संबंधित घरों में '
+                   'मेष/वृश्चिक/मकर राशि में स्थित है।'},
+ 'remedies': {'mantras': [{'en': 'Chant Hanuman Chalisa daily, especially on '
+                                 'Tuesdays',
+                           'hi': 'प्रतिदिन विशेषकर मंगलवार को हनुमान चालीसा का '
+                                 'जाप करें'},
+                          {'en': "Recite 'Om Kraam Kreem Kraum Sah Bhaumaya "
+                                 "Namah' 108 times daily",
+                           'hi': "'ॐ क्रां क्रीं क्रौं सः भौमाय नमः' का "
+                                 'प्रतिदिन 108 बार जाप करें'},
+                          {'en': 'Navagraha Shanti Puja with special focus on '
+                                 'Mars',
+                           'hi': 'मंगल ग्रह पर विशेष ध्यान के साथ नवग्रह शांति '
+                                 'पूजा'}],
+              'fasting': [{'en': 'Fast on Tuesdays (Mangalvar Vrat) for 21 '
+                                 'consecutive Tuesdays',
+                           'hi': 'मंगलवार (मंगलवार व्रत) का व्रत लगातार 21 '
+                                 'मंगलवार तक करें'},
+                          {'en': 'Consume only single-grain meal on fasting '
+                                 'day',
+                           'hi': 'उपवास के दिन केवल एक अनाज वाला भोजन ही '
+                                 'खाएं'}],
+              'worship': [{'en': 'Worship Lord Hanuman with sindoor and red '
+                                 'flowers on Tuesdays',
+                           'hi': 'मंगलवार के दिन हनुमान जी की पूजा सिन्दूर और '
+                                 'लाल फूल से करें'},
+                          {'en': 'Perform Kumbh Vivah (symbolic marriage to '
+                                 'pot/tree) before actual marriage',
+                           'hi': 'वास्तविक विवाह से पहले कुंभ विवाह '
+                                 '(बर्तन/पेड़ से प्रतीकात्मक विवाह) करें'},
+                          {'en': 'Visit Mangalnath temple in Ujjain for Mars '
+                                 'pacification',
+                           'hi': 'मंगल ग्रह की शांति के लिए उज्जैन में मंगलनाथ '
+                                 'मंदिर जाएँ'},
+                          {'en': 'Donate red lentils (masoor dal), red cloth, '
+                                 'and jaggery on Tuesdays',
+                           'hi': 'मंगलवार के दिन लाल मसूर दाल, लाल कपड़ा और '
+                                 'गुड़ का दान करें'}],
+              'gemstone': {'en': 'Wear Red Coral (Moonga) in gold/copper on '
+                                 'the ring finger after proper energization '
+                                 'with Mars mantra on a Tuesday during Shukla '
+                                 'Paksha.',
+                           'hi': 'शुक्ल पक्ष के मंगलवार के दिन लाल मूंगा को '
+                                 'सोने/तांबे में मंगल मंत्र से अभिमंत्रित करके '
+                                 'अनामिका उंगली में धारण करें।'}}}
+
+LIFE_PREDICTIONS: Dict[str, Dict[str, Any]] = {'career': {'Aries': {'en': 'Strong leadership drives your professional life. '
+                            'You excel in competitive environments where '
+                            'initiative and courage are rewarded -- military, '
+                            'sports, surgery, engineering, or '
+                            'entrepreneurship. Mars energy makes you a '
+                            'self-starter who prefers to lead rather than '
+                            'follow. Career breakthroughs often come through '
+                            'bold, independent action rather than patient '
+                            'waiting.',
+                      'hi': 'मजबूत नेतृत्व आपके पेशेवर जीवन को संचालित करता '
+                            'है। आप प्रतिस्पर्धी माहौल में उत्कृष्टता प्राप्त '
+                            'करते हैं जहां पहल और साहस को पुरस्कृत किया जाता '
+                            'है - सैन्य, खेल, सर्जरी, इंजीनियरिंग, या '
+                            'उद्यमिता। मंगल की ऊर्जा आपको एक स्व-स्टार्टर '
+                            'बनाती है जो अनुसरण करने के बजाय नेतृत्व करना पसंद '
+                            'करता है। करियर में सफलताएं अक्सर धैर्यपूर्वक '
+                            'इंतजार करने के बजाय साहसिक, स्वतंत्र कार्रवाई से '
+                            'आती हैं।'},
+            'Taurus': {'en': 'Steady career growth through persistence and '
+                             'reliability defines your professional journey. '
+                             'You thrive in banking, agriculture, real estate, '
+                             'luxury goods, hospitality, and fine arts. '
+                             'Venus-ruled Taurus on the 10th gives an eye for '
+                             'aesthetics that can translate into profitable '
+                             'ventures. Financial security matters more to you '
+                             'than fame, and your patience eventually builds '
+                             'lasting wealth.',
+                       'hi': 'दृढ़ता और विश्वसनीयता के माध्यम से स्थिर कैरियर '
+                             'विकास आपकी पेशेवर यात्रा को परिभाषित करता है। आप '
+                             'बैंकिंग, कृषि, रियल एस्टेट, विलासिता के सामान, '
+                             'आतिथ्य और ललित कला में फलते-फूलते हैं। 10 तारीख '
+                             'को शुक्र-शासित वृषभ सौंदर्यशास्त्र की दृष्टि '
+                             'देता है जो लाभदायक उद्यमों में तब्दील हो सकता '
+                             'है। वित्तीय सुरक्षा आपके लिए प्रसिद्धि से अधिक '
+                             'मायने रखती है, और आपका धैर्य अंततः स्थायी धन का '
+                             'निर्माण करता है।'},
+            'Gemini': {'en': 'Communication is the cornerstone of your career '
+                             'success. You shine in writing, journalism, '
+                             'teaching, marketing, trading, and information '
+                             "technology. Mercury's influence gives "
+                             'versatility -- you may hold multiple roles or '
+                             'change fields more than once. Your networking '
+                             'ability and quick wit open doors that remain '
+                             'closed to others, but focus is essential to '
+                             'avoid scattered energies.',
+                       'hi': 'संचार आपके करियर की सफलता की आधारशिला है। आप '
+                             'लेखन, पत्रकारिता, शिक्षण, विपणन, व्यापार और '
+                             'सूचना प्रौद्योगिकी में चमकते हैं। बुध का प्रभाव '
+                             'बहुमुखी प्रतिभा देता है - आप कई भूमिकाएँ निभा '
+                             'सकते हैं या एक से अधिक बार क्षेत्र बदल सकते हैं। '
+                             'आपकी नेटवर्किंग क्षमता और त्वरित बुद्धि ऐसे '
+                             'दरवाजे खोलती है जो दूसरों के लिए बंद रहते हैं, '
+                             'लेकिन बिखरी हुई ऊर्जा से बचने के लिए ध्यान '
+                             'केंद्रित करना आवश्यक है।'},
+            'Cancer': {'en': 'Your career flourishes in nurturing, caregiving, '
+                             'and emotionally resonant professions. '
+                             'Hospitality, food industry, nursing, '
+                             'counselling, interior design, and public welfare '
+                             "suit you well. The Moon's rulership makes your "
+                             'professional life subject to emotional tides -- '
+                             'periods of intense productivity alternate with '
+                             'withdrawal. Working close to home or in family '
+                             'businesses is highly favourable.',
+                       'hi': 'आपका करियर पालन-पोषण, देखभाल और भावनात्मक रूप से '
+                             'जुड़े व्यवसायों में फलता-फूलता है। आतिथ्य, खाद्य '
+                             'उद्योग, नर्सिंग, परामर्श, इंटीरियर डिजाइन और '
+                             'सार्वजनिक कल्याण आपके लिए उपयुक्त हैं। चंद्रमा '
+                             'का शासन आपके पेशेवर जीवन को भावनात्मक ज्वार के '
+                             'अधीन बनाता है - तीव्र उत्पादकता की अवधि वापसी के '
+                             'साथ वैकल्पिक होती है। घर के नजदीक या पारिवारिक '
+                             'व्यवसायों में काम करना अत्यधिक अनुकूल है।'},
+            'Leo': {'en': 'The stage is your natural workplace. Politics, '
+                          'entertainment, senior management, government, and '
+                          'creative direction are fields where your Sun-ruled '
+                          '10th house sign shines brightest. You need '
+                          'recognition and authority in your role; subordinate '
+                          'positions breed discontent. Your generosity and '
+                          'personal magnetism attract loyal teams, making you '
+                          'a natural CEO or director.',
+                    'hi': 'मंच आपका स्वाभाविक कार्यस्थल है। राजनीति, मनोरंजन, '
+                          'वरिष्ठ प्रबंधन, सरकार और रचनात्मक दिशा ऐसे क्षेत्र '
+                          'हैं जहां आपका सूर्य-शासित 10वां घर चिन्ह सबसे '
+                          'चमकीला है। आपको अपनी भूमिका में मान्यता और अधिकार '
+                          'की आवश्यकता है; अधीनस्थ पद असंतोष उत्पन्न करते हैं। '
+                          'आपकी उदारता और व्यक्तिगत चुंबकत्व वफादार टीमों को '
+                          'आकर्षित करते हैं, जिससे आप एक स्वाभाविक सीईओ या '
+                          'निदेशक बन जाते हैं।'},
+            'Virgo': {'en': 'Analytical precision and service orientation '
+                            'define your professional path. Healthcare, '
+                            'accounting, editing, quality control, data '
+                            'science, and pharmaceutical work suit you '
+                            "perfectly. Mercury's rulership gives meticulous "
+                            'attention to detail that others find '
+                            'extraordinary. Promotions may come slowly but '
+                            'your work speaks for itself and builds an '
+                            'impeccable reputation over time.',
+                      'hi': 'विश्लेषणात्मक सटीकता और सेवा अभिविन्यास आपके '
+                            'पेशेवर पथ को परिभाषित करते हैं। हेल्थकेयर, '
+                            'अकाउंटिंग, संपादन, गुणवत्ता नियंत्रण, डेटा '
+                            'विज्ञान और फार्मास्युटिकल कार्य आपके लिए बिल्कुल '
+                            'उपयुक्त हैं। बुध का शासन उन विवरणों पर '
+                            'सावधानीपूर्वक ध्यान देता है जो दूसरों को असाधारण '
+                            'लगते हैं। पदोन्नति धीरे-धीरे हो सकती है लेकिन '
+                            'आपका काम खुद बोलता है और समय के साथ बेदाग '
+                            'प्रतिष्ठा बनाता है।'},
+            'Libra': {'en': 'Partnership and diplomacy are central to your '
+                            'career success. Law, judiciary, diplomacy, '
+                            'fashion design, mediation, and luxury retail are '
+                            'ideal fields. Venus-ruled Libra on the 10th gives '
+                            'an elegant public image and skill in managing '
+                            'relationships. Joint ventures and collaborations '
+                            'bring greater success than solo efforts, and '
+                            'fairness in dealings earns lasting professional '
+                            'respect.',
+                      'hi': 'साझेदारी और कूटनीति आपके करियर की सफलता के केंद्र '
+                            'में हैं। कानून, न्यायपालिका, कूटनीति, फैशन '
+                            'डिजाइन, मध्यस्थता और लक्जरी रिटेल आदर्श क्षेत्र '
+                            'हैं। 10 तारीख को शुक्र-शासित तुला राशि एक सुंदर '
+                            'सार्वजनिक छवि और रिश्तों को प्रबंधित करने में '
+                            'कौशल प्रदान करती है। संयुक्त उद्यम और सहयोग एकल '
+                            'प्रयासों की तुलना में अधिक सफलता लाते हैं, और '
+                            'व्यवहार में निष्पक्षता स्थायी पेशेवर सम्मान '
+                            'अर्जित करती है।'},
+            'Scorpio': {'en': 'Intensity and transformation mark your '
+                              'professional journey. Research, investigation, '
+                              'surgery, psychology, insurance, occult '
+                              'sciences, and crisis management are your forte. '
+                              "Mars and Ketu's combined influence gives "
+                              'unmatched focus and willingness to probe hidden '
+                              'truths. Your career often involves dramatic '
+                              'shifts that ultimately lead to positions of '
+                              'deep influence behind the scenes.',
+                        'hi': 'तीव्रता और परिवर्तन आपकी पेशेवर यात्रा को '
+                              'चिह्नित करते हैं। अनुसंधान, जांच, सर्जरी, '
+                              'मनोविज्ञान, बीमा, गुप्त विज्ञान और संकट प्रबंधन '
+                              'आपकी विशेषता हैं। मंगल और केतु का संयुक्त '
+                              'प्रभाव छिपे हुए सत्य की जांच करने के लिए बेजोड़ '
+                              'फोकस और इच्छा देता है। आपके करियर में अक्सर '
+                              'नाटकीय बदलाव शामिल होते हैं जो अंततः पर्दे के '
+                              'पीछे गहरे प्रभाव वाले पदों तक ले जाते हैं।'},
+            'Sagittarius': {'en': 'Wisdom and expansion drive your career. '
+                                  'Higher education, law, publishing, foreign '
+                                  'trade, philosophy, religious leadership, '
+                                  'and long-distance travel industries suit '
+                                  "you. Jupiter's rulership bestows optimism "
+                                  'and ethical conduct that earns trust in '
+                                  'positions of authority. International '
+                                  'connections play a significant role, and '
+                                  'your career often takes you far from your '
+                                  'birthplace.',
+                            'hi': 'बुद्धि और विस्तार आपके करियर को आगे बढ़ाते '
+                                  'हैं। उच्च शिक्षा, कानून, प्रकाशन, विदेशी '
+                                  'व्यापार, दर्शन, धार्मिक नेतृत्व और लंबी '
+                                  'दूरी की यात्रा उद्योग आपके लिए उपयुक्त हैं। '
+                                  'बृहस्पति का शासन आशावाद और नैतिक आचरण '
+                                  'प्रदान करता है जो प्राधिकारी पदों पर '
+                                  'विश्वास अर्जित करता है। अंतर्राष्ट्रीय '
+                                  'संपर्क एक महत्वपूर्ण भूमिका निभाते हैं, और '
+                                  'आपका करियर अक्सर आपको आपके जन्मस्थान से दूर '
+                                  'ले जाता है।'},
+            'Capricorn': {'en': 'Ambition and structure are the pillars of '
+                                'your professional life. Government '
+                                'administration, mining, construction, '
+                                'corporate management, and traditional '
+                                'industries reward your disciplined nature. '
+                                "Saturn's rulership demands patience -- career "
+                                'heights are reached in the 30s and 40s rather '
+                                'than early. Your capacity for hard work and '
+                                'organisational skill eventually places you in '
+                                'positions of lasting authority.',
+                          'hi': 'महत्वाकांक्षा और संरचना आपके पेशेवर जीवन के '
+                                'आधार हैं। सरकारी प्रशासन, खनन, निर्माण, '
+                                'कॉर्पोरेट प्रबंधन और पारंपरिक उद्योग आपके '
+                                'अनुशासित स्वभाव को पुरस्कृत करते हैं। शनि के '
+                                'शासन के लिए धैर्य की आवश्यकता होती है - '
+                                'कैरियर की ऊंचाई जल्दी के बजाय 30 और 40 के दशक '
+                                'में पहुंचती है। कड़ी मेहनत और संगठनात्मक कौशल '
+                                'की आपकी क्षमता अंततः आपको स्थायी प्राधिकारी '
+                                'के पदों पर स्थापित करती है।'},
+            'Aquarius': {'en': 'Innovation and social reform characterise your '
+                               'career path. Technology, aviation, social '
+                               'work, NGO leadership, scientific research, and '
+                               'network-based businesses are ideal. Saturn and '
+                               "Rahu's combined influence gives both "
+                               'discipline and unconventional thinking. Your '
+                               'greatest professional success comes through '
+                               'serving collective goals rather than purely '
+                               'personal ambition.',
+                         'hi': 'नवाचार और सामाजिक सुधार आपके करियर पथ की '
+                               'विशेषताएँ हैं। प्रौद्योगिकी, विमानन, सामाजिक '
+                               'कार्य, एनजीओ नेतृत्व, वैज्ञानिक अनुसंधान और '
+                               'नेटवर्क-आधारित व्यवसाय आदर्श हैं। शनि और राहु '
+                               'का संयुक्त प्रभाव अनुशासन और अपरंपरागत सोच '
+                               'दोनों देता है। आपकी सबसे बड़ी व्यावसायिक सफलता '
+                               'विशुद्ध रूप से व्यक्तिगत महत्वाकांक्षा के बजाय '
+                               'सामूहिक लक्ष्यों की पूर्ति से आती है।'},
+            'Pisces': {'en': 'Intuition and compassion guide your professional '
+                             'life. Spiritual teaching, music, cinema, marine '
+                             'industries, hospital administration, charitable '
+                             "work, and the healing arts suit you. Jupiter's "
+                             'rulership bestows wisdom and selflessness that '
+                             'earns deep respect. Your career may lack '
+                             "conventional structure but its impact on others' "
+                             'lives is profound and your reputation endures.',
+                       'hi': 'अंतर्ज्ञान और करुणा आपके पेशेवर जीवन का '
+                             'मार्गदर्शन करते हैं। आध्यात्मिक शिक्षण, संगीत, '
+                             'सिनेमा, समुद्री उद्योग, अस्पताल प्रशासन, '
+                             'धर्मार्थ कार्य और उपचार कलाएँ आपके लिए उपयुक्त '
+                             'हैं। बृहस्पति का शासन ज्ञान और निस्वार्थता '
+                             'प्रदान करता है जो गहरा सम्मान अर्जित करता है। '
+                             'आपके करियर में पारंपरिक संरचना का अभाव हो सकता '
+                             'है लेकिन दूसरों के जीवन पर इसका प्रभाव गहरा होता '
+                             'है और आपकी प्रतिष्ठा कायम रहती है।'}},
+ 'health': {'Aries': {'en': 'With Aries influencing your health house, you are '
+                            'prone to acute conditions -- fevers, '
+                            'inflammation, headaches, and blood-related '
+                            'disorders. Your body runs hot and responds '
+                            'quickly to both illness and recovery. Regular '
+                            'physical activity is essential to channel excess '
+                            'Mars energy. Guard especially against head '
+                            'injuries, migraines, and skin eruptions caused by '
+                            'pitta imbalance.',
+                      'hi': 'मेष राशि के आपके स्वास्थ्य भाव को प्रभावित करने '
+                            'से, आपको तीव्र स्थितियों - बुखार, सूजन, सिरदर्द '
+                            'और रक्त संबंधी विकारों का खतरा है। आपका शरीर गर्म '
+                            'रहता है और बीमारी और रिकवरी दोनों के प्रति तुरंत '
+                            'प्रतिक्रिया करता है। मंगल की अतिरिक्त ऊर्जा को '
+                            'प्रवाहित करने के लिए नियमित शारीरिक गतिविधि '
+                            'आवश्यक है। विशेष रूप से सिर की चोटों, माइग्रेन और '
+                            'पित्त असंतुलन के कारण होने वाली त्वचा के फटने से '
+                            'बचाव करें।'},
+            'Taurus': {'en': 'Taurus on the 6th house gives a generally robust '
+                             'constitution but vulnerability in the throat, '
+                             'thyroid, and cervical spine. Overindulgence in '
+                             'rich foods leads to weight gain and metabolic '
+                             'issues. Your recovery from illness is slow but '
+                             'thorough once you commit to treatment. Diabetes, '
+                             'tonsillitis, and neck stiffness are conditions '
+                             'to monitor throughout life.',
+                       'hi': 'छठे घर पर वृषभ आम तौर पर एक मजबूत संविधान देता '
+                             'है लेकिन गले, थायरॉयड और ग्रीवा रीढ़ में कमजोरी '
+                             'देता है। गरिष्ठ खाद्य पदार्थों का अधिक सेवन करने '
+                             'से वजन बढ़ता है और चयापचय संबंधी समस्याएं होती '
+                             'हैं। एक बार जब आप उपचार के लिए प्रतिबद्ध हो जाते '
+                             'हैं तो बीमारी से आपकी रिकवरी धीमी लेकिन पूरी तरह '
+                             'से होती है। मधुमेह, टॉन्सिलिटिस और गर्दन की '
+                             'अकड़न ऐसी स्थितियाँ हैं जिन पर जीवन भर निगरानी '
+                             'रखी जानी चाहिए।'},
+            'Gemini': {'en': 'Gemini influencing health brings nervous system '
+                             'sensitivity and respiratory vulnerability. '
+                             'Anxiety, insomnia, bronchial issues, and '
+                             'shoulder-arm complaints are common patterns. '
+                             'Your mental health is deeply tied to physical '
+                             'well-being -- stress manifests as bodily '
+                             'symptoms quickly. Regular pranayama, moderate '
+                             'exercise, and digital detoxes protect your '
+                             'delicate nervous constitution.',
+                       'hi': 'स्वास्थ्य को प्रभावित करने वाला मिथुन तंत्रिका '
+                             'तंत्र संवेदनशीलता और श्वसन संबंधी कमजोरी लाता '
+                             'है। चिंता, अनिद्रा, ब्रोन्कियल समस्याएं और '
+                             'कंधे-बांह की शिकायतें सामान्य पैटर्न हैं। आपका '
+                             'मानसिक स्वास्थ्य शारीरिक कल्याण से गहराई से '
+                             'जुड़ा हुआ है - तनाव शारीरिक लक्षणों के रूप में '
+                             'शीघ्रता से प्रकट होता है। नियमित प्राणायाम, '
+                             'मध्यम व्यायाम और डिजिटल डिटॉक्स आपके नाजुक '
+                             'तंत्रिका तंत्र की रक्षा करते हैं।'},
+            'Cancer': {'en': "The Moon's influence on your health house makes "
+                             'you susceptible to digestive and emotional '
+                             'ailments. Acidity, water retention, chest '
+                             'congestion, and hormonal fluctuations follow '
+                             'lunar cycles. Emotional eating and '
+                             'comfort-seeking behaviour can lead to stomach '
+                             'disorders. A calm domestic environment and '
+                             'regular meal timing are your best preventive '
+                             'medicines.',
+                       'hi': 'आपके स्वास्थ्य भाव पर चंद्रमा का प्रभाव आपको '
+                             'पाचन और भावनात्मक बीमारियों के प्रति संवेदनशील '
+                             'बनाता है। अम्लता, जल प्रतिधारण, छाती में जमाव और '
+                             'हार्मोनल उतार-चढ़ाव चंद्र चक्र के अनुसार होते '
+                             'हैं। भावनात्मक खान-पान और आराम-पसंद व्यवहार से '
+                             'पेट संबंधी विकार हो सकते हैं। एक शांत घरेलू '
+                             'वातावरण और नियमित भोजन का समय आपकी सबसे अच्छी '
+                             'निवारक दवाएँ हैं।'},
+            'Leo': {'en': 'Leo on the 6th house gives vitality but '
+                          'vulnerability in the heart, spine, and eyes. Blood '
+                          'pressure, cardiac rhythm issues, and spinal '
+                          'problems require monitoring after age 35. Your '
+                          'constitution is strong when the Sun is well-placed '
+                          'but weakens dramatically under stress. Regular '
+                          'cardiovascular exercise, avoiding excessive anger, '
+                          'and sun salutations keep you robust.',
+                    'hi': 'छठे भाव में सिंह जीवन शक्ति देता है लेकिन हृदय, '
+                          'रीढ़ और आंखों में कमजोरी देता है। 35 वर्ष की आयु के '
+                          'बाद रक्तचाप, हृदय गति संबंधी समस्याएं और रीढ़ की '
+                          'हड्डी की समस्याओं पर निगरानी की आवश्यकता होती है। '
+                          'जब सूर्य अच्छी स्थिति में होता है तो आपका शरीर '
+                          'मजबूत होता है लेकिन तनाव में नाटकीय रूप से कमजोर हो '
+                          'जाता है। नियमित हृदय व्यायाम, अत्यधिक क्रोध से बचना '
+                          'और सूर्य नमस्कार आपको मजबूत बनाए रखते हैं।'},
+            'Virgo': {'en': 'Mercury-ruled Virgo on the health house creates '
+                            'sensitivity in the intestines and nervous '
+                            'digestion. IBS, food allergies, skin issues from '
+                            'internal toxins, and anxiety-driven ailments are '
+                            'common. Your tendency to worry amplifies minor '
+                            'symptoms into major concerns. A clean diet, '
+                            'herbal supplements, and routine health check-ups '
+                            'serve you far better than overthinking.',
+                      'hi': 'स्वास्थ्य भाव पर बुध-शासित कन्या राशि आंतों और '
+                            'तंत्रिका पाचन में संवेदनशीलता पैदा करती है। '
+                            'आईबीएस, खाद्य एलर्जी, आंतरिक विषाक्त पदार्थों से '
+                            'त्वचा संबंधी समस्याएं और चिंता से प्रेरित '
+                            'बीमारियाँ आम हैं। आपकी चिंता करने की प्रवृत्ति '
+                            'छोटे लक्षणों को बड़ी चिंताओं में बदल देती है। '
+                            'स्वच्छ आहार, हर्बल सप्लीमेंट और नियमित स्वास्थ्य '
+                            'जांच आपको ज़्यादा सोचने से कहीं बेहतर मदद करती '
+                            'है।'},
+            'Libra': {'en': 'Libra influencing health brings kidney, lower '
+                            'back, and urinary tract vulnerabilities. Sugar '
+                            'imbalances, skin conditions related to blood '
+                            'impurity, and reproductive health issues arise. '
+                            'Your health improves dramatically when emotional '
+                            'relationships are harmonious. Adequate water '
+                            'intake, avoiding processed foods, and maintaining '
+                            'work-life balance are essential.',
+                      'hi': 'स्वास्थ्य को प्रभावित करने वाला तुला राशि गुर्दे, '
+                            'पीठ के निचले हिस्से और मूत्र पथ में कमज़ोरियाँ '
+                            'लाता है। शर्करा असंतुलन, रक्त अशुद्धता से संबंधित '
+                            'त्वचा की स्थिति और प्रजनन स्वास्थ्य संबंधी '
+                            'समस्याएं उत्पन्न होती हैं। जब भावनात्मक रिश्ते '
+                            'सामंजस्यपूर्ण होते हैं तो आपके स्वास्थ्य में '
+                            'नाटकीय रूप से सुधार होता है। पर्याप्त पानी का '
+                            'सेवन, प्रसंस्कृत खाद्य पदार्थों से परहेज और '
+                            'कार्य-जीवन संतुलन बनाए रखना आवश्यक है।'},
+            'Scorpio': {'en': 'Scorpio on the 6th house indicates intense '
+                              'health crises that ultimately lead to '
+                              'transformation. Reproductive organs, excretory '
+                              'system, and hidden infections are vulnerable '
+                              'areas. Surgical interventions may be necessary '
+                              'at some point in life but lead to complete '
+                              'recovery. Detoxification routines, sexual '
+                              'health awareness, and regular screening prevent '
+                              'serious complications.',
+                        'hi': 'छठे भाव पर वृश्चिक गहन स्वास्थ्य संकट का संकेत '
+                              'देता है जो अंततः परिवर्तन की ओर ले जाता है। '
+                              'प्रजनन अंग, उत्सर्जन तंत्र और छिपे हुए संक्रमण '
+                              'संवेदनशील क्षेत्र हैं। जीवन में किसी बिंदु पर '
+                              'सर्जिकल हस्तक्षेप आवश्यक हो सकता है लेकिन इससे '
+                              'पूरी तरह ठीक हो जाता है। विषहरण दिनचर्या, यौन '
+                              'स्वास्थ्य जागरूकता और नियमित जांच गंभीर '
+                              'जटिलताओं को रोकती है।'},
+            'Sagittarius': {'en': "Jupiter's influence on health gives a "
+                                  'generally optimistic constitution but '
+                                  'excess in liver, hips, and thighs. Fatty '
+                                  'liver, sciatica, and weight gain from '
+                                  'overindulgence are common patterns. Your '
+                                  'faith and positive outlook aid recovery '
+                                  'remarkably well. Moderation in diet, '
+                                  'hip-strengthening exercises, and periodic '
+                                  'fasting maintain your natural vitality.',
+                            'hi': 'स्वास्थ्य पर बृहस्पति का प्रभाव आम तौर पर '
+                                  'आशावादी गठन देता है लेकिन यकृत, कूल्हों और '
+                                  'जांघों में अधिकता देता है। फैटी लीवर, '
+                                  'कटिस्नायुशूल, और अतिभोग से वजन बढ़ना '
+                                  'सामान्य पैटर्न हैं। आपका विश्वास और '
+                                  'सकारात्मक दृष्टिकोण उल्लेखनीय रूप से ठीक '
+                                  'होने में सहायता करता है। आहार में संयम, '
+                                  'कूल्हों को मजबूत बनाने वाले व्यायाम और '
+                                  'समय-समय पर उपवास आपकी प्राकृतिक जीवन शक्ति '
+                                  'को बनाए रखते हैं।'},
+            'Capricorn': {'en': 'Saturn-ruled Capricorn on the health house '
+                                'brings chronic but manageable conditions. '
+                                'Joint pain, arthritis, dental issues, knee '
+                                'problems, and skin dryness develop gradually '
+                                'over time. Your constitution strengthens with '
+                                'age -- health in the 40s is often better than '
+                                'in the 20s. Calcium-rich diet, joint mobility '
+                                'exercises, and patience with slow-healing '
+                                'conditions are advised.',
+                          'hi': 'स्वास्थ्य घर पर शनि-शासित मकर राशि पुरानी '
+                                'लेकिन प्रबंधनीय स्थितियाँ लाती है। जोड़ों का '
+                                'दर्द, गठिया, दांतों की समस्या, घुटनों की '
+                                'समस्या और त्वचा का सूखापन समय के साथ '
+                                'धीरे-धीरे विकसित होता है। उम्र के साथ आपका '
+                                'संविधान मजबूत होता जाता है - 40 की उम्र में '
+                                'स्वास्थ्य अक्सर 20 की तुलना में बेहतर होता '
+                                'है। कैल्शियम युक्त आहार, जोड़ों की गतिशीलता '
+                                'के व्यायाम और धीमी गति से ठीक होने वाली '
+                                'स्थितियों में धैर्य रखने की सलाह दी जाती है।'},
+            'Aquarius': {'en': 'Aquarius influencing health brings unusual or '
+                               'hard-to-diagnose conditions affecting '
+                               'circulation and the nervous system. Varicose '
+                               'veins, ankle injuries, and sudden onset '
+                               'ailments are characteristic. Your health '
+                               'benefits greatly from unconventional healing '
+                               'modalities -- acupuncture, energy healing, and '
+                               'Ayurvedic approaches may work better than '
+                               'conventional medicine for your constitution.',
+                         'hi': 'स्वास्थ्य को प्रभावित करने वाला कुंभ राशि '
+                               'परिसंचरण और तंत्रिका तंत्र को प्रभावित करने '
+                               'वाली असामान्य या निदान करने में कठिन स्थितियां '
+                               'लाती है। वैरिकाज़ नसें, टखने की चोटें और अचानक '
+                               'शुरू होने वाली बीमारियाँ इसकी विशेषता हैं। '
+                               'अपरंपरागत उपचार पद्धतियों से आपके स्वास्थ्य को '
+                               'बहुत लाभ होता है - एक्यूपंक्चर, ऊर्जा उपचार और '
+                               'आयुर्वेदिक दृष्टिकोण आपके संविधान के लिए '
+                               'पारंपरिक चिकित्सा से बेहतर काम कर सकते हैं।'},
+            'Pisces': {'en': 'Pisces on the 6th house creates sensitivity to '
+                             'allergies, foot problems, and immune system '
+                             'fluctuations. Lymphatic congestion, '
+                             'psychosomatic illness, and sensitivity to '
+                             'medications are common. Your health is deeply '
+                             'influenced by your spiritual and emotional '
+                             'state. Meditation, swimming, adequate sleep, and '
+                             'avoiding intoxicants are your most powerful '
+                             'health practices.',
+                       'hi': 'छठे भाव में मीन राशि एलर्जी, पैरों की समस्याओं '
+                             'और प्रतिरक्षा प्रणाली में उतार-चढ़ाव के प्रति '
+                             'संवेदनशीलता पैदा करती है। लसीका जमाव, मनोदैहिक '
+                             'बीमारी और दवाओं के प्रति संवेदनशीलता आम हैं। '
+                             'आपका स्वास्थ्य आपकी आध्यात्मिक और भावनात्मक '
+                             'स्थिति से गहराई से प्रभावित होता है। ध्यान, '
+                             'तैराकी, पर्याप्त नींद और नशीले पदार्थों से परहेज '
+                             'आपकी सबसे शक्तिशाली स्वास्थ्य आदतें हैं।'}},
+ 'marriage': {'Aries': {'en': 'Mars-ruled Aries on the 7th house brings a '
+                              'passionate, dynamic, but sometimes combative '
+                              'marriage. You attract strong-willed, '
+                              'independent partners who challenge you to grow. '
+                              'Arguments are frequent but reconciliations are '
+                              'equally intense. Early marriage may face '
+                              'turbulence; maturity improves harmony. Physical '
+                              'attraction and mutual respect are the bedrock '
+                              'of your partnerships.',
+                        'hi': 'सातवें घर पर मंगल शासित मेष राशि एक भावुक, '
+                              'गतिशील, लेकिन कभी-कभी जुझारू विवाह लाती है। आप '
+                              'मजबूत इरादों वाले, स्वतंत्र साझेदारों को '
+                              'आकर्षित करते हैं जो आपको आगे बढ़ने के लिए '
+                              'चुनौती देते हैं। बहसें अक्सर होती रहती हैं '
+                              'लेकिन सुलह भी उतनी ही तीव्र होती है। शीघ्र '
+                              'विवाह में अशांति का सामना करना पड़ सकता है; '
+                              'परिपक्वता से सामंजस्य में सुधार होता है। '
+                              'शारीरिक आकर्षण और आपसी सम्मान आपकी साझेदारियों '
+                              'का आधार हैं।'},
+              'Taurus': {'en': 'Venus-ruled Taurus on the 7th house promises a '
+                               'stable, sensual, and materially comfortable '
+                               'marriage. Your spouse is likely attractive, '
+                               'loyal, and fond of good living. Possessiveness '
+                               'and stubbornness are the main challenges. The '
+                               'relationship deepens with time like fine wine. '
+                               'Shared appreciation for beauty, food, music, '
+                               'and nature strengthens the bond.',
+                         'hi': 'सातवें घर पर शुक्र-शासित वृषभ एक स्थिर, कामुक '
+                               'और भौतिक रूप से आरामदायक विवाह का वादा करता '
+                               'है। आपका जीवनसाथी संभवतः आकर्षक, वफादार और '
+                               'अच्छे जीवन का शौकीन है। स्वामित्व और जिद मुख्य '
+                               'चुनौतियां हैं। समय के साथ रिश्ता बढ़िया शराब '
+                               'की तरह गहरा होता जाता है। सुंदरता, भोजन, संगीत '
+                               'और प्रकृति के लिए साझा सराहना बंधन को मजबूत '
+                               'करती है।'},
+              'Gemini': {'en': "Mercury's influence on your 7th house brings "
+                               'an intellectually stimulating partnership. '
+                               'Your spouse is communicative, witty, and '
+                               'possibly younger in spirit or age. Variety and '
+                               'mental connection matter more than physical '
+                               'passion. The risk is superficiality or '
+                               'multiple attachments. A partner who shares '
+                               'your curiosity and love of learning makes '
+                               'marriage a lifelong conversation.',
+                         'hi': 'आपके सातवें घर पर बुध का प्रभाव बौद्धिक रूप से '
+                               'प्रेरक साझेदारी लाता है। आपका जीवनसाथी '
+                               'मिलनसार, मजाकिया और संभवतः आत्मा या उम्र में '
+                               'छोटा है। विविधता और मानसिक जुड़ाव शारीरिक '
+                               'जुनून से ज्यादा मायने रखता है। जोखिम सतहीपन या '
+                               'एकाधिक अनुलग्नक है। एक साथी जो आपकी जिज्ञासा '
+                               'और सीखने के प्यार को साझा करता है, वह शादी को '
+                               'आजीवन बातचीत बना देता है।'},
+              'Cancer': {'en': 'The Moon ruling your 7th house gives an '
+                               'emotionally deep and nurturing marriage. Your '
+                               'spouse is caring, domestic, and deeply '
+                               'attached to family. Mood swings and emotional '
+                               'dependency can strain the relationship. A '
+                               'secure home environment is essential for '
+                               'marital happiness. Children and family '
+                               'traditions become the glue that holds the '
+                               'partnership together.',
+                         'hi': 'आपके सातवें घर पर शासन करने वाला चंद्रमा '
+                               'भावनात्मक रूप से गहरा और पोषित विवाह देता है। '
+                               'आपका जीवनसाथी देखभाल करने वाला, घरेलू और '
+                               'परिवार से गहराई से जुड़ा हुआ है। मूड में बदलाव '
+                               'और भावनात्मक निर्भरता रिश्ते में तनाव पैदा कर '
+                               'सकती है। वैवाहिक सुख के लिए सुरक्षित घरेलू '
+                               'वातावरण आवश्यक है। बच्चे और पारिवारिक परंपराएँ '
+                               'साझेदारी को एकजुट रखने वाली गोंद बन जाती हैं।'},
+              'Leo': {'en': 'The Sun on your 7th house attracts a proud, '
+                            'dignified, and authoritative spouse. Your partner '
+                            'commands attention and expects loyalty and '
+                            'admiration. Power struggles are the main '
+                            'challenge. When both egos are managed, the '
+                            'marriage is grand, warm, and generous. Public '
+                            'status and social standing of the couple matter '
+                            'significantly in this combination.',
+                      'hi': 'आपके 7वें घर पर सूर्य एक गौरवान्वित, प्रतिष्ठित '
+                            'और आधिकारिक जीवनसाथी को आकर्षित करता है। आपका '
+                            'साथी ध्यान आकर्षित करता है और वफादारी और प्रशंसा '
+                            'की अपेक्षा करता है। सत्ता संघर्ष मुख्य चुनौती है. '
+                            'जब दोनों अहं प्रबंधित होते हैं, तो विवाह भव्य, '
+                            'गर्मजोशीपूर्ण और उदार होता है। इस संयोजन में '
+                            'जोड़े की सार्वजनिक स्थिति और सामाजिक प्रतिष्ठा '
+                            'महत्वपूर्ण रूप से मायने रखती है।'},
+              'Virgo': {'en': 'Mercury-ruled Virgo on the 7th house brings a '
+                              'practical, service-oriented marriage. Your '
+                              'spouse is detail-oriented, health-conscious, '
+                              'and possibly critical. Perfectionism can create '
+                              'friction. The partnership improves when both '
+                              'focus on serving each other rather than finding '
+                              'faults. Shared routines, health goals, and '
+                              'intellectual pursuits create lasting harmony.',
+                        'hi': '7वें घर पर बुध-शासित कन्या एक व्यावहारिक, '
+                              'सेवा-उन्मुख विवाह लाती है। आपका जीवनसाथी '
+                              'विस्तार-उन्मुख, स्वास्थ्य के प्रति जागरूक और '
+                              'संभवतः आलोचनात्मक है। पूर्णतावाद घर्षण पैदा कर '
+                              'सकता है। साझेदारी तब बेहतर होती है जब दोनों दोष '
+                              'ढूंढने के बजाय एक-दूसरे की सेवा करने पर ध्यान '
+                              'केंद्रित करते हैं। साझा दिनचर्या, स्वास्थ्य '
+                              'लक्ष्य और बौद्धिक गतिविधियाँ स्थायी सद्भाव पैदा '
+                              'करती हैं।'},
+              'Libra': {'en': 'Venus-ruled Libra on the 7th house is the ideal '
+                              'placement for marriage. Partnership, romance, '
+                              'and mutual respect come naturally. Your spouse '
+                              'is charming, fair-minded, and socially '
+                              'graceful. Indecisiveness and avoidance of '
+                              'conflict are the only weaknesses. This '
+                              'placement favours love marriage and enduring '
+                              'conjugal happiness built on true companionship.',
+                        'hi': 'सातवें घर पर शुक्र-शासित तुला राशि विवाह के लिए '
+                              'आदर्श स्थान है। साझेदारी, रोमांस और आपसी सम्मान '
+                              'स्वाभाविक रूप से आते हैं। आपका जीवनसाथी आकर्षक, '
+                              'निष्पक्ष विचारों वाला और सामाजिक रूप से शालीन '
+                              'है। अनिर्णय और संघर्ष से बचना ही एकमात्र '
+                              'कमज़ोरियाँ हैं। यह स्थिति प्रेम विवाह और सच्चे '
+                              'साहचर्य पर निर्मित स्थायी वैवाहिक सुख का पक्ष '
+                              'लेती है।'},
+              'Scorpio': {'en': 'Mars-Ketu ruled Scorpio on the 7th house '
+                                'creates an intensely transformative marriage. '
+                                'Passion runs deep but so do jealousy and '
+                                'possessiveness. Your spouse has magnetic '
+                                'appeal and strong willpower. Trust issues and '
+                                'power dynamics require conscious work. When '
+                                'both partners surrender control, the marriage '
+                                'becomes a vehicle for profound spiritual '
+                                'growth.',
+                          'hi': '7वें घर पर मंगल-केतु का आधिपत्य वृश्चिक राशि '
+                                'में अत्यधिक परिवर्तनकारी विवाह बनाता है। '
+                                'जुनून गहरा होता है लेकिन ईर्ष्या और स्वामित्व '
+                                'भी गहरा होता है। आपके जीवनसाथी में चुंबकीय '
+                                'आकर्षण और दृढ़ इच्छाशक्ति है। विश्वास के '
+                                'मुद्दों और शक्ति की गतिशीलता के लिए सचेत '
+                                'कार्य की आवश्यकता होती है। जब दोनों साझेदार '
+                                'नियंत्रण छोड़ देते हैं, तो विवाह गहन '
+                                'आध्यात्मिक विकास का माध्यम बन जाता है।'},
+              'Sagittarius': {'en': "Jupiter's blessing on the 7th house "
+                                    'brings an expansive, philosophical, and '
+                                    'fortunate marriage. Your spouse is wise, '
+                                    'optimistic, and often from a different '
+                                    'cultural or educational background. '
+                                    'Freedom within the relationship is '
+                                    'essential -- neither partner tolerates '
+                                    'possessiveness. Travel, higher learning, '
+                                    'and shared spiritual values keep the '
+                                    'marriage vibrant across decades.',
+                              'hi': '7वें घर पर बृहस्पति का आशीर्वाद एक '
+                                    'विस्तृत, दार्शनिक और भाग्यशाली विवाह लाता '
+                                    'है। आपका जीवनसाथी बुद्धिमान, आशावादी और '
+                                    'अक्सर एक अलग सांस्कृतिक या शैक्षिक '
+                                    'पृष्ठभूमि से होता है। रिश्ते के भीतर '
+                                    'स्वतंत्रता आवश्यक है - कोई भी साथी '
+                                    'स्वामित्व की भावना को बर्दाश्त नहीं करता '
+                                    'है। यात्रा, उच्च शिक्षा और साझा '
+                                    'आध्यात्मिक मूल्य दशकों तक विवाह को जीवंत '
+                                    'बनाए रखते हैं।'},
+              'Capricorn': {'en': 'Saturn-ruled Capricorn on the 7th house '
+                                  'delays marriage but ensures its durability. '
+                                  'Your spouse is mature, responsible, and '
+                                  'possibly older. The early years may feel '
+                                  'dry or burdensome. With patience, the '
+                                  'partnership becomes a rock-solid foundation '
+                                  'for shared ambitions. Mutual respect for '
+                                  "each other's career goals and a practical "
+                                  'approach to love are the keys.',
+                            'hi': '7वें घर पर शनि-शासित मकर राशि विवाह में '
+                                  'देरी कराती है लेकिन उसका स्थायित्व '
+                                  'सुनिश्चित करती है। आपका जीवनसाथी परिपक्व, '
+                                  'जिम्मेदार और संभवतः अधिक उम्र का है। '
+                                  'शुरुआती वर्ष शुष्क या बोझिल लग सकते हैं। '
+                                  'धैर्य के साथ, साझेदारी साझा महत्वाकांक्षाओं '
+                                  'के लिए एक ठोस आधार बन जाती है। एक-दूसरे के '
+                                  'करियर लक्ष्यों के लिए पारस्परिक सम्मान और '
+                                  'प्यार के प्रति व्यावहारिक दृष्टिकोण ही '
+                                  'कुंजी हैं।'},
+              'Aquarius': {'en': 'Saturn-Rahu ruled Aquarius on the 7th house '
+                                 'creates an unconventional marriage. Your '
+                                 'spouse is independent, progressive, and '
+                                 'possibly eccentric. Traditional relationship '
+                                 'expectations are challenged. '
+                                 'Friendship-based marriage works best; '
+                                 'possessiveness destroys the bond. Shared '
+                                 'humanitarian values, intellectual '
+                                 'companionship, and personal space sustain '
+                                 'this unusual union.',
+                           'hi': '7वें घर पर कुंभ राशि पर शासन करने वाला '
+                                 'शनि-राहु एक अपरंपरागत विवाह बनाता है। आपका '
+                                 'जीवनसाथी स्वतंत्र, प्रगतिशील और संभवतः '
+                                 'विलक्षण है। पारंपरिक संबंध अपेक्षाओं को '
+                                 'चुनौती दी गई है। मित्रता-आधारित विवाह '
+                                 'सर्वोत्तम कार्य करता है; स्वामित्व बंधन को '
+                                 'नष्ट कर देता है। साझा मानवीय मूल्य, बौद्धिक '
+                                 'साहचर्य और व्यक्तिगत स्थान इस असामान्य मिलन '
+                                 'को बनाए रखते हैं।'},
+              'Pisces': {'en': 'Jupiter-ruled Pisces on the 7th house brings a '
+                               'spiritually elevated and compassionate '
+                               'marriage. Your spouse is gentle, intuitive, '
+                               'artistic, and possibly self-sacrificing. '
+                               'Boundaries may blur. Escapism through fantasy '
+                               'or substances is the main risk. When grounded '
+                               'in devotion and mutual care, this marriage '
+                               'feels like a divine partnership.',
+                         'hi': '7वें घर पर बृहस्पति शासित मीन राशि आध्यात्मिक '
+                               'रूप से उन्नत और दयालु विवाह लाती है। आपका '
+                               'जीवनसाथी सौम्य, सहज, कलात्मक और संभवतः '
+                               'आत्म-त्यागी करने वाला है। सीमाएं धुंधली हो '
+                               'सकती हैं. कल्पना या पदार्थों के माध्यम से '
+                               'पलायनवाद मुख्य जोखिम है। जब भक्ति और आपसी '
+                               'देखभाल पर आधारित होता है, तो यह विवाह एक दिव्य '
+                               'साझेदारी जैसा लगता है।'}},
+ 'finance': {'Aries': {'en': 'Mars-ruled Aries on the 2nd house gives '
+                             'aggressive earning capacity and bold financial '
+                             'decisions. Income comes through competitive '
+                             'fields, sports, engineering, or self-employment. '
+                             'You earn quickly but spend impulsively. Building '
+                             'savings requires conscious discipline against '
+                             'your fiery nature. Investments in real estate '
+                             'and metals tend to be more profitable than '
+                             'speculative ventures.',
+                       'hi': 'दूसरे घर पर मंगल द्वारा शासित मेष राशि आक्रामक '
+                             'कमाई क्षमता और साहसिक वित्तीय निर्णय देती है। आय '
+                             'प्रतिस्पर्धी क्षेत्रों, खेल, इंजीनियरिंग या '
+                             'स्व-रोजगार के माध्यम से आती है। आप जल्दी कमाते '
+                             'हैं लेकिन बिना सोचे-समझे खर्च कर देते हैं। बचत '
+                             'के निर्माण के लिए आपके उग्र स्वभाव के विरुद्ध '
+                             'सचेत अनुशासन की आवश्यकता होती है। सट्टा उद्यमों '
+                             'की तुलना में रियल एस्टेट और धातुओं में निवेश '
+                             'अधिक लाभदायक होता है।'},
+             'Taurus': {'en': 'Venus-ruled Taurus on the 2nd house is the most '
+                              'favourable placement for wealth accumulation. '
+                              'Steady income, a love of saving, and good taste '
+                              'in investments mark your financial life. '
+                              'Banking, agriculture, luxury goods, and real '
+                              'estate are your strongest wealth channels. '
+                              'Family wealth and inheritance are likely, and '
+                              'your financial position improves steadily with '
+                              'age.',
+                        'hi': 'दूसरे घर पर शुक्र-शासित वृषभ धन संचय के लिए '
+                              'सबसे अनुकूल स्थान है। स्थिर आय, बचत का प्यार और '
+                              'निवेश में अच्छा स्वाद आपके वित्तीय जीवन को '
+                              'चिह्नित करता है। बैंकिंग, कृषि, विलासिता के '
+                              'सामान और रियल एस्टेट आपके सबसे मजबूत धन चैनल '
+                              'हैं। पारिवारिक संपत्ति और विरासत की संभावना है, '
+                              'और उम्र के साथ आपकी वित्तीय स्थिति में लगातार '
+                              'सुधार होता है।'},
+             'Gemini': {'en': 'Mercury-ruled Gemini on the 2nd house creates '
+                              'multiple income streams and financial '
+                              'versatility. Earnings come through '
+                              'communication, trading, brokerage, writing, or '
+                              'intellectual property. Your financial situation '
+                              'fluctuates -- brilliant gains alternate with '
+                              'careless losses. Systematic investing and '
+                              'avoiding gossip-driven financial decisions '
+                              'protect your wealth.',
+                        'hi': 'दूसरे घर पर बुध-शासित मिथुन कई आय धाराएं और '
+                              'वित्तीय बहुमुखी प्रतिभा बनाता है। कमाई संचार, '
+                              'व्यापार, दलाली, लेखन, या बौद्धिक संपदा के '
+                              'माध्यम से होती है। आपकी वित्तीय स्थिति में '
+                              'उतार-चढ़ाव होता रहता है - शानदार लाभ के साथ-साथ '
+                              'लापरवाह नुकसान भी होता रहता है। व्यवस्थित निवेश '
+                              'और गपशप-संचालित वित्तीय निर्णयों से बचना आपके '
+                              'धन की रक्षा करता है।'},
+             'Cancer': {'en': 'The Moon on the 2nd house makes finances '
+                              'subject to emotional tides and cyclical '
+                              'patterns. Income from food, hospitality, real '
+                              'estate, and maternal family is indicated. '
+                              'Savings grow when you feel emotionally secure; '
+                              'insecurity triggers spending on comfort. '
+                              'Property investment, particularly residential, '
+                              'is your safest and most rewarding avenue.',
+                        'hi': 'दूसरे घर में चंद्रमा वित्त को भावनात्मक ज्वार '
+                              'और चक्रीय पैटर्न के अधीन बनाता है। भोजन, '
+                              'आतिथ्य, अचल संपत्ति और मातृ परिवार से आय का '
+                              'संकेत दिया गया है। जब आप भावनात्मक रूप से '
+                              'सुरक्षित महसूस करते हैं तो बचत बढ़ती है; '
+                              'असुरक्षा आराम पर खर्च करने को प्रेरित करती है। '
+                              'संपत्ति निवेश, विशेष रूप से आवासीय, आपका सबसे '
+                              'सुरक्षित और सबसे फायदेमंद तरीका है।'},
+             'Leo': {'en': 'The Sun on the 2nd house brings wealth through '
+                           'government, authority, and positions of power. You '
+                           'earn well but spend lavishly on maintaining status '
+                           'and generosity toward dependents. Gold, government '
+                           'bonds, and investments in entertainment or '
+                           'education are favourable. Your financial peak '
+                           'often coincides with periods of public recognition '
+                           'or political influence.',
+                     'hi': 'दूसरे घर पर सूर्य सरकार, प्राधिकरण और सत्ता के '
+                           'पदों के माध्यम से धन लाता है। आप अच्छा कमाते हैं '
+                           'लेकिन रुतबा बनाए रखने और आश्रितों के प्रति उदारता '
+                           'बरतने पर खूब खर्च करते हैं। सोना, सरकारी बांड और '
+                           'मनोरंजन या शिक्षा में निवेश अनुकूल हैं। आपका '
+                           'वित्तीय शिखर अक्सर सार्वजनिक मान्यता या राजनीतिक '
+                           'प्रभाव की अवधि के साथ मेल खाता है।'},
+             'Virgo': {'en': 'Mercury-ruled Virgo on the 2nd house gives '
+                             'careful, analytical financial management. Income '
+                             'from healthcare, service industries, accounting, '
+                             'and detailed work is indicated. You rarely make '
+                             'impulsive financial decisions and prefer '
+                             'low-risk, steady-return investments. Tax '
+                             'planning and budgeting come naturally, making '
+                             'you financially secure if not spectacularly '
+                             'wealthy.',
+                       'hi': 'दूसरे घर पर बुध-शासित कन्या राशि सावधानीपूर्वक, '
+                             'विश्लेषणात्मक वित्तीय प्रबंधन देती है। स्वास्थ्य '
+                             'देखभाल, सेवा उद्योग, लेखांकन और विस्तृत कार्य से '
+                             'आय का संकेत दिया गया है। आप शायद ही कभी '
+                             'आवेगपूर्ण वित्तीय निर्णय लेते हैं और कम जोखिम '
+                             'वाले, स्थिर रिटर्न वाले निवेश को प्राथमिकता देते '
+                             'हैं। कर योजना और बजट बनाना स्वाभाविक रूप से आते '
+                             'हैं, जो आपको शानदार अमीर नहीं तो वित्तीय रूप से '
+                             'सुरक्षित बनाते हैं।'},
+             'Libra': {'en': 'Venus-ruled Libra on the 2nd house attracts '
+                             'wealth through partnerships and aesthetic '
+                             'enterprises. Fashion, jewellery, art dealing, '
+                             'legal practice, and collaborative ventures are '
+                             'profitable. Your financial success is often '
+                             "intertwined with your spouse's or business "
+                             "partner's fortunes. Balanced spending on beauty "
+                             'and comfort does not diminish wealth but rather '
+                             'attracts more of it.',
+                       'hi': 'दूसरे घर पर शुक्र-शासित तुला साझेदारी और सौंदर्य '
+                             'उद्यमों के माध्यम से धन को आकर्षित करती है। '
+                             'फैशन, आभूषण, कला व्यवहार, कानूनी अभ्यास और '
+                             'सहयोगी उद्यम लाभदायक हैं। आपकी वित्तीय सफलता '
+                             'अक्सर आपके जीवनसाथी या व्यावसायिक साझेदार के '
+                             'भाग्य से जुड़ी होती है। सुंदरता और आराम पर '
+                             'संतुलित खर्च करने से धन कम नहीं होता, बल्कि वह '
+                             'और अधिक आकर्षित होता है।'},
+             'Scorpio': {'en': 'Mars-Ketu ruled Scorpio on the 2nd house '
+                               'creates intense financial experiences -- '
+                               'inheritance, insurance payouts, or sudden '
+                               'gains and losses. Research, mining, surgery, '
+                               'and occult-related income. You have a '
+                               'secretive approach to money and rarely reveal '
+                               'your true financial position. Transformation '
+                               'through financial crises ultimately leads to '
+                               'deeper wisdom about true value.',
+                         'hi': 'दूसरे घर पर मंगल-केतु शासित वृश्चिक तीव्र '
+                               'वित्तीय अनुभव पैदा करता है - विरासत, बीमा '
+                               'भुगतान, या अचानक लाभ और हानि। अनुसंधान, खनन, '
+                               'सर्जरी, और गुप्त-संबंधी आय। पैसे के प्रति आपका '
+                               'दृष्टिकोण गुप्त रहता है और आप शायद ही कभी अपनी '
+                               'वास्तविक वित्तीय स्थिति प्रकट करते हैं। '
+                               'वित्तीय संकटों के माध्यम से परिवर्तन अंततः '
+                               'सच्चे मूल्य के बारे में गहन ज्ञान की ओर ले '
+                               'जाता है।'},
+             'Sagittarius': {'en': "Jupiter's blessing on the 2nd house is "
+                                   'highly auspicious for wealth and family '
+                                   'prosperity. Income from teaching, law, '
+                                   'publishing, foreign trade, and religious '
+                                   'or spiritual work. You are generous with '
+                                   'money and your open-handedness is rewarded '
+                                   'by Providence. Long-term investments, '
+                                   'especially in education and foreign '
+                                   'markets, yield excellent returns.',
+                             'hi': 'दूसरे घर पर बृहस्पति का आशीर्वाद धन और '
+                                   'पारिवारिक समृद्धि के लिए अत्यधिक शुभ है। '
+                                   'शिक्षण, कानून, प्रकाशन, विदेशी व्यापार और '
+                                   'धार्मिक या आध्यात्मिक कार्यों से आय। आप '
+                                   'पैसे के मामले में उदार हैं और आपकी खुले '
+                                   'दिल की इच्छा को प्रोविडेंस द्वारा पुरस्कृत '
+                                   'किया जाता है। लंबी अवधि के निवेश, खासकर '
+                                   'शिक्षा और विदेशी बाजारों में, उत्कृष्ट '
+                                   'रिटर्न देते हैं।'},
+             'Capricorn': {'en': 'Saturn-ruled Capricorn on the 2nd house '
+                                 'builds wealth slowly but permanently. Income '
+                                 'from government, construction, mining, oil, '
+                                 'and traditional industries. Early life may '
+                                 'see financial constraints, but discipline '
+                                 'creates substantial wealth by middle age. '
+                                 'Real estate, fixed deposits, and '
+                                 'conservative blue-chip investments suit your '
+                                 'cautious temperament.',
+                           'hi': 'दूसरे घर पर शनि द्वारा शासित मकर राशि '
+                                 'धीरे-धीरे लेकिन स्थायी रूप से धन का निर्माण '
+                                 'करती है। सरकार, निर्माण, खनन, तेल और '
+                                 'पारंपरिक उद्योगों से आय। प्रारंभिक जीवन में '
+                                 'वित्तीय बाधाएं देखी जा सकती हैं, लेकिन '
+                                 'अनुशासन मध्य आयु तक पर्याप्त धन पैदा करता '
+                                 'है। रियल एस्टेट, सावधि जमा और रूढ़िवादी '
+                                 'ब्लू-चिप निवेश आपके सतर्क स्वभाव के अनुकूल '
+                                 'हैं।'},
+             'Aquarius': {'en': 'Saturn-Rahu ruled Aquarius on the 2nd house '
+                                'brings unconventional income sources. '
+                                'Technology, cryptocurrency, network '
+                                'marketing, aviation, and social enterprises '
+                                'are indicated. Your financial philosophy is '
+                                'progressive -- you value freedom over '
+                                'accumulation. Sudden gains through innovation '
+                                'or technology disruption can dramatically '
+                                'change your financial standing.',
+                          'hi': 'दूसरे घर पर शनि-राहु का स्वामित्व कुंभ राशि '
+                                'पर है जो अपरंपरागत आय स्रोत लाता है। '
+                                'प्रौद्योगिकी, क्रिप्टोकरेंसी, नेटवर्क '
+                                'मार्केटिंग, विमानन और सामाजिक उद्यमों का '
+                                'संकेत दिया गया है। आपका वित्तीय दर्शन '
+                                'प्रगतिशील है - आप संचय से अधिक स्वतंत्रता को '
+                                'महत्व देते हैं। नवाचार या प्रौद्योगिकी '
+                                'व्यवधान के माध्यम से अचानक लाभ आपकी वित्तीय '
+                                'स्थिति को नाटकीय रूप से बदल सकता है।'},
+             'Pisces': {'en': 'Jupiter-ruled Pisces on the 2nd house attracts '
+                              'wealth through intuition and spiritual '
+                              'alignment. Income from music, cinema, hospital '
+                              'administration, charity, marine activities, and '
+                              'healing arts. You are generous to a fault and '
+                              'may lose money through misplaced trust or lack '
+                              'of boundaries. When your financial decisions '
+                              'align with your spiritual values, abundance '
+                              'flows naturally.',
+                        'hi': 'दूसरे घर पर बृहस्पति शासित मीन राशि अंतर्ज्ञान '
+                              'और आध्यात्मिक संरेखण के माध्यम से धन को आकर्षित '
+                              'करती है। संगीत, सिनेमा, अस्पताल प्रशासन, दान, '
+                              'समुद्री गतिविधियों और उपचार कला से आय। आप किसी '
+                              'गलती के प्रति उदार हैं और गलत विश्वास या सीमाओं '
+                              'की कमी के कारण धन खो सकते हैं। जब आपके वित्तीय '
+                              'निर्णय आपके आध्यात्मिक मूल्यों के साथ संरेखित '
+                              'होते हैं, तो प्रचुरता स्वाभाविक रूप से प्रवाहित '
+                              'होती है।'}},
+ 'education': {'Aries': {'en': 'Mars-ruled Aries influencing education gives a '
+                               'competitive, fast-learning mind that excels '
+                               'under pressure. You prefer practical, hands-on '
+                               'learning over theoretical study. Engineering, '
+                               'military science, surgery, and sports '
+                               'education are naturally suited fields. Early '
+                               'academic life may show impulsiveness, but '
+                               'focused coaching channels your energy into '
+                               'impressive academic achievements.',
+                         'hi': 'शिक्षा को प्रभावित करने वाला मंगल-शासित मेष एक '
+                               'प्रतिस्पर्धी, तेजी से सीखने वाला दिमाग देता है '
+                               'जो दबाव में उत्कृष्टता प्राप्त करता है। आप '
+                               'सैद्धांतिक अध्ययन की अपेक्षा व्यावहारिक, '
+                               'व्यावहारिक शिक्षा को प्राथमिकता देते हैं। '
+                               'इंजीनियरिंग, सैन्य विज्ञान, सर्जरी और खेल '
+                               'शिक्षा स्वाभाविक रूप से अनुकूल क्षेत्र हैं। '
+                               'प्रारंभिक शैक्षणिक जीवन में आवेग दिख सकता है, '
+                               'लेकिन केंद्रित कोचिंग आपकी ऊर्जा को प्रभावशाली '
+                               'शैक्षणिक उपलब्धियों में बदल देती है।'},
+               'Taurus': {'en': 'Venus-ruled Taurus on the education house '
+                                'gives a steady, methodical learning approach. '
+                                'You absorb knowledge slowly but retain it '
+                                'permanently. Fine arts, music, agriculture, '
+                                'economics, and culinary arts are ideal fields '
+                                'of study. A comfortable, aesthetically '
+                                'pleasing study environment dramatically '
+                                'improves your concentration and academic '
+                                'output.',
+                          'hi': 'शिक्षा घर पर शुक्र-शासित वृषभ एक स्थिर, '
+                                'व्यवस्थित सीखने का दृष्टिकोण देता है। आप '
+                                'ज्ञान को धीरे-धीरे ग्रहण करते हैं लेकिन उसे '
+                                'स्थायी रूप से बनाए रखते हैं। ललित कला, संगीत, '
+                                'कृषि, अर्थशास्त्र और पाक कला अध्ययन के आदर्श '
+                                'क्षेत्र हैं। एक आरामदायक, सौंदर्यपूर्ण रूप से '
+                                'मनभावन अध्ययन वातावरण नाटकीय रूप से आपकी '
+                                'एकाग्रता और शैक्षणिक आउटपुट में सुधार करता '
+                                'है।'},
+               'Gemini': {'en': 'Mercury-ruled Gemini is among the strongest '
+                                'placements for intellectual achievement. You '
+                                'excel in languages, mathematics, commerce, '
+                                'journalism, and computer science. Your '
+                                'learning speed is exceptional but depth may '
+                                'suffer due to scattered interests. Debate, '
+                                'quizzing, and competitive examinations '
+                                'showcase your mental agility and '
+                                'communication skills.',
+                          'hi': 'बुध शासित मिथुन बौद्धिक उपलब्धि के लिए सबसे '
+                                'मजबूत स्थानों में से एक है। आप भाषा, गणित, '
+                                'वाणिज्य, पत्रकारिता और कंप्यूटर विज्ञान में '
+                                'उत्कृष्ट हैं। आपकी सीखने की गति असाधारण है '
+                                'लेकिन बिखरी हुई रुचियों के कारण गहराई '
+                                'प्रभावित हो सकती है। वाद-विवाद, प्रश्नोत्तरी '
+                                'और प्रतियोगी परीक्षाएं आपकी मानसिक चपलता और '
+                                'संचार कौशल को प्रदर्शित करती हैं।'},
+               'Cancer': {'en': 'Moon-ruled Cancer on the education house '
+                                'gives excellent memory and intuitive learning '
+                                'ability. History, psychology, nursing, home '
+                                'science, and marine biology suit your '
+                                'emotional intelligence. Your academic '
+                                'performance fluctuates with emotional state '
+                                '-- supportive teachers matter immensely. '
+                                'Education received at home or in a nurturing '
+                                'environment yields the best results.',
+                          'hi': 'शिक्षा घर पर चंद्रमा शासित कर्क राशि उत्कृष्ट '
+                                'स्मृति और सहज ज्ञान युक्त सीखने की क्षमता '
+                                'देती है। इतिहास, मनोविज्ञान, नर्सिंग, गृह '
+                                'विज्ञान और समुद्री जीव विज्ञान आपकी भावनात्मक '
+                                'बुद्धिमत्ता के अनुकूल हैं। भावनात्मक स्थिति '
+                                'के साथ आपके शैक्षणिक प्रदर्शन में उतार-चढ़ाव '
+                                'होता रहता है - सहायक शिक्षक बहुत मायने रखते '
+                                'हैं। घर पर या पालन-पोषण वाले वातावरण में '
+                                'प्राप्त शिक्षा सर्वोत्तम परिणाम देती है।'},
+               'Leo': {'en': 'Sun-ruled Leo influencing education gives '
+                             'confidence and flair in academic settings. '
+                             'Political science, performing arts, '
+                             'administration, and leadership programmes suit '
+                             'you well. You prefer being the best student in '
+                             'class rather than part of the crowd. Government '
+                             'scholarships and recognition for academic '
+                             'excellence are strongly indicated.',
+                       'hi': 'सूर्य शासित सिंह राशि शिक्षा को प्रभावित करने से '
+                             'शैक्षणिक सेटिंग्स में आत्मविश्वास और प्रतिभा '
+                             'मिलती है। राजनीति विज्ञान, प्रदर्शन कला, प्रशासन '
+                             'और नेतृत्व कार्यक्रम आपके लिए उपयुक्त हैं। आप '
+                             'भीड़ का हिस्सा बनने के बजाय कक्षा में '
+                             'सर्वश्रेष्ठ छात्र बनना पसंद करते हैं। सरकारी '
+                             'छात्रवृत्ति और शैक्षणिक उत्कृष्टता के लिए '
+                             'मान्यता का जोरदार संकेत दिया गया है।'},
+               'Virgo': {'en': 'Mercury-ruled Virgo is the finest placement '
+                               'for analytical and scientific education. '
+                               'Medicine, pharmacy, statistics, editing, '
+                               'research methodology, and environmental '
+                               'science are ideal. Your attention to detail '
+                               'makes you a natural scholar who produces '
+                               'meticulous work. Overly critical '
+                               'self-assessment can create examination anxiety '
+                               'despite strong preparation.',
+                         'hi': 'विश्लेषणात्मक और वैज्ञानिक शिक्षा के लिए '
+                               'बुध-शासित कन्या राशि सर्वोत्तम स्थान है। '
+                               'चिकित्सा, फार्मेसी, सांख्यिकी, संपादन, '
+                               'अनुसंधान पद्धति और पर्यावरण विज्ञान आदर्श हैं। '
+                               'विस्तार पर आपका ध्यान आपको एक स्वाभाविक '
+                               'विद्वान बनाता है जो सावधानीपूर्वक काम करता है। '
+                               'अत्यधिक आलोचनात्मक आत्म-मूल्यांकन मजबूत तैयारी '
+                               'के बावजूद परीक्षा की चिंता पैदा कर सकता है।'},
+               'Libra': {'en': 'Venus-ruled Libra on the education house '
+                               'favours artistic and social sciences. Law, '
+                               'diplomacy, fashion design, architecture, and '
+                               'international relations are naturally suited '
+                               'fields. You learn best through discussion and '
+                               'collaboration rather than solitary study. '
+                               'Aesthetic subjects and those requiring '
+                               'balanced judgement bring out your highest '
+                               'intellectual abilities.',
+                         'hi': 'शिक्षा घर पर शुक्र-शासित तुला कलात्मक और '
+                               'सामाजिक विज्ञान का पक्षधर है। कानून, कूटनीति, '
+                               'फैशन डिजाइन, वास्तुकला और अंतर्राष्ट्रीय संबंध '
+                               'स्वाभाविक रूप से उपयुक्त क्षेत्र हैं। आप अकेले '
+                               'अध्ययन के बजाय चर्चा और सहयोग के माध्यम से '
+                               'सबसे अच्छा सीखते हैं। सौंदर्य संबंधी विषय और '
+                               'संतुलित निर्णय की आवश्यकता वाले विषय आपकी '
+                               'उच्चतम बौद्धिक क्षमताओं को सामने लाते हैं।'},
+               'Scorpio': {'en': 'Mars-Ketu ruled Scorpio influencing '
+                                 'education gives intense, focused research '
+                                 'ability. Psychology, forensic science, '
+                                 'surgery, occult studies, and detective work '
+                                 'suit your probing mind. You are drawn to '
+                                 'hidden knowledge and excel in subjects '
+                                 'others find dark or difficult. Academic '
+                                 'breakthroughs often come through obsessive '
+                                 'deep study rather than breadth of learning.',
+                           'hi': 'मंगल-केतु शासित वृश्चिक शिक्षा को प्रभावित '
+                                 'करते हुए गहन, केंद्रित अनुसंधान क्षमता देता '
+                                 'है। मनोविज्ञान, फोरेंसिक विज्ञान, सर्जरी, '
+                                 'गुप्त अध्ययन और जासूसी कार्य आपके जांच दिमाग '
+                                 'के लिए उपयुक्त हैं। आप छिपे हुए ज्ञान की ओर '
+                                 'आकर्षित होते हैं और उन विषयों में उत्कृष्टता '
+                                 'प्राप्त करते हैं जो दूसरों को कठिन या कठिन '
+                                 'लगते हैं। शैक्षणिक सफलताएं अक्सर सीखने की '
+                                 'व्यापकता के बजाय जुनूनी गहन अध्ययन से आती '
+                                 'हैं।'},
+               'Sagittarius': {'en': "Jupiter's blessing on the education "
+                                     'house is supremely favourable for higher '
+                                     'learning. Philosophy, theology, law, '
+                                     'foreign languages, and university '
+                                     'teaching are natural fields. You are '
+                                     'drawn to wisdom traditions and excel in '
+                                     'environments that value ethical '
+                                     'thinking. Study abroad or distance '
+                                     'education from foreign universities is '
+                                     'strongly indicated and successful.',
+                               'hi': 'शिक्षा घर पर बृहस्पति का आशीर्वाद उच्च '
+                                     'शिक्षा के लिए अत्यंत अनुकूल है। '
+                                     'दर्शनशास्त्र, धर्मशास्त्र, कानून, विदेशी '
+                                     'भाषाएँ और विश्वविद्यालय शिक्षण प्राकृतिक '
+                                     'क्षेत्र हैं। आप ज्ञान परंपराओं की ओर '
+                                     'आकर्षित होते हैं और ऐसे वातावरण में '
+                                     'उत्कृष्टता प्राप्त करते हैं जो नैतिक सोच '
+                                     'को महत्व देता है। विदेश में अध्ययन या '
+                                     'विदेशी विश्वविद्यालयों से दूरस्थ शिक्षा '
+                                     'दृढ़ता से संकेतित और सफल है।'},
+               'Capricorn': {'en': 'Saturn-ruled Capricorn on the education '
+                                   'house delays academic success but makes it '
+                                   'permanent. Civil engineering, '
+                                   'architecture, geology, public '
+                                   'administration, and traditional crafts '
+                                   'suit you. Early academic life may show '
+                                   'obstacles or late starts, but persistence '
+                                   'pays off handsomely. Professional '
+                                   'certifications and practical '
+                                   'qualifications serve you better than '
+                                   'theoretical degrees.',
+                             'hi': 'शिक्षा घर पर शनि का शासन मकर राशि में होने '
+                                   'से शैक्षणिक सफलता में देरी होती है लेकिन '
+                                   'यह उसे स्थायी बनाती है। सिविल इंजीनियरिंग, '
+                                   'वास्तुकला, भूविज्ञान, सार्वजनिक प्रशासन और '
+                                   'पारंपरिक शिल्प आपके लिए उपयुक्त हैं। '
+                                   'प्रारंभिक शैक्षणिक जीवन में बाधाएँ आ सकती '
+                                   'हैं या देर से शुरुआत हो सकती है, लेकिन '
+                                   'दृढ़ता से अच्छा परिणाम मिलता है। '
+                                   'व्यावसायिक प्रमाणपत्र और व्यावहारिक '
+                                   'योग्यताएँ आपको सैद्धांतिक डिग्री से बेहतर '
+                                   'सेवा प्रदान करती हैं।'},
+               'Aquarius': {'en': 'Saturn-Rahu influenced Aquarius on the '
+                                  'education house favours cutting-edge and '
+                                  'unconventional study. Aerospace, '
+                                  'information technology, social sciences, '
+                                  'astrology, and futuristic research suit '
+                                  'you. You learn best through experimentation '
+                                  'and may be self-taught in key areas. Group '
+                                  'study and online learning platforms enhance '
+                                  'your naturally network-oriented '
+                                  'intelligence.',
+                            'hi': 'शिक्षा भाव पर शनि-राहु का प्रभाव कुम्भ राशि '
+                                  'वालों को अत्याधुनिक और अपरंपरागत अध्ययन का '
+                                  'पक्षधर है। एयरोस्पेस, सूचना प्रौद्योगिकी, '
+                                  'सामाजिक विज्ञान, ज्योतिष और भविष्य संबंधी '
+                                  'शोध आपके लिए उपयुक्त हैं। आप प्रयोग के '
+                                  'माध्यम से सबसे अच्छा सीखते हैं और प्रमुख '
+                                  'क्षेत्रों में स्वयं-सिखाया जा सकता है। समूह '
+                                  'अध्ययन और ऑनलाइन शिक्षण प्लेटफ़ॉर्म आपकी '
+                                  'स्वाभाविक रूप से नेटवर्क-उन्मुख बुद्धि को '
+                                  'बढ़ाते हैं।'},
+               'Pisces': {'en': 'Jupiter-ruled Pisces influencing education '
+                                'gives exceptional intuitive and creative '
+                                'intelligence. Fine arts, music, spiritual '
+                                'philosophy, marine science, and healing arts '
+                                'are your ideal fields. Your learning style is '
+                                'absorptive rather than analytical -- you '
+                                'understand through feeling. Meditation and '
+                                'retreats may contribute more to your real '
+                                'education than formal classroom instruction.',
+                          'hi': 'शिक्षा को प्रभावित करने वाली बृहस्पति शासित '
+                                'मीन राशि असाधारण सहज और रचनात्मक बुद्धि देती '
+                                'है। ललित कला, संगीत, आध्यात्मिक दर्शन, '
+                                'समुद्री विज्ञान और उपचार कला आपके आदर्श '
+                                'क्षेत्र हैं। आपकी सीखने की शैली विश्लेषणात्मक '
+                                'के बजाय अवशोषक है - आप महसूस करके समझते हैं। '
+                                'औपचारिक कक्षा निर्देश की तुलना में ध्यान और '
+                                'एकांतवास आपकी वास्तविक शिक्षा में अधिक योगदान '
+                                'दे सकते हैं।'}},
+ 'character': {'Aries': {'en': 'You are a born pioneer with a courageous, '
+                               'direct, and fiercely independent character. '
+                               'Honesty to the point of bluntness, quick '
+                               'temper that cools equally fast, and restless '
+                               'energy define your personality. You lead from '
+                               'the front and cannot tolerate cowardice or '
+                               'dishonesty. Your greatest virtue is courage; '
+                               'your greatest challenge is patience.',
+                         'hi': 'आप साहसी, प्रत्यक्ष और अत्यंत स्वतंत्र चरित्र '
+                               'वाले जन्मजात अग्रणी हैं। बेबाकी की हद तक '
+                               'ईमानदारी, उतनी ही तेजी से ठंडा होने वाला '
+                               'त्वरित स्वभाव और बेचैन ऊर्जा आपके व्यक्तित्व '
+                               'को परिभाषित करती है। आप आगे बढ़कर नेतृत्व करते '
+                               'हैं और कायरता या बेईमानी बर्दाश्त नहीं कर '
+                               'सकते। आपका सबसे बड़ा गुण साहस है; आपकी सबसे '
+                               'बड़ी चुनौती धैर्य है.'},
+               'Taurus': {'en': 'You possess a steady, patient, and deeply '
+                                'loyal character rooted in material reality. '
+                                'Reliability, sensuality, and a stubborn '
+                                'refusal to be rushed are your hallmarks. You '
+                                'value comfort, beauty, and security above '
+                                'adventure or novelty. Your greatest virtue is '
+                                'dependability; your greatest challenge is '
+                                'resistance to change.',
+                          'hi': 'आपके पास भौतिक वास्तविकता में निहित एक स्थिर, '
+                                'धैर्यवान और गहरा वफादार चरित्र है। '
+                                'विश्वसनीयता, कामुकता और जल्दबाजी से इनकार '
+                                'करना आपकी पहचान है। आप रोमांच या नवीनता से '
+                                'ऊपर आराम, सुंदरता और सुरक्षा को महत्व देते '
+                                'हैं। आपका सबसे बड़ा गुण निर्भरता है; आपकी '
+                                'सबसे बड़ी चुनौती परिवर्तन का प्रतिरोध है।'},
+               'Gemini': {'en': 'An intellectually curious, quick-witted, and '
+                                'endlessly adaptable character defines you. '
+                                'You process information faster than most and '
+                                'communicate with charm and precision. Duality '
+                                'is inherent -- you can argue both sides of '
+                                'any issue with equal conviction. Your '
+                                'greatest virtue is versatility; your greatest '
+                                'challenge is consistency.',
+                          'hi': 'एक बौद्धिक रूप से जिज्ञासु, त्वरित-समझदार और '
+                                'अंतहीन रूप से अनुकूलनीय चरित्र आपको परिभाषित '
+                                'करता है। आप अन्य लोगों की तुलना में सूचनाओं '
+                                'को तेजी से संसाधित करते हैं और आकर्षण और '
+                                'सटीकता के साथ संचार करते हैं। द्वंद्व '
+                                'अंतर्निहित है - आप किसी भी मुद्दे के दोनों '
+                                'पक्षों पर समान दृढ़ विश्वास के साथ बहस कर '
+                                'सकते हैं। आपका सबसे बड़ा गुण बहुमुखी प्रतिभा '
+                                'है; आपकी सबसे बड़ी चुनौती निरंतरता है।'},
+               'Cancer': {'en': 'You carry a deeply emotional, nurturing, and '
+                                'protective character beneath a tough '
+                                'exterior. Family and emotional security are '
+                                'your core motivations in every decision you '
+                                'make. Your memory is powerful and you hold '
+                                'onto both love and grudges with equal '
+                                'tenacity. Your greatest virtue is devotion; '
+                                'your greatest challenge is letting go of the '
+                                'past.',
+                          'hi': 'आप अपने सख्त बाहरी स्वरूप के साथ-साथ एक गहरा '
+                                'भावनात्मक, पालन-पोषण करने वाला और सुरक्षात्मक '
+                                'चरित्र रखते हैं। आपके प्रत्येक निर्णय में '
+                                'परिवार और भावनात्मक सुरक्षा आपकी मुख्य '
+                                'प्रेरणाएँ हैं। आपकी याददाश्त शक्तिशाली है और '
+                                'आप प्यार और नाराजगी दोनों को समान दृढ़ता से '
+                                'पकड़ते हैं। आपका सबसे बड़ा गुण भक्ति है; आपकी '
+                                'सबसे बड़ी चुनौती अतीत को जाने देना है।'},
+               'Leo': {'en': 'A generous, dignified, and magnificently '
+                             'confident character radiates from your being. '
+                             'You command attention effortlessly and feel most '
+                             'alive when appreciated and respected. Leadership '
+                             'comes naturally, though your pride can make you '
+                             'vulnerable to flattery. Your greatest virtue is '
+                             'magnanimity; your greatest challenge is ego '
+                             'management.',
+                       'hi': 'एक उदार, गरिमामय और भव्य आत्मविश्वास वाला चरित्र '
+                             'आपके अस्तित्व से झलकता है। आप सहजता से ध्यान '
+                             'आकर्षित करते हैं और सराहना और सम्मान मिलने पर '
+                             'सबसे अधिक जीवंत महसूस करते हैं। नेतृत्व '
+                             'स्वाभाविक रूप से आता है, हालाँकि आपका अहंकार '
+                             'आपको चापलूसी के प्रति संवेदनशील बना सकता है। '
+                             'आपका सबसे बड़ा गुण उदारता है; आपकी सबसे बड़ी '
+                             'चुनौती अहंकार प्रबंधन है।'},
+               'Virgo': {'en': 'You embody a precise, analytical, and '
+                               'service-oriented character with exacting '
+                               'standards. Detail-oriented to a remarkable '
+                               'degree, you notice what others miss entirely. '
+                               'Self-criticism and a desire for perfection '
+                               'drive both your achievements and your '
+                               'anxieties. Your greatest virtue is '
+                               'discrimination; your greatest challenge is '
+                               'self-acceptance.',
+                         'hi': 'आप सटीक मानकों के साथ एक सटीक, विश्लेषणात्मक '
+                               'और सेवा-उन्मुख चरित्र का प्रतीक हैं। उल्लेखनीय '
+                               'स्तर तक विस्तार-उन्मुख, आप नोटिस करते हैं कि '
+                               'अन्य लोग पूरी तरह से क्या भूल जाते हैं। '
+                               'आत्म-आलोचना और पूर्णता की इच्छा आपकी '
+                               'उपलब्धियों और चिंताओं दोनों को प्रेरित करती '
+                               'है। आपका सबसे बड़ा गुण विवेक है; आपकी सबसे '
+                               'बड़ी चुनौती आत्म-स्वीकृति है।'},
+               'Libra': {'en': 'Balance, harmony, and aesthetic refinement '
+                               'characterise your elegant personality. You '
+                               'seek fairness in all dealings and are deeply '
+                               'uncomfortable with conflict or ugliness. '
+                               'Partnership is essential -- you understand '
+                               'yourself best through relationship with '
+                               'others. Your greatest virtue is diplomacy; '
+                               'your greatest challenge is decisiveness.',
+                         'hi': 'संतुलन, सामंजस्य और सौंदर्य परिष्कार आपके '
+                               'सुरुचिपूर्ण व्यक्तित्व की विशेषता है। आप सभी '
+                               'व्यवहारों में निष्पक्षता चाहते हैं और संघर्ष '
+                               'या कुरूपता से बहुत असहज हैं। साझेदारी आवश्यक '
+                               'है - आप दूसरों के साथ संबंधों के माध्यम से '
+                               'स्वयं को सबसे अच्छी तरह समझते हैं। आपका सबसे '
+                               'बड़ा गुण कूटनीति है; आपकी सबसे बड़ी चुनौती '
+                               'निर्णायकता है।'},
+               'Scorpio': {'en': 'Intensity, depth, and unwavering '
+                                 'determination define your powerful '
+                                 'character. You see beneath surfaces and are '
+                                 "drawn to life's hidden dimensions -- "
+                                 'psychology, mystery, power. Loyalty to your '
+                                 'chosen few is absolute, but betrayal '
+                                 'triggers devastating consequences. Your '
+                                 'greatest virtue is transformative power; '
+                                 'your greatest challenge is releasing '
+                                 'control.',
+                           'hi': 'तीव्रता, गहराई और अटूट दृढ़ संकल्प आपके '
+                                 'शक्तिशाली चरित्र को परिभाषित करते हैं। आप '
+                                 'सतहों के नीचे देखते हैं और जीवन के छिपे हुए '
+                                 'आयामों - मनोविज्ञान, रहस्य, शक्ति - की ओर '
+                                 'आकर्षित होते हैं। अपने चुने हुए कुछ लोगों के '
+                                 'प्रति वफादारी पूर्ण है, लेकिन विश्वासघात '
+                                 'विनाशकारी परिणामों को ट्रिगर करता है। आपका '
+                                 'सबसे बड़ा गुण परिवर्तनकारी शक्ति है; आपकी '
+                                 'सबसे बड़ी चुनौती नियंत्रण जारी करना है।'},
+               'Sagittarius': {'en': 'An optimistic, freedom-loving, and '
+                                     'philosophically minded character propels '
+                                     'your life. You seek meaning above '
+                                     'material gain and feel stifled by '
+                                     'routine or narrow thinking. Honesty is '
+                                     'your default mode, sometimes delivered '
+                                     'with uncomfortable directness. Your '
+                                     'greatest virtue is wisdom-seeking; your '
+                                     'greatest challenge is commitment.',
+                               'hi': 'एक आशावादी, स्वतंत्रता-प्रेमी और '
+                                     'दार्शनिक विचारधारा वाला चरित्र आपके जीवन '
+                                     'को आगे बढ़ाता है। आप भौतिक लाभ से ऊपर '
+                                     'अर्थ तलाशते हैं और नियमित या संकीर्ण सोच '
+                                     'से दबा हुआ महसूस करते हैं। ईमानदारी आपका '
+                                     'डिफ़ॉल्ट तरीका है, कभी-कभी असुविधाजनक '
+                                     'प्रत्यक्षता के साथ प्रस्तुत किया जाता '
+                                     'है। आपका सबसे बड़ा गुण ज्ञान-प्राप्ति '
+                                     'है; आपकी सबसे बड़ी चुनौती प्रतिबद्धता '
+                                     'है।'},
+               'Capricorn': {'en': 'Disciplined, ambitious, and profoundly '
+                                   'responsible -- your character is built for '
+                                   'endurance. You take life seriously, often '
+                                   'shouldering burdens others would refuse, '
+                                   'without complaint. Time is your ally; you '
+                                   'grow stronger, wiser, and more prosperous '
+                                   'as you age. Your greatest virtue is '
+                                   'perseverance; your greatest challenge is '
+                                   'allowing joy.',
+                             'hi': 'अनुशासित, महत्वाकांक्षी और अत्यधिक '
+                                   'जिम्मेदार - आपका चरित्र धैर्य के लिए बनाया '
+                                   'गया है। आप जीवन को गंभीरता से लेते हैं, '
+                                   'अक्सर ऐसे बोझ उठाने से जिन्हें दूसरे लोग '
+                                   'बिना किसी शिकायत के मना कर देते हैं। समय '
+                                   'आपका सहयोगी है; जैसे-जैसे आपकी उम्र बढ़ती '
+                                   'है आप मजबूत, समझदार और अधिक समृद्ध होते '
+                                   'जाते हैं। आपका सबसे बड़ा गुण दृढ़ता है; '
+                                   'आपकी सबसे बड़ी चुनौती आनंद को अनुमति देना '
+                                   'है।'},
+               'Aquarius': {'en': 'You are an independent thinker with a '
+                                  'humanitarian, progressive, and sometimes '
+                                  'eccentric character. Conventional '
+                                  'expectations feel like chains to you; your '
+                                  'mind operates ahead of its time. You value '
+                                  'friendship and collective well-being over '
+                                  'personal emotional attachment. Your '
+                                  'greatest virtue is originality; your '
+                                  'greatest challenge is emotional warmth.',
+                            'hi': 'आप मानवतावादी, प्रगतिशील और कभी-कभी विलक्षण '
+                                  'चरित्र वाले एक स्वतंत्र विचारक हैं। '
+                                  'पारंपरिक अपेक्षाएँ आपको जंजीरों की तरह '
+                                  'महसूस होती हैं; आपका दिमाग अपने समय से पहले '
+                                  'काम करता है। आप व्यक्तिगत भावनात्मक लगाव से '
+                                  'अधिक मित्रता और सामूहिक भलाई को महत्व देते '
+                                  'हैं। आपका सबसे बड़ा गुण मौलिकता है; आपकी '
+                                  'सबसे बड़ी चुनौती भावनात्मक गर्मजोशी है।'},
+               'Pisces': {'en': 'A deeply compassionate, intuitive, and '
+                                'spiritually attuned character flows through '
+                                "your being. You absorb others' emotions like "
+                                'a sponge and feel the pain of the world '
+                                'acutely. Artistic and mystical gifts are '
+                                'abundant, though practical reality can feel '
+                                'overwhelming. Your greatest virtue is '
+                                'unconditional compassion; your greatest '
+                                'challenge is boundaries.',
+                          'hi': 'एक गहन दयालु, सहज ज्ञान युक्त और आध्यात्मिक '
+                                'रूप से समायोजित चरित्र आपके अस्तित्व में '
+                                'प्रवाहित होता है। आप स्पंज की तरह दूसरों की '
+                                'भावनाओं को सोख लेते हैं और दुनिया के दर्द को '
+                                'तीव्रता से महसूस करते हैं। कलात्मक और रहस्यमय '
+                                'उपहार प्रचुर मात्रा में हैं, हालांकि '
+                                'व्यावहारिक वास्तविकता भारी लग सकती है। आपका '
+                                'सबसे बड़ा गुण बिना शर्त करुणा है; आपकी सबसे '
+                                'बड़ी चुनौती सीमाएँ हैं।'}},
+ 'hobbies': {'Aries': {'en': 'You are naturally drawn to high-energy, '
+                             'competitive pursuits. Martial arts, trekking, '
+                             'motorsports, and adventure travel satisfy your '
+                             'Mars-driven need for adrenaline. You enjoy being '
+                             'the first to try new activities and quickly lose '
+                             'interest in passive entertainment. Physical '
+                             'challenges, outdoor sports, and DIY projects '
+                             'keep your restless spirit engaged and happy.',
+                       'hi': 'आप स्वाभाविक रूप से उच्च-ऊर्जा, प्रतिस्पर्धी '
+                             'गतिविधियों की ओर आकर्षित होते हैं। मार्शल आर्ट, '
+                             'ट्रैकिंग, मोटरस्पोर्ट्स और साहसिक यात्राएं आपकी '
+                             'मंगल-प्रेरित एड्रेनालाईन की आवश्यकता को पूरा '
+                             'करती हैं। आप नई गतिविधियों को सबसे पहले आज़माने '
+                             'में आनंद लेते हैं और निष्क्रिय मनोरंजन में रुचि '
+                             'जल्दी ही खो देते हैं। शारीरिक चुनौतियाँ, आउटडोर '
+                             'खेल और DIY प्रोजेक्ट आपकी बेचैन आत्मा को व्यस्त '
+                             'और खुश रखते हैं।'},
+             'Taurus': {'en': 'Sensory pleasures define your leisure time. '
+                              'Cooking, gardening, music appreciation, '
+                              'pottery, and collecting fine objects bring deep '
+                              'satisfaction. You prefer hobbies that produce '
+                              'tangible results and engage the senses. Nature '
+                              'walks, wine tasting, and interior decoration '
+                              'reflect your Venus-ruled desire for beauty and '
+                              'comfort in every aspect of life.',
+                        'hi': 'संवेदी सुख आपके ख़ाली समय को परिभाषित करते हैं। '
+                              'खाना पकाना, बागवानी करना, संगीत की प्रशंसा '
+                              'करना, मिट्टी के बर्तन बनाना और बढ़िया वस्तुएँ '
+                              'इकट्ठा करना गहरी संतुष्टि लाता है। आप ऐसे शौक '
+                              'पसंद करते हैं जो ठोस परिणाम देते हैं और '
+                              'इंद्रियों को व्यस्त रखते हैं। प्रकृति की सैर, '
+                              'वाइन चखना और आंतरिक सजावट जीवन के हर पहलू में '
+                              'सुंदरता और आराम की आपकी शुक्र-शासित इच्छा को '
+                              'दर्शाती है।'},
+             'Gemini': {'en': 'Intellectual stimulation is the thread '
+                              'connecting all your hobbies. Reading, puzzles, '
+                              'board games, podcasting, blogging, and learning '
+                              'new languages keep your Mercury-ruled mind '
+                              'active. You tend to have many hobbies '
+                              'simultaneously and cycle between them. Social '
+                              'hobbies -- debating, quiz competitions, and '
+                              'book clubs -- satisfy your need for mental '
+                              'sparring and human connection.',
+                        'hi': 'बौद्धिक उत्तेजना आपके सभी शौक को जोड़ने वाला '
+                              'धागा है। पढ़ना, पहेलियाँ, बोर्ड गेम, '
+                              'पॉडकास्टिंग, ब्लॉगिंग और नई भाषाएँ सीखना आपके '
+                              'बुध-शासित दिमाग को सक्रिय रखता है। आप एक साथ कई '
+                              'शौक पालते हैं और उनके बीच समय-समय पर चलते रहते '
+                              'हैं। सामाजिक शौक - वाद-विवाद, प्रश्नोत्तरी '
+                              'प्रतियोगिताएं, और पुस्तक क्लब - मानसिक बहस और '
+                              'मानवीय संबंध की आपकी आवश्यकता को पूरा करते '
+                              'हैं।'},
+             'Cancer': {'en': 'Home-centred and emotionally nourishing '
+                              'activities are your preferred pastimes. Cooking '
+                              'family recipes, scrapbooking, home decoration, '
+                              'swimming, and genealogy research satisfy your '
+                              'lunar nature. You enjoy hobbies that connect '
+                              'you with your roots and create lasting '
+                              'memories. Caring for pets, tending a home '
+                              'garden, and hosting intimate gatherings bring '
+                              'genuine joy.',
+                        'hi': 'घर-केंद्रित और भावनात्मक रूप से पौष्टिक '
+                              'गतिविधियाँ आपका पसंदीदा शगल हैं। पारिवारिक '
+                              'व्यंजन पकाना, स्क्रैपबुकिंग, घर की सजावट, '
+                              'तैराकी और वंशावली अनुसंधान आपके चंद्र स्वभाव को '
+                              'संतुष्ट करते हैं। आप ऐसे शौक का आनंद लेते हैं '
+                              'जो आपको अपनी जड़ों से जोड़ते हैं और स्थायी '
+                              'यादें बनाते हैं। पालतू जानवरों की देखभाल करना, '
+                              'घर के बगीचे की देखभाल करना और अंतरंग समारोहों '
+                              'की मेजबानी करना वास्तविक आनंद लाता है।'},
+             'Leo': {'en': 'Creative performance and self-expression drive '
+                           'your leisure pursuits. Theatre, dance, painting, '
+                           'photography, and any activity where you can shine '
+                           'before an audience captivate you. You enjoy '
+                           'organising events and being the life of social '
+                           'gatherings. Luxury hobbies -- fine dining, '
+                           'fashion, and travel to glamorous destinations -- '
+                           'appeal to your royal nature.',
+                     'hi': 'रचनात्मक प्रदर्शन और आत्म-अभिव्यक्ति आपके अवकाश '
+                           'कार्यों को संचालित करते हैं। थिएटर, नृत्य, '
+                           'पेंटिंग, फ़ोटोग्राफ़ी, और कोई भी गतिविधि जहाँ आप '
+                           'दर्शकों को मंत्रमुग्ध करने के लिए चमक सकें। आप '
+                           'कार्यक्रम आयोजित करने और सामाजिक समारोहों की जान '
+                           'बनने का आनंद लेते हैं। विलासितापूर्ण शौक - बढ़िया '
+                           'भोजन, फैशन और ग्लैमरस स्थलों की यात्रा - आपके शाही '
+                           'स्वभाव को आकर्षित करते हैं।'},
+             'Virgo': {'en': 'Precision-based and health-oriented hobbies suit '
+                             'your analytical Virgo nature. Yoga, herbal '
+                             'gardening, journaling, jigsaw puzzles, and '
+                             'craft-making satisfy your need for order and '
+                             'detail. You enjoy hobbies that improve your '
+                             'skills incrementally over time. Reading '
+                             'non-fiction, organising spaces, and volunteering '
+                             'for service-oriented causes bring quiet but deep '
+                             'fulfilment.',
+                       'hi': 'परिशुद्धता-आधारित और स्वास्थ्य-उन्मुख शौक आपके '
+                             'विश्लेषणात्मक कन्या स्वभाव के अनुकूल हैं। योग, '
+                             'हर्बल बागवानी, जर्नलिंग, जिग्सॉ पहेलियां और '
+                             'शिल्प-निर्माण ऑर्डर और विवरण की आपकी आवश्यकता को '
+                             'पूरा करते हैं। आप ऐसे शौक का आनंद लेते हैं जो '
+                             'समय के साथ आपके कौशल में उत्तरोत्तर सुधार करते '
+                             'हैं। नॉन-फिक्शन पढ़ना, स्थान व्यवस्थित करना और '
+                             'सेवा-उन्मुख कार्यों के लिए स्वयंसेवा करना शांत '
+                             'लेकिन गहरी तृप्ति लाता है।'},
+             'Libra': {'en': 'Aesthetic and social hobbies define your '
+                             'leisure. Painting, music, fashion design, '
+                             'ballroom dancing, and art gallery visits feed '
+                             'your Venus-ruled craving for beauty and harmony. '
+                             'You enjoy activities you can share with a '
+                             'partner or close friends. Hosting elegant '
+                             'gatherings, interior styling, and cultural '
+                             'events are pastimes you naturally excel at.',
+                       'hi': 'सौंदर्यात्मक और सामाजिक शौक आपके ख़ाली समय को '
+                             'परिभाषित करते हैं। पेंटिंग, संगीत, फैशन डिज़ाइन, '
+                             'बॉलरूम नृत्य और आर्ट गैलरी का दौरा आपकी '
+                             'शुक्र-शासित सुंदरता और सद्भाव की लालसा को बढ़ाता '
+                             'है। आप उन गतिविधियों का आनंद लेते हैं जिन्हें आप '
+                             'किसी साथी या करीबी दोस्तों के साथ साझा कर सकते '
+                             'हैं। सुंदर समारोहों की मेजबानी करना, आंतरिक '
+                             'सज्जा और सांस्कृतिक कार्यक्रम ऐसे शगल हैं जिनमें '
+                             'आप स्वाभाविक रूप से उत्कृष्टता प्राप्त करते '
+                             'हैं।'},
+             'Scorpio': {'en': 'Intense, investigative, and transformative '
+                               'hobbies attract you. True crime research, '
+                               'psychology study, scuba diving, martial arts, '
+                               'and mystery-solving games engage your probing '
+                               'Scorpio nature. You prefer depth over variety '
+                               'and may pursue a single hobby with obsessive '
+                               'dedication. Occult studies, tantric '
+                               'meditation, and extreme sports provide the '
+                               'intensity you crave.',
+                         'hi': 'गहन, खोजी और परिवर्तनकारी शौक आपको आकर्षित '
+                               'करते हैं। सच्चा अपराध अनुसंधान, मनोविज्ञान '
+                               'अध्ययन, स्कूबा डाइविंग, मार्शल आर्ट और '
+                               'रहस्य-सुलझाने वाले खेल आपके वृश्चिक स्वभाव की '
+                               'जांच करते हैं। आप विविधता से अधिक गहराई को '
+                               'पसंद करते हैं और जुनूनी समर्पण के साथ एक ही '
+                               'शौक को पूरा कर सकते हैं। गुप्त अध्ययन, '
+                               'तांत्रिक ध्यान और चरम खेल वह तीव्रता प्रदान '
+                               'करते हैं जो आप चाहते हैं।'},
+             'Sagittarius': {'en': 'Adventure and learning are inseparable in '
+                                   'your leisure life. Long-distance travel, '
+                                   'horse riding, archery, philosophy reading, '
+                                   'and foreign culture exploration light up '
+                                   'your Jupiter-ruled spirit. You are the '
+                                   'eternal student who finds joy in every new '
+                                   'experience and place. Outdoor activities, '
+                                   'spiritual retreats, and cultural festivals '
+                                   'are your favourite pastimes.',
+                             'hi': 'आपके ख़ाली जीवन में रोमांच और सीखना '
+                                   'अविभाज्य हैं। लंबी दूरी की यात्रा, '
+                                   'घुड़सवारी, तीरंदाजी, दर्शनशास्त्र पढ़ना और '
+                                   'विदेशी संस्कृति की खोज आपकी बृहस्पति-शासित '
+                                   'भावना को उजागर करती है। आप शाश्वत छात्र '
+                                   'हैं जो हर नए अनुभव और स्थान में आनंद पाते '
+                                   'हैं। बाहरी गतिविधियाँ, आध्यात्मिक विश्राम '
+                                   'और सांस्कृतिक उत्सव आपके पसंदीदा शगल हैं।'},
+             'Capricorn': {'en': 'Structured, goal-oriented hobbies satisfy '
+                                 'your Saturn-ruled temperament. Mountain '
+                                 'climbing, chess, woodworking, numismatics, '
+                                 'and historical study appeal to your '
+                                 'disciplined nature. You prefer hobbies that '
+                                 'build skill over time and produce measurable '
+                                 'results. Antique collecting, architecture '
+                                 'appreciation, and strategic board games are '
+                                 'lifelong interests.',
+                           'hi': 'संरचित, लक्ष्य-उन्मुख शौक आपके शनि-शासित '
+                                 'स्वभाव को संतुष्ट करते हैं। पर्वतारोहण, '
+                                 'शतरंज, लकड़ी का काम, मुद्राशास्त्र और '
+                                 'ऐतिहासिक अध्ययन आपके अनुशासित स्वभाव को '
+                                 'आकर्षित करते हैं। आप ऐसे शौक पसंद करते हैं '
+                                 'जो समय के साथ कौशल का निर्माण करते हैं और '
+                                 'मापने योग्य परिणाम देते हैं। प्राचीन वस्तुओं '
+                                 'का संग्रह, वास्तुकला की सराहना और रणनीतिक '
+                                 'बोर्ड गेम आजीवन रुचि रखते हैं।'},
+             'Aquarius': {'en': 'Unconventional and technology-driven hobbies '
+                                'excite your progressive nature. Astronomy, '
+                                'coding, drone flying, electronic music '
+                                'production, and social activism are '
+                                'characteristic pursuits. You enjoy hobbies '
+                                'that connect you with like-minded communities '
+                                'or push societal boundaries. Science fiction, '
+                                'futuristic gadgets, and humanitarian '
+                                'volunteering reflect your visionary Aquarian '
+                                'spirit.',
+                          'hi': 'अपरंपरागत और प्रौद्योगिकी-संचालित शौक आपके '
+                                'प्रगतिशील स्वभाव को उत्साहित करते हैं। खगोल '
+                                'विज्ञान, कोडिंग, ड्रोन उड़ान, इलेक्ट्रॉनिक '
+                                'संगीत उत्पादन और सामाजिक सक्रियता विशिष्ट '
+                                'गतिविधियाँ हैं। आप ऐसे शौक का आनंद लेते हैं '
+                                'जो आपको समान विचारधारा वाले समुदायों से '
+                                'जोड़ते हैं या सामाजिक सीमाओं को तोड़ते हैं। '
+                                'विज्ञान कथा, भविष्य के गैजेट और मानवीय '
+                                'स्वयंसेवा आपकी दूरदर्शी कुंभ भावना को दर्शाते '
+                                'हैं।'},
+             'Pisces': {'en': 'Creative and spiritual hobbies nourish your '
+                              'sensitive Piscean soul. Music, painting, '
+                              'poetry, swimming, meditation, and dream '
+                              'journaling are natural outlets for your vast '
+                              'imagination. You are drawn to activities near '
+                              'water and those that allow emotional or '
+                              'spiritual expression. Film appreciation, '
+                              'charity work, and healing arts like Reiki or '
+                              'crystal therapy bring deep peace.',
+                        'hi': 'रचनात्मक और आध्यात्मिक शौक आपकी संवेदनशील मीन '
+                              'आत्मा को पोषण देते हैं। संगीत, पेंटिंग, कविता, '
+                              'तैराकी, ध्यान और स्वप्न जर्नलिंग आपकी विशाल '
+                              'कल्पना के लिए प्राकृतिक आउटलेट हैं। आप पानी के '
+                              'निकट की गतिविधियों और ऐसी गतिविधियों की ओर '
+                              'आकर्षित होते हैं जो भावनात्मक या आध्यात्मिक '
+                              'अभिव्यक्ति की अनुमति देती हैं। फिल्म की सराहना, '
+                              'दान कार्य और रेकी या क्रिस्टल थेरेपी जैसी उपचार '
+                              'कलाएं गहरी शांति लाती हैं।'}},
+ 'family': {'Aries': {'en': 'Mars energy on the 4th house creates a dynamic '
+                            'but sometimes volatile home environment. You take '
+                            'charge of family matters with decisive authority. '
+                            'Property disputes or renovation projects are '
+                            'common themes. Independence was established early '
+                            '-- you may have left home young. Family '
+                            'relationships improve when you channel '
+                            'competitive energy into protecting rather than '
+                            'controlling.',
+                      'hi': 'चौथे घर पर मंगल की ऊर्जा एक गतिशील लेकिन कभी-कभी '
+                            'अस्थिर घरेलू वातावरण बनाती है। आप पारिवारिक '
+                            'मामलों की जिम्मेदारी निर्णायक अधिकार के साथ लेते '
+                            'हैं। संपत्ति विवाद या नवीकरण परियोजनाएं आम विषय '
+                            'हैं। स्वतंत्रता की स्थापना जल्दी हो गई थी - हो '
+                            'सकता है कि आपने युवावस्था में ही घर छोड़ दिया हो। '
+                            'जब आप प्रतिस्पर्धी ऊर्जा को नियंत्रित करने के '
+                            'बजाय सुरक्षा में लगाते हैं तो पारिवारिक रिश्ते '
+                            'बेहतर होते हैं।'},
+            'Taurus': {'en': 'Venus-ruled Taurus on the 4th house is excellent '
+                             'for domestic happiness and property ownership. '
+                             'Your home is comfortable, well-decorated, and a '
+                             'source of genuine pride. Family bonds are strong '
+                             'and enduring, especially with your mother. '
+                             'Ancestral property and family wealth are likely. '
+                             'Stability and tradition are the pillars of your '
+                             'family life across generations.',
+                       'hi': 'चौथे घर पर शुक्र-शासित वृषभ घरेलू सुख और संपत्ति '
+                             'के स्वामित्व के लिए उत्कृष्ट है। आपका घर '
+                             'आरामदायक, अच्छी तरह से सजाया हुआ और वास्तविक '
+                             'गौरव का स्रोत है। पारिवारिक बंधन मजबूत और स्थायी '
+                             'होते हैं, विशेषकर आपकी माँ के साथ। पैतृक संपत्ति '
+                             'और पारिवारिक संपत्ति मिलने की संभावना है। '
+                             'स्थिरता और परंपरा पीढ़ियों तक आपके पारिवारिक '
+                             'जीवन के आधार हैं।'},
+            'Gemini': {'en': "Mercury's influence on the 4th house creates an "
+                             'intellectually stimulating home environment. '
+                             'Family discussions, debates, and a house full of '
+                             'books and media define your domestic space. You '
+                             'may change residences frequently or have '
+                             'multiple properties. Family communication is '
+                             'lively but sometimes superficial -- deeper '
+                             'emotional bonding requires conscious effort.',
+                       'hi': 'चतुर्थ भाव पर बुध का प्रभाव घर में बौद्धिक रूप '
+                             'से उत्साहवर्धक वातावरण बनाता है। पारिवारिक '
+                             'चर्चाएँ, बहसें और किताबों और मीडिया से भरा घर '
+                             'आपके घरेलू स्थान को परिभाषित करता है। आप बार-बार '
+                             'आवास बदल सकते हैं या आपके पास कई संपत्तियां हो '
+                             'सकती हैं। पारिवारिक संचार जीवंत लेकिन कभी-कभी '
+                             'सतही होता है - गहरे भावनात्मक बंधन के लिए सचेत '
+                             'प्रयास की आवश्यकता होती है।'},
+            'Cancer': {'en': 'The Moon ruling the 4th house is the most '
+                             'natural and powerful placement for family '
+                             "happiness. Your mother's influence is profound "
+                             'and your attachment to ancestral home and '
+                             'traditions is deep. Nurturing your family is '
+                             'your primary source of emotional fulfilment. '
+                             'Property near water, a well-stocked kitchen, and '
+                             'family gatherings define your domestic bliss.',
+                       'hi': 'चतुर्थ भाव पर शासन करने वाला चंद्रमा पारिवारिक '
+                             'सुख के लिए सबसे प्राकृतिक और शक्तिशाली स्थान है। '
+                             'आपकी माँ का प्रभाव गहरा है और पैतृक घर और '
+                             'परंपराओं से आपका लगाव गहरा है। अपने परिवार का '
+                             'पालन-पोषण आपकी भावनात्मक संतुष्टि का प्राथमिक '
+                             'स्रोत है। पानी के पास की संपत्ति, एक अच्छी तरह '
+                             'से भंडारित रसोईघर और पारिवारिक समारोह आपके घरेलू '
+                             'आनंद को परिभाषित करते हैं।'},
+            'Leo': {'en': 'Sun-ruled Leo on the 4th house creates a proud, '
+                          'dignified home environment. Your residence reflects '
+                          'your status -- spacious, well-lit, and impressive. '
+                          "Father's influence on family culture is strong. You "
+                          'take pride in your lineage and family achievements. '
+                          'Generosity toward family members and a regal '
+                          'household atmosphere characterise your home life.',
+                    'hi': 'चौथे घर पर सूर्य शासित सिंह राशि एक गौरवपूर्ण, '
+                          'सम्मानजनक घरेलू वातावरण बनाती है। आपका निवास आपकी '
+                          'स्थिति को दर्शाता है - विशाल, अच्छी रोशनी वाला और '
+                          'प्रभावशाली। पारिवारिक संस्कृति पर पिता का प्रभाव '
+                          'प्रबल होता है। आप अपनी वंशावली और पारिवारिक '
+                          'उपलब्धियों पर गर्व करते हैं। परिवार के सदस्यों के '
+                          'प्रति उदारता और शाही घरेलू माहौल आपके घरेलू जीवन की '
+                          'विशेषता है।'},
+            'Virgo': {'en': 'Mercury-ruled Virgo on the 4th house creates an '
+                            'orderly, health-conscious home environment. '
+                            'Cleanliness, routine, and practical efficiency '
+                            'define your domestic life. Your mother is '
+                            'detail-oriented and health-focused. Property '
+                            'investments are carefully researched and '
+                            'sensible. Family relationships improve when you '
+                            'relax your critical standards and accept '
+                            'imperfection.',
+                      'hi': 'चौथे घर पर बुध-शासित कन्या एक व्यवस्थित, '
+                            'स्वास्थ्य के प्रति जागरूक घरेलू वातावरण बनाता है। '
+                            'स्वच्छता, दिनचर्या और व्यावहारिक दक्षता आपके '
+                            'घरेलू जीवन को परिभाषित करती है। आपकी माँ '
+                            'विस्तार-उन्मुख और स्वास्थ्य-केंद्रित हैं। संपत्ति '
+                            'निवेश सावधानीपूर्वक शोधित और समझदारीपूर्ण होता '
+                            'है। जब आप अपने महत्वपूर्ण मानकों को शिथिल करते '
+                            'हैं और अपूर्णता को स्वीकार करते हैं तो पारिवारिक '
+                            'रिश्ते बेहतर होते हैं।'},
+            'Libra': {'en': 'Venus-ruled Libra on the 4th house blesses the '
+                            'home with beauty, harmony, and social grace. Your '
+                            'residence is tastefully decorated and serves as a '
+                            'gathering place for friends and family. Both '
+                            'parents contribute equally to your upbringing. '
+                            'Property with aesthetic appeal attracts you. '
+                            'Family peace depends on maintaining balance and '
+                            'avoiding taking sides in domestic disputes.',
+                      'hi': 'चौथे घर पर शुक्र-शासित तुला घर को सुंदरता, सद्भाव '
+                            'और सामाजिक अनुग्रह का आशीर्वाद देती है। आपका '
+                            'निवास शानदार ढंग से सजाया गया है और दोस्तों और '
+                            'परिवार के लिए एक सभा स्थल के रूप में कार्य करता '
+                            'है। आपके पालन-पोषण में माता-पिता दोनों समान रूप '
+                            'से योगदान देते हैं। सौन्दर्यात्मक आकर्षण वाली '
+                            'संपत्ति आपको आकर्षित करती है। पारिवारिक शांति '
+                            'संतुलन बनाए रखने और घरेलू विवादों में किसी का '
+                            'पक्ष लेने से बचने पर निर्भर करती है।'},
+            'Scorpio': {'en': 'Mars-Ketu ruled Scorpio on the 4th house '
+                              'creates deep, intense family dynamics. Family '
+                              'secrets, ancestral karma, and transformative '
+                              'domestic experiences shape your inner life. '
+                              'Property matters may involve disputes or '
+                              'dramatic changes. Your emotional attachment to '
+                              'home runs very deep despite an outward '
+                              'appearance of detachment. Healing family karma '
+                              'is a life theme.',
+                        'hi': 'चतुर्थ भाव पर मंगल-केतु का आधिपत्य वृश्चिक राशि '
+                              'में गहरी, गहन पारिवारिक गतिशीलता पैदा करता है। '
+                              'पारिवारिक रहस्य, पैतृक कर्म और परिवर्तनकारी '
+                              'घरेलू अनुभव आपके आंतरिक जीवन को आकार देते हैं। '
+                              'संपत्ति के मामलों में विवाद या नाटकीय परिवर्तन '
+                              'शामिल हो सकते हैं। बाहरी अलगाव के बावजूद घर से '
+                              'आपका भावनात्मक लगाव बहुत गहरा है। पारिवारिक '
+                              'कर्म को ठीक करना जीवन का विषय है।'},
+            'Sagittarius': {'en': "Jupiter's blessing on the 4th house creates "
+                                  'an expansive, philosophical, and fortunate '
+                                  'home life. Your family values education, '
+                                  'ethics, and spiritual growth. Property '
+                                  'ownership is indicated, often in multiple '
+                                  'locations or abroad. Your home functions as '
+                                  'a place of learning and wisdom. '
+                                  'International connections within the family '
+                                  'and a liberal, open-minded household '
+                                  'atmosphere prevail.',
+                            'hi': 'चतुर्थ भाव पर बृहस्पति का आशीर्वाद एक '
+                                  'विस्तृत, दार्शनिक और भाग्यशाली घरेलू जीवन '
+                                  'बनाता है। आपका परिवार शिक्षा, नैतिकता और '
+                                  'आध्यात्मिक विकास को महत्व देता है। संपत्ति '
+                                  'के स्वामित्व का संकेत अक्सर कई स्थानों या '
+                                  'विदेश में दिया जाता है। आपका घर सीखने और '
+                                  'ज्ञान के स्थान के रूप में कार्य करता है। '
+                                  'परिवार के भीतर अंतर्राष्ट्रीय संबंध और एक '
+                                  'उदार, खुले विचारों वाला घरेलू माहौल कायम '
+                                  'है।'},
+            'Capricorn': {'en': 'Saturn-ruled Capricorn on the 4th house '
+                                'creates a structured, disciplined family '
+                                'environment. Emotional warmth may have been '
+                                'scarce in early life, replaced by duty and '
+                                'responsibility. Property accumulation is slow '
+                                'but substantial. Family traditions and '
+                                'ancestral obligations are taken seriously. '
+                                'Domestic happiness increases markedly after '
+                                'middle age as Saturn rewards patience.',
+                          'hi': 'चौथे घर पर शनि द्वारा शासित मकर राशि एक '
+                                'संरचित, अनुशासित पारिवारिक वातावरण बनाती है। '
+                                'प्रारंभिक जीवन में भावनात्मक गर्मजोशी कम रही '
+                                'होगी, उसकी जगह कर्तव्य और जिम्मेदारी ने ले '
+                                'ली। संपत्ति संचय धीमा है लेकिन पर्याप्त है। '
+                                'पारिवारिक परंपराओं और पैतृक दायित्वों को '
+                                'गंभीरता से लिया जाता है। मध्य आयु के बाद '
+                                'घरेलू सुख में उल्लेखनीय वृद्धि होती है '
+                                'क्योंकि शनि धैर्य का पुरस्कार देता है।'},
+            'Aquarius': {'en': 'Saturn-Rahu influenced Aquarius on the 4th '
+                               'house creates an unconventional home life. '
+                               'Your family may be progressive, scattered '
+                               'geographically, or non-traditional in '
+                               'structure. Technology plays a large role in '
+                               'your domestic space. Emotional distance from '
+                               'roots is possible but compensated by '
+                               'chosen-family bonds. Property in unusual '
+                               'locations or modern apartments suits you.',
+                         'hi': 'चतुर्थ भाव पर शनि-राहु से प्रभावित कुंभ राशि '
+                               'एक अपरंपरागत घरेलू जीवन बनाती है। आपका परिवार '
+                               'प्रगतिशील, भौगोलिक रूप से बिखरा हुआ, या संरचना '
+                               'में गैर-पारंपरिक हो सकता है। प्रौद्योगिकी आपके '
+                               'घरेलू क्षेत्र में एक बड़ी भूमिका निभाती है। '
+                               'जड़ों से भावनात्मक दूरी संभव है लेकिन इसकी '
+                               'भरपाई चुने हुए पारिवारिक बंधनों से होती है। '
+                               'असामान्य स्थानों या आधुनिक अपार्टमेंट में '
+                               'संपत्ति आपके लिए उपयुक्त है।'},
+            'Pisces': {'en': 'Jupiter-ruled Pisces on the 4th house creates a '
+                             'spiritually rich and emotionally nourishing '
+                             'home. Your mother is compassionate and possibly '
+                             'spiritually inclined. The home serves as a '
+                             "sanctuary from the world's harshness. Property "
+                             'near water is highly favourable. Family life is '
+                             'gentle, artistic, and deeply connected to '
+                             'devotion and selfless love.',
+                       'hi': 'चौथे घर पर बृहस्पति शासित मीन राशि आध्यात्मिक '
+                             'रूप से समृद्ध और भावनात्मक रूप से पौष्टिक घर '
+                             'बनाती है। आपकी माँ दयालु हैं और संभवतः '
+                             'आध्यात्मिक रुझान वाली हैं। घर दुनिया की कठोरता '
+                             'से एक अभयारण्य के रूप में कार्य करता है। पानी के '
+                             'पास की संपत्ति अत्यधिक अनुकूल होती है। पारिवारिक '
+                             'जीवन सौम्य, कलात्मक और भक्ति और निस्वार्थ प्रेम '
+                             'से गहराई से जुड़ा हुआ है।'}}}
