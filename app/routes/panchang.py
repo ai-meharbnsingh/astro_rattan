@@ -16,6 +16,7 @@ from app.panchang_engine import (
     calculate_choghadiya,
 )
 from app.festival_engine import detect_festivals
+from app.sankranti_engine import build_sankranti_payload
 
 
 # ============================================================
@@ -624,6 +625,18 @@ def get_sunrise(
         "moonrise": panchang.get("moonrise", "--:--"),
         "moonset": panchang.get("moonset", "--:--"),
     }
+
+
+@router.get("/api/panchang/sankranti", status_code=status.HTTP_200_OK)
+def get_sankranti(
+    year: int = Query(default=None, ge=1900, le=2100),
+    latitude: float = Query(default=28.6139),
+    longitude: float = Query(default=77.2090),
+):
+    """Return 12 Sankranti (Sun ingress) times + restriction windows for a year."""
+    _validate_coords(latitude, longitude)
+    target_year = year or date.today().year
+    return build_sankranti_payload(target_year, longitude)
 
 
 @router.get("/api/festivals", status_code=status.HTTP_200_OK)

@@ -10,3 +10,4 @@ export { default as TarabalamTab } from './TarabalamTab';
 export { default as MuhuratFinderTab } from './MuhuratFinderTab';
 export { default as PanchangCoreTab } from './PanchangCoreTab';
 export { default as MonthlyCalendarTab } from './MonthlyCalendarTab';
+export { default as SankrantiTab } from './SankrantiTab';

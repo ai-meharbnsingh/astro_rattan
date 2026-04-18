@@ -29,6 +29,9 @@ e2e_backend.log
 e2e_frontend.log
 _archive/
 _trash/
+.claude/
+graphify-out/cache/
+graphify-out/needs_update
 .env*.local
 # ML model files — download at build time, don't commit
 *.pt

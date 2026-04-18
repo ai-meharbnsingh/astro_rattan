@@ -23,13 +23,12 @@ from app.muhurat_rules import (
     MRITYU_YOGA_TITHI, VISHA_YOGA_TITHI,
 )
 from app.panchang_engine import calculate_panchang
+from app.sankranti_engine import find_sankranti_times
 
 # Good tara numbers (1-indexed): Sampat=2, Kshema=4, Sadhaka=6, Mitra=8, Ati-Mitra=9
 _GOOD_TARAS = {2, 4, 6, 8, 9}
 # Good Chandra Balam houses (house of current Moon from birth Moon)
 _CHANDRA_BALAM_GOOD = {1, 3, 6, 7, 10, 11}
-
-_SANKRANTI_CACHE: dict[int, list[datetime]] = {}
 
 _CHANDRA_BALAM_FRUITS: dict[int, dict[str, str]] = {
     1: {"en": "Generally supportive for starting work.", "hi": "कार्य आरम्भ हेतु सामान्यतः अनुकूल।"},
@@ -59,69 +58,14 @@ _TARA_BALAM_FRUITS: dict[int, dict[str, str]] = {
 }
 
 
-def _sun_sign_index(dt_utc: datetime) -> int:
-    """Return sidereal Sun sign index (0=Aries…11=Pisces) at a UTC datetime."""
-    try:
-        import swisseph as swe  # type: ignore
-        from app.astro_engine import _SWE_LOCK
-
-        with _SWE_LOCK:
-            swe.set_sid_mode(swe.SIDM_LAHIRI)
-            jd = swe.julday(
-                dt_utc.year,
-                dt_utc.month,
-                dt_utc.day,
-                dt_utc.hour + dt_utc.minute / 60.0 + dt_utc.second / 3600.0,
-            )
-            xx, _ = swe.calc_ut(jd, swe.SUN, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
-            lon = float(xx[0]) % 360.0
-            return int(lon // 30.0)
-    except Exception:
-        from app.astro_engine import _approx_sun_longitude, _approx_ayanamsa, _datetime_to_jd
-
-        jd = _datetime_to_jd(dt_utc)
-        lon = (_approx_sun_longitude(jd) - _approx_ayanamsa(jd)) % 360.0
-        return int(lon // 30.0)
+def _sankranti_ingress_times(year: int) -> list[datetime]:
+    """Return 12 Sankranti ingress instants (UTC datetimes), ordered from Mesha."""
+    return [e.ingress_utc for e in find_sankranti_times(year)]
 
 
+# Back-compat: tests and older callers import this name.
 def _find_sankranti_times(year: int) -> list[datetime]:
-    """Find approximate Sankranti ingress times for a year (UTC datetimes)."""
-    cached = _SANKRANTI_CACHE.get(year)
-    if cached is not None:
-        return cached
-
-    start = datetime(year, 1, 1, 0, 0, tzinfo=timezone.utc)
-    end = datetime(year + 1, 1, 1, 0, 0, tzinfo=timezone.utc)
-
-    sankrantis: list[datetime] = []
-    prev_sign = _sun_sign_index(start)
-
-    dt = start + timedelta(days=1)
-    while dt <= end and len(sankrantis) < 12:
-        sign = _sun_sign_index(dt)
-        if sign != prev_sign:
-            lo = dt - timedelta(days=1)
-            hi = dt
-            for _ in range(16):  # ~1 minute resolution
-                mid = lo + (hi - lo) / 2
-                if _sun_sign_index(mid) == prev_sign:
-                    lo = mid
-                else:
-                    hi = mid
-            sankrantis.append(hi)
-            prev_sign = sign
-        dt = dt + timedelta(days=1)
-
-    # Tests and UI expect index 0 = Mesha (Aries) Sankranti, not Makara.
-    # Rotate list so that the ingress *into Aries* is first when available.
-    if sankrantis:
-        signs_after = [_sun_sign_index(t + timedelta(minutes=5)) for t in sankrantis]
-        if 0 in signs_after:
-            idx = signs_after.index(0)
-            sankrantis = sankrantis[idx:] + sankrantis[:idx]
-
-    _SANKRANTI_CACHE[year] = sankrantis
-    return sankrantis
+    return _sankranti_ingress_times(year)
 
 
 def _is_sankranti_restricted(d: date, sankranti_times: list[datetime]) -> bool:
@@ -204,7 +148,7 @@ def find_muhurat_dates(
 
     days_in_month = calendar.monthrange(year, month)[1]
     favorable_dates: List[Dict[str, Any]] = []
-    sankranti_times = _find_sankranti_times(year)
+    sankranti_times = _sankranti_ingress_times(year)
 
     for day in range(1, days_in_month + 1):
         d = date(year, month, day)
@@ -654,7 +598,7 @@ def find_travel_muhurat(
         return {"error": f"Invalid direction: {direction}", "dates": []}
 
     days_in_month = calendar.monthrange(year, month)[1]
-    sankranti_times = _find_sankranti_times(year)
+    sankranti_times = _sankranti_ingress_times(year)
     out: list[dict[str, Any]] = []
 
     for day in range(1, days_in_month + 1):
