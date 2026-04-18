@@ -1082,6 +1082,7 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
     from app.lalkitab_source_tags import source_of
     from app.lalkitab_savdhaniyan import get_remedy_precautions
     from app.lalkitab_andhe_grah import detect_andhe_grah
+    from app.lalkitab_remedy_classifier import stamp_classification
     src = source_of("get_remedies")
 
     # P0.2 — run blind-planet detector once so both remedy entries and
@@ -1099,6 +1100,8 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
         planet_entry.setdefault("source", src)
         if isinstance(planet_entry.get("remedy"), dict):
             planet_entry["remedy"].setdefault("source", src)
+            # P1.11 — stamp Trial / Remedy / Good Conduct tier on every remedy.
+            stamp_classification(planet_entry["remedy"])
 
         # P0.1 — attach the Savdhaniyan bundle (LK 4.08 + 4.09) so the UI
         # surfaces every mandatory precaution BEFORE the remedy action.

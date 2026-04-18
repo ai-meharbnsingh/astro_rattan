@@ -6,6 +6,35 @@ lagnas, months, and conditions to avoid. All names include Hindi translations.
 from typing import Any, Dict, List
 
 # ============================================================
+# P0 DOSHA TABLES (tests + finder hard/soft blocks)
+# ============================================================
+# NOTE: These lists use Python weekday numbering: Monday=0 … Sunday=6.
+# Values are tithi numbers in Shukla paksha range (1-15). Krishna paksha
+# is normalized via normalize_tithi_for_rules().
+
+# Mrityu Yoga (warning) — weekday -> tithi (1-15)
+MRITYU_YOGA_TITHI: List[int] = [
+    7,   # Monday    + Saptami
+    8,   # Tuesday   + Ashtami
+    9,   # Wednesday + Navami
+    14,  # Thursday  + Chaturdashi
+    6,   # Friday    + Shashthi
+    4,   # Saturday  + Chaturthi
+    1,   # Sunday    + Pratipada
+]
+
+# Visha Yoga (hard block) — weekday -> tithi (1-15)
+VISHA_YOGA_TITHI: List[int] = [
+    6,   # Monday
+    7,   # Tuesday
+    2,   # Wednesday
+    8,   # Thursday
+    9,   # Friday
+    7,   # Saturday
+    4,   # Sunday
+]
+
+# ============================================================
 # Activity metadata with translations
 # ============================================================
 MUHURAT_ACTIVITIES: Dict[str, Dict[str, str]] = {
