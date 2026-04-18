@@ -1413,15 +1413,15 @@ export default function Features() {
               <div className="mb-6 rounded-xl border border-sacred-gold/20 bg-sacred-gold/[0.02] p-4">
                 {/* Context header */}
                 <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-sacred-gold/15">
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                    <Calendar className="w-3.5 h-3.5 text-sacred-gold-dark shrink-0" />
-                    <span className="font-semibold text-foreground">{hi ? 'आज का सारांश' : "Today's Snapshot"}</span>
+                  <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4 text-sacred-gold-dark shrink-0" />
+                    <span className="font-medium text-foreground">{hi ? 'आज का सारांश' : "Today's Snapshot"}</span>
                     <span>·</span>
                     <span>{todayLabel}</span>
                     {tithiLabel && <><span>·</span><span>{tithiLabel}</span></>}
                     {nakshatraLabel && <><span>·</span><span>{nakshatraLabel}</span></>}
                   </div>
-                  <span className="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark">
+                  <span className="shrink-0 text-sm font-medium px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark">
                     {hi ? energy.hi : energy.en}
                   </span>
                 </div>
