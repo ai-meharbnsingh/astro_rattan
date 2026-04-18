@@ -695,11 +695,10 @@ CREATE INDEX IF NOT EXISTS idx_consultations_client ON consultations(client_id);
 CREATE INDEX IF NOT EXISTS idx_consultations_scheduled ON consultations(scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_consultations_status ON consultations(status);
     """),
-    (21, "Sprint I — Profile photos (astrologer + client) + palmistry hand photos", """
--- Astrologer / user profile photo (self-service avatar)
-ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_url TEXT;
-
--- Client profile photo + palmistry hands (left + right).
+    (21, "Sprint I — Client profile photo + palmistry hand photos", """
+-- Client photo slots.
+-- NOTE: astrologer/user profile photo already uses users.avatar_url
+-- (added at table creation time) so no change is needed there.
 -- Stored as base64 data URLs OR as relative paths under /uploads/ —
 -- callers choose; the column is a free-form TEXT so the frontend can
 -- pass whichever URL scheme it prefers.

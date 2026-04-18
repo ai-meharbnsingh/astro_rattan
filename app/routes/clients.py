@@ -149,6 +149,113 @@ def update_client(
     return {"message": "Client updated"}
 
 
+# ── Sprint I — Create client + auto-generate all charts ─────
+
+class ClientGenerateAll(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    phone: Optional[str] = None
+    birth_date: str
+    birth_time: str
+    birth_place: str
+    latitude: float
+    longitude: float
+    timezone_offset: float = 5.5
+    gender: Optional[str] = "male"
+    notes: Optional[str] = None
+    profile_photo_url: Optional[str] = None
+    left_hand_photo_url: Optional[str] = None
+    right_hand_photo_url: Optional[str] = None
+    # Which chart types to pre-generate — default all 3
+    generate_vedic: bool = True
+    generate_lalkitab: bool = True
+    generate_numerology: bool = True
+
+
+@router.post("/generate-all", status_code=status.HTTP_201_CREATED)
+def create_client_and_generate(
+    body: ClientGenerateAll,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Sprint I — one-shot: create client + generate Vedic, Lal Kitab and
+    Numerology kundlis in a single request.
+
+    Returns the created client + a map of chart_type → kundli_id so the UI
+    can deep-link into any of them without a follow-up request.
+    """
+    import json
+    # Inline import to avoid a circular dependency at module load.
+    from app.astro_engine import calculate_planet_positions
+
+    # 1) Create client row
+    client_row = db.execute(
+        """INSERT INTO clients
+           (astrologer_id, name, phone, birth_date, birth_time, birth_place,
+            latitude, longitude, timezone_offset, gender, notes,
+            profile_photo_url, left_hand_photo_url, right_hand_photo_url)
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+           RETURNING *""",
+        (
+            current_user["sub"], body.name, body.phone, body.birth_date,
+            body.birth_time, body.birth_place, body.latitude, body.longitude,
+            body.timezone_offset, body.gender or "male", body.notes,
+            body.profile_photo_url, body.left_hand_photo_url, body.right_hand_photo_url,
+        ),
+    ).fetchone()
+    client = dict(client_row)
+    client_id = client["id"]
+
+    # 2) Pre-compute planet positions once — ALL chart types derive from the
+    #    same sidereal positions, so there's no reason to recompute thrice.
+    try:
+        chart_data = calculate_planet_positions(
+            birth_date=body.birth_date,
+            birth_time=body.birth_time,
+            latitude=body.latitude,
+            longitude=body.longitude,
+            tz_offset=body.timezone_offset,
+        )
+        chart_json = json.dumps(chart_data, default=str)
+    except Exception as e:
+        db.commit()  # Keep the client row even if chart calc fails
+        raise HTTPException(
+            status_code=500,
+            detail=f"Client created but chart calculation failed: {type(e).__name__}",
+        )
+
+    generated: dict[str, str] = {}
+    to_generate: list[str] = []
+    if body.generate_vedic: to_generate.append("vedic")
+    if body.generate_lalkitab: to_generate.append("lalkitab")
+    if body.generate_numerology: to_generate.append("numerology")
+
+    for chart_type in to_generate:
+        try:
+            row = db.execute(
+                """INSERT INTO kundlis
+                   (user_id, client_id, person_name, birth_date, birth_time, birth_place,
+                    latitude, longitude, timezone_offset, chart_type, chart_data)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   RETURNING id""",
+                (
+                    current_user["sub"], client_id, body.name, body.birth_date,
+                    body.birth_time, body.birth_place, body.latitude, body.longitude,
+                    body.timezone_offset, chart_type, chart_json,
+                ),
+            ).fetchone()
+            generated[chart_type] = row["id"]
+        except Exception as e:
+            # Non-fatal — record the partial result and continue.
+            generated[chart_type] = f"error:{type(e).__name__}"
+
+    db.commit()
+    return {
+        "client": client,
+        "kundlis": generated,
+        "total_generated": len([v for v in generated.values() if not str(v).startswith("error:")]),
+    }
+
+
 # ── Notes ────────────────────────────────────────────────────
 
 class NoteCreate(BaseModel):
