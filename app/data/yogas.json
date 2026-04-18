@@ -474,9 +474,9 @@
     "key": "srikantha",
     "name_en": "Srikantha Yoga",
     "name_hi": "श्रीकण्ठ योग",
-    "category": "fame",
-    "category_label_en": "Fame Yoga",
-    "category_label_hi": "यश योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
     "rules": {
       "type": "AND",
       "conditions": [
@@ -527,9 +527,9 @@
     "key": "srinatha",
     "name_en": "Srinatha Yoga",
     "name_hi": "श्रीनाथ योग",
-    "category": "fame",
-    "category_label_en": "Fame Yoga",
-    "category_label_hi": "यश योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
     "rules": {
       "type": "AND",
       "conditions": [
@@ -1954,6 +1954,151 @@
     "effect_en": "Planets in 3rd, 6th, 10th, and 11th from Moon — generous, charitable, wealthy, and respected; possesses all comforts.",
     "effect_hi": "चंद्र से 3, 6, 10, 11वें भाव में ग्रह — उदार, दानी, धनी, सम्मानित; सभी सुखों से युक्त।",
     "sloka_ref": "Phaladeepika Adh. 12 sloka 7",
+    "nature": "benefic"
+  },
+  {
+    "key": "achachhamala",
+    "name_en": "Achachhamala Yoga",
+    "name_hi": "अचाचमाल योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
+    "rules": {
+      "type": "AND",
+      "conditions": [
+        {
+          "type": "planet_in_house_from_sun",
+          "offset": 2,
+          "exclude": [
+            "Jupiter",
+            "Venus",
+            "Mercury",
+            "Moon"
+          ]
+        },
+        {
+          "type": "planet_in_house_from_sun",
+          "offset": 12,
+          "exclude": [
+            "Jupiter",
+            "Venus",
+            "Mercury",
+            "Moon"
+          ]
+        }
+      ]
+    },
+    "effect_en": "Natural malefics hem the Sun from both sides (2nd and 12th from Sun) — native faces hardships, physical difficulties, and obstacles in self-expression. The Sun's vital force is weakened by this malefic siege.",
+    "effect_hi": "सूर्य के द्वितीय और द्वादश भाव में पापग्रह — सूर्य की शक्ति कमज़ोर, शारीरिक कठिनाइयाँ, आत्म-प्रकाश में बाधा। पापग्रहों के बीच घिरे सूर्य की जीवनशक्ति क्षीण।",
+    "sloka_ref": "Phaladeepika Adh. 6 sloka 38",
+    "nature": "malefic"
+  },
+  {
+    "key": "srimanta",
+    "name_en": "Srimanta Yoga",
+    "name_hi": "श्रीमान योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
+    "rules": {
+      "type": "AND",
+      "conditions": [
+        {
+          "type": "planet_in_houses",
+          "planet": "Jupiter",
+          "houses": [
+            1,
+            4,
+            5,
+            7,
+            9,
+            10
+          ]
+        },
+        {
+          "type": "lord_of_house_in_houses",
+          "lord_of": 9,
+          "in_houses": [
+            1,
+            4,
+            5,
+            7,
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    "effect_en": "Jupiter in a Kendra or Trikona with the 9th lord also strong in Kendra/Trikona — native is extremely wealthy, honoured, lives with great luxury and dharmic prosperity.",
+    "effect_hi": "बृहस्पति केंद्र/त्रिकोण में, भाग्येश भी केंद्र/त्रिकोण में — जातक अत्यंत धनवान, सम्माननीय, ऐश्वर्यशाली एवं धर्मिष्ठ।",
+    "sloka_ref": "Phaladeepika Adh. 6",
+    "nature": "benefic"
+  },
+  {
+    "key": "vamsi",
+    "name_en": "Vamsi Yoga",
+    "name_hi": "वंशी योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
+    "rules": {
+      "type": "AND",
+      "conditions": [
+        {
+          "type": "planet_in_houses",
+          "planet": "Sun",
+          "houses": [
+            5
+          ]
+        },
+        {
+          "type": "planet_in_houses",
+          "planet": "Jupiter",
+          "houses": [
+            1,
+            4,
+            5,
+            7,
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    "effect_en": "Sun in the 5th house with Jupiter in Kendra or Trikona — native is born to a noble dynasty, carries forward the family lineage with honour, and is blessed with righteous children.",
+    "effect_hi": "सूर्य पंचम भाव में, बृहस्पति केंद्र/त्रिकोण में — कुलीन वंश में जन्म, वंश का गौरव बढ़ाने वाला, धर्मी संतान का योग।",
+    "sloka_ref": "Phaladeepika Adh. 6",
+    "nature": "benefic"
+  },
+  {
+    "key": "goar",
+    "name_en": "Goar Yoga",
+    "name_hi": "गोअर योग",
+    "category": "adh6_special",
+    "category_label_en": "Phaladeepika Adh. 6 Yogas",
+    "category_label_hi": "फलदीपिका अ. 6 योग",
+    "rules": {
+      "type": "AND",
+      "conditions": [
+        {
+          "type": "planet_in_own_or_exaltation",
+          "planet": "Mars"
+        },
+        {
+          "type": "planet_in_houses",
+          "planet": "Mars",
+          "houses": [
+            1,
+            4,
+            7,
+            10
+          ]
+        }
+      ]
+    },
+    "effect_en": "Mars in own or exalted sign placed in a Kendra — native is exceptionally brave, physically strong, a natural warrior and leader, gains victory over enemies and achieves martial glory.",
+    "effect_hi": "मंगल स्वराशि या उच्च में, केंद्र भाव में — जातक अत्यंत साहसी, बलशाली, योद्धा-स्वभाव, शत्रु-विजेता एवं मार्तण्ड-तेज से युक्त।",
+    "sloka_ref": "Phaladeepika Adh. 6",
     "nature": "benefic"
   }
 ]
