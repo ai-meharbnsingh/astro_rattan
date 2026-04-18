@@ -3050,3 +3050,21 @@ def get_maha_yogas(
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
+
+
+@router.get("/{kundli_id}/graha-sambandha", status_code=status.HTTP_200_OK)
+def get_graha_sambandha(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """5 types of Graha Sambandha (planet connections) — Phaladeepika Adh. 15-16."""
+    from app.graha_sambandha_engine import analyze_graha_sambandha
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    asc_sign = chart.get("ascendant", {}).get("sign", "")
+    result = analyze_graha_sambandha(planets, asc_sign)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result

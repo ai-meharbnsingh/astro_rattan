@@ -245,6 +245,71 @@ def _house_strength(house: int, chart: Dict[str, Any]) -> str:
 
 
 # ───────────────────────────────────────────────────────────────
+# Lordship effect helpers (Phaladeepika Adh. 8)
+# ───────────────────────────────────────────────────────────────
+
+_HOUSE_AREAS_EN: Dict[int, str] = {
+    1: "self and body", 2: "wealth and family", 3: "courage and siblings",
+    4: "home and mother", 5: "children and intelligence", 6: "enemies and disease",
+    7: "marriage and partnerships", 8: "longevity and transformation",
+    9: "fortune and dharma", 10: "career and status",
+    11: "gains and income", 12: "losses and liberation",
+}
+_HOUSE_AREAS_HI: Dict[int, str] = {
+    1: "स्वयं एवं शरीर", 2: "धन एवं परिवार", 3: "पराक्रम एवं भाई-बहन",
+    4: "गृह एवं माता", 5: "संतान एवं बुद्धि", 6: "शत्रु एवं रोग",
+    7: "विवाह एवं साझेदारी", 8: "आयु एवं परिवर्तन",
+    9: "भाग्य एवं धर्म", 10: "कर्म एवं प्रतिष्ठा",
+    11: "लाभ एवं आय", 12: "व्यय एवं मोक्ष",
+}
+
+def _get_owned_houses(planet: str, asc_sign: str) -> List[int]:
+    """Return list of house numbers owned by planet given the ascendant sign."""
+    if not asc_sign:
+        return []
+    zodiac = [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+    ]
+    if asc_sign not in zodiac:
+        return []
+    asc_idx = zodiac.index(asc_sign)
+    owned = []
+    for sign, lord in _SIGN_LORD.items():
+        if lord == planet:
+            sign_idx = zodiac.index(sign)
+            house = ((sign_idx - asc_idx) % 12) + 1
+            owned.append(house)
+    return sorted(owned)
+
+
+def _build_lordship_effect(planet: str, owned_houses: List[int], occupied_house: int) -> str:
+    areas = [f"house {h} ({_HOUSE_AREAS_EN.get(h, '')})" for h in owned_houses]
+    areas_str = " and ".join(areas)
+    combined = sorted(set(owned_houses + [occupied_house]))
+    combined_str = ", ".join(f"H{h}" for h in combined)
+    return (
+        f"{planet} lords {areas_str}, and occupies house {occupied_house} "
+        f"({_HOUSE_AREAS_EN.get(occupied_house, '')}). "
+        f"Per Phaladeepika Adh. 8, it activates and delivers results of {combined_str} "
+        f"simultaneously — lordship + placement together determine the full Bhava Phala."
+    )
+
+
+def _build_lordship_effect_hi(planet: str, owned_houses: List[int], occupied_house: int) -> str:
+    areas = [f"भाव {h} ({_HOUSE_AREAS_HI.get(h, '')})" for h in owned_houses]
+    areas_str = " एवं ".join(areas)
+    combined = sorted(set(owned_houses + [occupied_house]))
+    combined_str = "、".join(f"भाव {h}" for h in combined)
+    return (
+        f"{planet} {areas_str} का स्वामी है और भाव {occupied_house} "
+        f"({_HOUSE_AREAS_HI.get(occupied_house, '')}) में स्थित है। "
+        f"फलदीपिका अ. 8 के अनुसार यह {combined_str} के फल एक साथ देता है — "
+        f"भावेशत्व + स्थिति दोनों मिलकर पूर्ण भाव फल निर्धारित करते हैं।"
+    )
+
+
+# ───────────────────────────────────────────────────────────────
 # Main analysis
 # ───────────────────────────────────────────────────────────────
 
@@ -288,6 +353,10 @@ def analyze_bhava_phala(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     data = load_bhava_phala_data()
     planets_raw = chart_data.get("planets") or {}
 
+    # Extract ascendant sign early — needed for both planet placements and bhava generals
+    ascendant = chart_data.get("ascendant") or {}
+    asc_sign = str(ascendant.get("sign", ""))
+
     # ── Planet placements ─────────────────────────────────────
     for planet in _PLANET_ORDER:
         pdata = planets_raw.get(planet)
@@ -327,14 +396,23 @@ def analyze_bhava_phala(chart_data: Dict[str, Any]) -> Dict[str, Any]:
                     f"{sign_lord} की स्थिति एवं बल भाव {house} में {planet} के फल को संशोधित करते हैं।"
                 )
 
+        # Lordship effect: what houses does this planet own? (Phaladeepika Adh. 8)
+        owned_houses = _get_owned_houses(planet, asc_sign if asc_sign else "")
+        placement["owned_houses"] = owned_houses
+        if owned_houses:
+            placement["lordship_effect_en"] = _build_lordship_effect(planet, owned_houses, house)
+            placement["lordship_effect_hi"] = _build_lordship_effect_hi(planet, owned_houses, house)
+        else:
+            placement["lordship_effect_en"] = None
+            placement["lordship_effect_hi"] = None
+
         result["planet_placements"].append(placement)
 
     # ── Bhava generals (all 12) with mooltrikona note ─────────
 
     # ── Bhava generals (all 12) ───────────────────────────────
     # Build sign→house lookup for mooltrikona rule
-    ascendant = chart_data.get("ascendant") or {}
-    asc_sign = str(ascendant.get("sign", ""))
+    # (asc_sign already extracted above)
     _zodiac = [
         "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
         "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
