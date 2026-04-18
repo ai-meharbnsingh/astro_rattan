@@ -1757,6 +1757,16 @@ export const translations: Record<Language, TranslationMap> = {
     'lk.tab.teva': 'Teva',
     'lk.tab.advanced': 'Karmic Insights',
 
+    // Source / provenance badge labels (LK_CANONICAL / LK_DERIVED / PRODUCT / vedic_influenced)
+    'lk.source.canonical': 'LK 1952',
+    'lk.source.derived': 'LK derived',
+    'lk.source.product': 'Product',
+    'lk.source.vedic': 'Vedic overlay',
+    'lk.source.canonical.desc': 'Content quoted directly from Lal Kitab 1952 canon.',
+    'lk.source.derived.desc': 'Logical inference from Lal Kitab principles — not verbatim quote.',
+    'lk.source.product.desc': 'Product / UX layer — not claimed as Lal Kitab canon.',
+    'lk.source.vedic.desc': 'Classical Vedic overlay — shown for cross-reference only.',
+
     // Advanced Analysis
     'lk.advanced.title': 'Advanced Karmic Insights',
     'lk.advanced.desc': 'Expert Lal Kitab analysis of your past-life debts, artificial influences, and critical precautions.',
@@ -4381,6 +4391,16 @@ export const translations: Record<Language, TranslationMap> = {
     'lk.tab.saved': 'सेव',
     'lk.tab.teva': 'तेवा',
     'lk.tab.advanced': 'कर्मिक दृष्टि',
+
+    // Source / provenance badge labels
+    'lk.source.canonical': 'लाल किताब 1952',
+    'lk.source.derived': 'तार्किक निष्कर्ष',
+    'lk.source.product': 'उत्पाद सुविधा',
+    'lk.source.vedic': 'वैदिक परत',
+    'lk.source.canonical.desc': 'लाल किताब 1952 के मूल पाठ से सीधे उद्धृत।',
+    'lk.source.derived.desc': 'लाल किताब के सिद्धांतों से तार्किक निष्कर्ष — सीधा उद्धरण नहीं।',
+    'lk.source.product.desc': 'उत्पाद / यूएक्स परत — लाल किताब कैनन नहीं।',
+    'lk.source.vedic.desc': 'शास्त्रीय वैदिक परत — केवल संदर्भ के लिए प्रदर्शित।',
 
     // Advanced Analysis
     'lk.advanced.title': 'उन्नत कर्मिक विश्लेषण',

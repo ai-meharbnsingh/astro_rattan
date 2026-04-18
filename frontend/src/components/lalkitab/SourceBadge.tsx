@@ -31,39 +31,46 @@ interface SourceBadgeProps {
   size?: SourceBadgeSize;
   title?: string;
   className?: string;
+  /** Optional LK reference e.g. "4.08" — shown as `· LK 4.08` after the label. */
+  lkRef?: string;
 }
 
 interface BadgeConfig {
   i18nKey: string;
+  descKey: string;
   fallback: string;
+  descFallback: string;
   classes: string;
-  defaultTitle: string;
 }
 
 const CONFIG: Record<string, BadgeConfig> = {
   LK_CANONICAL: {
     i18nKey: 'lk.source.canonical',
+    descKey: 'lk.source.canonical.desc',
     fallback: 'LK 1952',
+    descFallback: 'Content quoted directly from Lal Kitab 1952 canon.',
     classes: 'bg-green-100 text-green-800 border-green-300',
-    defaultTitle: 'Directly sourced from the Lal Kitab 1952 text.',
   },
   LK_DERIVED: {
     i18nKey: 'lk.source.derived',
+    descKey: 'lk.source.derived.desc',
     fallback: 'LK derived',
+    descFallback: 'Logical inference from Lal Kitab principles — not verbatim quote.',
     classes: 'bg-amber-100 text-amber-800 border-amber-300',
-    defaultTitle: 'Logical inference from Lal Kitab principles (not a direct quote).',
   },
   PRODUCT: {
     i18nKey: 'lk.source.product',
+    descKey: 'lk.source.product.desc',
     fallback: 'Product',
+    descFallback: 'Product / UX layer — not claimed as Lal Kitab canon.',
     classes: 'bg-gray-100 text-gray-700 border-gray-300',
-    defaultTitle: 'Product/UX feature — not claimed as Lal Kitab canon.',
   },
   vedic_influenced: {
     i18nKey: 'lk.source.vedic',
+    descKey: 'lk.source.vedic.desc',
     fallback: 'Vedic overlay',
+    descFallback: 'Classical Vedic overlay — shown for cross-reference only.',
     classes: 'bg-indigo-100 text-indigo-800 border-indigo-300',
-    defaultTitle: 'Vedic astrology overlay — not part of the Lal Kitab system.',
   },
 };
 
@@ -73,11 +80,18 @@ const SIZE_CLASSES: Record<SourceBadgeSize, string> = {
   sm: 'text-[11px] px-2.5 py-1',
 };
 
+function translateOrFallback(t: (k: string) => string, key: string, fallback: string): string {
+  // useTranslation's `t()` returns the key itself when missing → treat as miss.
+  const v = t(key);
+  return v === key ? fallback : v;
+}
+
 export default function SourceBadge({
   source,
   size = 'xs',
   title,
   className = '',
+  lkRef,
 }: SourceBadgeProps) {
   const { t } = useTranslation();
 
@@ -85,20 +99,25 @@ export default function SourceBadge({
   const cfg = CONFIG[source];
   if (!cfg) return null;
 
-  // i18n.ts `t()` returns the key itself when no translation exists.
-  // Treat that as a miss and fall back to the English label.
-  const translated = t(cfg.i18nKey);
-  const label = translated === cfg.i18nKey ? cfg.fallback : translated;
+  const label = translateOrFallback(t, cfg.i18nKey, cfg.fallback);
+  const description = translateOrFallback(t, cfg.descKey, cfg.descFallback);
+  const refSuffix = lkRef ? ` · LK ${lkRef}` : '';
+  const tooltip = title ?? description;
+  // aria-label is the full accessible name (label + LK ref + description)
+  // so screen readers announce what the pill means, not just the abbreviation.
+  const ariaLabel = `${label}${refSuffix} — ${description}`;
 
   const sizeClass = SIZE_CLASSES[size];
 
   return (
     <span
-      title={title ?? cfg.defaultTitle}
+      role="note"
+      aria-label={ariaLabel}
+      title={tooltip}
       className={`inline-flex items-center rounded-full border font-semibold uppercase tracking-wide whitespace-nowrap ${sizeClass} ${cfg.classes} ${className}`.trim()}
       data-source={source}
     >
-      {label}
+      {label}{refSuffix}
     </span>
   );
 }

@@ -20,6 +20,7 @@ import {
   Heart
 } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
+import SourceBadge from './SourceBadge';
 import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
 
 interface Props {
@@ -159,8 +160,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="flex-1">
-            <h2 className="text-2xl font-sans font-bold text-sacred-gold mb-1">
+            <h2 className="text-2xl font-sans font-bold text-sacred-gold mb-1 flex items-center gap-2">
               {t('lk.advanced.karmicScore')}
+              <SourceBadge source="LK_DERIVED" size="xs" />
             </h2>
             <p className="text-sm text-foreground/60 max-w-md">
               {t('lk.advanced.scoreDesc')}
@@ -254,6 +256,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-sacred-gold" />
             <h3 className="text-xl font-sans font-bold text-foreground">{t('lk.advanced.masnuiGrah')}</h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" />
           </div>
           {masnuiList.length > 0 && (
             <span className="text-[10px] font-bold text-sacred-gold-dark bg-sacred-gold/10 px-2 py-1 rounded border border-sacred-gold/20 uppercase tracking-widest animate-pulse">
@@ -503,6 +506,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         <div className="flex items-center gap-2 mb-4">
           <History className="w-5 h-5 text-sacred-gold" />
           <h3 className="text-xl font-sans font-bold text-foreground">{t('lk.advanced.karmicDebts')}</h3>
+          <SourceBadge source="LK_DERIVED" size="xs" />
         </div>
         <div className="space-y-4">
           {data.karmic_debts.map((debt: any, i: number) => (

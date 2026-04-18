@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import SourceBadge from './SourceBadge';
 import { pickLang } from '@/components/lalkitab/safe-render';
 import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck } from 'lucide-react';
 
@@ -295,11 +296,12 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="rounded-xl border border-sacred-gold/20 bg-card p-5">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <Sparkles className="w-4 h-4 text-sacred-gold" />
           <h3 className="font-semibold text-sacred-gold">
             {isHi ? 'लाल किताब उपाय — समस्या · कारण · उपाय · असर' : 'Lal Kitab Remedies — Problem · Reason · Remedy · Why It Works'}
           </h3>
+          <SourceBadge source="LK_CANONICAL" size="xs" />
         </div>
         <p className="text-xs text-muted-foreground">
           {isHi
@@ -358,11 +360,12 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
       {/* Validated Remedies section */}
       {(validatedLoading || validated.length > 0) && (
         <div className="pt-4 border-t border-sacred-gold/20">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <BadgeCheck className="w-4 h-4 text-green-600" />
             <h3 className="font-semibold text-sacred-gold text-sm">
               {isHi ? 'सत्यापित उपाय (लाल किताब नियमों से)' : 'Validated Remedies (verified against LK rules)'}
             </h3>
+            <SourceBadge source="LK_DERIVED" size="xs" />
           </div>
 
           {validatedLoading && (
@@ -413,11 +416,12 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
       {/* Master Remedies (raw DB) */}
       {(masterLoading || master.length > 0) && (
         <div className="pt-4 border-t border-sacred-gold/20">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <BadgeCheck className="w-4 h-4 text-sacred-gold" />
             <h3 className="font-semibold text-sacred-gold text-sm">
               {isHi ? 'मास्टर उपाय (डेटाबेस)' : 'Master Remedies (database)'}
             </h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" />
           </div>
 
           {masterLoading && (

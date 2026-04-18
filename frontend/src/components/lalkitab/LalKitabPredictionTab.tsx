@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
 import { Star, Info, ThumbsUp, Meh, AlertTriangle, TrendingUp, Scale, Shield } from 'lucide-react';
 import { pickLang } from './safe-render';
+import SourceBadge from './SourceBadge';
 
 type StudioLabel = 'STRONG' | 'MODERATE' | 'NEEDS ATTENTION';
 
@@ -171,9 +172,10 @@ export default function LalKitabPredictionTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
+        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1 flex-wrap">
           <Info className="w-5 h-5" />
           {t('lk.studio.title')}
+          <SourceBadge source="PRODUCT" size="xs" />
         </h2>
         <p className="text-sm text-gray-500">{t('lk.studio.desc')}</p>
       </div>
@@ -238,8 +240,9 @@ export default function LalKitabPredictionTab() {
 
             {hasCauseBreakdown && (
               <div className="mb-4 space-y-2">
-                <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5">
+                <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5 flex items-center gap-2 flex-wrap">
                   {isHi ? 'चार्ट विश्लेषण' : 'Chart Analysis'}
+                  <SourceBadge source="LK_DERIVED" size="xs" />
                 </p>
 
                 {primaryCause && (
