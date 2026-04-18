@@ -619,6 +619,94 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
         </div>
       </section>
 
+      {/* P1.4 — Time Planet (non-remediable fate signature, LK 2.16) */}
+      {data?.time_planet && (
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <h3 className="text-xl font-sans font-bold text-foreground">
+              {isHi ? 'समय-ग्रह (उपाय-रहित)' : 'Time Planet (non-remediable)'}
+            </h3>
+            <SourceBadge source="LK_CANONICAL" size="xs" lkRef="2.16" />
+          </div>
+          <p className="text-sm text-foreground/70 mb-4">
+            {isHi
+              ? 'जन्म के वार-स्वामी और होरा-स्वामी मिलकर आपका समय-ग्रह बनाते हैं — यह भाग्य का चिह्न है, कर्म नहीं। इस पर किए गए उपाय उल्टे पड़ते हैं।'
+              : 'The ruler of the birth weekday and the ruler of the birth hour combine into your Time Planet — a signature of fate, not karma. Remedies applied to it backfire.'}
+          </p>
+          <div className="p-5 rounded-xl border-2 border-amber-300 bg-amber-50">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div>
+                <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wide mb-1">
+                  {isHi ? 'वार-स्वामी' : 'Day Lord'}
+                </p>
+                <p className="text-lg font-bold text-foreground">
+                  {isHi ? (data.time_planet.day_lord_hi || data.time_planet.day_lord) : data.time_planet.day_lord}
+                </p>
+                <p className="text-[11px] text-foreground/60">
+                  {data.time_planet.weekday_name}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wide mb-1">
+                  {isHi ? 'होरा-स्वामी' : 'Hora Lord'}
+                </p>
+                <p className="text-lg font-bold text-foreground">
+                  {data.time_planet.hora_lord
+                    ? (isHi ? (data.time_planet.hora_lord_hi || data.time_planet.hora_lord) : data.time_planet.hora_lord)
+                    : (isHi ? '—' : '—')}
+                </p>
+                {data.time_planet.hora_skipped && (
+                  <p className="text-[11px] text-foreground/60 italic">
+                    {isHi ? 'सूर्योदय उपलब्ध नहीं' : 'sunrise unavailable'}
+                  </p>
+                )}
+                {data.time_planet.sunrise_assumed && !data.time_planet.hora_skipped && (
+                  <p className="text-[11px] text-foreground/60 italic">
+                    {isHi ? 'सूर्योदय ~06:00 माना' : 'sunrise assumed ~06:00'}
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wide mb-1">
+                  {isHi ? 'समय-ग्रह' : 'Time Planet'}
+                </p>
+                <p className="text-lg font-bold text-amber-900">
+                  {isHi ? (data.time_planet.time_planet_hi || data.time_planet.time_planet) : data.time_planet.time_planet}
+                  {data.time_planet.doubled && (
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold uppercase">
+                      {isHi ? 'दोगुना' : 'doubled'}
+                    </span>
+                  )}
+                  {data.time_planet.dual && !data.time_planet.doubled && (
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold uppercase">
+                      {isHi ? 'द्वि' : 'dual'}
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wide mb-1">
+                  {isHi ? 'स्थिति' : 'Status'}
+                </p>
+                <p className="text-lg font-bold text-red-700 flex items-center gap-1">
+                  <XCircle className="w-4 h-4" />
+                  {isHi ? 'उपाय वर्जित' : 'Remedy banned'}
+                </p>
+              </div>
+            </div>
+            <div className="pt-3 border-t border-amber-300/60">
+              <p className="text-[10px] font-bold text-red-800 uppercase tracking-wide mb-1">
+                {isHi ? 'चेतावनी' : 'Warning'}
+              </p>
+              <p className="text-sm text-foreground/90 leading-relaxed">
+                {isHi ? data.time_planet.warning_hi : data.time_planet.warning_en}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Prohibitions */}
       <section>
         <div className="flex items-center gap-2 mb-4">

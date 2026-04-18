@@ -71,6 +71,9 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
   const primary = pickPrimaryType(activeTypes);
   const cfg = primary ? TEVA_CONFIG[primary] : TEVA_CONFIG.khali;
 
+  // P1.3 — 35-Sala / 36-Sala Chakar cycle (ascendant-lord driven).
+  const chakar = (advanced?.chakar_cycle || fullData?.advanced?.chakar_cycle) ?? null;
+
   const labelKeyByType: Record<string, string> = {
     andha: 'lk.teva.andha',
     ratondha: 'lk.teva.ratondha',
@@ -166,7 +169,41 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
                   {t(labelKeyByType[ty] || 'lk.teva.type')}
                 </span>
               ))}
+              {/* P1.3 — Chakar cycle chip (35-Sala / 36-Sala) */}
+              {chakar && (chakar.cycle_length === 35 || chakar.cycle_length === 36) && (
+                <span
+                  key="chakar-cycle"
+                  className={`text-xs px-2 py-1 rounded-full border font-semibold cursor-help ${
+                    chakar.cycle_length === 36
+                      ? 'border-purple-300/60 bg-purple-500/10 text-purple-800'
+                      : 'border-sacred-gold/30 bg-white/40 text-sacred-gold-dark'
+                  }`}
+                  title={isHi ? chakar.reason_hi : chakar.reason_en}
+                >
+                  {isHi
+                    ? `चक्र: ${chakar.cycle_length}-साला`
+                    : `Chakar: ${chakar.cycle_length}-Sala`}
+                  {chakar.ascendant_lord && (
+                    <span className="opacity-60 ml-1">
+                      · {isHi
+                          ? (chakar.ascendant_lord_hi || chakar.ascendant_lord)
+                          : chakar.ascendant_lord}
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
+            {/* P1.3 — 36-Sala "shadow year" explanation (only when 36-cycle) */}
+            {chakar && chakar.cycle_length === 36 && (chakar.shadow_year_en || chakar.shadow_year_hi) && (
+              <div className="mt-2 p-3 rounded-lg border border-purple-200/60 bg-purple-500/5">
+                <p className="text-[11px] font-bold text-purple-800 uppercase tracking-wide mb-1">
+                  {isHi ? '36-साला छाया वर्ष' : '36-Sala Shadow Year'}
+                </p>
+                <p className="text-xs text-purple-900/80 leading-relaxed">
+                  {isHi ? chakar.shadow_year_hi : chakar.shadow_year_en}
+                </p>
+              </div>
+            )}
             {activeTypes.map((ty) => {
               const desc = teva?.description?.[ty];
               const text = pickLang(desc, isHi);

@@ -1137,6 +1137,14 @@ def get_lalkitab_advanced(
     sleeping_info = calculate_sleeping_status(formatted_positions)
     kayam_planets = calculate_kayam_grah(formatted_positions, lk_aspects)
 
+    # Parse chart_data once — needed by Andhe Grah (P1.1), Chakar cycle
+    # (P1.3) for the ascendant sign, and any downstream consumer.
+    try:
+        _raw_chart = row["chart_data"]
+        chart_data = json.loads(_raw_chart) if isinstance(_raw_chart, str) else (_raw_chart or {})
+    except (json.JSONDecodeError, TypeError, KeyError):
+        chart_data = {}
+
     # P1.1 — Modified Analytical Tewa needs Andhe Grah detection on every
     # chart (not just remedies). Wire the blind-planet detector into the
     # /advanced endpoint so the Tewa tab can colour-code planets by state.
@@ -1156,6 +1164,43 @@ def get_lalkitab_advanced(
         logger.warning("Rahu-Ketu axis detection failed: %s", e)
         rahu_ketu_axis = None
 
+    # P1.3 — 35-Sala vs 36-Sala Chakar auto-determination.
+    # Ascendant sign + planets occupying the 1st house drive the decision.
+    try:
+        from app.lalkitab_chakar import detect_chakar_cycle
+        asc_sign = (chart_data.get("ascendant") or {}).get("sign", "") if isinstance(chart_data, dict) else ""
+        planets_in_h1 = [
+            p["planet"] for p in formatted_positions
+            if int(p.get("house") or 0) == 1
+        ]
+        chakar_cycle = detect_chakar_cycle(asc_sign, planets_in_h1)
+    except Exception as e:
+        logger.warning("Chakar cycle detection failed: %s", e)
+        chakar_cycle = None
+
+    # P1.4 — Day + Time (Hora) planet — non-remediable fate signature (LK 2.16).
+    # Reuses the Hora sunrise we already computed (when available) so both
+    # engines agree on the Hora lord.
+    try:
+        from app.lalkitab_time_planet import detect_time_planet
+        sunrise_hms_val = None
+        try:
+            _srt = locals().get("sunrise_time_obj")
+            if _srt is not None:
+                sunrise_hms_val = _srt.strftime("%H:%M:%S")
+        except Exception:
+            sunrise_hms_val = None
+
+        time_planet_info = detect_time_planet(
+            birth_date_iso=row["birth_date"],
+            birth_time_hms=row["birth_time"],
+            sunrise_hms=sunrise_hms_val,
+            allow_sunrise_fallback=True,
+        )
+    except Exception as e:
+        logger.warning("Time-planet detection failed: %s", e)
+        time_planet_info = None
+
     return {
         "masnui_planets": calculate_masnui_planets(formatted_positions),
         "karmic_debts": hora_debt_analysis["final_debts"] if hora_debt_analysis else calculate_karmic_debts(formatted_positions),
@@ -1171,6 +1216,10 @@ def get_lalkitab_advanced(
         "andhe": andhe_info,
         # P1.5 — canonical Rahu-Ketu 1-7 axis combined effect (LK 2.17)
         "rahu_ketu_axis": rahu_ketu_axis,
+        # P1.3 — 35-Sala vs 36-Sala Chakar cycle determination
+        "chakar_cycle": chakar_cycle,
+        # P1.4 — Day + Time (Hora) planet (non-remediable fate signature)
+        "time_planet": time_planet_info,
     }
 
 
