@@ -99,6 +99,37 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
         </div>
       )}
 
+      {/* ── Mercury Hermaphrodite Extended Note ── */}
+      {data.planets?.Mercury?.hermaphrodite_note && (
+        <div className="rounded-xl border border-border overflow-hidden">
+          <div className="px-4 py-2 bg-muted border-b border-border">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+              {hi ? 'बुध नपुंसक प्रकृति (विस्तृत)' : 'Mercury Hermaphrodite Nature (Extended)'}
+            </span>
+          </div>
+          <div className="p-3 text-xs text-foreground/80 space-y-1">
+            {(() => {
+              const note = data.planets.Mercury.hermaphrodite_note;
+              return (
+                <>
+                  <p>{hi ? note.reason_hi : note.reason_en}</p>
+                  {note.conjunct_planets?.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {note.conjunct_planets.map((p: string) => (
+                        <span key={p} className="px-1.5 py-0.5 bg-muted rounded text-[10px] font-medium">
+                          {translatePlanet(p, language)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-foreground/40 italic mt-1">{note.sloka_ref}</p>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
       {/* ── Sign Triads — Deva / Manava / Rakshasa (Phaladeepika Adh. 1) ── */}
       {data.lagna_triad?.triad && (
         <div className="rounded-xl border border-border overflow-hidden">

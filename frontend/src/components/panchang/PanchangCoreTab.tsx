@@ -301,6 +301,23 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
       </div>
     </div>
 
+    {/* Kula Yoga */}
+    {panchang.special_yogas?.kula_yoga?.active && (
+      <div className="flex items-center gap-2 p-2 rounded-lg bg-purple-50 border border-purple-200">
+        <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-600 text-white">कुल योग</span>
+        <p className="text-xs text-purple-900">{isHi ? panchang.special_yogas.kula_yoga.hi : panchang.special_yogas.kula_yoga.en}</p>
+      </div>
+    )}
+
+    {/* Best Hora for Travel */}
+    {panchang.best_hora_for_travel && (
+      <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50 border border-blue-200">
+        <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-600 text-white">{isHi ? 'यात्रा-होरा' : 'Travel Hora'}</span>
+        <span className="text-xs font-semibold text-blue-900">{isHi ? (panchang.best_hora_for_travel.lord_hi || panchang.best_hora_for_travel.lord) : panchang.best_hora_for_travel.lord}</span>
+        <span className="text-xs text-blue-700">{panchang.best_hora_for_travel.start} – {panchang.best_hora_for_travel.end}</span>
+      </div>
+    )}
+
     {/* Panchanga Shuddhi Score */}
     {panchang.panchanga_shuddhi && (
       <div className="flex items-center gap-2 p-2 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20">

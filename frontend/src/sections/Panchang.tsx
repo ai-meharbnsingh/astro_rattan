@@ -85,7 +85,9 @@ export interface FullPanchangData {
     dwipushkar?: { active: boolean; name: string; name_hindi: string };
     tripushkar?: { active: boolean; name: string; name_hindi: string };
     ganda_moola?: { active: boolean; nakshatra?: string; name: string; name_hindi: string };
+    kula_yoga?: { active: boolean; total: number; en: string; hi: string };
   };
+  best_hora_for_travel?: { lord: string; lord_hi?: string; start: string; end: string; } | null;
   directions?: {
     disha_shool?: { direction: string; direction_hindi: string; name: string; name_hindi: string };
     baana?: { element: string; element_hindi: string; direction: string; direction_hindi: string };

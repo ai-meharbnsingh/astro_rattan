@@ -81,6 +81,10 @@ interface MuhuratDate {
   tara_balam?: TaraBalam | null;
   // Business/shop-specific fields
   recommended_hora_windows?: HoraWindow[];
+  // Universal scoring fields
+  muhurat_score?: number;
+  quality?: string;
+  dosha_cancellations?: string[];
 }
 
 interface MarriageSeasonCalendar {
@@ -555,6 +559,17 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                       <span className="ml-1">⚠️ {language === 'hi' ? 'पर्याप्त से कम' : 'Below Paryapta'}</span>
                     )}
                   </span>
+                </div>
+              )}
+
+              {d.muhurat_score !== undefined && (
+                <div className="text-xs mt-2">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">
+                    {d.quality || 'Saamanya'} — {d.muhurat_score}/100
+                  </span>
+                  {d.dosha_cancellations && d.dosha_cancellations.length > 0 && (
+                    <p className="text-xs text-emerald-700 mt-1">✓ {d.dosha_cancellations.join(' • ')}</p>
+                  )}
                 </div>
               )}
 

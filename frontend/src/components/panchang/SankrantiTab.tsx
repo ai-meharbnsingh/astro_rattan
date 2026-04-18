@@ -23,6 +23,37 @@ interface SankrantiRow {
     note_en?: string;
     note_hi?: string;
   };
+  sankranti_type?: {
+    name_en: string;
+    name_hi: string;
+    day_en: string;
+    day_hi: string;
+    description_en: string;
+    description_hi: string;
+  };
+  amritkaal?: {
+    start_local: string;
+    end_local: string;
+    duration_minutes: number;
+    is_classical: boolean;
+    note_en?: string;
+  };
+  ayana?: {
+    ayana_en: string;
+    ayana_hi: string;
+    note_en: string;
+    note_hi: string;
+  };
+  makar_special?: {
+    uttarayan_en: string;
+    uttarayan_hi: string;
+    mela_note_en: string;
+    mela_note_hi: string;
+  };
+  sign_effects?: {
+    effect_en: string;
+    effect_hi: string;
+  };
 }
 
 interface SankrantiPayload {
@@ -137,13 +168,28 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                   {rows.map((r) => {
                     const rashiName = language === 'hi' ? (r.rashi_hindi || r.rashi) : (r.rashi || r.rashi_hindi);
                     const puny = r.punyakaal;
+                    const sType = r.sankranti_type;
+                    const amrit = r.amritkaal;
+                    const ayana = r.ayana;
+                    const makar = r.makar_special;
+                    const fx = r.sign_effects;
                     return (
                       <TableRow key={`${r.rashi_index}-${r.ingress_utc}`}>
                         <TableCell className="font-semibold">
-                          <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-sacred-gold" />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Sparkles className="h-4 w-4 text-sacred-gold shrink-0" />
                             {rashiName}
+                            {sType && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-sacred-gold/15 text-sacred-gold border border-sacred-gold/30 font-medium">
+                                {language === 'hi' ? sType.name_hi : sType.name_en}
+                              </span>
+                            )}
                           </div>
+                          {fx && (
+                            <div className="text-[11px] italic text-muted-foreground mt-1">
+                              {language === 'hi' ? fx.effect_hi : fx.effect_en}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">{r.ingress_local}</div>
@@ -181,6 +227,27 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                             </div>
                           ) : (
                             <span className="text-sm text-muted-foreground">—</span>
+                          )}
+                          {amrit && (
+                            <div className="mt-2 text-[11px] text-foreground/80">
+                              <span className="font-semibold text-emerald-700">
+                                {language === 'hi' ? 'अमृतकाल:' : 'Amritkaal:'}
+                              </span>{' '}
+                              {amrit.start_local} → {amrit.end_local}
+                              {amrit.note_en && (
+                                <span className="ml-1 text-muted-foreground">({amrit.note_en})</span>
+                              )}
+                            </div>
+                          )}
+                          {ayana && (
+                            <div className="mt-1.5 text-[11px] text-blue-700/80">
+                              {language === 'hi' ? ayana.ayana_hi : ayana.ayana_en}
+                            </div>
+                          )}
+                          {makar && (
+                            <div className="mt-1.5 text-[11px] px-2 py-1 rounded-lg bg-sacred-gold/10 border border-sacred-gold/25 text-foreground/80">
+                              {language === 'hi' ? makar.uttarayan_hi : makar.uttarayan_en}
+                            </div>
                           )}
                         </TableCell>
                       </TableRow>
