@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Sparkles, X } from 'lucide-react';
+import { api } from '@/lib/api';
 import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
 import { PLANET_ASPECTS, toDMS } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateLabel, translateNakshatra } from '@/lib/backend-translations';
@@ -6,9 +8,114 @@ import type { SidePanelState } from '@/hooks/useKundliData';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 
+function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; language: string }) {
+  const [data, setData] = useState<any>(null);
+  const hi = language === 'hi';
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/planet-properties`)
+      .then(res => { if (!cancelled) setData(res); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  if (!data?.planets || (data.planets as any[]).length === 0) return null;
+
+  return (
+    <div className="mt-6 overflow-x-auto rounded-xl border border-border">
+      <div className="px-4 py-2 bg-muted border-b border-border">
+        <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+          {hi ? 'ग्रह गुण' : 'Planet Properties'}
+        </span>
+      </div>
+      <table className="w-full text-xs">
+        <thead className="bg-muted/50">
+          <tr>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'अवस्था' : 'Stage'}</th>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'गुण' : 'Guna'}</th>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'बलादि' : 'Baladi'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(data.planets as any[]).map((p: any, i: number) => (
+            <tr key={i} className="border-t border-border">
+              <td className="p-1.5 font-medium text-foreground">{translatePlanet(p.planet, language)}</td>
+              <td className="p-1.5 text-foreground/80">{hi ? (p.avastha_hi || p.avastha) : p.avastha}</td>
+              <td className="p-1.5 text-foreground/80">{hi ? (p.guna_hi || p.guna) : p.guna}</td>
+              <td className="p-1.5 text-foreground/80">{hi ? (p.baladi_hi || p.baladi) : p.baladi}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; language: string }) {
+  const [data, setData] = useState<any>(null);
+  const hi = language === 'hi';
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/panchadha-maitri`)
+      .then(res => { if (!cancelled) setData(res); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  if (!data?.relations || (data.relations as any[]).length === 0) return null;
+
+  const relationColor = (rel: string) => {
+    if (!rel) return 'bg-slate-100 text-slate-600';
+    const r = rel.toLowerCase();
+    if (r.includes('great friend')) return 'bg-emerald-100 text-emerald-800';
+    if (r.includes('friend')) return 'bg-green-100 text-green-800';
+    if (r.includes('great enemy')) return 'bg-red-100 text-red-800';
+    if (r.includes('enemy')) return 'bg-orange-100 text-orange-800';
+    return 'bg-slate-100 text-slate-700';
+  };
+
+  return (
+    <div className="mt-6 overflow-x-auto rounded-xl border border-border">
+      <div className="px-4 py-2 bg-muted border-b border-border">
+        <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+          {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
+        </span>
+      </div>
+      <table className="w-full text-xs">
+        <thead className="bg-muted/50">
+          <tr>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'अन्य' : 'With'}</th>
+            <th className="text-left p-1.5 text-primary font-medium">{hi ? 'संबंध' : 'Relation'}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(data.relations as any[]).map((r: any, i: number) => (
+            <tr key={i} className="border-t border-border">
+              <td className="p-1.5 font-medium text-foreground">{translatePlanet(r.planet1, language)}</td>
+              <td className="p-1.5 text-foreground/80">{translatePlanet(r.planet2, language)}</td>
+              <td className="p-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${relationColor(r.combined_relation)}`}>
+                  {hi ? (r.combined_relation_hi || r.combined_relation) : r.combined_relation}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 interface PlanetsTabProps {
   planets: any[];
   result: any;
+  kundliId: string;
   sidePanel: SidePanelState;
   setSidePanel: (v: SidePanelState) => void;
   handlePlanetClick: (planet: PlanetData) => void;
@@ -19,7 +126,7 @@ interface PlanetsTabProps {
 }
 
 export default function PlanetsTab({
-  planets, result, sidePanel, setSidePanel,
+  planets, result, kundliId, sidePanel, setSidePanel,
   handlePlanetClick, handleHouseClick,
   language, t, HOUSE_SIGNIFICANCE,
 }: PlanetsTabProps) {
@@ -195,6 +302,10 @@ export default function PlanetsTab({
             </TableBody>
           </Table>
         </div>
+
+        {/* Planet Properties & Panchadha Maitri */}
+        {kundliId && <PlanetPropertiesSection kundliId={kundliId} language={language} />}
+        {kundliId && <PanchadhaMaitriSection kundliId={kundliId} language={language} />}
       </div>
     </div>
   );

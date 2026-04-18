@@ -47,6 +47,15 @@ interface VrittiData {
   person_name?: string;
 }
 
+interface NavamshaData {
+  d9_10th_lord?: string;
+  element?: string;
+  career_en?: string;
+  career_hi?: string;
+  suited_fields?: string[];
+  sloka_ref?: string;
+}
+
 interface Props {
   kundliId: string;
   language: string;
@@ -57,6 +66,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<VrittiData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [navamsha, setNavamsha] = useState<NavamshaData | null>(null);
   const isHi = language === 'hi';
 
   useEffect(() => {
@@ -74,6 +84,15 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
         if (!cancelled) setLoading(false);
       }
     })();
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<NavamshaData>(`/api/kundli/${kundliId}/navamsha-profession`)
+      .then(res => { if (!cancelled) setNavamsha(res); })
+      .catch(() => {});
     return () => { cancelled = true; };
   }, [kundliId]);
 
@@ -301,6 +320,56 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
           )}
         </div>
       </div>
+
+      {/* Navamsha Profession (D9) */}
+      {navamsha && (
+        <div className="p-5 rounded-xl border border-sacred-gold/30 bg-white shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <Compass className="w-5 h-5 text-sacred-gold-dark" />
+            <h3 className="text-base font-semibold text-sacred-gold-dark">
+              {isHi ? 'नवांश वृत्ति (D9)' : 'Navamsha Profession (D9)'}
+            </h3>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
+            {navamsha.d9_10th_lord && (
+              <div>
+                <span className="text-muted-foreground">{isHi ? 'D9 दशम स्वामी:' : 'D9 10th Lord:'}</span>
+                <span className="ml-1 font-semibold text-foreground">{navamsha.d9_10th_lord}</span>
+              </div>
+            )}
+            {navamsha.element && (
+              <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                navamsha.element === 'fire' ? 'bg-red-100 text-red-700' :
+                navamsha.element === 'earth' ? 'bg-green-100 text-green-700' :
+                navamsha.element === 'water' ? 'bg-blue-100 text-blue-700' :
+                'bg-amber-100 text-amber-700'
+              }`}>
+                {navamsha.element.charAt(0).toUpperCase() + navamsha.element.slice(1)}
+              </span>
+            )}
+          </div>
+          {(navamsha.career_en || navamsha.career_hi) && (
+            <p className="text-sm text-foreground/90 leading-relaxed mb-3">
+              {isHi ? (navamsha.career_hi || navamsha.career_en) : navamsha.career_en}
+            </p>
+          )}
+          {navamsha.suited_fields && navamsha.suited_fields.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {navamsha.suited_fields.map((f, i) => (
+                <span key={i} className="px-2.5 py-1 rounded-full bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-xs font-medium">
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+          {navamsha.sloka_ref && (
+            <div className="flex items-center gap-1.5 pt-3 mt-3 border-t border-sacred-gold/15 text-[11px] text-muted-foreground">
+              <BookOpen className="w-3 h-3" />
+              <span className="italic">{navamsha.sloka_ref}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Career guidance footer */}
       <div className="p-4 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20 text-xs text-muted-foreground flex items-start gap-2">

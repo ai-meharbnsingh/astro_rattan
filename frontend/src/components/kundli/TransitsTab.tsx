@@ -67,18 +67,18 @@ function TransitHeatMap({ kundliId, t, language }: { kundliId: string; t: any; l
           const date = new Date(day.date);
           const dayNum = date.getDate();
           const month = date.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { month: 'short' });
-          
+
           let color = 'bg-red-500';
           if (day.score >= 70) color = 'bg-green-500';
           else if (day.score >= 40) color = 'bg-amber-400';
 
           return (
             <div key={idx} className="flex flex-col items-center gap-1 group relative">
-              <div 
+              <div
                 className={`w-full aspect-square rounded-md shadow-sm transition-transform hover:scale-110 cursor-help ${color}`}
               />
               <span className="text-[10px] text-foreground/50 font-bold">{dayNum}</span>
-              
+
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 pointer-events-none">
                 <div className="bg-black/90 text-white text-[10px] p-2 rounded whitespace-nowrap shadow-2xl border border-white/10 ring-1 ring-black">
@@ -96,6 +96,60 @@ function TransitHeatMap({ kundliId, t, language }: { kundliId: string; t: any; l
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-green-500" /> {t('transit.good')}</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-amber-400" /> {t('transit.average')}</div>
         <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-500" /> {t('transit.challenging')}</div>
+      </div>
+    </div>
+  );
+}
+
+function FamilyTimingSection({ kundliId, language, t }: { kundliId: string; language: string; t: (key: string) => string }) {
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/family-timing`)
+      .then(res => { if (!cancelled) setData(res); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  if (!data) return null;
+
+  const cards = [
+    { key: 'father',   label: language === 'hi' ? 'पिता'       : 'Father',   bg: 'bg-amber-50',  border: 'border-amber-200',  text: 'text-amber-800'  },
+    { key: 'mother',   label: language === 'hi' ? 'माता'       : 'Mother',   bg: 'bg-rose-50',   border: 'border-rose-200',   text: 'text-rose-800'   },
+    { key: 'siblings', label: language === 'hi' ? 'भाई-बहन'    : 'Siblings', bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-800'   },
+    { key: 'spouse',   label: language === 'hi' ? 'जीवनसाथी'   : 'Spouse',   bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800' },
+  ];
+
+  return (
+    <div className="rounded-xl border border-sacred-gold/30 bg-white shadow-sm p-5">
+      <Heading as={4} variant={4} className="text-sacred-gold-dark mb-4">
+        {language === 'hi' ? 'परिवार के प्रमुख समय' : 'Family Timing Indicators'}
+      </Heading>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {cards.map(({ key, label, bg, border, text }) => {
+          const info = data[key];
+          if (!info) return null;
+          return (
+            <div key={key} className={`rounded-lg p-4 border ${bg} ${border}`}>
+              <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${text}`}>{label}</p>
+              <p className={`text-sm leading-relaxed ${text}`}>
+                {language === 'hi' ? (info.timing_hi || info.timing_en) : info.timing_en}
+              </p>
+              {info.favorable !== undefined && (
+                <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-medium ${info.favorable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {info.favorable
+                    ? (language === 'hi' ? 'शुभ' : 'Favorable')
+                    : (language === 'hi' ? 'अशुभ' : 'Unfavorable')}
+                </span>
+              )}
+              {info.note && (
+                <p className="text-xs text-muted-foreground mt-1 italic">{info.note}</p>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -207,13 +261,13 @@ export default function TransitsTab(props: TransitsTabProps) {
                     <div className="flex items-center justify-between mb-4">
                       <Heading as={4} variant={4}>{t('transit.chart')} ({transitData.transit_date})</Heading>
                       <div className="flex bg-white rounded-lg p-1 border border-border/30">
-                        <button 
+                        <button
                           onClick={() => setViewMode('diamond')}
                           className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${viewMode === 'diamond' ? 'bg-muted text-white' : 'text-primary hover:bg-muted/10'}`}
                         >
                           DIAMOND
                         </button>
-                        <button 
+                        <button
                           onClick={() => setViewMode('concentric')}
                           className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${viewMode === 'concentric' ? 'bg-muted text-white' : 'text-primary hover:bg-muted/10'}`}
                         >
@@ -256,9 +310,9 @@ export default function TransitsTab(props: TransitsTabProps) {
                         </div>
                       ) : (
                         <div className="w-full animate-in fade-in zoom-in-95 duration-500">
-                          <ConcentricChart 
-                            natalPlanets={natalPlanets} 
-                            transitPlanets={transitPlanets} 
+                          <ConcentricChart
+                            natalPlanets={natalPlanets}
+                            transitPlanets={transitPlanets}
                             lagnaLongitude={result?.chart_data?.ascendant?.longitude || 0}
                           />
                         </div>
@@ -384,6 +438,9 @@ export default function TransitsTab(props: TransitsTabProps) {
             ) : (
               <p className="text-center text-foreground py-8">{t('transit.clickTab')}</p>
             )}
+
+            {/* Family Timing Indicators */}
+            {result?.id && <FamilyTimingSection kundliId={result.id} language={language} t={t} />}
 
             {/* Retrograde Station Dates */}
             {result?.id && <RetrogradeStationsSection kundliId={result.id} />}

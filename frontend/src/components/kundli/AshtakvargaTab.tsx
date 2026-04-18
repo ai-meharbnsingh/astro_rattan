@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { api } from '@/lib/api';
 import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
@@ -70,6 +72,81 @@ function SAVKundliChart({ savData, language, lagnaSign, t }: { savData: Record<s
         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-700"/>&ge;28 {t('auto.strong')}</span>
         <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-700"/>&lt;28 {t('auto.weak')}</span>
       </div>
+    </div>
+  );
+}
+
+function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; language: string; t: (key: string) => string }) {
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/horasara-phala`)
+      .then(res => { if (!cancelled) setData(res); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  if (!data) return null;
+
+  const assessment = language === 'hi'
+    ? (data.overall_assessment_hi || data.overall_assessment_en)
+    : data.overall_assessment_en;
+  const triggeredRules = (data.special_rules || []).filter((r: any) => r.triggered);
+  const planetReadings = data.planet_bav_readings || [];
+
+  return (
+    <div className="bg-muted rounded-xl p-5 border border-border">
+      <Heading as={4} variant={4} className="mb-3">
+        {language === 'hi' ? 'होरासार फल' : 'Horasara Phala'}
+      </Heading>
+      {assessment && (
+        <p className="text-sm text-foreground/90 leading-relaxed mb-4">{assessment}</p>
+      )}
+      {triggeredRules.length > 0 && (
+        <div className="mb-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+            {language === 'hi' ? 'विशेष योग' : 'Special Rules Triggered'}
+          </p>
+          <div className="space-y-1">
+            {triggeredRules.map((rule: any, i: number) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span className="text-foreground/90">
+                  {language === 'hi' ? (rule.description_hi || rule.description_en) : rule.description_en}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {planetReadings.length > 0 && (
+        <div className="overflow-x-auto">
+          <Table className="w-full text-sm">
+            <TableHeader>
+              <TableRow className="border-b border-border">
+                <TableHead className="text-left p-2 text-primary font-medium">{t('table.planet')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium">House</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium">Bindus</TableHead>
+                <TableHead className="text-left p-2 text-primary font-medium">Reading</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {planetReadings.map((row: any, i: number) => (
+                <TableRow key={i} className="border-t border-border hover:bg-muted/5">
+                  <TableCell className="p-2 font-medium text-foreground">{translatePlanet(row.planet, language)}</TableCell>
+                  <TableCell className="p-2 text-center text-foreground">{row.house}</TableCell>
+                  <TableCell className="p-2 text-center text-foreground font-semibold">{row.bindus}</TableCell>
+                  <TableCell className="p-2 text-muted-foreground text-xs">
+                    {language === 'hi' ? (row.reading_hi || row.reading_en) : row.reading_en}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
@@ -334,11 +411,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               </Table>
             </div>
           </div>
-          
+
           <div className="bg-muted rounded-xl p-5 border border-border">
             <Heading as={4} variant={4} className="mb-2">{t('ashtakvarga.purifiedPoints')}</Heading>
             <p className="text-sm text-muted-foreground mb-4">{t('ashtakvarga.purificationDesc')}</p>
-            
+
             <div className="space-y-8">
               {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
                 const purified = ashtakvargaData.purified?.[planet];
@@ -354,7 +431,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                         {t('ashtakvarga.shodhyaPinda')}: <span className="text-foreground text-lg">{purified.shodhya_pinda}</span>
                       </div>
                     </div>
-                    
+
                     <div className="overflow-x-auto p-3">
                       <Table className="w-full text-sm border-collapse">
                         <TableHeader>
@@ -394,6 +471,11 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
               })}
             </div>
           </div>
+
+          {/* Horasara Phala */}
+          {ashtakvargaData.kundli_id && (
+            <HorasaraPhalaSection kundliId={ashtakvargaData.kundli_id} language={language} t={t} />
+          )}
 
           {/* General Remedies */}
           <GeneralRemedies language={language} t={t} kundliId={ashtakvargaData.kundli_id} />

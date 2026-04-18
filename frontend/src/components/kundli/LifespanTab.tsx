@@ -106,6 +106,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedMethod, setExpandedMethod] = useState<string | null>(null);
+  const [avPindayu, setAvPindayu] = useState<any>(null);
   const isHi = language === 'hi';
 
   useEffect(() => {
@@ -115,8 +116,6 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
     setError('');
     (async () => {
       try {
-        // Prefer the richer /lifespan endpoint (includes all 3 methods);
-        // fallback to /ayu-classification if old backend
         try {
           const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/lifespan`);
           if (!cancelled) setData(res);
@@ -130,6 +129,15 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
         if (!cancelled) setLoading(false);
       }
     })();
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/pindayu`)
+      .then(res => { if (!cancelled) setAvPindayu(res); })
+      .catch(() => {});
     return () => { cancelled = true; };
   }, [kundliId]);
 
@@ -303,6 +311,53 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Ashtakavarga Pindayu */}
+      {avPindayu && (
+        <div className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h3 className="font-semibold text-sacred-gold-dark flex items-center gap-2">
+              <Sun className="w-5 h-5" />
+              {isHi ? 'अष्टकवर्ग पिण्डायु' : 'Ashtakavarga Pindayu'}
+            </h3>
+            {avPindayu.classification && (
+              <span className={`text-xs font-bold px-2 py-0.5 rounded border ${CATEGORY_COLOR[avPindayu.classification] || CATEGORY_COLOR.Madhyayu}`}>
+                {t(CATEGORY_KEY_MAP[avPindayu.classification] || 'auto.madhyayu')}
+              </span>
+            )}
+          </div>
+          {avPindayu.total_years != null && (
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="text-3xl font-bold text-sacred-gold-dark">{avPindayu.total_years.toFixed(1)}</span>
+              <span className="text-sm text-muted-foreground">{t('auto.years')}</span>
+            </div>
+          )}
+          {avPindayu.planet_contributions && (avPindayu.planet_contributions as any[]).length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-sacred-gold/20">
+                    <th className="text-left py-1 pr-3 text-muted-foreground font-medium">{isHi ? 'ग्रह' : 'Planet'}</th>
+                    <th className="text-center py-1 px-2 text-muted-foreground font-medium">{isHi ? 'भाव' : 'House'}</th>
+                    <th className="text-center py-1 px-2 text-muted-foreground font-medium">{isHi ? 'बिंदु' : 'Bindus'}</th>
+                    <th className="text-right py-1 pl-3 text-muted-foreground font-medium">{isHi ? 'वर्ष' : 'Years'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(avPindayu.planet_contributions as any[]).map((pc: any, i: number) => (
+                    <tr key={i} className="border-t border-sacred-gold/10">
+                      <td className="py-1 pr-3 font-medium text-foreground">{pc.planet}</td>
+                      <td className="py-1 px-2 text-center text-muted-foreground">{pc.house}</td>
+                      <td className="py-1 px-2 text-center text-muted-foreground">{pc.bindus}</td>
+                      <td className="py-1 pl-3 text-right font-semibold text-sacred-gold-dark">{pc.years?.toFixed(1)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 

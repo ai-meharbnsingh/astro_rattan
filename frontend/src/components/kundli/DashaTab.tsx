@@ -1,9 +1,66 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
+import { api } from '@/lib/api';
 import { translatePlanet } from '@/lib/backend-translations';
 import GeneralRemedies from './GeneralRemedies';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+
+function SookshmaSection({ kundliId, language, t }: { kundliId: string; language: string; t: (k: string) => string }) {
+  const [data, setData] = useState<any>(null);
+  const hi = language === 'hi';
+
+  useEffect(() => {
+    if (!kundliId) return;
+    let cancelled = false;
+    api.get<any>(`/api/kundli/${kundliId}/sookshma-prana`)
+      .then(res => { if (!cancelled) setData(res); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [kundliId]);
+
+  if (!data) return null;
+
+  const currentSookshma = (data.sookshma || []).find((s: any) => s.is_current);
+  const currentPrana = (data.prana || []).find((p: any) => p.is_current);
+  if (!currentSookshma && !currentPrana) return null;
+
+  return (
+    <div className="bg-muted rounded-xl border border-border p-4">
+      <Heading as={4} variant={4} className="mb-3">{hi ? 'सूक्ष्म-प्राण दशा' : 'Sookshma-Prana Dasha'}</Heading>
+      <div className="overflow-x-auto">
+        <Table className="w-full text-xs">
+          <TableHeader className="bg-muted">
+            <TableRow>
+              <TableHead className="p-1.5 text-primary font-medium">{hi ? 'स्तर' : 'Level'}</TableHead>
+              <TableHead className="p-1.5 text-primary font-medium">{hi ? 'स्वामी' : 'Lord'}</TableHead>
+              <TableHead className="p-1.5 text-primary font-medium">{hi ? 'आरम्भ' : 'Start'}</TableHead>
+              <TableHead className="p-1.5 text-primary font-medium">{hi ? 'समाप्त' : 'End'}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentSookshma && (
+              <TableRow className="bg-violet-50/30 border-t border-border">
+                <TableCell className="p-1.5 font-semibold text-violet-700">{hi ? 'सूक्ष्म' : 'Sookshma'}</TableCell>
+                <TableCell className="p-1.5 text-foreground">{translatePlanet(currentSookshma.planet, language)}</TableCell>
+                <TableCell className="p-1.5 text-foreground/70">{currentSookshma.start}</TableCell>
+                <TableCell className="p-1.5 text-foreground/70">{currentSookshma.end}</TableCell>
+              </TableRow>
+            )}
+            {currentPrana && (
+              <TableRow className="bg-rose-50/30 border-t border-border">
+                <TableCell className="p-1.5 pl-6 font-semibold text-rose-700">{hi ? 'प्राण' : 'Prana'}</TableCell>
+                <TableCell className="p-1.5 text-foreground">{translatePlanet(currentPrana.planet, language)}</TableCell>
+                <TableCell className="p-1.5 text-foreground/70">{currentPrana.start}</TableCell>
+                <TableCell className="p-1.5 text-foreground/70">{currentPrana.end}</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
 
 interface DashaTabProps {
   dashaData: any;
@@ -39,7 +96,7 @@ export default function DashaTab({
     const currentMD = extendedDashaData.mahadasha?.find((md: any) => md.is_current);
     const currentAD = currentMD?.antardasha?.find((ad: any) => ad.is_current);
     const currentPT = currentAD?.pratyantar?.find((pt: any) => pt.is_current);
-    
+
     return (
       <div className="space-y-6">
         {/* Current Dasha Summary Table */}
@@ -92,7 +149,7 @@ export default function DashaTab({
                   return (
                     <React.Fragment key={md.planet}>
                       {/* Mahadasha Row */}
-                      <TableRow 
+                      <TableRow
                         className={`cursor-pointer transition-colors ${md.is_current ? 'bg-primary/10' : 'hover:bg-muted/5'}`}
                         onClick={() => setExpandedMahadasha(isMdExpanded ? null : md.planet)}
                       >
@@ -116,7 +173,7 @@ export default function DashaTab({
                         const isAdExpanded = expandedAntardasha === adKey;
                         return (
                           <React.Fragment key={adKey}>
-                            <TableRow 
+                            <TableRow
                               className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-muted/10'}`}
                               onClick={(e) => { e.stopPropagation(); setExpandedAntardasha(isAdExpanded ? null : adKey); }}
                             >
@@ -148,7 +205,7 @@ export default function DashaTab({
 
                             {/* Pratyantar Rows */}
                             {isAdExpanded && (ad.pratyantar || []).map((pt: any, idx: number) => (
-                              <TableRow 
+                              <TableRow
                                 key={idx}
                                 className={`bg-white/60 transition-colors ${pt.is_current ? 'bg-primary/5' : 'hover:bg-muted/5'}`}
                               >
@@ -174,7 +231,12 @@ export default function DashaTab({
             </Table>
           </div>
         </div>
-        
+
+        {/* Sookshma-Prana Dasha */}
+        {extendedDashaData.kundli_id && (
+          <SookshmaSection kundliId={extendedDashaData.kundli_id} language={language} t={t} />
+        )}
+
         {/* General Remedies */}
         <GeneralRemedies language={language} t={t} kundliId={extendedDashaData.kundli_id} />
       </div>
@@ -225,7 +287,7 @@ export default function DashaTab({
             </Table>
           </div>
         </div>
-        
+
         {/* General Remedies */}
         <GeneralRemedies language={language} t={t} kundliId={dashaData.kundli_id} />
       </div>
