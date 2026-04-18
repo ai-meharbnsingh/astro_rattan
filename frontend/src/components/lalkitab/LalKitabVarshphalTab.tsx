@@ -168,7 +168,7 @@ export default function LalKitabVarshphalTab() {
               </div>
               <div className="flex justify-center">
                 <div className="w-full max-w-[460px] aspect-square">
-                  <InteractiveKundli chartData={chartData} compact />
+                  <InteractiveKundli chartData={chartData} compact hideCombust />
                 </div>
               </div>
             </div>

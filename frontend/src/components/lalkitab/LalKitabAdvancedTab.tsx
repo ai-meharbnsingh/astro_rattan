@@ -347,22 +347,34 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   <span className="px-2 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold">{t('auto.masnui')}</span>
                 </div>
                 <p className="text-sm font-bold text-foreground mb-1">
-                  {m.formed_by.map((p: string) => translatePlanet(p, language)).join(' + ')}
+                  {(Array.isArray(m.formed_by) ? m.formed_by : [])
+                    .filter((p: any) => typeof p === 'string')
+                    .map((p: string) => translatePlanet(p, language))
+                    .join(' + ')}
                 </p>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xs text-foreground/60">→</span>
-                  <span className="text-lg font-bold text-sacred-gold-dark">{translatePlanet(m.masnui_planet, language)}</span>
-                </div>
-                {m.quality && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                    m.quality === 'Khali Hawai' ? 'bg-gray-200 text-gray-700' :
-                    m.quality === 'Challenging' ? 'bg-red-100 text-red-700' :
-                    m.quality === 'Mixed' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-green-100 text-green-700'
-                  }`}>
-                    {m.quality}
+                  <span className="text-lg font-bold text-sacred-gold-dark">
+                    {typeof m.masnui_planet === 'string'
+                      ? translatePlanet(m.masnui_planet, language)
+                      : ''}
                   </span>
-                )}
+                </div>
+                {m.quality && (() => {
+                  // Bilingual mapping for the four LK quality bands.
+                  const qualityLabel: Record<string, { en: string; hi: string; cls: string }> = {
+                    'Khali Hawai': { en: 'Khali Hawai (Empty Air)', hi: 'खाली हवाई', cls: 'bg-gray-200 text-gray-700' },
+                    'Challenging': { en: 'Challenging',              hi: 'कठिन',       cls: 'bg-red-100 text-red-700' },
+                    'Mixed':       { en: 'Mixed',                    hi: 'मिश्रित',    cls: 'bg-yellow-100 text-yellow-700' },
+                    'Good':        { en: 'Good',                     hi: 'शुभ',        cls: 'bg-green-100 text-green-700' },
+                  };
+                  const label = qualityLabel[m.quality] ?? { en: String(m.quality), hi: String(m.quality), cls: 'bg-green-100 text-green-700' };
+                  return (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${label.cls}`}>
+                      {isHi ? label.hi : label.en}
+                    </span>
+                  );
+                })()}
                 <p className="text-xs text-foreground/70 italic border-t border-sacred-gold/10 pt-2 mt-2">
                   {t('lk.advanced.affectedDomain')}: {pickLang(m?.affected_domain, isHi)}
                 </p>
@@ -525,7 +537,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                   )}
                   <p className="text-xs font-semibold text-red-600/70">{t('lk.advanced.reason')}: {pickLang(debt?.reason, isHi)}</p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{t('auto.aCTIVEDEBT')}</span>
+                <span className="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-bold self-start">{t('lk.advanced.activeDebt')}</span>
               </div>
               <div className="bg-white/60 p-3 rounded-lg border border-red-100 mb-3">
                 <p className="text-xs font-bold text-red-800 mb-1 uppercase tracking-tighter">{t('lk.advanced.manifestation')}</p>
@@ -1088,22 +1100,26 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       >
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <h5 className={`font-bold text-sm ${isHigh ? 'text-red-800' : 'text-orange-800'}`}>
-                            {pickLang(item?.name ?? item?.dhoka_name, isHi)}
+                            {pickLang(item?.dhoka_name, isHi)}
                           </h5>
                           <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
                             isHigh
                               ? 'bg-red-200 text-red-800 border-red-300'
                               : 'bg-orange-100 text-orange-800 border-orange-200'
                           }`}>
-                            {isHi ? (isHigh ? 'उच्च' : 'मध्यम') : (typeof item?.severity === 'string' ? item.severity : '')}
+                            {isHi
+                              ? (isHigh ? 'उच्च' : 'मध्यम')
+                              : (typeof item?.severity === 'string' && item.severity.length > 0
+                                  ? item.severity.charAt(0).toUpperCase() + item.severity.slice(1).toLowerCase()
+                                  : '')}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
-                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.house_src ?? item?.source_house}</span>
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.source_house}</span>
                           <ArrowRight className="w-3 h-3" />
-                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.house_tgt ?? item?.target_house}</span>
+                          <span className="font-semibold">{isHi ? 'भाव' : 'House'} {item?.target_house}</span>
                           {(() => {
-                            const planets = item?.planets_involved || item?.malefics_causing || [];
+                            const planets = item?.malefics_causing || [];
                             return planets.length > 0 ? (
                               <span className="ml-1">
                                 ({planets.map((p: string) => translatePlanet(p, language)).join(', ')})
@@ -1113,7 +1129,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                         </div>
                         <p className="text-xs text-foreground/70 leading-relaxed">
                           {pickLang(
-                            item?.description ?? { en: item?.desc_en, hi: item?.desc_hi },
+                            item?.description,
                             isHi
                           )}
                         </p>
@@ -1138,7 +1154,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       className="p-4 rounded-xl border border-red-300 bg-red-500/5"
                     >
                       <div className="flex items-start justify-between gap-3 mb-2">
-                        <h5 className="font-bold text-sm text-red-800">{pickLang(item?.name ?? item?.strike_name, isHi)}</h5>
+                        <h5 className="font-bold text-sm text-red-800">{pickLang(item?.strike_name, isHi)}</h5>
                         <span className="shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-200 text-red-800 border border-red-300">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                           {isHi ? 'खतरा' : 'DANGER'}
@@ -1147,9 +1163,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                       <div className="flex items-center gap-1.5 text-xs text-foreground/60 mb-2">
                         <span className="font-semibold">{isHi ? 'प्रहारक भाव' : 'Striker H'}{item?.striker_house}</span>
                         <ArrowRight className="w-3 h-3" />
-                        <span className="font-semibold">{isHi ? 'लक्ष्य भाव' : 'Target H'}{item?.target_house ?? item?.victim_house}</span>
+                        <span className="font-semibold">{isHi ? 'लक्ष्य भाव' : 'Target H'}{item?.victim_house}</span>
                         {(() => {
-                          const planets = item?.planets_involved || item?.malefics || [];
+                          const planets = item?.malefics || [];
                           return planets.length > 0 ? (
                             <span className="ml-1">
                               ({planets.map((p: string) => translatePlanet(p, language)).join(', ')})
@@ -1158,7 +1174,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                         })()}
                       </div>
                       <p className="text-xs text-foreground/70 leading-relaxed mb-2">
-                        {pickLang(item?.description ?? { en: item?.desc_en, hi: item?.desc_hi }, isHi)}
+                        {pickLang(item?.description, isHi)}
                       </p>
                       {(item?.warning || item?.warning_en || item?.warning_hi) && (
                         <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200">

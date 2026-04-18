@@ -26,6 +26,7 @@ interface InteractiveKundliProps {
   onPlanetClick?: (planet: PlanetData) => void;
   onHouseClick?: (house: number, sign: string, planets: PlanetData[]) => void;
   compact?: boolean; // Hide North/South toggle, always show North Indian
+  hideCombust?: boolean; // Lal Kitab context — combustion is Vedic-only, don't render "^"
 }
 
 type ChartStyle = 'north' | 'south';
@@ -111,7 +112,7 @@ function getPlanetColor(planet: string): string {
 
 // Build planet label with status symbols (AstroSage style)
 // * Retrograde  ^ Combust  □ Vargottama  ↑ Exalted  ↓ Debilitated
-function getPlanetLabel(p: PlanetData, lang?: string): string {
+function getPlanetLabel(p: PlanetData, lang?: string, hideCombust: boolean = false): string {
   const abbrMap = lang === 'hi' ? PLANET_ABBREVIATIONS_HI : PLANET_ABBREVIATIONS;
   const abbr = abbrMap[p.planet] || PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
   let suffix = '';
@@ -119,7 +120,8 @@ function getPlanetLabel(p: PlanetData, lang?: string): string {
   const statusStr = typeof p.status === 'string' ? p.status : (p.status ? pickLang(p.status, false) : '');
   const s = statusStr?.toLowerCase() || '';
   if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
-  if (p.is_combust || s.includes('combust')) suffix += '^';
+  // Lal Kitab does NOT use combustion — callers pass hideCombust=true to suppress.
+  if (!hideCombust && (p.is_combust || s.includes('combust'))) suffix += '^';
   if (p.is_vargottama || s.includes('vargottama')) suffix += '\u25A1';
   if (s.includes('exalted')) suffix += '\u2191';
   if (s.includes('debilitated')) suffix += '\u2193';
@@ -604,6 +606,7 @@ interface PlanetBadgeProps {
   showPlanetTooltip: (p: PlanetData, x: number, y: number) => void;
   hideTooltip: () => void;
   onPlanetClick?: (p: PlanetData) => void;
+  hideCombust?: boolean;
 }
 
 function PlanetBadge({
@@ -615,11 +618,12 @@ function PlanetBadge({
   showPlanetTooltip,
   hideTooltip,
   onPlanetClick,
+  hideCombust,
 }: PlanetBadgeProps) {
   const { language: lang } = useTranslation();
   const color = getPlanetColor(p.planet);
   const isHovered = hoveredPlanet === p.planet;
-  const label = getPlanetLabel(p, lang);
+  const label = getPlanetLabel(p, lang, hideCombust);
 
   return (
     <g
@@ -668,7 +672,7 @@ function PlanetBadge({
 }
 
 
-export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact }: InteractiveKundliProps) {
+export default function InteractiveKundli({ chartData, onPlanetClick, onHouseClick, compact, hideCombust }: InteractiveKundliProps) {
   const { t, language } = useTranslation();
   const [hoveredHouse, setHoveredHouse] = useState<number | null>(null);
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
@@ -909,6 +913,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                     showPlanetTooltip={showPlanetTooltip}
                     hideTooltip={hideTooltip}
                     onPlanetClick={onPlanetClick}
+                    hideCombust={hideCombust}
                   />
                 );
               })}
@@ -1114,7 +1119,7 @@ export default function InteractiveKundli({ chartData, onPlanetClick, onHouseCli
                 const px = startX + pCol * spacing;
                 const baseY = nh.cy + (isTrapezoid ? 14 : 8) - (count > 0 ? 2 : 0);
                 const py = baseY + pRow * rowHeight;
-                const label = getPlanetLabel(p, language);
+                const label = getPlanetLabel(p, language, hideCombust);
 
                 return (
                   <g key={p.planet} role="img" aria-label={p.planet}>

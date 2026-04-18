@@ -191,7 +191,7 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
           </h3>
           <div className="flex justify-center">
             <div className="w-72 h-72">
-              <InteractiveKundli chartData={interactiveChartData} compact />
+              <InteractiveKundli chartData={interactiveChartData} compact hideCombust />
             </div>
           </div>
         </div>

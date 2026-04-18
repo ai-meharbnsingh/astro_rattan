@@ -22,11 +22,17 @@ interface DoshaResult {
   isVedicInfluenced: boolean;
 }
 
-const severityStyles: Record<DoshaResult['severity'], string> = {
+const severityStyles: Record<string, string> = {
   high: 'bg-red-500/20 text-red-600',
   medium: 'bg-orange-500/20 text-orange-600',
   low: 'bg-yellow-500/20 text-yellow-700',
+  // Defaults for unexpected / empty severity values so Tailwind classes
+  // never resolve to `undefined` (which breaks the pill entirely).
+  none: 'bg-gray-200/40 text-gray-600',
+  '': 'bg-gray-200/40 text-gray-600',
 };
+
+const SEVERITY_DEFAULT = 'bg-gray-200/40 text-gray-600';
 
 /**
  * Map backend dosha format (snake_case) to frontend DoshaResult (camelCase).
@@ -165,7 +171,7 @@ export default function LalKitabDoshaTab() {
                 {t('lk.dosha.severity')}:
               </span>
               <span
-                className={`text-sm font-semibold px-2.5 py-0.5 rounded-full ${severityStyles[dosha.severity]}`}
+                className={`text-sm font-semibold px-2.5 py-0.5 rounded-full ${severityStyles[dosha.severity as string] ?? SEVERITY_DEFAULT}`}
               >
                 {dosha.severity === 'high'
                   ? t('lk.dosha.high')

@@ -252,6 +252,8 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.horaAnalysisCouldNot': 'Hora analysis could not be performed - birth time not available',
     'auto.hORABASED': 'HORA-BASED',
     'auto.mODIFIED': 'MODIFIED',
+    'lk.advanced.activeDebt': 'ACTIVE DEBT',
+    // Deprecated garbled alias retained so older components don't break.
     'auto.aCTIVEDEBT': 'ACTIVE DEBT',
     'auto.congratulationsNoSev': 'Congratulations! No severe karmic debts detected',
     'auto.noSpecificProhibitio': 'No specific prohibitions found',
@@ -304,6 +306,8 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.empty': 'Empty',
     'auto.effectsNotAvailableF': 'Effects not available for this planet',
     'auto.emptyHouseNoPlanetsP': 'Empty house — no planets placed',
+    'auto.chartDataNotAvailable': 'Chart data not available',
+    // Deprecated mis-scanned key retained for backward-compat; prefer the corrected spelling above.
     'auto.chartDataNotAvailabl': 'Chart data not available',
     'auto.failedToLoadMarriage': 'Failed to load marriage prediction',
     'auto.marriagePredictions': 'Marriage Predictions',
@@ -2875,6 +2879,7 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.horaAnalysisCouldNot': 'जन्म समय उपलब्ध नहीं होने के कारण होरा विश्लेषण नहीं किया जा सका',
     'auto.hORABASED': 'होरा-आधारित',
     'auto.mODIFIED': 'परिवर्तित',
+    'lk.advanced.activeDebt': 'सक्रिय ऋण',
     'auto.aCTIVEDEBT': 'सक्रिय',
     'auto.congratulationsNoSev': 'बधाई! कोई गंभीर कर्मिक ऋण नहीं मिला',
     'auto.noSpecificProhibitio': 'कोई विशिष्ट वर्जना नहीं मिली',
@@ -2927,6 +2932,7 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.empty': 'खाली',
     'auto.effectsNotAvailableF': 'इस ग्रह के लिए प्रभाव उपलब्ध नहीं हैं',
     'auto.emptyHouseNoPlanetsP': 'खाली भाव — कोई ग्रह नहीं',
+    'auto.chartDataNotAvailable': 'कुंडली चार्ट डेटा उपलब्ध नहीं है',
     'auto.chartDataNotAvailabl': 'कुंडली चार्ट डेटा उपलब्ध नहीं है',
     'auto.failedToLoadMarriage': 'विवाह भविष्यवाणी लोड नहीं हो सकी',
     'auto.marriagePredictions': 'विवाह भविष्यवाणी',

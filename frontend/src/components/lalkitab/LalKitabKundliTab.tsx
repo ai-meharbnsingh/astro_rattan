@@ -88,11 +88,11 @@ export default function LalKitabKundliTab() {
         </div>
         {interactiveChartData ? (
           <div className="max-w-[520px] mx-auto">
-            <InteractiveKundli chartData={interactiveChartData} compact />
+            <InteractiveKundli chartData={interactiveChartData} compact hideCombust />
           </div>
         ) : (
           <div className="text-center text-sm text-muted-foreground py-10">
-            {t('auto.chartDataNotAvailabl')}
+            {t('auto.chartDataNotAvailable')}
           </div>
         )}
       </div>
