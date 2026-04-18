@@ -6,7 +6,20 @@ import { AlertTriangle, CheckCircle, Shield, Info } from 'lucide-react';
 import { pickLang } from './safe-render';
 import { severityPill } from './severity-styles';
 
-type DoshaSource = 'LK_CANONICAL' | 'vedic_influenced' | 'none' | string;
+type DoshaSource =
+  | 'LK_CANONICAL'
+  | 'LK_DERIVED'
+  | 'VEDIC_INFLUENCED'   // canonical upper-case (Codex D2)
+  | 'vedic_influenced'   // backwards-compat lowercase alias
+  | 'none'
+  | string;
+
+// Helper: both case variants count as "vedic overlay".
+function isVedicSource(source: string | null | undefined): boolean {
+  if (!source) return false;
+  const s = source.toLowerCase();
+  return s === 'vedic_influenced';
+}
 
 interface DoshaResult {
   key: string;
@@ -36,11 +49,11 @@ function mapBackendDosha(d: any): DoshaResult {
   const isVedic =
     typeof d?.is_vedic_influenced === 'boolean'
       ? d.is_vedic_influenced
-      : source === 'vedic_influenced';
+      : isVedicSource(source);
   const isLk =
     typeof d?.is_lk_canonical === 'boolean'
       ? d.is_lk_canonical
-      : source !== 'vedic_influenced';
+      : !isVedicSource(source);
   return {
     key: d?.key ?? '',
     nameEn: pickLang(d?.name_en ?? d?.nameEn ?? '', false),
@@ -90,9 +103,10 @@ export default function LalKitabDoshaTab() {
 
   const doshas: DoshaResult[] = backendDoshas ?? [];
 
-  // Split into LK canonical vs Vedic overlays
-  const lkDoshas = doshas.filter((d) => d.source !== 'vedic_influenced');
-  const vedicDoshas = doshas.filter((d) => d.source === 'vedic_influenced');
+  // Split into LK canonical vs Vedic overlays (handles both
+  // SCREAMING_SNAKE and legacy lowercase source values — Codex D2).
+  const lkDoshas = doshas.filter((d) => !isVedicSource(d.source));
+  const vedicDoshas = doshas.filter((d) => isVedicSource(d.source));
 
   const sortByDetected = (arr: DoshaResult[]) => {
     const detected = arr.filter((d) => d.detected);

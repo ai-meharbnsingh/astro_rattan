@@ -201,6 +201,30 @@ export default function LalKitabPredictionTab() {
         const supportingFactor = pickLang(a.supporting_factor, isHi);
         const hasCauseBreakdown = !!(primaryCause || secondaryModifier || supportingFactor);
 
+        // Codex D7: weakest/strongest chip row — makes the raw values that
+        // feed into primary_cause visible to users. Only render when we
+        // have at least one side populated.
+        const hasWeakest = !!(a.weakest_planet && a.weakest_house);
+        const hasStrongest = !!(a.strongest_planet && a.strongest_house);
+        const hasChips = hasWeakest || hasStrongest;
+        const dignityLabel = (d?: string | null) => {
+          if (!d) return '';
+          if (isHi) {
+            const map: Record<string, string> = {
+              exalted: 'उच्च',
+              debilitated: 'नीच',
+              own: 'स्वगृही',
+              friendly: 'मित्र',
+              enemy: 'शत्रु',
+              neutral: 'समान',
+              combust: 'अस्त',
+              retrograde: 'वक्री',
+            };
+            return map[d.toLowerCase()] ?? d;
+          }
+          return d;
+        };
+
         return (
           <div key={a.key} className={`rounded-2xl border p-5 ${cfg.border} ${cfg.bg}`}>
             <div className="flex items-start justify-between gap-4 mb-3">
@@ -238,12 +262,37 @@ export default function LalKitabPredictionTab() {
               </p>
             </div>
 
-            {hasCauseBreakdown && (
+            {(hasCauseBreakdown || hasChips) && (
               <div className="mb-4 space-y-2">
                 <p className="text-xs font-bold text-sacred-gold uppercase tracking-widest mb-1.5 flex items-center gap-2 flex-wrap">
                   {isHi ? 'चार्ट विश्लेषण' : 'Chart Analysis'}
                   <SourceBadge source="LK_DERIVED" size="xs" />
                 </p>
+
+                {hasChips && (
+                  <div className="flex flex-wrap gap-1.5 mb-1">
+                    {hasWeakest && (
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-red-300/40 bg-red-500/5 text-red-700 font-semibold"
+                        title={isHi ? 'सबसे कमज़ोर ग्रह — प्राथमिक कारण का स्रोत' : 'Weakest planet — drives the primary cause'}
+                      >
+                        <AlertTriangle className="w-3 h-3" />
+                        {isHi ? 'कमज़ोर:' : 'Weakest:'} {a.weakest_planet} H{a.weakest_house}
+                        {a.weakest_dignity ? ` (${dignityLabel(a.weakest_dignity)})` : ''}
+                      </span>
+                    )}
+                    {hasStrongest && (
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border border-green-300/40 bg-green-500/5 text-green-700 font-semibold"
+                        title={isHi ? 'सबसे मज़बूत ग्रह — सहायक कारक का स्रोत' : 'Strongest planet — drives the supporting factor'}
+                      >
+                        <TrendingUp className="w-3 h-3" />
+                        {isHi ? 'मज़बूत:' : 'Strongest:'} {a.strongest_planet} H{a.strongest_house}
+                        {a.strongest_dignity ? ` (${dignityLabel(a.strongest_dignity)})` : ''}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {primaryCause && (
                   <div className="rounded-lg border border-red-300/30 bg-red-500/5 p-3">

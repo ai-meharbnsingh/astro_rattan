@@ -1757,14 +1757,20 @@ export const translations: Record<Language, TranslationMap> = {
     'lk.tab.teva': 'Teva',
     'lk.tab.advanced': 'Karmic Insights',
 
-    // Source / provenance badge labels (LK_CANONICAL / LK_DERIVED / PRODUCT / vedic_influenced)
+    // Source / provenance badge labels (LK_CANONICAL / LK_DERIVED / LK_ADAPTED / PRODUCT / ML_SCORED / HEURISTIC / VEDIC_INFLUENCED)
     'lk.source.canonical': 'LK 1952',
     'lk.source.derived': 'LK derived',
+    'lk.source.adapted': 'LK adapted',
     'lk.source.product': 'Product',
+    'lk.source.mlScored': 'ML scored',
+    'lk.source.heuristic': 'Heuristic',
     'lk.source.vedic': 'Vedic overlay',
     'lk.source.canonical.desc': 'Content quoted directly from Lal Kitab 1952 canon.',
     'lk.source.derived.desc': 'Logical inference from Lal Kitab principles — not verbatim quote.',
+    'lk.source.adapted.desc': 'LK rule applied to a scenario not explicitly in 1952 text.',
     'lk.source.product.desc': 'Product / UX layer — not claimed as Lal Kitab canon.',
+    'lk.source.mlScored.desc': 'Score produced by a learned / statistical model.',
+    'lk.source.heuristic.desc': 'Heuristic / empirical weighting — not ML, not canon.',
     'lk.source.vedic.desc': 'Classical Vedic overlay — shown for cross-reference only.',
 
     // Advanced Analysis
@@ -4395,11 +4401,17 @@ export const translations: Record<Language, TranslationMap> = {
     // Source / provenance badge labels
     'lk.source.canonical': 'लाल किताब 1952',
     'lk.source.derived': 'तार्किक निष्कर्ष',
+    'lk.source.adapted': 'अनुकूलित',
     'lk.source.product': 'उत्पाद सुविधा',
+    'lk.source.mlScored': 'एमएल स्कोर',
+    'lk.source.heuristic': 'अनुभवजन्य',
     'lk.source.vedic': 'वैदिक परत',
     'lk.source.canonical.desc': 'लाल किताब 1952 के मूल पाठ से सीधे उद्धृत।',
     'lk.source.derived.desc': 'लाल किताब के सिद्धांतों से तार्किक निष्कर्ष — सीधा उद्धरण नहीं।',
+    'lk.source.adapted.desc': 'लाल किताब नियम को ऐसे परिदृश्य पर लागू किया गया जो 1952 में स्पष्ट नहीं था।',
     'lk.source.product.desc': 'उत्पाद / यूएक्स परत — लाल किताब कैनन नहीं।',
+    'lk.source.mlScored.desc': 'सांख्यिकीय / मशीन-अधिगम मॉडल द्वारा उत्पन्न स्कोर।',
+    'lk.source.heuristic.desc': 'अनुभवजन्य / प्रायोगिक भार — न एमएल, न कैनन।',
     'lk.source.vedic.desc': 'शास्त्रीय वैदिक परत — केवल संदर्भ के लिए प्रदर्शित।',
 
     // Advanced Analysis

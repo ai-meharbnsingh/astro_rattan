@@ -26,7 +26,16 @@ of these constants, so the frontend can label the section accordingly.
 
 LK_CANONICAL = "LK_CANONICAL"
 LK_DERIVED = "LK_DERIVED"
+LK_ADAPTED = "LK_ADAPTED"       # Rule applied to a scenario LK 1952 didn't explicitly cover
 PRODUCT = "PRODUCT"
+ML_SCORED = "ML_SCORED"         # Score produced by a learned/heuristic model
+HEURISTIC = "HEURISTIC"         # Heuristic scoring / empirical weighting (not ML)
+
+# Vedic overlay — used for dosha engine and future cross-system tags.
+# Case-normalised upper-case variant is canonical; lower-case alias kept
+# for backward compatibility with existing payloads (Codex D2 audit).
+VEDIC_INFLUENCED = "VEDIC_INFLUENCED"
+VEDIC_INFLUENCED_LEGACY = "vedic_influenced"
 
 # Per-engine classification. Key = function name. Value = source tag.
 # This lets callers (frontend, tests, audits) query the tag without

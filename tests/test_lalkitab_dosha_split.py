@@ -60,14 +60,27 @@ def run():
                   f"got source={d['source']}" if d else "missing"):
             failures += 1
 
-    # Test 2 — Vedic-overlay houses (H2/H4/H12) → vedic_influenced
+    # Test 2 — Vedic-overlay houses (H2/H4/H12) → source in
+    # {"VEDIC_INFLUENCED", "vedic_influenced"} (Codex D2: taxonomy
+    # case was normalised; both variants treated as equivalent).
+    VEDIC_VALUES = {"VEDIC_INFLUENCED", "vedic_influenced"}
     for h in MANGAL_DOSH_VEDIC_OVERLAY:
         d = _mangal(detect_lalkitab_doshas(_planets(h)))
-        if not ok(f"Mars H{h} → source=vedic_influenced",
-                  d and d["source"] == "vedic_influenced"
+        if not ok(f"Mars H{h} → source ∈ {{VEDIC_INFLUENCED, vedic_influenced}}",
+                  d and d["source"] in VEDIC_VALUES
                   and not d["is_lk_canonical"]
                   and d["is_vedic_influenced"],
                   f"got source={d['source']}, is_lk={d['is_lk_canonical']}" if d else "missing"):
+            failures += 1
+        # D3: source_note must be non-empty on Vedic-overlay detections
+        if not ok(f"Mars H{h} → source_note_en populated",
+                  d and bool(d.get("source_note_en")),
+                  f"got source_note_en={d.get('source_note_en') if d else None!r}"):
+            failures += 1
+        # D4: lk_equivalent_key must point to the LK-canon equivalent
+        if not ok(f"Mars H{h} → lk_equivalent_key='mangalDosh'",
+                  d and d.get("lk_equivalent_key") == "mangalDosh",
+                  f"got lk_equivalent_key={d.get('lk_equivalent_key') if d else None!r}"):
             failures += 1
 
     # Test 3 — Mars H5 (not in either list) → detected=False, source=none

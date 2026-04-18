@@ -988,8 +988,39 @@ def get_remedies_master(
         ).fetchall()
         # Filter to only matching (planet, house) pairs since ANY is OR-based
         valid_pairs = {(p, h) for p, h in positions.items() if h != 0}
+        # Codex D6 — attach Savdhaniyan + Andhe-Grah safety layer to
+        # the master-remedies response so the UI can render them
+        # alongside remedies from any endpoint, not just /enriched.
+        from app.lalkitab_savdhaniyan import get_remedy_precautions
+        from app.lalkitab_andhe_grah import detect_andhe_grah
+
+        # Build planet_positions list for the blind-planet detector
+        pp_list = [
+            {"planet": p.capitalize(), "house": h}
+            for p, h in positions.items() if h != 0
+        ]
+        andhe = detect_andhe_grah(pp_list)
+        blind_map = andhe.get("per_planet") or {}
+
         for r in rows:
             if (r["planet"], r["house"]) in valid_pairs:
+                planet_cap = r["planet"].capitalize()
+                precaution_bundle = get_remedy_precautions(
+                    planet_cap,
+                    house=r["house"],
+                    remedy_material=(r.get("remedy_type") or "") if isinstance(r, dict) else "",
+                )
+                blind_info = blind_map.get(planet_cap) or {}
+                andhe_warning = None
+                if blind_info.get("is_blind"):
+                    andhe_warning = {
+                        "kind": "blind_planet",
+                        "severity": blind_info.get("severity"),
+                        "reasons": blind_info.get("reasons"),
+                        "en": blind_info.get("warning_en"),
+                        "hi": blind_info.get("warning_hi"),
+                        "lk_ref": "4.14",
+                    }
                 remedies.append({
                     "planet": r["planet"],
                     "house": r["house"],
@@ -998,6 +1029,11 @@ def get_remedies_master(
                     "duration_days": r["duration_days"],
                     "instructions": r["instructions"],
                     "caution": r["caution"],
+                    # D6 safety layer
+                    "savdhaniyan": precaution_bundle,
+                    "time_rule": precaution_bundle["time_rule"],
+                    "reversal_risk": precaution_bundle["reversal_risk"],
+                    "andhe_grah_warning": andhe_warning,
                 })
 
     return {"remedies": remedies}
@@ -1290,6 +1326,48 @@ def lk_validated_remedies(
             detail="Calculation error — please try again",
         )
 
+    # Codex D6 — enrich each validated remedy with the Savdhaniyan
+    # safety bundle + Andhe-Grah warning, so UIs rendering validated
+    # remedies get the same LK 4.08/4.09/4.14 protection as /enriched.
+    from app.lalkitab_savdhaniyan import get_remedy_precautions
+    from app.lalkitab_andhe_grah import detect_andhe_grah
+    andhe = detect_andhe_grah(formatted_positions)
+    blind_map = andhe.get("per_planet") or {}
+
+    def _enrich(r: dict) -> dict:
+        planet = r.get("for_planet") or r.get("planet") or ""
+        if not planet:
+            return r
+        # Find the planet's LK house from the positions list.
+        house = next(
+            (p.get("house") for p in formatted_positions if p.get("planet") == planet),
+            None,
+        )
+        precaution_bundle = get_remedy_precautions(
+            planet,
+            house=house,
+            remedy_material=r.get("material", "") if isinstance(r, dict) else "",
+        )
+        blind_info = blind_map.get(planet) or {}
+        andhe_warning = None
+        if blind_info.get("is_blind"):
+            andhe_warning = {
+                "kind": "blind_planet",
+                "severity": blind_info.get("severity"),
+                "reasons": blind_info.get("reasons"),
+                "en": blind_info.get("warning_en"),
+                "hi": blind_info.get("warning_hi"),
+                "lk_ref": "4.14",
+            }
+        return {
+            **r,
+            "savdhaniyan": precaution_bundle,
+            "time_rule": precaution_bundle["time_rule"],
+            "reversal_risk": precaution_bundle["reversal_risk"],
+            "andhe_grah_warning": andhe_warning,
+        }
+
+    remedies = [_enrich(r) for r in (remedies or [])]
     return {"remedies": remedies}
 
 

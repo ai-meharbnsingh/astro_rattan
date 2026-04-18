@@ -173,9 +173,12 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
     is_lk_mangal     = mars_h in MANGAL_DOSH_LK_HOUSES
     is_vedic_mangal  = mars_h in MANGAL_DOSH_VEDIC_OVERLAY
     mangal_detected  = is_lk_mangal or is_vedic_mangal
+    # Codex D2 audit: use SCREAMING_SNAKE for taxonomy consistency.
+    # Lower-case alias "vedic_influenced" is still emitted in the
+    # record below for backward-compat with frontend filters.
     mangal_source    = (
         "LK_CANONICAL"     if is_lk_mangal
-        else "vedic_influenced" if is_vedic_mangal
+        else "VEDIC_INFLUENCED" if is_vedic_mangal
         else "none"
     )
     results.append({
@@ -186,6 +189,33 @@ def detect_lalkitab_doshas(planet_positions: List[Dict[str, Any]]) -> List[Dict[
         "is_lk_canonical": is_lk_mangal,
         "is_vedic_influenced": is_vedic_mangal,
         "source": mangal_source,
+        # Codex D2 audit — backwards-compatible lowercase alias so
+        # frontend filters using the old string (`vedic_influenced`)
+        # don't silently break when taxonomy case is normalised.
+        "source_legacy": mangal_source.lower() if is_vedic_mangal else mangal_source,
+        # Codex D3 audit — classical citation for the Vedic overlay branch.
+        "source_note_en": (
+            "Parashari Hora Shastra — Mangal Dosh from H1/H2/H4/H7/H8/H12. "
+            "Lal Kitab 1952 adopts a stricter subset (H1/H7/H8 only), so this "
+            "is flagged as Vedic overlay for cross-reference." if is_vedic_mangal
+            else (
+                "Lal Kitab 1952 canonical — Mars in angular or 8th house."
+                if is_lk_mangal else ""
+            )
+        ),
+        "source_note_hi": (
+            "पाराशरी होरा शास्त्र — मंगल दोष H1/H2/H4/H7/H8/H12 से। "
+            "लाल किताब 1952 में सख्त नियम (केवल H1/H7/H8), इसलिए वैदिक परत "
+            "के रूप में संदर्भ हेतु।" if is_vedic_mangal
+            else (
+                "लाल किताब 1952 मूल — केंद्र या 8वें भाव में मंगल।"
+                if is_lk_mangal else ""
+            )
+        ),
+        # Codex D4 audit — cross-link to the nearest LK-canon equivalent
+        # so the frontend can render a "see also" pointer from the
+        # Vedic block to the canonical block.
+        "lk_equivalent_key": "mangalDosh" if is_vedic_mangal else None,
         "severity": (
             "high" if mangal_detected and mars_h in MANGAL_DOSH_HIGH_HOUSES
             else ("medium" if is_lk_mangal
