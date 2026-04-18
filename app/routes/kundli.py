@@ -3053,6 +3053,31 @@ def get_maha_yogas(
 
 
 # ─────────────────────────────────────────────────────────────
+# Raja Yogas — Phaladeepika Adhyaya 7
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/{kundli_id}/raja-yogas", status_code=status.HTTP_200_OK)
+def get_raja_yogas(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """12 Raja Yogas from Phaladeepika Adhyaya 7."""
+    from app.raja_yoga_engine import detect_adh7_raja_yogas
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planets = chart.get("planets", {})
+    asc_sign = chart.get("ascendant", {}).get("sign", "")
+    yogas = detect_adh7_raja_yogas(planets, asc_sign)
+    return {
+        "kundli_id": kundli_id,
+        "person_name": row["person_name"],
+        "yogas": yogas,
+        "sloka_ref": "Phaladeepika Adhyaya 7",
+    }
+
+
+# ─────────────────────────────────────────────────────────────
 # Family Demise Timing — Phaladeepika Adhyaya 17
 # ─────────────────────────────────────────────────────────────
 
