@@ -85,23 +85,30 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
 
       {/* Current Lagna */}
       {currentLagna && (
-        <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
+        <div className="flex items-center gap-3 p-3 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
           <Sunrise className="h-8 w-8 text-sacred-gold flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground">
               {t('auto.currentLagnaAscendan')}
             </p>
-            <span className="font-bold text-foreground">
-              {language === 'hi'
-                ? currentLagna.lagna_hindi || RASHI_HINDI[currentLagna.lagna] || currentLagna.lagna
-                : currentLagna.lagna}
-            </span>
-            {(panchang as any).samvat?.pushkara?.active && (
-              <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 border border-amber-400/50 text-amber-700 text-[10px] font-semibold" title={language === 'hi' ? 'वर्तमान लग्न पुष्कर नवांश में है — अत्यन्त शुभ' : 'Current lagna is in Pushkara Navamsha — highly auspicious'}>
-                ✦ {language === 'hi' ? 'पुष्कर नवांश' : 'Pushkara Navamsha'}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-foreground text-base">
+                {language === 'hi'
+                  ? currentLagna.lagna_hindi || RASHI_HINDI[currentLagna.lagna] || currentLagna.lagna
+                  : currentLagna.lagna}
               </span>
-            )}
-            <span className="mx-2 text-sacred-gold">{currentLagna.start} - {currentLagna.end}</span>
+              {(currentLagna as any).degree && (
+                <span className="text-xs bg-sacred-gold/20 text-sacred-gold font-semibold px-2 py-0.5 rounded-full">
+                  {(currentLagna as any).degree}°
+                </span>
+              )}
+              {(panchang as any).samvat?.pushkara?.active && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-100 border border-amber-400/50 text-amber-700 text-[10px] font-semibold" title={language === 'hi' ? 'वर्तमान लग्न पुष्कर नवांश में है — अत्यन्त शुभ' : 'Current lagna is in Pushkara Navamsha — highly auspicious'}>
+                  ✦ {language === 'hi' ? 'पुष्कर नवांश' : 'Pushkara Navamsha'}
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground mt-1 block">{currentLagna.start} - {currentLagna.end}</span>
             {LAGNA_INFO[currentLagna.lagna] && (
               <Text variant="small" as="span">
                 {language === 'hi'
@@ -110,7 +117,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
               </Text>
             )}
           </div>
-          <span className="px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold font-semibold text-xs">
+          <span className="px-2 py-1 rounded-full bg-sacred-gold/20 text-sacred-gold font-semibold text-xs flex-shrink-0">
             {t('auto.now')}
           </span>
         </div>
@@ -120,7 +127,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
       <div className="rounded-lg border overflow-hidden">
         <h3 className="font-bold text-foreground p-2 flex items-center gap-1 bg-card/30">
           <Sunrise className="h-4 w-4 text-sacred-gold" />
-          {language === 'hi' ? 'दिन के लग्न' : "Today's Lagna Changes"}
+          {language === 'hi' ? 'दिन के लग्न (उदय लग्न)' : "Today's Uday Lagna (Rising Sign)"}
         </h3>
 
         <div className="overflow-x-auto">
@@ -135,6 +142,9 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                 </TableHead>
                 <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
                   {t('auto.end')}
+                </TableHead>
+                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
+                  {language === 'hi' ? 'अंश' : 'Degree'}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -189,6 +199,9 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                     </TableCell>
                     <TableCell className="px-2 py-1 text-muted-foreground">
                       {lagna.end}
+                    </TableCell>
+                    <TableCell className="px-2 py-1 text-muted-foreground">
+                      {(lagna as any).degree ? `${(lagna as any).degree}°` : '—'}
                     </TableCell>
                   </TableRow>
                 );
