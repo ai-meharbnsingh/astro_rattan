@@ -2066,6 +2066,7 @@ def get_active_rin(
     overlay with urgency escalation.
     """
     from app.lalkitab_advanced import calculate_karmic_debts, enrich_debts_active_passive
+    from app.lalkitab_compound_debt import rank_compound_debts
     from app.lalkitab_dasha import get_dasha_timeline
     from datetime import date as _date
     positions, row = _get_lk_positions(kundli_id, user["sub"], db)
@@ -2090,13 +2091,26 @@ def get_active_rin(
         current_dasha_lord = None
         upcoming_dasha_lords = None
 
+    enriched = enrich_debts_active_passive(
+        debts, positions,
+        current_dasha_lord=current_dasha_lord,
+        upcoming_dasha_lords=upcoming_dasha_lords,
+    )
+    # P2.9 — compound-debt priority analysis (LK canon Rina-Shodhan Krama).
+    # Keeps the existing `debts` list contract but additionally returns a
+    # `compound_analysis` payload with ranked order, clusters, and
+    # blocked-by relationships. The ranked list is a separate copy —
+    # `debts` order is untouched for backwards compatibility.
+    try:
+        compound_analysis = rank_compound_debts(enriched, positions)
+    except Exception:
+        # Non-fatal — the raw debt list still ships.
+        compound_analysis = None
+
     return {
-        "debts": enrich_debts_active_passive(
-            debts, positions,
-            current_dasha_lord=current_dasha_lord,
-            upcoming_dasha_lords=upcoming_dasha_lords,
-        ),
+        "debts": enriched,
         "current_dasha_lord": current_dasha_lord,
+        "compound_analysis": compound_analysis,
     }
 
 

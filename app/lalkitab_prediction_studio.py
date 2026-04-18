@@ -280,6 +280,41 @@ def compute_area_score(
     planet_positions: Dict[str, int],
     planet_longitudes: Optional[Dict[str, float]] = None,
 ) -> int:
+    """Back-compat wrapper — returns the scalar score only.
+
+    P2.3 — the evidence-emitting version lives in
+    `compute_area_score_with_evidence` (returns score + evidence trail).
+    """
+    result = compute_area_score_with_evidence(area, planet_positions, planet_longitudes)
+    return result["score"]
+
+
+def compute_area_score_with_evidence(
+    area: PredictionArea,
+    planet_positions: Dict[str, int],
+    planet_longitudes: Optional[Dict[str, float]] = None,
+) -> Dict[str, Any]:
+    """P2.3 — Explainable scoring.
+
+    Returns
+    -------
+        {
+          "score": int,                   # final 0-100 score for the area
+          "evidence": [                   # per-signal contribution trail
+            { kind, planet, house, contribution, rule_ref, label_en, label_hi }
+          ],
+          "counterfactual_en": str,       # "Without {X}, score would be +Y higher"
+          "counterfactual_hi": str,
+          "top_negative_signal": dict | None,
+        }
+
+    Evidence kinds:
+        trace    — structural "planet is present in H{n}" anchor
+        bonus    — positive contribution
+        penalty  — negative contribution
+        rule     — canonical LK rule that applied (e.g. "LK 2.08 Bunyaad")
+        cap      — score clamp at floor/ceiling
+    """
     total_score = 0
     count = 0
     benefics = {"Jupiter", "Venus", "Moon", "Mercury"}
@@ -293,35 +328,114 @@ def compute_area_score(
             house_to_planets[h].append(p)
     house_strengths: Dict[int, str] = {h: _house_strength(ps) for h, ps in house_to_planets.items()}
 
+    evidence: List[Dict[str, Any]] = []
+
+    def _add(
+        kind: str,
+        planet: Optional[str],
+        house: Optional[int],
+        contribution: int,
+        rule_ref: Optional[str],
+        label_en: str,
+        label_hi: str,
+    ) -> None:
+        if contribution == 0 and kind not in ("trace", "rule", "cap"):
+            return
+        row: Dict[str, Any] = {
+            "kind": kind,
+            "contribution": int(contribution),
+            "label_en": label_en,
+            "label_hi": label_hi,
+        }
+        if planet is not None:
+            row["planet"] = planet
+        if house is not None:
+            row["house"] = int(house)
+        if rule_ref:
+            row["rule_ref"] = rule_ref
+        evidence.append(row)
+
     for planet_key in area.primary_planets:
         house = planet_positions.get(planet_key)
         if not house:
+            # Absent planet — record as a latent trace so users see the gap.
+            _add(
+                "trace", planet_key, None, 0, None,
+                f"{planet_key} not placed in chart — contributes nothing to this area.",
+                f"{planet_key} कुंडली में अनुपस्थित — इस क्षेत्र में योगदान शून्य।",
+            )
             continue
 
         score = SCORE_NEUTRAL_BASE
+        _add(
+            "trace", planet_key, house, 0, None,
+            f"{planet_key} in H{house}: base {SCORE_NEUTRAL_BASE}",
+            f"{planet_key} भाव {house} में: आधार {SCORE_NEUTRAL_BASE}",
+        )
+
         is_pakka = house == PAKKA_GHAR.get(planet_key)
         if is_pakka:
             score += SCORE_PAKKA_GHAR_BONUS
+            _add(
+                "bonus", planet_key, house, SCORE_PAKKA_GHAR_BONUS, "LK Pakka Ghar",
+                f"{planet_key} in its Pakka Ghar (H{house}): +{SCORE_PAKKA_GHAR_BONUS}",
+                f"{planet_key} पक्के घर में (H{house}): +{SCORE_PAKKA_GHAR_BONUS}",
+            )
 
         in_primary_house = house in area.primary_houses
         if in_primary_house:
             score += SCORE_PRIMARY_HOUSE_BONUS
+            _add(
+                "bonus", planet_key, house, SCORE_PRIMARY_HOUSE_BONUS, None,
+                f"{planet_key} in primary house H{house} for {area.en}: +{SCORE_PRIMARY_HOUSE_BONUS}",
+                f"{planet_key} {area.hi} के मुख्य भाव H{house} में: +{SCORE_PRIMARY_HOUSE_BONUS}",
+            )
 
         hs = house_strengths.get(house)
         if hs == "strong":
             score += SCORE_STRONG_HOUSE_BONUS
+            _add(
+                "bonus", planet_key, house, SCORE_STRONG_HOUSE_BONUS, None,
+                f"H{house} has strong benefic support: +{SCORE_STRONG_HOUSE_BONUS}",
+                f"भाव {house} में शुभ समर्थन: +{SCORE_STRONG_HOUSE_BONUS}",
+            )
         if hs == "weak":
             score -= SCORE_WEAK_HOUSE_PENALTY
+            _add(
+                "penalty", planet_key, house, -SCORE_WEAK_HOUSE_PENALTY, None,
+                f"H{house} is malefic-heavy: -{SCORE_WEAK_HOUSE_PENALTY}",
+                f"भाव {house} पाप-ग्रह-भारी: -{SCORE_WEAK_HOUSE_PENALTY}",
+            )
 
         if planet_key in benefics and in_primary_house:
             score += SCORE_BENEFIC_PRIMARY_BONUS
+            _add(
+                "bonus", planet_key, house, SCORE_BENEFIC_PRIMARY_BONUS, None,
+                f"Benefic {planet_key} in primary H{house}: +{SCORE_BENEFIC_PRIMARY_BONUS}",
+                f"शुभ ग्रह {planet_key} मुख्य भाव H{house} में: +{SCORE_BENEFIC_PRIMARY_BONUS}",
+            )
         if planet_key in benefics and house in dushthanas:
             score -= SCORE_BENEFIC_DUSTHANA_PENALTY
+            _add(
+                "penalty", planet_key, house, -SCORE_BENEFIC_DUSTHANA_PENALTY, "LK Dusthana",
+                f"Benefic {planet_key} wasted in dusthana H{house}: -{SCORE_BENEFIC_DUSTHANA_PENALTY}",
+                f"शुभ ग्रह {planet_key} दुस्थान H{house} में व्यर्थ: -{SCORE_BENEFIC_DUSTHANA_PENALTY}",
+            )
 
         if planet_key in malefics and house in dushthanas:
             score -= SCORE_MALEFIC_DUSTHANA_PENALTY
+            _add(
+                "penalty", planet_key, house, -SCORE_MALEFIC_DUSTHANA_PENALTY, "LK Dusthana",
+                f"Malefic {planet_key} festering in dusthana H{house}: -{SCORE_MALEFIC_DUSTHANA_PENALTY}",
+                f"पाप ग्रह {planet_key} दुस्थान H{house} में बिगड़ता है: -{SCORE_MALEFIC_DUSTHANA_PENALTY}",
+            )
         if planet_key in malefics and in_primary_house and not is_pakka:
             score -= SCORE_MALEFIC_NO_DIGNITY_PENALTY
+            _add(
+                "penalty", planet_key, house, -SCORE_MALEFIC_NO_DIGNITY_PENALTY, None,
+                f"Malefic {planet_key} in primary H{house} without dignity: -{SCORE_MALEFIC_NO_DIGNITY_PENALTY}",
+                f"पाप ग्रह {planet_key} मुख्य भाव H{house} में बिना गरिमा: -{SCORE_MALEFIC_NO_DIGNITY_PENALTY}",
+            )
 
         co_support = 0
         for p in area.primary_planets:
@@ -332,21 +446,96 @@ def compute_area_score(
                 co_support += 1
         if co_support > 0:
             score += SCORE_CO_SUPPORT_BONUS
+            _add(
+                "bonus", planet_key, house, SCORE_CO_SUPPORT_BONUS, None,
+                f"{co_support} co-trace planet(s) also in primary houses: +{SCORE_CO_SUPPORT_BONUS}",
+                f"{co_support} सह-ग्रह भी मुख्य भावों में: +{SCORE_CO_SUPPORT_BONUS}",
+            )
 
         if planet_longitudes is not None:
             try:
                 lon = float(planet_longitudes.get(planet_key, 0.0) or 0.0)
             except Exception:
                 lon = 0.0
-            score += _navamsa_dignity_adjustment(planet_key, lon)
+            nav_adj = _navamsa_dignity_adjustment(planet_key, lon)
+            if nav_adj > 0:
+                _add(
+                    "bonus", planet_key, house, nav_adj, "Navamsa D9",
+                    f"{planet_key} navamsa-exalted/vargottama: +{nav_adj}",
+                    f"{planet_key} नवांश में उच्च/वर्गोत्तम: +{nav_adj}",
+                )
+            elif nav_adj < 0:
+                _add(
+                    "penalty", planet_key, house, nav_adj, "Navamsa D9",
+                    f"{planet_key} navamsa-debilitated: {nav_adj}",
+                    f"{planet_key} नवांश में नीच: {nav_adj}",
+                )
+            score += nav_adj
 
+        pre_clamp = score
         score = max(SCORE_FLOOR, min(SCORE_CEILING, score))
+        if score != pre_clamp:
+            clamp_delta = score - pre_clamp
+            _add(
+                "cap", planet_key, house, clamp_delta,
+                "Score floor/ceiling",
+                f"{planet_key} score clamped from {pre_clamp} to {score} (delta {clamp_delta:+d})",
+                f"{planet_key} अंक {pre_clamp} से {score} पर सीमित (परिवर्तन {clamp_delta:+d})",
+            )
+
         total_score += score
         count += 1
 
+    # Counterfactual — identify top negative contribution and project score
+    # without it. Uses the largest single negative hit across all trace
+    # planets, averaged over `count` in the same way the mean is computed.
+    top_negative = None
+    most_neg = 0
+    for ev in evidence:
+        c = ev.get("contribution", 0)
+        if c < most_neg:
+            most_neg = c
+            top_negative = ev
+
     if count == 0:
-        return SCORE_DEFAULT_EMPTY
-    return int(round(total_score / count))
+        final_score = SCORE_DEFAULT_EMPTY
+        counterfactual_en = (
+            "No trace planets placed in the chart — score defaults to a neutral baseline."
+        )
+        counterfactual_hi = (
+            "इस क्षेत्र का कोई ग्रह कुंडली में स्थित नहीं — तटस्थ आधार अंक।"
+        )
+    else:
+        final_score = int(round(total_score / count))
+        if top_negative and count > 0:
+            # Project score if this single signal hadn't applied.
+            projected_delta = int(round(abs(most_neg) / count))
+            projected = min(SCORE_CEILING, final_score + projected_delta)
+            signal_desc_en = top_negative.get("label_en", "the weakest signal")
+            signal_desc_hi = top_negative.get("label_hi", "कमज़ोर संकेत")
+            counterfactual_en = (
+                f"Without \"{signal_desc_en}\", overall score would be approximately "
+                f"{projected}/100 (+{projected_delta} higher)."
+            )
+            counterfactual_hi = (
+                f"\"{signal_desc_hi}\" के बिना, कुल अंक लगभग {projected}/100 होता "
+                f"(+{projected_delta} अधिक)।"
+            )
+        else:
+            counterfactual_en = (
+                "No major negative signal — score reflects balanced chart pressure."
+            )
+            counterfactual_hi = (
+                "कोई बड़ा नकारात्मक संकेत नहीं — अंक संतुलित कुंडली को दर्शाता है।"
+            )
+
+    return {
+        "score": final_score,
+        "evidence": evidence,
+        "counterfactual_en": counterfactual_en,
+        "counterfactual_hi": counterfactual_hi,
+        "top_negative_signal": top_negative,
+    }
 
 
 # ─────────────────────────────────────────────────────────────
@@ -737,7 +926,12 @@ def build_prediction_studio(
     """
     areas_out: List[Dict[str, Any]] = []
     for area in PREDICTION_AREAS:
-        score = compute_area_score(area, planet_positions, planet_longitudes)
+        # P2.3 — score + evidence trail (explainable prediction engine)
+        scored = compute_area_score_with_evidence(area, planet_positions, planet_longitudes)
+        score = scored["score"]
+        area_evidence = scored["evidence"]
+        counterfactual_en = scored["counterfactual_en"]
+        counterfactual_hi = scored["counterfactual_hi"]
         conf = score_to_confidence(score)
         trace = []
         for p in area.primary_planets:
@@ -792,6 +986,11 @@ def build_prediction_studio(
                     "en": specific.get("supporting_factor_en", ""),
                     "hi": specific.get("supporting_factor_hi", ""),
                 },
+                # P2.3 — Explainable prediction engine
+                "evidence": area_evidence,
+                "counterfactual_en": counterfactual_en,
+                "counterfactual_hi": counterfactual_hi,
+                "evidence_source": "LK_DERIVED",
             }
         )
     from app.lalkitab_source_tags import source_of

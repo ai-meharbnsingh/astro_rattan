@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import { Scale, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Scale, AlertCircle, CheckCircle2, Loader2, ArrowUpCircle, Ban, Layers } from 'lucide-react';
 import { pickLang } from './safe-render';
+import SourceBadge from './SourceBadge';
 
 interface Props {
   kundliId: string;
@@ -31,6 +32,40 @@ interface Debt {
     en?: string;
     hi?: string;
   } | null;
+  // P2.9 — compound debt priority overlay
+  priority_rank?: number;
+  priority_score?: number;
+  priority_boosts?: Array<{ kind: string; delta: number; reason_en?: string; reason_hi?: string }>;
+  canon_name?: string;
+  cluster_activator?: string;
+  cluster_size?: number;
+  blocked_by?: string;
+  blocked_reason?: { en?: string; hi?: string };
+}
+
+interface CompoundCluster {
+  activator: string;
+  debts: string[];
+  member_count: number;
+  combined_score: number;
+  note_en: string;
+  note_hi: string;
+}
+
+interface CompoundBlock {
+  blocker: string;
+  blocks: string[];
+  reason_en: string;
+  reason_hi: string;
+}
+
+interface CompoundAnalysis {
+  ranked: Debt[];
+  clusters: CompoundCluster[];
+  blocked_relationships: CompoundBlock[];
+  recommended_order_en: string;
+  recommended_order_hi: string;
+  source: string;
 }
 
 const PLANET_HI: Record<string, string> = {
@@ -77,6 +112,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
 
   const [debts, setDebts] = useState<Debt[]>([]);
   const [afflicted, setAfflicted] = useState<string[]>([]);
+  const [compound, setCompound] = useState<CompoundAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -84,6 +120,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
     if (!kundliId) {
       setDebts([]);
       setAfflicted([]);
+      setCompound(null);
       setError('');
       return;
     }
@@ -93,6 +130,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
       .then((res: any) => {
         setDebts(Array.isArray(res?.debts) ? res.debts : []);
         setAfflicted(Array.isArray(res?.afflicted_planets) ? res.afflicted_planets : []);
+        setCompound(res?.compound_analysis || null);
       })
       .catch(() => setError(t('auto.failedToLoadDebtData')))
       .finally(() => setLoading(false));
@@ -153,6 +191,11 @@ export default function LalKitabRinTab({ kundliId }: Props) {
             <p className="text-xs text-gray-500 mt-0.5">{t('auto.totalDebts')}</p>
           </div>
         </div>
+      )}
+
+      {/* P2.9 — Compound Priority Analysis */}
+      {!loading && compound && Array.isArray(compound.ranked) && compound.ranked.length > 0 && (
+        <CompoundPrioritySection compound={compound} isHi={isHi} />
       )}
 
       {/* Loading */}
@@ -366,6 +409,153 @@ function DebtCard({ debt, isHi }: { debt: Debt; isHi: boolean }) {
           </p>
         </div>
       )}
+
+      {/* P2.9 — Blocked-by warning (canon gating, e.g. Pitru blocks Deva) */}
+      {debt.blocked_by && (
+        <div className="mt-2 p-2.5 rounded-lg bg-red-500/8 border border-red-400/40 flex items-start gap-2">
+          <Ban className="w-3.5 h-3.5 text-red-600 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest mb-0.5">
+              {isHi ? 'पहले यह उपाय अवरुद्ध' : 'Gated by canon'}
+            </p>
+            <p className="text-xs text-foreground/80 leading-snug">
+              {isHi
+                ? (debt.blocked_reason?.hi || `पहले ${debt.blocked_by} का उपाय करें।`)
+                : (debt.blocked_reason?.en || `Work ${debt.blocked_by} first.`)}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// P2.9 — Compound Priority Section
+// ─────────────────────────────────────────────────────────────
+function CompoundPrioritySection({ compound, isHi }: { compound: CompoundAnalysis; isHi: boolean }) {
+  const top3 = (compound.ranked || []).slice(0, 3);
+  const rankBadges = ['1️⃣', '2️⃣', '3️⃣'];
+
+  return (
+    <div className="rounded-2xl border border-sacred-gold/30 bg-sacred-gold/5 p-5 space-y-4">
+      <div>
+        <h3 className="text-lg font-sans font-bold text-sacred-gold flex items-center gap-2 flex-wrap mb-1">
+          <Layers className="w-5 h-5" />
+          {isHi ? 'यौगिक प्राथमिकता' : 'Compound Priority'}
+          <SourceBadge source="LK_DERIVED" size="xs" />
+        </h3>
+        <p className="text-xs text-foreground/70 leading-snug">
+          {isHi
+            ? 'लाल किताब ऋण-शोधन क्रम के अनुसार, एक साथ उपाय न करें — इस क्रम में करें।'
+            : 'Per Lal Kitab Rina-Shodhan Krama: do not remediate all Rins at once — work them in this order.'}
+        </p>
+      </div>
+
+      {/* Top 3 priority ranking */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {top3.map((debt, i) => {
+          const title = debt.canon_name
+            || pickLang((debt as any).name ?? (debt as any).debt_type, isHi)
+            || `Debt ${i + 1}`;
+          const isBlocked = !!debt.blocked_by;
+          return (
+            <div
+              key={`${debt.canon_name || i}`}
+              className={`relative rounded-xl border p-3 ${
+                isBlocked
+                  ? 'border-red-300/50 bg-red-500/5'
+                  : i === 0
+                    ? 'border-sacred-gold/50 bg-sacred-gold/10'
+                    : 'border-gray-200 bg-white/60'
+              }`}
+            >
+              <div className="flex items-start gap-2 mb-1">
+                <span className="text-xl shrink-0" aria-hidden="true">{rankBadges[i]}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground leading-tight">{title}</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {typeof debt.priority_score === 'number' && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-sacred-gold/15 text-sacred-gold-dark font-semibold">
+                        {isHi ? 'अंक' : 'Score'}: {debt.priority_score}
+                      </span>
+                    )}
+                    {debt.dasha_active && (
+                      <span className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-700 font-semibold">
+                        <ArrowUpCircle className="w-3 h-3" />
+                        {isHi ? 'दशा' : 'Dasha'}
+                      </span>
+                    )}
+                    {debt.cluster_activator && (debt.cluster_size ?? 0) > 1 && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-700 font-semibold">
+                        {isHi ? 'समूह' : 'Cluster'}: {debt.cluster_activator}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              {isBlocked && (
+                <div className="mt-2 flex items-start gap-1">
+                  <Ban className="w-3 h-3 text-red-600 mt-0.5 shrink-0" />
+                  <p className="text-[10px] text-red-700 leading-snug">
+                    {isHi
+                      ? (debt.blocked_reason?.hi || `पहले ${debt.blocked_by}`)
+                      : (debt.blocked_reason?.en || `Gated by ${debt.blocked_by}`)}
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Blocked relationships banner */}
+      {compound.blocked_relationships && compound.blocked_relationships.length > 0 && (
+        <div className="rounded-lg border border-red-400/40 bg-red-500/5 p-3">
+          <p className="text-[10px] font-bold text-red-700 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+            <Ban className="w-3.5 h-3.5" />
+            {isHi ? 'कैनन अवरोध' : 'Canon Blocks'}
+          </p>
+          <ul className="space-y-1.5">
+            {compound.blocked_relationships.map((b, idx) => (
+              <li key={`${b.blocker}-${idx}`} className="text-xs text-foreground/80 leading-snug">
+                <span className="font-semibold text-red-700">
+                  {b.blocker} {isHi ? 'पहले' : 'first'}:
+                </span>{' '}
+                {isHi ? b.reason_hi : b.reason_en}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Clusters (planet-shared compound) */}
+      {compound.clusters && compound.clusters.length > 0 && (
+        <div className="rounded-lg border border-purple-300/40 bg-purple-500/5 p-3">
+          <p className="text-[10px] font-bold text-purple-700 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5" />
+            {isHi ? 'संयोजित समूह' : 'Compound Clusters'}
+          </p>
+          <ul className="space-y-1.5">
+            {compound.clusters.map((c, idx) => (
+              <li key={`${c.activator}-${idx}`} className="text-xs text-foreground/80 leading-snug">
+                <span className="font-semibold text-purple-700">{c.activator}:</span>{' '}
+                {isHi ? c.note_hi : c.note_en}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Recommended order — prose paragraph */}
+      <div className="rounded-lg border border-sacred-gold/30 bg-white/50 p-3">
+        <p className="text-[10px] font-bold text-sacred-gold-dark uppercase tracking-widest mb-1">
+          {isHi ? 'अनुशंसित क्रम' : 'Recommended Order'}
+        </p>
+        <p className="text-xs text-foreground/85 leading-relaxed">
+          {isHi ? compound.recommended_order_hi : compound.recommended_order_en}
+        </p>
+      </div>
     </div>
   );
 }

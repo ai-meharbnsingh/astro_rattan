@@ -2,9 +2,19 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
-import { Star, Info, ThumbsUp, Meh, AlertTriangle, TrendingUp, Scale, Shield } from 'lucide-react';
+import { Star, Info, ThumbsUp, Meh, AlertTriangle, TrendingUp, Scale, Shield, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { pickLang } from './safe-render';
 import SourceBadge from './SourceBadge';
+
+interface EvidenceRow {
+  kind: 'trace' | 'rule' | 'penalty' | 'bonus' | 'cap' | string;
+  planet?: string;
+  house?: number;
+  contribution: number;
+  rule_ref?: string;
+  label_en: string;
+  label_hi: string;
+}
 
 type StudioLabel = 'STRONG' | 'MODERATE' | 'NEEDS ATTENTION';
 
@@ -38,6 +48,11 @@ interface StudioArea {
   strongest_planet?: string | null;
   strongest_house?: number | null;
   strongest_dignity?: string | null;
+  // P2.3 — Explainable prediction engine
+  evidence?: EvidenceRow[];
+  counterfactual_en?: string;
+  counterfactual_hi?: string;
+  evidence_source?: string;
 }
 
 const labelConfig: Record<string, { bg: string; text: string; border: string; icon: typeof Star; en: string; hi: string }> = {
@@ -123,6 +138,11 @@ export default function LalKitabPredictionTab() {
 
   const storageKey = `${STORAGE_KEY_PREFIX}${kundliId || ''}`;
   const [feedback, setFeedback] = useState<Record<string, string>>({});
+  // P2.3 — per-area expansion state for the "Why this score?" panel
+  const [expandedExplain, setExpandedExplain] = useState<Record<string, boolean>>({});
+  const toggleExplain = useCallback((areaKey: string) => {
+    setExpandedExplain((prev) => ({ ...prev, [areaKey]: !prev[areaKey] }));
+  }, []);
 
   useEffect(() => {
     if (!kundliId) return;
@@ -348,6 +368,16 @@ export default function LalKitabPredictionTab() {
               </div>
             </div>
 
+            {/* P2.3 — Explainable prediction engine: "Why this score?" */}
+            {Array.isArray(a.evidence) && a.evidence.length > 0 && (
+              <ExplainPanel
+                area={a}
+                isHi={isHi}
+                open={!!expandedExplain[a.key]}
+                onToggle={() => toggleExplain(a.key)}
+              />
+            )}
+
             <div className="mt-auto pt-4 border-t border-sacred-gold/10">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                 {t('lk.prediction.feedbackTitle')}
@@ -395,6 +425,154 @@ export default function LalKitabPredictionTab() {
       {!error && areas.length === 0 && (
         <div className="text-center py-8 text-sm text-muted-foreground">
           {isHi ? 'कोई डेटा नहीं।' : 'No data.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// P2.3 — Explainable prediction engine: "Why this score?" panel
+// ─────────────────────────────────────────────────────────────
+function ExplainPanel({
+  area,
+  isHi,
+  open,
+  onToggle,
+}: {
+  area: StudioArea;
+  isHi: boolean;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const evidence = area.evidence || [];
+  const counterfactual = isHi ? area.counterfactual_hi : area.counterfactual_en;
+
+  // Group evidence into logical sections for readability
+  const kindColor = (kind: string): string => {
+    switch (kind) {
+      case 'bonus':   return 'text-green-700 bg-green-500/10 border-green-300/30';
+      case 'penalty': return 'text-red-700 bg-red-500/10 border-red-300/30';
+      case 'rule':    return 'text-blue-700 bg-blue-500/10 border-blue-300/30';
+      case 'cap':     return 'text-amber-700 bg-amber-500/10 border-amber-300/30';
+      case 'trace':
+      default:        return 'text-gray-600 bg-gray-500/10 border-gray-300/30';
+    }
+  };
+
+  const kindLabel = (kind: string): string => {
+    if (isHi) {
+      switch (kind) {
+        case 'bonus':   return 'लाभ';
+        case 'penalty': return 'हानि';
+        case 'rule':    return 'नियम';
+        case 'cap':     return 'सीमा';
+        case 'trace':
+        default:        return 'आधार';
+      }
+    }
+    switch (kind) {
+      case 'bonus':   return 'BONUS';
+      case 'penalty': return 'PENALTY';
+      case 'rule':    return 'RULE';
+      case 'cap':     return 'CAP';
+      case 'trace':
+      default:        return 'TRACE';
+    }
+  };
+
+  // Sort: penalties first (most informative), then bonuses, then neutral
+  const sorted = [...evidence].sort((a, b) => {
+    const rank = (e: EvidenceRow) =>
+      e.kind === 'penalty' ? 0
+      : e.kind === 'cap' ? 1
+      : e.kind === 'bonus' ? 2
+      : 3;
+    const r = rank(a) - rank(b);
+    if (r !== 0) return r;
+    return a.contribution - b.contribution; // most negative first within group
+  });
+
+  return (
+    <div className="mb-4 rounded-xl border border-sacred-gold/25 bg-white/40">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between gap-2 p-3 text-left hover:bg-sacred-gold/5 rounded-xl transition-colors"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          <HelpCircle className="w-4 h-4 text-sacred-gold" />
+          <span className="text-xs font-bold text-sacred-gold uppercase tracking-widest">
+            {isHi ? 'यह अंक क्यों?' : 'Why this score?'}
+          </span>
+          <SourceBadge source="LK_DERIVED" size="xs" />
+          <span className="text-[10px] text-gray-500">
+            {evidence.length} {isHi ? 'संकेत' : 'signals'}
+          </span>
+        </div>
+        {open ? (
+          <ChevronUp className="w-4 h-4 text-sacred-gold shrink-0" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-sacred-gold shrink-0" />
+        )}
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 pt-1 space-y-3">
+          {/* Counterfactual callout at top */}
+          {counterfactual && (
+            <div className="rounded-lg border border-blue-300/40 bg-blue-500/5 p-3">
+              <p className="text-[10px] font-bold text-blue-700 uppercase tracking-widest mb-1">
+                {isHi ? 'प्रति-तथ्यात्मक' : 'Counterfactual'}
+              </p>
+              <p className="text-xs text-foreground/85 leading-relaxed">{counterfactual}</p>
+            </div>
+          )}
+
+          {/* Evidence table */}
+          <div className="rounded-lg border border-gray-200 bg-white/70 overflow-hidden">
+            <div className="grid grid-cols-[auto_1fr_auto_auto] gap-2 px-3 py-2 bg-sacred-gold/10 text-[10px] font-bold text-sacred-gold-dark uppercase tracking-widest">
+              <span>{isHi ? 'प्रकार' : 'Kind'}</span>
+              <span>{isHi ? 'संकेत' : 'Signal'}</span>
+              <span className="text-right">{isHi ? 'योगदान' : 'Δ'}</span>
+              <span className="text-right">{isHi ? 'नियम' : 'Rule'}</span>
+            </div>
+            <ul className="divide-y divide-gray-200/70">
+              {sorted.map((ev, idx) => {
+                const label = isHi ? ev.label_hi : ev.label_en;
+                const contrib = ev.contribution;
+                const contribColor = contrib > 0
+                  ? 'text-green-700'
+                  : contrib < 0
+                    ? 'text-red-700'
+                    : 'text-gray-500';
+                return (
+                  <li
+                    key={`${ev.kind}-${ev.planet ?? 'x'}-${ev.house ?? 'x'}-${idx}`}
+                    className="grid grid-cols-[auto_1fr_auto_auto] gap-2 px-3 py-2 items-start"
+                  >
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold tracking-wide self-center ${kindColor(ev.kind)}`}>
+                      {kindLabel(ev.kind)}
+                    </span>
+                    <span className="text-xs text-foreground/85 leading-snug">{label}</span>
+                    <span className={`text-xs font-bold text-right tabular-nums ${contribColor} self-center`}>
+                      {contrib > 0 ? `+${contrib}` : contrib}
+                    </span>
+                    <span className="text-[10px] text-gray-500 text-right self-center truncate max-w-[80px]">
+                      {ev.rule_ref || '—'}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <p className="text-[10px] text-gray-500 italic leading-snug">
+            {isHi
+              ? 'यह तालिका बताती है कि प्रत्येक ग्रह/भाव संकेत ने अंक में कितना योगदान दिया। धनात्मक (+) मूल्य बल देते हैं; ऋणात्मक (−) खींचते हैं।'
+              : 'This table shows how each planet/house signal contributed to the score. Positive (+) values lift; negative (−) drag.'}
+          </p>
         </div>
       )}
     </div>

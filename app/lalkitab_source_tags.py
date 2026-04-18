@@ -78,6 +78,8 @@ ENGINE_SOURCE = {
     "calculate_soya_ghar":                 LK_DERIVED,
     "calculate_muththi":                   LK_DERIVED,
     "enrich_debts_active_passive":         LK_DERIVED,
+    "rank_compound_debts":                 LK_DERIVED,   # P2.9 compound priority
+    "build_prediction_evidence":           LK_DERIVED,   # P2.3 explainable predictions
     "get_vastu_diagnosis":                 LK_DERIVED,
     "get_seven_year_cycle":                LK_DERIVED,
     "calculate_age_milestones":            LK_DERIVED,
