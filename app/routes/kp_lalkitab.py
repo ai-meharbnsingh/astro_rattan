@@ -1224,6 +1224,57 @@ def get_lalkitab_advanced(
 
 
 # ─────────────────────────────────────────────────────────────
+# P1.12 — Chandra Kundali as INDEPENDENT LK framework (LK 1952)
+# ─────────────────────────────────────────────────────────────
+
+@router.get("/api/lalkitab/chandra-kundali/{kundli_id}")
+def get_chandra_kundali(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Return the Chandra Kundali (Moon-chart) read as an INDEPENDENT LK
+    predictive framework — per LK 1952 canon.
+
+    Unlike the Vedic practice of shifting house numbers with the SAME
+    interpretation table, this endpoint:
+      1. Re-anchors all planets so Moon becomes H1 of the Chandra chart.
+      2. Uses LK-specific Chandra readings (emotion / mother / mental states
+         focus) — NOT copied from the Lagna interpretation table.
+      3. Cross-checks every planet's Lagna vs Chandra reading and flags
+         meaningful disagreements so the native sees both voices.
+    """
+    from app.lalkitab_chandra_kundali import compute_chandra_kundali
+
+    positions, _row = _get_lk_positions(kundli_id, user["sub"], db)
+    if not positions:
+        raise HTTPException(
+            status_code=400,
+            detail="No valid planet positions in chart",
+        )
+
+    # Find Moon's natal house — required anchor.
+    moon_house = next(
+        (p["house"] for p in positions if p.get("planet") == "Moon"),
+        None,
+    )
+    if not isinstance(moon_house, int) or not (1 <= moon_house <= 12):
+        raise HTTPException(
+            status_code=422,
+            detail="Moon position not available — Chandra Kundali cannot be computed",
+        )
+
+    lagna_interps = get_all_interpretations_for_chart(positions)
+
+    return compute_chandra_kundali(
+        positions,
+        moon_house,
+        lagna_interpretations=lagna_interps,
+    )
+
+
+# ─────────────────────────────────────────────────────────────
 # Lal Kitab Bunyaad / Takkar / Enemy Presence Analysis
 # ─────────────────────────────────────────────────────────────
 

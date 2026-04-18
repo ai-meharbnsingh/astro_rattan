@@ -47,6 +47,7 @@ import LalKitabPalmistryTab from '@/components/lalkitab/LalKitabPalmistryTab';
 import LalKitabFamilyTab from '@/components/lalkitab/LalKitabFamilyTab';
 import LalKitabVastuTab from '@/components/lalkitab/LalKitabVastuTab';
 import LalKitabRemedyTrackerTab from '@/components/lalkitab/LalKitabRemedyTrackerTab';
+import LalKitabChandraKundaliTab from '@/components/lalkitab/LalKitabChandraKundaliTab';
 
 type View = 'form' | 'generating' | 'result';
 
@@ -328,6 +329,7 @@ function LalKitabPageInner() {
                 <LalKitabKundliTab chartData={chartData} apiResult={apiResult} />
                 <LalKitabPlanetsTab chartData={chartData} kundliId={kundliId} />
                 <LalKitabHousesTab chartData={chartData} />
+                <LalKitabChandraKundaliTab kundliId={kundliId} language={language} />
               </TabsContent>
               <TabsContent value="analysis" className="space-y-8">
                 <LalKitabDoshaTab chartData={chartData} />
