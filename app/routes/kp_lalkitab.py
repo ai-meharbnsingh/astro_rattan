@@ -3,8 +3,10 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
-from datetime import date as _date
-from typing import Any
+from datetime import date as _date, datetime as _datetime
+from typing import Any, Optional
+
+import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -13,7 +15,7 @@ from app.astro_engine import calculate_planet_positions
 from app.database import get_db
 from app.kp_engine import calculate_kp_cuspal, calculate_kp_horary, get_horary_prediction
 from app.lalkitab_engine import get_remedies, REMEDIES_BY_HOUSE
-from app.models import KPHoraryRequest, KPHoraryPredictRequest
+from app.models import KPHoraryRequest, KPHoraryPredictRequest, PrashnaQuickRequest
 from app.lalkitab_advanced import (
     calculate_masnui_planets,
     calculate_karmic_debts,
@@ -1596,6 +1598,69 @@ def delete_saved_prediction(
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Prediction not found")
     return {"ok": True}
+
+
+# ─────────────────────────────────────────────────────────────
+# Prashna Quick — public, no auth, auto-number
+# ─────────────────────────────────────────────────────────────
+
+@router.post("/api/prashna/quick")
+async def prashna_quick(body: PrashnaQuickRequest):
+    """Public Prashna Kundli — no login required.
+    KP horary number is auto-derived from current timestamp.
+    Accepts question_type + optional city/coordinates.
+    """
+    now = _datetime.now()
+    number = (int(now.timestamp()) % 249) + 1
+    query_dt = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    lat, lon = body.latitude, body.longitude
+    if (lat is None or lon is None) and body.city:
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                r = await client.get(
+                    "https://nominatim.openstreetmap.org/search",
+                    params={"q": body.city, "format": "json", "limit": 1},
+                    headers={"User-Agent": "AstroRattan/1.0"},
+                )
+                results = r.json()
+                if results:
+                    lat = float(results[0]["lat"])
+                    lon = float(results[0]["lon"])
+        except Exception:
+            pass
+
+    query_place = {
+        "latitude": lat if lat is not None else 28.6139,
+        "longitude": lon if lon is not None else 77.2090,
+        "tz_offset": 5.5,
+    }
+
+    try:
+        chart = get_horary_prediction(
+            number=number,
+            question_type=body.question_type,
+            query_datetime=query_dt,
+            query_place=query_place,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+    except Exception as exc:
+        logger.error("Prashna quick error: %s", exc)
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Calculation error — please try again")
+
+    pred = chart.get("prediction", {}) or {}
+    return {
+        "number": number,
+        "question_type": body.question_type,
+        "verdict": pred.get("verdict", "neutral"),
+        "verdict_detail": pred.get("verdict_detail", ""),
+        "timing": pred.get("timing", ""),
+        "description": pred.get("description", ""),
+        "sub_lord_of_cusp": pred.get("sub_lord_of_cusp", ""),
+        "cusp_checked": pred.get("cusp_checked", 0),
+        "queried_at": query_dt,
+    }
 
 
 # ─────────────────────────────────────────────────────────────

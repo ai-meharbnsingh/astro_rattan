@@ -207,6 +207,12 @@ class KPHoraryPredictRequest(BaseModel):
     query_datetime: str = Field(description="ISO datetime of query (YYYY-MM-DD HH:MM:SS)")
     query_place: Optional[dict] = Field(default=None, description="Optional {latitude, longitude, tz_offset}")
 
+class PrashnaQuickRequest(BaseModel):
+    question_type: str = Field(min_length=1, description="Question type: marriage, job, travel, health, finance, legal, education, property")
+    city: Optional[str] = Field(default="New Delhi", description="City name for geocoding")
+    latitude: Optional[float] = Field(default=None)
+    longitude: Optional[float] = Field(default=None)
+
 
 # ============================================================
 # Birth Rectification

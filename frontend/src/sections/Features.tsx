@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
-import { AlertTriangle, Calendar, ChevronDown, ChevronUp, Info, Loader2, MapPin, Sparkles, Star, Sun, X } from 'lucide-react';
+import { AlertTriangle, Calendar, CheckCircle, ChevronDown, ChevronUp, Clock, HelpCircle, Info, Loader2, MapPin, MessageCircle, Moon, Sparkles, Star, Sun, X, XCircle } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG from '@/components/KundliChartSVG';
 
@@ -347,6 +347,47 @@ const hasMeaningfulSections = (sections?: HoroscopeSections) => {
   });
 };
 
+const PRASHNA_QUESTIONS = [
+  { key: 'marriage', emoji: '💑', en: 'Marriage', hi: 'विवाह' },
+  { key: 'job', emoji: '💼', en: 'Career', hi: 'करियर' },
+  { key: 'finance', emoji: '💰', en: 'Finance', hi: 'वित्त' },
+  { key: 'health', emoji: '🏥', en: 'Health', hi: 'स्वास्थ्य' },
+  { key: 'travel', emoji: '✈️', en: 'Travel', hi: 'यात्रा' },
+];
+
+function PrashnaResultCard({ result, l }: { result: any; l: (en: string, hi: string) => string }) {
+  const v: string = result.verdict || 'neutral';
+  const palette: Record<string, { bg: string; border: string; text: string; icon: string }> = {
+    favorable:   { bg: 'bg-emerald-50', border: 'border-emerald-300', text: 'text-emerald-800', icon: 'text-emerald-500' },
+    unfavorable: { bg: 'bg-red-50',     border: 'border-red-300',     text: 'text-red-800',     icon: 'text-red-500'     },
+    mixed:       { bg: 'bg-amber-50',   border: 'border-amber-300',   text: 'text-amber-800',   icon: 'text-amber-500'   },
+    neutral:     { bg: 'bg-gray-50',    border: 'border-gray-300',    text: 'text-gray-700',    icon: 'text-gray-400'    },
+  };
+  const c = palette[v] || palette.neutral;
+  const Icon = v === 'favorable' ? CheckCircle : v === 'unfavorable' ? XCircle : Info;
+  const label: Record<string, string> = {
+    favorable:   l('Favorable ✓', 'अनुकूल ✓'),
+    unfavorable: l('Unfavorable ✗', 'प्रतिकूल ✗'),
+    mixed:       l('Mixed', 'मिश्रित'),
+    neutral:     l('Neutral', 'तटस्थ'),
+  };
+  return (
+    <div className={`mt-4 p-4 rounded-xl border ${c.bg} ${c.border}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon className={`w-5 h-5 shrink-0 ${c.icon}`} />
+        <span className={`font-bold text-base ${c.text}`}>{label[v] || v}</span>
+      </div>
+      <p className={`text-sm ${c.text} leading-relaxed mb-2`}>{result.verdict_detail}</p>
+      {result.timing && (
+        <p className="text-xs text-muted-foreground italic leading-relaxed">{result.timing}</p>
+      )}
+      <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-current/10">
+        {l('KP Horary', 'KP होरेरी')} #{result.number} · {result.queried_at}
+      </p>
+    </div>
+  );
+}
+
 export default function Features() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { language } = useTranslation();
@@ -378,6 +419,16 @@ export default function Features() {
   const locSearchRef = useRef<HTMLDivElement>(null);
   const locSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Prashna Kundli state
+  const [prashnaQ, setPrashnaQ] = useState<string>('marriage');
+  const [prashnaCity, setPrashnaCity] = useState<string>('New Delhi');
+  const [prashnaLat, setPrashnaLat] = useState<number | null>(null);
+  const [prashnaLon, setPrashnaLon] = useState<number | null>(null);
+  const [prashnaSuggs, setPrashnaSuggs] = useState<Array<{ name: string; lat: number; lon: number }>>([]);
+  const [prashnaLoading, setPrashnaLoading] = useState<boolean>(false);
+  const [prashnaResult, setPrashnaResult] = useState<any>(null);
+  const prashnaCityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Location search: debounced geocode
   const handleLocSearch = (query: string) => {
     setLocSearchQuery(query);
@@ -401,6 +452,34 @@ export default function Features() {
     setLocSearchOpen(false);
     setLocSearchQuery('');
     setLocSearchResults([]);
+  };
+
+  const searchPrashnaCity = (q: string) => {
+    setPrashnaCity(q);
+    setPrashnaLat(null); setPrashnaLon(null);
+    if (prashnaCityTimer.current) clearTimeout(prashnaCityTimer.current);
+    if (q.trim().length < 2) { setPrashnaSuggs([]); return; }
+    prashnaCityTimer.current = setTimeout(async () => {
+      try {
+        const r = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(q.trim())}`);
+        setPrashnaSuggs(Array.isArray(r) ? r.slice(0, 5) : []);
+      } catch { setPrashnaSuggs([]); }
+    }, 300);
+  };
+
+  const askPrashna = async () => {
+    setPrashnaLoading(true);
+    setPrashnaResult(null);
+    try {
+      const r = await api.post('/api/prashna/quick', {
+        question_type: prashnaQ,
+        city: prashnaCity,
+        latitude: prashnaLat,
+        longitude: prashnaLon,
+      });
+      setPrashnaResult(r);
+    } catch { /* silent — user sees no change */ }
+    setPrashnaLoading(false);
   };
 
   // Close search dropdown on outside click
@@ -1030,6 +1109,156 @@ export default function Features() {
             })()}
           </div>
         )}
+
+        {/* ── Prashna Kundli ── */}
+        <div id="prashna-section" className="animate-section mb-16">
+          <div className="text-center mb-8">
+            <Heading as={2} variant={2} className="text-sacred-gold-dark mb-2 leading-[1.1]">
+              {l('Prashna Kundli', 'प्रश्न कुंडली')}
+            </Heading>
+            <p className="text-gray-600 max-w-xl mx-auto text-sm leading-relaxed">
+              {l('No birth details needed. Ask any life question — get an instant KP Horary answer, free.',
+                 'जन्म विवरण की जरूरत नहीं। कोई भी जीवन प्रश्न पूछें — तुरंत KP होरेरी उत्तर, मुफ्त।')}
+            </p>
+          </div>
+
+          <div className="max-w-xl mx-auto">
+            <div className="rounded-2xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm p-6">
+              {/* Question selector */}
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                {l('What is your question about?', 'आपका सवाल किस बारे में है?')}
+              </p>
+              <div className="grid grid-cols-5 gap-2 mb-5">
+                {PRASHNA_QUESTIONS.map(q => (
+                  <button key={q.key} onClick={() => setPrashnaQ(q.key)}
+                    className={`py-2 px-1 rounded-xl text-center transition-all text-xs font-semibold ${
+                      prashnaQ === q.key
+                        ? 'bg-sacred-gold-dark text-white shadow-sm'
+                        : 'border border-sacred-gold/35 text-foreground hover:bg-sacred-gold/10'
+                    }`}>
+                    <span className="block text-base mb-0.5">{q.emoji}</span>
+                    {l(q.en, q.hi)}
+                  </button>
+                ))}
+              </div>
+
+              {/* City input */}
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                {l('Your city', 'आपका शहर')}
+              </p>
+              <div className="relative mb-4">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-sacred-gold-dark/50 pointer-events-none" />
+                <input type="text" value={prashnaCity}
+                  onChange={e => searchPrashnaCity(e.target.value)}
+                  placeholder={l('Search city…', 'शहर खोजें…')}
+                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-sacred-gold/40 bg-white text-sm focus:border-sacred-gold focus:outline-none placeholder:text-muted-foreground/50" />
+                {prashnaSuggs.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full z-20 bg-white border border-sacred-gold/20 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
+                    {prashnaSuggs.map((s, i) => (
+                      <button key={i} onClick={() => { setPrashnaCity(s.name.split(',')[0]); setPrashnaLat(s.lat); setPrashnaLon(s.lon); setPrashnaSuggs([]); }}
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-sacred-gold/10 transition-colors">
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Ask button */}
+              <button onClick={askPrashna} disabled={prashnaLoading || !prashnaCity.trim()}
+                className="w-full py-2.5 rounded-xl font-semibold bg-sacred-gold hover:bg-sacred-gold-dark text-white flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                {prashnaLoading
+                  ? <><Loader2 className="w-4 h-4 animate-spin" />{l('Calculating…', 'गणना हो रही है…')}</>
+                  : <><Sparkles className="w-4 h-4" />{l('Ask the Stars', 'तारों से पूछें')}</>
+                }
+              </button>
+
+              {prashnaResult && <PrashnaResultCard result={prashnaResult} l={l} />}
+            </div>
+            <p className="text-center text-[11px] text-muted-foreground mt-3">
+              {l('Powered by KP Horary — Krishnamurti Paddhati classical system',
+                 'KP होरेरी द्वारा संचालित — कृष्णमूर्ति पद्धति शास्त्रीय प्रणाली')}
+            </p>
+          </div>
+        </div>
+
+        {/* ── Don't Know Birth Time? ── */}
+        <div id="unknown-birth-time-section" className="animate-section mb-16">
+          <div className="rounded-2xl overflow-hidden border border-sacred-gold/25 shadow-sm bg-gradient-to-br from-amber-50/60 to-white">
+            {/* Header */}
+            <div className="p-6 text-center border-b border-sacred-gold/15 bg-gradient-to-r from-amber-50 to-orange-50/40">
+              <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
+                <HelpCircle className="w-3.5 h-3.5" />
+                {l("Don't know your birth time?", "जन्म समय नहीं पता?")}
+              </div>
+              <Heading as={2} variant={2} className="text-sacred-gold-dark mb-2 leading-[1.1]">
+                {l('Still Get Accurate Insights', 'फिर भी सटीक ज्योतिष पाएं')}
+              </Heading>
+              <p className="text-gray-600 text-sm max-w-lg mx-auto leading-relaxed">
+                {l("30–40% of people don't know their exact birth time. These three paths give you powerful Vedic astrology without it.",
+                   "30–40% लोगों को अपना जन्म समय नहीं पता। इन तीन रास्तों से बिना जन्म समय के भी ज्योतिष का पूरा लाभ उठाएं।")}
+              </p>
+            </div>
+
+            {/* Three cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-sacred-gold/15">
+              {/* Moon Kundli */}
+              <a href="/kundli" className="p-6 hover:bg-amber-50/60 transition-colors group block">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
+                  <Moon className="w-5 h-5" />
+                </div>
+                <span className="inline-block bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded mb-2">
+                  {l('Free', 'मुफ्त')}
+                </span>
+                <h3 className="font-bold text-foreground mb-1.5 text-base">{l('Moon Kundli', 'चंद्र कुंडली')}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  {l("Have your DOB but not the time? Moon chart gives emotional patterns, Dasha timeline, and life predictions — no birth time needed.",
+                     "DOB है पर समय नहीं? चंद्र कुंडली से भावनात्मक पैटर्न, दशा और जीवन भविष्यवाणी मिलेगी।")}
+                </p>
+                <span className="text-sacred-gold-dark text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  {l('Get Moon Kundli', 'चंद्र कुंडली पाएं')} →
+                </span>
+              </a>
+
+              {/* Ask a Question */}
+              <button onClick={() => { const el = document.getElementById('prashna-section'); if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({ top: y, behavior: 'smooth' }); }}}
+                className="p-6 hover:bg-amber-50/60 transition-colors group text-left w-full block">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-3">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <span className="inline-block bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded mb-2">
+                  {l('Free', 'मुफ्त')}
+                </span>
+                <h3 className="font-bold text-foreground mb-1.5 text-base">{l('Ask a Question', 'सवाल पूछें')}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  {l("No DOB needed at all. Ask about marriage, career, finance, or health using Prashna Kundli — instant KP Horary answer.",
+                     "DOB की भी जरूरत नहीं। विवाह, करियर, वित्त या स्वास्थ्य के बारे में प्रश्न कुंडली से तुरंत उत्तर पाएं।")}
+                </p>
+                <span className="text-sacred-gold-dark text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  {l('Ask Now', 'अभी पूछें')} →
+                </span>
+              </button>
+
+              {/* Birth Rectification */}
+              <a href="/kundli" className="p-6 hover:bg-amber-50/60 transition-colors group block">
+                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-3">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <span className="inline-block bg-amber-100 text-amber-700 text-[10px] font-semibold px-2 py-0.5 rounded mb-2">
+                  {l('Premium', 'प्रीमियम')}
+                </span>
+                <h3 className="font-bold text-foreground mb-1.5 text-base">{l('Birth Rectification', 'जन्म समय शुद्धि')}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  {l("Know an approximate time + key life events? Our engine pinpoints your exact birth time using advanced rectification techniques.",
+                     "अनुमानित समय और जीवन की प्रमुख घटनाएं पता हैं? हमारा इंजन उन्नत तकनीक से सटीक जन्म समय निकाल सकता है।")}
+                </p>
+                <span className="text-sacred-gold-dark text-xs font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
+                  {l('Explore', 'जानें')} →
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
 
         {/* Horoscope (Compact) */}
         <div id="horoscope-section" className="features-title mb-12">
