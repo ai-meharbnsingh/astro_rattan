@@ -2,14 +2,17 @@
 from __future__ import annotations
 
 import calendar
+import logging
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Query, Response, status
 
 from app.panchang_engine import calculate_panchang
 from app.muhurat_rules import get_all_activities
 from app.muhurat_finder import find_muhurat_dates, find_travel_muhurat
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["muhurat"])
 
@@ -48,12 +51,24 @@ def muhurat_monthly(
     month: int = Query(default=None),
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
+    response: Response = None,
 ):
     """⚠ DEPRECATED: Use /api/muhurat/finder instead.
 
     Monthly calendar-style muhurat compatibility endpoint (simplified logic).
     This endpoint uses basic Shukla Paksha + tithi checks only.
     For full activity-specific rules, use /api/muhurat/finder."""
+    # Add deprecation headers
+    if response:
+        response.headers["Deprecation"] = "true"
+        response.headers["Sunset"] = "2026-12-31T23:59:59Z"
+        response.headers["Link"] = '</api/muhurat/finder>; rel="successor-version"'
+
+    logger.warning(
+        f"DEPRECATED: /api/muhurat/monthly called with event_type={event_type}. "
+        "Use /api/muhurat/finder instead for activity-specific muhurat rules."
+    )
+
     today = date.today()
     target_year = year or today.year
     target_month = month or today.month
@@ -73,12 +88,24 @@ def muhurat_find(
     date_str: str = Query(alias="date"),
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
+    response: Response = None,
 ):
     """⚠ DEPRECATED: Use /api/muhurat/finder instead.
 
     Daily window compatibility endpoint for a selected date (simplified logic).
     This endpoint uses basic Shukla Paksha + tithi checks only.
     For full activity-specific rules, use /api/muhurat/finder with ?activity="""
+    # Add deprecation headers
+    if response:
+        response.headers["Deprecation"] = "true"
+        response.headers["Sunset"] = "2026-12-31T23:59:59Z"
+        response.headers["Link"] = '</api/muhurat/finder>; rel="successor-version"'
+
+    logger.warning(
+        f"DEPRECATED: /api/muhurat/find called with event_type={event_type}, date={date_str}. "
+        "Use /api/muhurat/finder with ?activity= parameter instead for activity-specific rules."
+    )
+
     panchang = calculate_panchang(date_str, latitude, longitude)
     tithi = (panchang.get("tithi", {}) or {}).get("name", "")
     nak = (panchang.get("nakshatra", {}) or {}).get("name", "")
