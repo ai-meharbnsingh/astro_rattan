@@ -553,6 +553,7 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
 
     destruction_risk = False
     flourishing = False
+    malefic_in_dusthana_strengthens = False
 
     # ── Destruction checks ────────────────────────────────────
     if lord and lord_house in DUSTHANAS:
@@ -622,6 +623,7 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
     # A natural malefic in its own dusthana energises the house's core purpose
     # (6th → defeats enemies; 8th → fortifies longevity; 12th → aids liberation/foreign).
     if house in DUSTHANAS and has_malefic_occupant:
+        malefic_in_dusthana_strengthens = True
         malefics_in_house = [o for o in occupants if o in NATURAL_MALEFICS]
         dusthana_names = {6: "6th (Ari)", 8: "8th (Randhra)", 12: "12th (Vyaya)"}
         dusthana_benefits = {
@@ -675,6 +677,7 @@ def _assess_bhava(house: int, chart: Dict[str, Any]) -> Dict[str, Any]:
         "karaka": karaka_raw,
         "flourishing": flourishing,
         "destruction_risk": destruction_risk,
+        "malefic_in_dusthana_strengthens": malefic_in_dusthana_strengthens,
         "reasons_en": reasons_en,
         "reasons_hi": reasons_hi,
         "karaka_as_lagna_analysis_en": k_en,

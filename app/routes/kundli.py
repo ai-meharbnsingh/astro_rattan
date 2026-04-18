@@ -1139,6 +1139,10 @@ def get_sodashvarga(
         planet_longitudes["Ascendant"] = asc_lon
 
     result = calculate_sodashvarga(planet_longitudes)
+    try:
+        result["varga_strength"] = calculate_varga_strength(planet_longitudes)
+    except Exception:
+        result["varga_strength"] = None
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
