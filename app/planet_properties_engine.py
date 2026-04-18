@@ -201,6 +201,22 @@ def _get_day_night_indicator(chart_data: Dict[str, Any]) -> Dict[str, Any]:
 _MALE_PLANETS = {"Sun", "Mars", "Jupiter"}
 _FEMALE_PLANETS = {"Moon", "Venus"}
 
+# Vedic aspect offsets (house-based) per planet
+_PLANET_ASPECT_OFFSETS: Dict[str, List[int]] = {
+    "Sun": [7],
+    "Moon": [7],
+    "Mars": [4, 7, 8],
+    "Mercury": [7],
+    "Jupiter": [5, 7, 9],
+    "Venus": [7],
+    "Saturn": [3, 7, 10],
+    "Rahu": [5, 7, 9],
+    "Ketu": [5, 7, 9],
+}
+
+_NATURAL_BENEFICS = {"Moon", "Jupiter", "Venus", "Mercury"}
+_NATURAL_MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+
 
 def _get_mercury_gender_state(chart_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """
@@ -272,6 +288,112 @@ def _get_mercury_gender_state(chart_data: Dict[str, Any]) -> Optional[Dict[str, 
         "reason_en": reason_en,
         "reason_hi": reason_hi,
         "conjunct_planets": conjunct_planets,
+        "sloka_ref": "Phaladeepika Adh. 2",
+    }
+
+
+def _get_mercury_hermaphrodite_note(
+    chart_data: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """
+    Mercury hermaphrodite nature rule (Phaladeepika Adh. 2).
+    Mercury adopts the nature of planets it is conjunct with or aspected by.
+    - Conjunct / aspected by malefics  → malefic-leaning
+    - Conjunct / aspected by benefics  → benefic-leaning
+    - Alone / mixed / neutral          → neutral
+    """
+    planets = chart_data.get("planets", {})
+    mercury_data = planets.get("Mercury")
+    if mercury_data is None:
+        return None
+
+    mercury_house = int(mercury_data.get("house", 0) or 0)
+    if not mercury_house:
+        return None
+
+    # Build house -> planets mapping
+    house_planets: Dict[int, List[str]] = {h: [] for h in range(1, 13)}
+    for pname, pdata in planets.items():
+        if isinstance(pdata, dict):
+            ph = int(pdata.get("house", 0) or 0)
+            if ph:
+                house_planets[ph].append(pname)
+
+    conjunct = [p for p in house_planets.get(mercury_house, []) if p != "Mercury"]
+
+    # Find planets that aspect Mercury's house
+    aspected_by: List[str] = []
+    for pname, pdata in planets.items():
+        if pname == "Mercury":
+            continue
+        if not isinstance(pdata, dict):
+            continue
+        ph = int(pdata.get("house", 0) or 0)
+        if not ph:
+            continue
+        for offset in _PLANET_ASPECT_OFFSETS.get(pname, [7]):
+            target = ((ph - 1 + offset) % 12) + 1
+            if target == mercury_house:
+                aspected_by.append(pname)
+                break
+
+    # Remove duplicates while preserving order
+    seen = set()
+    all_influences: List[str] = []
+    for p in conjunct + aspected_by:
+        if p not in seen:
+            seen.add(p)
+            all_influences.append(p)
+
+    benefic_influences = [p for p in all_influences if p in _NATURAL_BENEFICS]
+    malefic_influences = [p for p in all_influences if p in _NATURAL_MALEFICS]
+
+    if malefic_influences and not benefic_influences:
+        nature = "malefic-leaning"
+        nature_hi = "पाप-प्रधान"
+        reason_en = (
+            f"Mercury is influenced by malefic(s) {', '.join(malefic_influences)} "
+            f"— adopts malefic tendencies."
+        )
+        reason_hi = (
+            f"बुध पाप ग्रह {', '.join(malefic_influences)} के प्रभाव में है — "
+            f"पाप प्रवृत्ति धारण करता है।"
+        )
+    elif benefic_influences and not malefic_influences:
+        nature = "benefic-leaning"
+        nature_hi = "शुभ-प्रधान"
+        reason_en = (
+            f"Mercury is influenced by benefic(s) {', '.join(benefic_influences)} "
+            f"— adopts benefic tendencies."
+        )
+        reason_hi = (
+            f"बुध शुभ ग्रह {', '.join(benefic_influences)} के प्रभाव में है — "
+            f"शुभ प्रवृत्ति धारण करता है।"
+        )
+    else:
+        nature = "neutral"
+        nature_hi = "मध्यम"
+        if all_influences:
+            reason_en = (
+                f"Mercury receives mixed influences ({', '.join(all_influences)}) "
+                f"— remains neutral."
+            )
+            reason_hi = (
+                f"बुध पर मिश्रित प्रभाव हैं ({', '.join(all_influences)}) — "
+                f"मध्यम रहता है।"
+            )
+        else:
+            reason_en = "Mercury is unaspected and unconjoined — remains neutral."
+            reason_hi = "बुध पर कोई ग्रह-दृष्टि या युति नहीं — मध्यम रहता है।"
+
+    return {
+        "mercury_nature": nature,
+        "mercury_nature_hi": nature_hi,
+        "reason_en": reason_en,
+        "reason_hi": reason_hi,
+        "conjunct_planets": conjunct,
+        "aspected_by": list(dict.fromkeys(aspected_by)),
+        "influencing_planets": all_influences,
         "sloka_ref": "Phaladeepika Adh. 2",
     }
 
@@ -400,6 +522,11 @@ def get_planet_properties(chart_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # --- Mercury Gender State (Feature 23) ---
     mercury_gender_state = _get_mercury_gender_state(chart_data)
+
+    # --- Mercury Hermaphrodite Nature Note (Feature 23 extended) ---
+    mercury_note = _get_mercury_hermaphrodite_note(chart_data)
+    if mercury_note and "Mercury" in planets_out:
+        planets_out["Mercury"]["hermaphrodite_note"] = mercury_note
 
     return {
         "planets": planets_out,
