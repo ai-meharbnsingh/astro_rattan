@@ -94,8 +94,8 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
     );
   }
 
-  // Group present yogas by category
-  const presentYogas = (yogaDoshaData.yogas || []).filter((y: any) => y.present);
+  // Group present yogas by category — exclude Adh.7 Raja Yogas (shown in dedicated section below)
+  const presentYogas = (yogaDoshaData.yogas || []).filter((y: any) => y.present && y.category !== 'Raja Yoga (Adh. 7)');
   const grouped: Record<string, any[]> = {};
   for (const yoga of presentYogas) {
     const cat = yoga.category || '__other__';
