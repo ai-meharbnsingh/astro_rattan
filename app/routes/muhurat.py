@@ -49,7 +49,11 @@ def muhurat_monthly(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
 ):
-    """Monthly calendar-style muhurat compatibility endpoint."""
+    """⚠ DEPRECATED: Use /api/muhurat/finder instead.
+
+    Monthly calendar-style muhurat compatibility endpoint (simplified logic).
+    This endpoint uses basic Shukla Paksha + tithi checks only.
+    For full activity-specific rules, use /api/muhurat/finder."""
     today = date.today()
     target_year = year or today.year
     target_month = month or today.month
@@ -70,7 +74,11 @@ def muhurat_find(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
 ):
-    """Daily window compatibility endpoint for a selected date."""
+    """⚠ DEPRECATED: Use /api/muhurat/finder instead.
+
+    Daily window compatibility endpoint for a selected date (simplified logic).
+    This endpoint uses basic Shukla Paksha + tithi checks only.
+    For full activity-specific rules, use /api/muhurat/finder with ?activity="""
     panchang = calculate_panchang(date_str, latitude, longitude)
     tithi = (panchang.get("tithi", {}) or {}).get("name", "")
     nak = (panchang.get("nakshatra", {}) or {}).get("name", "")

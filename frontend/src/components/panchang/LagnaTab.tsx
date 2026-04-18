@@ -59,8 +59,30 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
     return lagnaTable.find((l) => isInTimeRange(currentMinutes, l.start, l.end));
   }, [lagnaTable, timezoneOffset, minuteTick]);
 
+  // Check if any lagna has ganda/sandhi warning
+  const hasGandaSandhi = lagnaTable.some((l: any) => l.ganda_sandhi);
+
   return (
     <div className="space-y-3">
+      {/* Ganda/Sandhi Warning Banner */}
+      {hasGandaSandhi && (
+        <div className="rounded-lg border border-purple-200 bg-purple-50/60 p-3">
+          <div className="flex items-start gap-2">
+            <Info className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-purple-900 mb-1">
+                {language === 'hi' ? 'गंडा और संधि लग्न सतर्कता' : 'Ganda & Sandhi Lagna Alert'}
+              </p>
+              <p className="text-xs text-purple-700 leading-relaxed">
+                {language === 'hi'
+                  ? 'आज के दिन गंडा लग्न (किसी भी राशि के प्रथम 3°20′) और संधि लग्न (अंतिम 3°20′) अशुभ हैं। महत्वपूर्ण कार्यों के लिए इन समयों से बचें।'
+                  : 'Today\'s Ganda Lagna (first 3°20′ of any sign) and Sandhi Lagna (last 3°20′) are inauspicious. Avoid important ceremonies during these periods.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Current Lagna */}
       {currentLagna && (
         <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
@@ -126,15 +148,35 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                     className={`
                       border-b border/50 last:border-0
                       ${isCurrent ? 'bg-sacred-gold/10' : index % 2 === 0 ? 'bg-card/30' : ''}
+                      ${(lagna as any).ganda_sandhi ? 'opacity-75' : ''}
                     `}
                   >
                     <TableCell className="px-2 py-1">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
                           {language === 'hi'
                             ? lagna.lagna_hindi || RASHI_HINDI[lagna.lagna] || lagna.lagna
                             : lagna.lagna}
                         </span>
+                        {(lagna as any).ganda_sandhi && (
+                          <span
+                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-semibold"
+                            style={{
+                              backgroundColor: (lagna as any).ganda_sandhi === 'ganda' ? 'rgba(239,68,68,0.15)' : 'rgba(168,85,247,0.15)',
+                              color: (lagna as any).ganda_sandhi === 'ganda' ? '#dc2626' : '#a855f7',
+                              border: `1px solid ${(lagna as any).ganda_sandhi === 'ganda' ? 'rgba(239,68,68,0.4)' : 'rgba(168,85,247,0.4)'}`
+                            }}
+                            title={
+                              (lagna as any).ganda_sandhi === 'ganda'
+                                ? (language === 'hi' ? 'गंडा लग्न — पहले 3°20′ (अशुभ)' : 'Ganda Lagna — first 3°20′ (inauspicious)')
+                                : (language === 'hi' ? 'संधि लग्न — अंतिम 3°20′ (अशुभ)' : 'Sandhi Lagna — last 3°20′ (inauspicious)')
+                            }
+                          >
+                            ⚠ {language === 'hi'
+                              ? ((lagna as any).ganda_sandhi === 'ganda' ? 'गंडा' : 'संधि')
+                              : ((lagna as any).ganda_sandhi === 'ganda' ? 'Ganda' : 'Sandhi')}
+                          </span>
+                        )}
                         {isCurrent && (
                           <span className="px-1.5 py-0.5 text-xs bg-sacred-gold text-background rounded-full">
                             {t('auto.now')}

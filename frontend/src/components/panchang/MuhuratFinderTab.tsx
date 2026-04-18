@@ -406,8 +406,30 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {d.lagna_windows.map((lw, i) => (
-                      <div key={`${lw.lagna}-${i}`} className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs border border-blue-100">
-                        <div className="font-semibold">{lw.lagna}</div>
+                      <div
+                        key={`${lw.lagna}-${i}`}
+                        className={`px-2 py-1 rounded text-xs border ${
+                          lw.ganda_sandhi
+                            ? 'bg-red-50 text-red-700 border-red-200 opacity-75'
+                            : 'bg-blue-50 text-blue-700 border-blue-100'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold">{lw.lagna}</span>
+                          {lw.ganda_sandhi && (
+                            <span
+                              className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold"
+                              style={{
+                                backgroundColor: lw.ganda_sandhi === 'ganda' ? 'rgba(239,68,68,0.2)' : 'rgba(168,85,247,0.2)',
+                                color: lw.ganda_sandhi === 'ganda' ? '#dc2626' : '#a855f7',
+                              }}
+                            >
+                              {language === 'hi'
+                                ? (lw.ganda_sandhi === 'ganda' ? '⚠ गंडा' : '⚠ संधि')
+                                : (`⚠ ${lw.ganda_sandhi === 'ganda' ? 'Ganda' : 'Sandhi'}`)}
+                            </span>
+                          )}
+                        </div>
                         <div>{lw.start} – {lw.end}</div>
                         {lw.safe_window && (
                           <div className="mt-0.5 text-green-700 bg-green-50 px-1.5 py-0.5 rounded text-[10px] border border-green-100">
