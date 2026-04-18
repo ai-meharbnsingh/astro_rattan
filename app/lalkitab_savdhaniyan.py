@@ -249,10 +249,22 @@ def get_remedy_precautions(
         for p in precautions
     )
 
-    return {
+    # P2.10 — merge tithi timing bundle so the UI can show "do this on
+    # Shukla Saptami" right beside the remedy precaution card.
+    # Import lazily to avoid any circular-import risk at module load.
+    try:
+        from app.lalkitab_tithi_timing import get_tithi_remedy_timing
+        tithi_timing = get_tithi_remedy_timing(planet, remedy_text=remedy_material)
+    except Exception:
+        tithi_timing = None
+
+    bundle: Dict[str, Any] = {
         "precautions": precautions,
         "time_rule": time_rule,
         "reversal_risk": reversal_risk,
         "lk_refs": sorted({p.get("lk_ref") for p in precautions if p.get("lk_ref")}),
         "source": "LK_CANONICAL",
     }
+    if tithi_timing:
+        bundle["tithi_timing"] = tithi_timing
+    return bundle

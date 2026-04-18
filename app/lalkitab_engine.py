@@ -1083,6 +1083,7 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
     from app.lalkitab_savdhaniyan import get_remedy_precautions
     from app.lalkitab_andhe_grah import detect_andhe_grah
     from app.lalkitab_remedy_classifier import stamp_classification
+    from app.lalkitab_remedy_matrix import get_remedy_matrix
     src = source_of("get_remedies")
 
     # P0.2 — run blind-planet detector once so both remedy entries and
@@ -1114,6 +1115,11 @@ def get_remedies(planet_positions: dict, chart_data: "dict | None" = None) -> di
         planet_entry["savdhaniyan"] = precaution_bundle
         planet_entry["time_rule"] = precaution_bundle["time_rule"]
         planet_entry["reversal_risk"] = precaution_bundle["reversal_risk"]
+
+        # P2.11 — stamp the frozen direction/colour/material matrix so the
+        # remedy card can render a compact Direction · Colour · Material
+        # chip row directly from the planet entry.
+        planet_entry["remedy_matrix"] = get_remedy_matrix(planet_name)
 
         # P0.3 — blind-planet warning attached to remedies that target a
         # blind planet OR a planet adjacent to one. Rendered BEFORE the

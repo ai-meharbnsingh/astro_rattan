@@ -3,7 +3,7 @@ import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import SourceBadge from './SourceBadge';
 import { pickLang } from '@/components/lalkitab/safe-render';
-import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { AlertTriangle, HelpCircle, Lightbulb, Sparkles, Loader2, ChevronDown, ChevronUp, Clock, ShieldCheck, BadgeCheck, Calendar, Compass, Palette, Gem } from 'lucide-react';
 
 interface Props {
   kundliId: string;
@@ -37,6 +37,38 @@ interface EnrichedRemedy {
     time_rule?: string;
     reversal_risk?: boolean;
     lk_refs?: string[];
+    // P2.10 — tithi timing sub-bundle (LK_DERIVED)
+    tithi_timing?: {
+      preferred_paksha?: 'shukla' | 'krishna' | 'either';
+      preferred_tithis?: number[];
+      forbidden_tithis?: number[];
+      forbidden_tithis_detail?: Array<{
+        tithi: number; paksha?: string;
+        reason_en?: string; reason_hi?: string;
+      }>;
+      peak_tithi?: number | null;
+      peak_tithi_paksha?: string | null;
+      peak_tithi_en?: string;
+      peak_tithi_hi?: string;
+      reason_en?: string;
+      reason_hi?: string;
+      lk_ref?: string;
+      source?: string;
+    };
+  };
+  // P2.11 — direction/colour/material matrix (LK_CANONICAL)
+  remedy_matrix?: {
+    direction?: { en?: string; hi?: string; bearing_deg?: number | null };
+    colour?: {
+      primary_en?: string; primary_hi?: string; hex?: string;
+      alt_en?: string[]; alt_hi?: string[];
+    };
+    material?: {
+      primary_en?: string; primary_hi?: string;
+      alt?: string[]; alt_hi?: string[];
+    };
+    lk_ref?: string;
+    source?: string;
   };
   time_rule?: string;
   reversal_risk?: boolean;
@@ -220,6 +252,44 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
                       ? 'लाल किताब 4.08 के अनुसार — सावधानी छूटने पर उपाय उल्टा पड़ सकता है।'
                       : 'Per LK 4.08 — omitting a precaution can silently reverse the remedy.'}
                   </p>
+
+                  {/* P2.10 — TITHI TIMING sub-section */}
+                  {r.savdhaniyan?.tithi_timing && (r.savdhaniyan.tithi_timing.peak_tithi_en || r.savdhaniyan.tithi_timing.peak_tithi_hi) && (
+                    <div className="mt-3 pt-3 border-t border-orange-300/60">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="w-4 h-4 text-orange-700 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-bold text-orange-800 uppercase tracking-wide mb-1">
+                            {isHi ? 'तिथि समय (सर्वोत्तम)' : 'Tithi Timing (Optimal Lunar Day)'}
+                            <span className="ml-2 text-[10px] font-normal opacity-75">
+                              LK {r.savdhaniyan.tithi_timing.lk_ref || '4.16'} · {r.savdhaniyan.tithi_timing.source || 'LK_DERIVED'}
+                            </span>
+                          </p>
+                          <p className="text-xs text-orange-900 leading-relaxed">
+                            <span className="font-semibold">
+                              {isHi ? 'चरम तिथि: ' : 'Peak tithi: '}
+                            </span>
+                            {isHi
+                              ? (r.savdhaniyan.tithi_timing.peak_tithi_hi || r.savdhaniyan.tithi_timing.peak_tithi_en)
+                              : (r.savdhaniyan.tithi_timing.peak_tithi_en || r.savdhaniyan.tithi_timing.peak_tithi_hi)}
+                          </p>
+                          {(r.savdhaniyan.tithi_timing.reason_en || r.savdhaniyan.tithi_timing.reason_hi) && (
+                            <p className="text-[11px] text-orange-800/80 leading-relaxed mt-1 italic">
+                              {isHi ? r.savdhaniyan.tithi_timing.reason_hi : r.savdhaniyan.tithi_timing.reason_en}
+                            </p>
+                          )}
+                          {r.savdhaniyan.tithi_timing.forbidden_tithis && r.savdhaniyan.tithi_timing.forbidden_tithis.length > 0 && (
+                            <p className="text-[11px] text-red-700 mt-1">
+                              <span className="font-semibold">
+                                {isHi ? 'वर्जित तिथियाँ: ' : 'Avoid: '}
+                              </span>
+                              {r.savdhaniyan.tithi_timing.forbidden_tithis.join(', ')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -247,6 +317,51 @@ function RemedyCard({ r, isHi }: { r: EnrichedRemedy; isHi: boolean }) {
                   </span>
                 )}
               </div>
+
+              {/* P2.11 — Direction · Colour · Material chip row */}
+              {r.remedy_matrix && (r.remedy_matrix.direction?.en || r.remedy_matrix.colour?.primary_en || r.remedy_matrix.material?.primary_en) && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {r.remedy_matrix.direction?.en && (
+                    <span
+                      className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800"
+                      title={isHi
+                        ? `दिशा ${r.remedy_matrix.direction.bearing_deg ?? ''}°`
+                        : `Bearing ${r.remedy_matrix.direction.bearing_deg ?? ''}°`}
+                    >
+                      <Compass className="w-3 h-3" />
+                      {isHi ? 'दिशा:' : 'Direction:'}{' '}
+                      <span className="font-semibold">
+                        {isHi ? r.remedy_matrix.direction.hi : r.remedy_matrix.direction.en}
+                      </span>
+                    </span>
+                  )}
+                  {r.remedy_matrix.colour?.primary_en && (
+                    <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800">
+                      <Palette className="w-3 h-3" />
+                      {isHi ? 'रंग:' : 'Colour:'}{' '}
+                      {r.remedy_matrix.colour.hex && (
+                        <span
+                          className="inline-block w-2.5 h-2.5 rounded-full border border-black/10"
+                          style={{ backgroundColor: r.remedy_matrix.colour.hex }}
+                          aria-hidden
+                        />
+                      )}
+                      <span className="font-semibold">
+                        {isHi ? r.remedy_matrix.colour.primary_hi : r.remedy_matrix.colour.primary_en}
+                      </span>
+                    </span>
+                  )}
+                  {r.remedy_matrix.material?.primary_en && (
+                    <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800">
+                      <Gem className="w-3 h-3" />
+                      {isHi ? 'धातु:' : 'Material:'}{' '}
+                      <span className="font-semibold">
+                        {isHi ? r.remedy_matrix.material.primary_hi : r.remedy_matrix.material.primary_en}
+                      </span>
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
