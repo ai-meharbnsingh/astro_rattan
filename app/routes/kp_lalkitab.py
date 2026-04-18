@@ -2673,3 +2673,267 @@ def get_lalkitab_full(
         del result["_errors"]
 
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════
+# P2.6 — COMPREHENSIVE LK PDF REPORT (MVP)
+# Aggregates existing endpoints into a single, printable JSON payload.
+# Frontend renders to HTML and uses window.print() → browser PDF.
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/pdf-report/{kundli_id}", status_code=status.HTTP_200_OK)
+def get_lalkitab_pdf_report(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    P2.6 — Aggregated Lal Kitab report payload (MVP, ~10-15 printable pages).
+
+    Pulls together: Tewa chart, per-planet analysis, detected doshas,
+    karmic debts (Rin), Prediction Studio scores, remedies, Varshphal
+    (current year), and source-tag references — so the frontend can
+    render one long, structured document and offer a print-to-PDF action.
+
+    Design notes:
+      - Each section is independently try/except-wrapped; one section's
+        failure does NOT kill the whole report. Failures surface in
+        `_errors.<section>` so the UI can gracefully hide them.
+      - No new PDF engine dependency — the MVP relies on the browser's
+        `window.print()` to produce a real PDF.
+      - Caches nothing — recomputes on every call. The kundli itself is
+        the cache.
+    """
+    report: dict[str, Any] = {
+        "kundli_id": kundli_id,
+        "generated_at": _date.today().isoformat(),
+        "person": {},
+        "tewa": None,
+        "planets": [],
+        "doshas": None,
+        "karmic_debts": None,
+        "prediction_studio": None,
+        "remedies": None,
+        "varshphal": None,
+        "sources": [],
+        "_errors": {},
+    }
+
+    # ── Fetch raw kundli + positions (mandatory — bail out on failure) ──
+    positions, row = _get_lk_positions(kundli_id, user["sub"], db)
+    raw = row["chart_data"]
+    chart_data = json.loads(raw) if isinstance(raw, str) else (raw or {})
+
+    # ── Person / cover page ──
+    report["person"] = {
+        "person_name": row.get("person_name") or "",
+        "birth_date": row.get("birth_date") or "",
+        "birth_time": row.get("birth_time") or "",
+        "birth_place": row.get("birth_place") or "",
+        "latitude": row.get("latitude"),
+        "longitude": row.get("longitude"),
+        "timezone_offset": row.get("timezone_offset"),
+        "gender": row.get("gender") or "",
+    }
+
+    # Pre-compute formatted_positions used by multiple sections
+    formatted_positions = [
+        {"planet": p["planet"].capitalize(), "house": p["house"]}
+        for p in positions
+    ]
+
+    # ── Tewa (identification + classification) ──
+    try:
+        lk_aspects = calculate_lk_aspects(formatted_positions)
+        sleeping_info = calculate_sleeping_status(formatted_positions)
+        kayam_planets = calculate_kayam_grah(formatted_positions, lk_aspects)
+        from app.lalkitab_andhe_grah import detect_andhe_grah
+        andhe_info = detect_andhe_grah(formatted_positions, chart_data=chart_data)
+        report["tewa"] = {
+            "chart_data": chart_data,
+            "positions": positions,
+            "teva_type": identify_teva_type(formatted_positions),
+            "masnui_planets": calculate_masnui_planets(formatted_positions),
+            "sleeping": sleeping_info,
+            "kayam": kayam_planets,
+            "andhe": andhe_info,
+            "aspects": lk_aspects,
+        }
+    except Exception as e:
+        logger.warning("pdf-report: tewa section failed: %s", e, exc_info=True)
+        report["_errors"]["tewa"] = str(e)
+
+    # ── Per-planet analysis (9 planets × key fields) ──
+    try:
+        planets_dict = chart_data.get("planets", {}) if isinstance(chart_data, dict) else {}
+        planets_out = []
+        for pname in [
+            "Sun", "Moon", "Mars", "Mercury", "Jupiter",
+            "Venus", "Saturn", "Rahu", "Ketu",
+        ]:
+            info = planets_dict.get(pname) or {}
+            lk_house = _derive_lk_house(info) if isinstance(info, dict) else 0
+            planets_out.append({
+                "planet": pname,
+                "planet_hi": PLANET_NAMES_HI.get(pname, pname),
+                "sign": info.get("sign") if isinstance(info, dict) else None,
+                "lk_house": lk_house,
+                "nakshatra": info.get("nakshatra") if isinstance(info, dict) else None,
+                "sign_degree": info.get("sign_degree") if isinstance(info, dict) else None,
+                "longitude": info.get("longitude") if isinstance(info, dict) else None,
+                "is_retrograde": bool(info.get("retrograde") or info.get("is_retrograde")) if isinstance(info, dict) else False,
+                "status": _lk_status_string(info) if isinstance(info, dict) else "",
+            })
+        report["planets"] = planets_out
+    except Exception as e:
+        logger.warning("pdf-report: planets section failed: %s", e, exc_info=True)
+        report["_errors"]["planets"] = str(e)
+
+    # ── Doshas ──
+    try:
+        from app.lalkitab_dosha import detect_lalkitab_doshas
+        report["doshas"] = detect_lalkitab_doshas(positions)
+    except Exception as e:
+        logger.warning("pdf-report: doshas section failed: %s", e, exc_info=True)
+        report["_errors"]["doshas"] = str(e)
+
+    # ── Karmic Debts (Rin) — use enriched list with active/passive flag ──
+    try:
+        base_debts = calculate_karmic_debts(formatted_positions)
+        try:
+            active_enriched = enrich_debts_active_passive(base_debts, formatted_positions)
+        except Exception:
+            active_enriched = base_debts
+        report["karmic_debts"] = {
+            "debts": active_enriched,
+            "count": len(active_enriched or []),
+        }
+    except Exception as e:
+        logger.warning("pdf-report: karmic_debts section failed: %s", e, exc_info=True)
+        report["_errors"]["karmic_debts"] = str(e)
+
+    # ── Prediction Studio ──
+    try:
+        planet_positions = {p["planet"].capitalize(): int(p["house"]) for p in positions if p.get("house")}
+        planets_dict_ps = chart_data.get("planets", {}) if isinstance(chart_data, dict) else {}
+        planet_lons: dict[str, float] = {}
+        for pname, info in planets_dict_ps.items():
+            if pname in _KNOWN_PLANETS and isinstance(info, dict):
+                lon = info.get("longitude")
+                if lon is not None:
+                    try:
+                        planet_lons[pname] = float(lon)
+                    except Exception:
+                        pass
+        from app.lalkitab_prediction_studio import build_prediction_studio
+        report["prediction_studio"] = build_prediction_studio(planet_positions, planet_lons)
+    except Exception as e:
+        logger.warning("pdf-report: prediction_studio section failed: %s", e, exc_info=True)
+        report["_errors"]["prediction_studio"] = str(e)
+
+    # ── Remedies (enriched, with savdhaniyan + classification) ──
+    try:
+        planet_positions_r = {
+            p: info.get("sign")
+            for p, info in chart_data.get("planets", {}).items()
+            if isinstance(info, dict) and isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+        }
+        if planet_positions_r:
+            res = get_remedies(planet_positions_r, chart_data=chart_data)
+            enriched = []
+            for planet, info in res.items():
+                r = info["remedy"]
+                enriched.append({
+                    "planet": planet,
+                    "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+                    "sign": info["sign"],
+                    "lk_house": info["lk_house"],
+                    "dignity": info["dignity"],
+                    "strength": info["strength"],
+                    "has_remedy": info["has_remedy"],
+                    "urgency": r.get("urgency", "low"),
+                    "remedy_en": r.get("en", ""),
+                    "remedy_hi": r.get("hi", ""),
+                    "problem_en": r.get("problem_en", ""),
+                    "problem_hi": r.get("problem_hi", ""),
+                    "reason_en": r.get("reason_en", ""),
+                    "reason_hi": r.get("reason_hi", ""),
+                    "how_en": r.get("how_en", ""),
+                    "how_hi": r.get("how_hi", ""),
+                    "savdhaniyan_en": r.get("savdhaniyan_en") or r.get("caution_en") or "",
+                    "savdhaniyan_hi": r.get("savdhaniyan_hi") or r.get("caution_hi") or "",
+                    "classification": r.get("classification") or r.get("category") or "",
+                })
+            urgency_order = {"high": 0, "medium": 1, "low": 2}
+            enriched.sort(key=lambda x: (0 if x["has_remedy"] else 1, urgency_order.get(x["urgency"], 2), x["lk_house"]))
+            report["remedies"] = {"remedies": enriched, "count": len(enriched)}
+        else:
+            report["_errors"]["remedies"] = "no planet positions with valid signs"
+    except Exception as e:
+        logger.warning("pdf-report: remedies section failed: %s", e, exc_info=True)
+        report["_errors"]["remedies"] = str(e)
+
+    # ── Varshphal (current year) ──
+    try:
+        from datetime import datetime as _dt
+        from app.varshphal_engine import calculate_varshphal
+        cur_year = _dt.now().year
+        vp = calculate_varshphal(
+            natal_chart_data=chart_data,
+            target_year=cur_year,
+            birth_date=row["birth_date"],
+            latitude=row.get("latitude") or 0.0,
+            longitude=row.get("longitude") or 0.0,
+            tz_offset=row.get("timezone_offset") or 5.5,
+        )
+        report["varshphal"] = {"year": cur_year, **(vp or {})}
+    except Exception as e:
+        logger.warning("pdf-report: varshphal section failed: %s", e, exc_info=True)
+        report["_errors"]["varshphal"] = str(e)
+
+    # ── Sources (every LK reference surfaced in the report) ──
+    # Static catalog — MVP version. A future phase can pull real citations
+    # from the in-repo LK 1952 engine tags.
+    try:
+        sources = [
+            {"tag": "LK-1952", "title_en": "Lal Kitab 1952 (Arun Sanhita)",
+             "title_hi": "लाल किताब १९५२ (अरुण संहिता)",
+             "summary_en": "Canonical primary source for all LK rules — Teva, Rin, doshas, remedies.",
+             "summary_hi": "समस्त तेवा, ऋण, दोष एवं उपाय-नियमों का मूल प्रमाण।"},
+            {"tag": "LK-1941", "title_en": "Lal Kitab 1941",
+             "title_hi": "लाल किताब १९४१",
+             "summary_en": "Second edition — alternative remedy readings for edge cases.",
+             "summary_hi": "द्वितीय संस्करण — विशेष परिस्थितियों में वैकल्पिक उपाय।"},
+            {"tag": "LK-1939", "title_en": "Lal Kitab 1939",
+             "title_hi": "लाल किताब १९३९",
+             "summary_en": "First edition — foundational house-planet delineations.",
+             "summary_hi": "प्रथम संस्करण — मूल भाव-ग्रह विवेचना।"},
+            {"tag": "LK-Teva", "title_en": "LK Teva (Chart Classification)",
+             "title_hi": "तेवा — कुंडली वर्गीकरण",
+             "summary_en": "Andha / Ratondha / Dharmi / Nabalig / Khali — overall chart type.",
+             "summary_hi": "अंधा / रतौंधा / धर्मी / नाबालिग / खाली — सम्पूर्ण कुंडली प्रकार।"},
+            {"tag": "LK-Rin", "title_en": "LK Rin (Karmic Debts)",
+             "title_hi": "ऋण — कर्म-ऋण",
+             "summary_en": "Pitra, Matra, Stri, Bhratra, Swarna, etc. — nine classical debts.",
+             "summary_hi": "पित्र, मातृ, स्त्री, भ्रातृ, स्वर्ण आदि — नौ शास्त्रीय ऋण।"},
+            {"tag": "LK-Doshas", "title_en": "LK Doshas",
+             "title_hi": "दोष",
+             "summary_en": "Afflictions detected by house/sign/planet combinations.",
+             "summary_hi": "भाव-राशि-ग्रह संयोजन से पहचाने गये दोष।"},
+            {"tag": "LK-Varshphal", "title_en": "LK Varshphal (Solar Return)",
+             "title_hi": "वर्षफल",
+             "summary_en": "Annual chart — Muntha, Varshesh, Mudda Dasha.",
+             "summary_hi": "वार्षिक कुंडली — मुंथा, वर्षेश, मुद्दा दशा।"},
+            {"tag": "LK-Remedies", "title_en": "LK Remedies (Upay)",
+             "title_hi": "उपाय",
+             "summary_en": "Concrete LK remedies with savdhaniyan (cautions) and classification.",
+             "summary_hi": "ठोस उपाय — सावधानियाँ एवं वर्गीकरण सहित।"},
+        ]
+        report["sources"] = sources
+    except Exception as e:
+        logger.warning("pdf-report: sources section failed: %s", e, exc_info=True)
+        report["_errors"]["sources"] = str(e)
+
+    if not report["_errors"]:
+        del report["_errors"]
+    return report
