@@ -104,6 +104,16 @@ HINDI_CHOGHADIYA_QUALITY = {
     'Rog': 'रोग', 'Kaal': 'काल', 'Udveg': 'उद्वेग',
 }
 
+GOWRI_HINDI = {
+    'Labha': 'लाभ',
+    'Amruta': 'अमृत',
+    'Shubha': 'शुभ',
+    'Kaal': 'काल',
+    'Udvega': 'उद्वेग',
+    'Chara': 'चर',
+    'Dhanada': 'धनदा',
+}
+
 router = APIRouter(tags=["panchang"])
 
 
@@ -350,7 +360,7 @@ def _inject_hindi_fields(panchang: dict):
     # Gowri
     if "gowri_panchang" in panchang and isinstance(panchang["gowri_panchang"], list):
         for g in panchang["gowri_panchang"]:
-             g["name_hindi"] = g.get("name") # Logic for Gowri names needed if they differ
+             g["name_hindi"] = GOWRI_HINDI.get(g.get("name"), g.get("name"))
 
 
 # ============================================================

@@ -26,6 +26,36 @@ interface LagnaWindow {
   safe_window?: { start: string; end: string };
 }
 
+interface LagnaScore {
+  lagna: string;
+  lord: string;
+  score: number;
+  start: string;
+  end: string;
+}
+
+interface ChandraBalam {
+  house: number;
+  favorable: boolean;
+  interpretation_en: string;
+  interpretation_hi: string;
+}
+
+interface TaraBalam {
+  tara: number;
+  tara_name: string;
+  favorable: boolean;
+  interpretation_en: string;
+  interpretation_hi: string;
+}
+
+interface HoraWindow {
+  hora: string;
+  lord: string;
+  start: string;
+  end: string;
+}
+
 interface MuhuratDate {
   date: string;
   weekday: string;
@@ -42,6 +72,20 @@ interface MuhuratDate {
   sunset: string;
   rahu_kaal: { start: string; end: string } | string;
   lagna_windows: LagnaWindow[];
+  // Marriage-specific fields
+  lagnasuddhi?: LagnaScore | null;
+  vivaha_quality?: number;
+  vivaha_paryapta?: boolean;
+  summary?: string;
+  chandra_balam?: ChandraBalam | null;
+  tara_balam?: TaraBalam | null;
+  // Business/shop-specific fields
+  recommended_hora_windows?: HoraWindow[];
+}
+
+interface MarriageSeasonCalendar {
+  allowed_months: string[];
+  forbidden_months: string[];
 }
 
 interface MuhuratResult {
@@ -50,6 +94,7 @@ interface MuhuratResult {
   year: number;
   dates: MuhuratDate[];
   total_favorable: number;
+  marriage_season_calendar?: MarriageSeasonCalendar;
 }
 
 interface Props {
@@ -336,6 +381,36 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
               }
             </p>
           </div>
+
+          {/* Marriage season calendar */}
+          {results?.activity?.key === 'marriage' && results?.marriage_season_calendar && (
+            <div className="space-y-2 bg-pink-50 border border-pink-200 rounded-lg p-3">
+              <p className="text-xs font-bold text-pink-700">
+                {language === 'hi' ? 'अनुकूल माह' : 'Favorable Months'}
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {results.marriage_season_calendar.allowed_months?.map((m) => (
+                  <span key={m} className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                    {m}
+                  </span>
+                ))}
+              </div>
+              {results.marriage_season_calendar.forbidden_months && results.marriage_season_calendar.forbidden_months.length > 0 && (
+                <>
+                  <p className="text-xs font-bold text-pink-700 mt-2">
+                    {language === 'hi' ? 'वर्जित माह' : 'Forbidden Months'}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {results.marriage_season_calendar.forbidden_months.map((m) => (
+                      <span key={m} className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded-full opacity-70">
+                        {m}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Date cards */}
           {results?.dates?.map((d, idx) => (

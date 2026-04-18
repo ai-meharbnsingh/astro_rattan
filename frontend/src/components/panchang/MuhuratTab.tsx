@@ -38,6 +38,37 @@ const PANCHAKA_TYPE_INFO: Record<string, { en: string; hi: string; severity: 'hi
   Roga:   { en: 'Disease — avoid new health risks, medical procedures if possible.',        hi: 'रोग पंचक — नई बीमारी, चिकित्सा कार्य में सावधानी।', severity: 'medium' },
   Raja:   { en: 'Royal/Govt — generally mild. Govt & administrative work may proceed.',     hi: 'राज पंचक — सामान्य। सरकारी व प्रशासनिक कार्य हो सकते हैं।', severity: 'low' },
 };
+
+const ANANDADI_MEANINGS: Record<string, { en: string; hi: string; auspicious: boolean }> = {
+  Ananda: { en: 'Joy, celebration, auspicious gatherings', hi: 'आनंद, समारोह, शुभ सभाएं', auspicious: true },
+  Siddhi: { en: 'Success, accomplishment, task completion', hi: 'सफलता, उपलब्धि, कार्य पूर्णता', auspicious: true },
+  Kaladanda: { en: 'Danger, timidity, caution required', hi: 'खतरा, डर, सावधानी आवश्यक', auspicious: false },
+  Mrityu: { en: 'Death association, avoid major ceremonies', hi: 'मृत्यु संबंध, बड़े संस्कार वर्जित', auspicious: false },
+  Dhumra: { en: 'Smoke, confusion, unclear outcomes', hi: 'धुआं, भ्रम, अस्पष्ट परिणाम', auspicious: false },
+  Asukha: { en: 'Discomfort, difficult work', hi: 'असुख, कठिन कार्य', auspicious: false },
+  Saubhagya: { en: 'Good fortune, prosperity', hi: 'सौभाग्य, समृद्धि', auspicious: true },
+  Saumya: { en: 'Gentleness, harmony, peace', hi: 'कोमलता, सामंजस्य, शांति', auspicious: true },
+  Bahu_Sukha: { en: 'Much happiness, pleasure', hi: 'अधिक सुख, आनंद', auspicious: true },
+  Yoga: { en: 'Union, joining, good connections', hi: 'योग, मिलन, अच्छे संबंध', auspicious: true },
+  Subha: { en: 'Favorable, beneficial results', hi: 'अनुकूल, लाभकारी परिणाम', auspicious: true },
+  Sukla: { en: 'Bright, illuminating, clarity', hi: 'उज्ज्वल, प्रकाशित, स्पष्टता', auspicious: true },
+  Brahma: { en: 'Creation, new beginnings, fertility', hi: 'सृष्टि, नई शुरुआत, प्रजनन शक्ति', auspicious: true },
+  Dhata: { en: 'Creator energy, prosperity', hi: 'निर्माता ऊर्जा, समृद्धि', auspicious: true },
+  Rakshasa: { en: 'Demonic, fierce, destructive', hi: 'राक्षसी, प्रचंड, विनाशकारी', auspicious: false },
+  Pitra: { en: 'Ancestral, honoring forebears', hi: 'पितृ, पूर्वजों को सम्मान', auspicious: true },
+  Deva: { en: 'Divine, celestial blessings', hi: 'दिव्य, स्वर्गीय आशीर्वाद', auspicious: true },
+  Jara: { en: 'Decay, deterioration, aging', hi: 'जीर्णता, क्षय, वृद्धावस्था', auspicious: false },
+  Niriti: { en: 'Darkness, southwestern direction misfortune', hi: 'अंधकार, दुर्भाग्य', auspicious: false },
+  Vaha: { en: 'Flow, current, journey', hi: 'प्रवाह, धारा, यात्रा', auspicious: true },
+  Vahana: { en: 'Vehicle, transport, movement', hi: 'वाहन, परिवहन, गति', auspicious: true },
+  Vritta: { en: 'Cycle, continuity, prosperity', hi: 'चक्र, निरंतरता, समृद्धि', auspicious: true },
+  Chakra: { en: 'Circle, power, cycles', hi: 'वृत्त, चक्र, शक्ति', auspicious: true },
+  Satwa: { en: 'Purity, sattvic, goodness', hi: 'पवित्रता, सत्त्वगुण', auspicious: true },
+  Rajas: { en: 'Activity, passion, motion', hi: 'सक्रियता, आवेग, गति', auspicious: true },
+  Tamas: { en: 'Inertia, darkness, ignorance', hi: 'जड़ता, अंधकार, अज्ञान', auspicious: false },
+  Shakti: { en: 'Power, strength, energy', hi: 'शक्ति, बल, ऊर्जा', auspicious: true },
+  Pushpa: { en: 'Flower, beauty, blooming', hi: 'पुष्प, सौंदर्य, विकास', auspicious: true },
+};
 interface ExtPanchang extends FullPanchangData {
   special_yogas?: Record<string, SpecialYogaEntry>;
   directions?: DirectionsData;

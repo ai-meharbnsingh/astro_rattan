@@ -77,7 +77,7 @@ export default function AdvancedTab({ panchang, language, t }: Props) {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {doGhati.map((m: any, idx: number) => {
-              const isAuspicious = m.quality === 'Auspicious' || m.quality === 'Good';
+              const isAuspicious = m.quality === 'good' || m.quality === 'Auspicious';
               return (
                 <div 
                   key={idx} 
@@ -115,9 +115,11 @@ export default function AdvancedTab({ panchang, language, t }: Props) {
 function translateQuality(q: string): string {
   switch(q) {
     case 'Auspicious': return 'शुभ';
+    case 'good': return 'शुभ';
     case 'Inauspicious': return 'अशुभ';
     case 'Good': return 'अच्छा';
     case 'Bad': return 'बुरा';
+    case 'neutral': return 'सामान्य';
     default: return q;
   }
 }

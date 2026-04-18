@@ -56,6 +56,7 @@ const GOWRI_PERIOD_DETAILS: Record<string, { en: string; hi: string }> = {
   roga: { en: 'Not good for health-related decisions', hi: 'स्वास्थ्य संबंधित निर्णयों के लिए उचित नहीं' },
   chara: { en: 'Suitable for travel and movement', hi: 'यात्रा और गतिशील कार्यों के लिए उपयुक्त' },
   dhana: { en: 'Favorable for money matters', hi: 'धन संबंधी कार्यों के लिए अनुकूल' },
+  dhanada: { en: 'Prosperity and wealth gaining', hi: 'समृद्धि और धन वृद्धि के लिए अनुकूल' },
 };
 
 export default function GowriTab({ panchang, language, t, timezoneOffset, minuteTick }: Props) {

@@ -11,10 +11,10 @@
 
 | Layer | Files | Status |
 |-------|-------|--------|
-| Core Engine | `panchang_engine.py` (1,639 lines) | ✅ |
-| Muhurat Finder | `muhurat_finder.py` (247 lines) | ✅ |
-| Activity Rules DB | `muhurat_rules.py` (372 lines) | ✅ |
-| Special Yogas | `panchang_yogas.py` (289 lines) | ✅ |
+| Core Engine | `panchang_engine.py` (1,895 lines) | ✅ |
+| Muhurat Finder | `muhurat_finder.py` (698 lines) | ✅ |
+| Activity Rules DB | `muhurat_rules.py` (543 lines) | ✅ |
+| Special Yogas | `panchang_yogas.py` (508 lines) | ✅ |
 | Directions | `panchang_directions.py` (252 lines) | ✅ |
 | Miscellaneous | `panchang_misc.py` | ✅ |
 | Ekadashi | `panchang_ekadashi.py` | ✅ |
@@ -33,8 +33,8 @@ The book has 11 main Prakaranas (chapters):
 |---|-----------|-------|-----------|
 | 1 | Shubhashubha | Auspicious/Inauspicious — Tithis, Yogas, Doshas, Hora, Muhurta | ⚠️ Partial |
 | 2 | Sankranti | Sun's ingress into 12 signs — timing, restrictions, Amritkaal | ⚠️ Partial (P1 timings + restriction exposed; P2 Amritkaal/type rules pending) |
-| 3 | Gochara | Planet transits and their muhurta effects | ⚠️ Partial |
-| 4 | Samskara | 16 life-cycle ceremonies (Shodasha Samskaras) | ⚠️ 4 of 16 |
+| 3 | Gochara | Planet transits and their muhurta effects | ⚠️ Partial (Balam scoring + position fruits done) |
+| 4 | Samskara | 16 life-cycle ceremonies (Shodasha Samskaras) | ⚠️ 7 of 16 |
 | 5 | Vivaha | Marriage muhurta — detailed multi-factor rules | ⚠️ Deep layer partial |
 | 6 | Saptamukhya Samskara | 7 main sacrament rules | ❌ Not built |
 | 7 | Dwiragamana | Bride's second journey muhurta | ❌ Not built |
@@ -193,21 +193,21 @@ The book has 11 main Prakaranas (chapters):
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| Ravi Yoga | Specific nakshatra + weekday combos (distinct from Sarvartha Siddhi) | P1 |
-| Siddhi Yoga | Tithi + weekday combination (e.g., Pratipada + Sunday) | P1 |
-| Mrityu Yoga | Death yoga — tithi + weekday dosha, must warn in muhurta finder | P0 |
-| Visha Yoga | Poison yoga — nakshatra + tithi combo, absolute block | P0 |
-| Vyatipata Yoga | One of 27 yogas — extremely inauspicious (worse than Vishkambha), blocks ALL activity | P0 |
-| Vaidhriti Yoga | 26th of 27 yogas — inauspicious, should block major ceremonies | P0 |
-| Marana Yoga | Death association yoga — tithi + weekday | P0 |
-| Dagdha Nakshatra | Per-month "burned nakshatra" (changes monthly, e.g., each month has 1-2 dagdha nakshatras) | P1 |
-| Kula Yoga | Lineage/family yoga from weekday + nakshatra | P2 |
-| Tithi-Vara Dosha table | Full matrix of bad tithi+weekday combinations beyond Dagdha Tithi | P1 |
-| Ganda Lagna | First 3°20' of any sign = inauspicious for all ceremonies | P1 |
-| Sandhi Lagna | Last 3°20' of any sign = to be avoided for muhurta | P1 |
-| Chaturmasa period | 4-month period (Ashadh Shukla 11 → Kartik Shukla 11) — no major ceremonies | P1 |
-| Tithi lord display | Show planet ruling each tithi + its significations | P2 |
-| Tithi fruit text | Interpretive text per tithi (e.g., "Ashtami — obstacle-prone, avoid contracts") | P2 |
+| Ravi Yoga | Specific nakshatra + weekday combos | ✅ |
+| Siddhi Yoga | Tithi + weekday combination | ✅ |
+| Mrityu Yoga | Death yoga — tithi + weekday dosha | ✅ |
+| Visha Yoga | Poison yoga — tithi + weekday combo | ✅ |
+| Vyatipata Yoga | One of 27 yogas — EXTREMELY inauspicious | ✅ |
+| Vaidhriti Yoga | 27th of 27 yogas — EXTREMELY inauspicious | ✅ |
+| Marana Yoga | Death association yoga — tithi + weekday | ✅ |
+| Dagdha Nakshatra | Per-month "burned nakshatra" | ✅ |
+| Kula Yoga | Lineage/family yoga from weekday + nakshatra | ❌ Not built |
+| Tithi-Vara Dosha table | Full matrix of bad tithi+weekday combinations | ✅ |
+| Ganda Lagna | First 3°20' of any sign = inauspicious | ✅ |
+| Sandhi Lagna | Last 3°20' of any sign = avoid | ✅ |
+| Chaturmasa period | 4-month period (Ashadh Shukla 11 → Kartik Shukla 11) | ✅ |
+| Tithi lord display | Show planet ruling each tithi | P2 |
+| Tithi fruit text | Interpretive text per tithi | P2 |
 | Panchanga Shuddhi score | Composite day-quality score based on all 5 elements | P1 |
 
 ### 5.2 Prakarana 2: Sankranti Chapter
@@ -336,45 +336,45 @@ Our marriage muhurta has the basic framework but Muhurt Chintamani Vivaha chapte
 ### P0 — Safety / Must Fix Before Public Use
 | # | Feature | Risk if Missing |
 |---|---------|----------------|
-| 1 | Vyatipata Yoga block | Users pick extremely inauspicious muhurta unknowingly |
-| 2 | Vaidhriti Yoga block | Same — book says "never do anything in Vaidhriti" |
-| 3 | Mrityu Yoga warning | Association with death timing — medical/legal liability |
-| 4 | Visha Yoga block | Extreme inauspiciousness, users will be misled |
-| 5 | Sankranti 16-hour restriction | Major ceremonies during Sankranti considered disastrous |
-| 6 | Ganda Lagna / Sandhi Lagna warning | All muhurta tables show lagna but without this warning |
+| 1 | Vyatipata Yoga block | ✅ |
+| 2 | Vaidhriti Yoga block | ✅ |
+| 3 | Mrityu Yoga warning | ✅ |
+| 4 | Visha Yoga block | ✅ |
+| 5 | Sankranti 16-hour restriction | ✅ |
+| 6 | Ganda Lagna / Sandhi Lagna warning | ✅ |
 
 ### P1 — Core Classical Accuracy (High Business Value)
 | # | Feature |
 |---|---------|
 | 7 | Sankranti Punyakaal + restriction window calculation ⚠️ (restriction + yearly table done; punyakaal heuristic until P2 prahar rules) |
-| 8 | Chaturmasa period detection (4 months block) |
-| 9 | Tithi-Vara dosha full matrix |
-| 10 | Ravi Yoga + Siddhi Yoga calculation |
-| 11 | Panchanga Shuddhi composite score |
-| 12 | Chandrabalam per-position interpretation text ✅ |
-| 13 | Tara Balam per-position text (9 positions) ✅ |
-| 14 | Marriage season calendar (allowed/forbidden months) ✅ |
-| 15 | Guru rashi + Shukra rashi filter for marriage ✅ |
-| 16 | Lagnasuddhi score for marriage ✅ |
-| 17 | Muhurta conflict resolution rules (precedence system) |
-| 18 | Vivaha Paryapta minimum quality gate ✅ |
-| 19 | Marriage muhurta summary card ✅ |
-| 20 | Dosha cancellation / exception rules |
-| 21 | Vidyarambha muhurta (school start — high search volume) ✅ |
-| 22 | Shraddha timing (Pitru Paksha — high demand) ✅ |
-| 23 | Antyeshti timing guidance ✅ |
-| 24 | Bhoomi Puja muhurta |
-| 25 | Shilanyas muhurta |
-| 26 | Vastu Shanti muhurta |
-| 27 | Griha Pravesh extended rules (Uttarayan, Pushya/Rohini) |
-| 28 | Travel muhurta finder (direction × nakshatra matrix) ✅ |
-| 29 | Pushya Nakshatra travel guide ✅ |
-| 30 | Business/shop opening extended rules ✅ |
-| 31 | Hora activity guide (best activity per planetary hora) ✅ |
-| 32 | 27 Yoga interpretation text ✅ |
-| 33 | Dagdha Nakshatra per month |
-| 34 | Wire MuhuratTab to use `/finder` endpoint (not simplified) |
-| 35 | Lagna windows display in MuhuratFinderTab ✅ |
+| 8 | Chaturmasa period detection (4 months block) | ✅ |
+| 9 | Tithi-Vara dosha full matrix | ✅ |
+| 10 | Ravi Yoga + Siddhi Yoga calculation | ✅ |
+| 11 | Panchanga Shuddhi composite score | P1 |
+| 12 | Chandrabalam per-position interpretation text | ✅ |
+| 13 | Tara Balam per-position text (9 positions) | ✅ |
+| 14 | Marriage season calendar (allowed/forbidden months) | ✅ |
+| 15 | Guru rashi + Shukra rashi filter for marriage | ✅ |
+| 16 | Lagnasuddhi score for marriage | ✅ |
+| 17 | Muhurta conflict resolution rules (precedence system) | P1 |
+| 18 | Vivaha Paryapta minimum quality gate | ✅ |
+| 19 | Marriage muhurta summary card | ✅ |
+| 20 | Dosha cancellation / exception rules | P1 |
+| 21 | Vidyarambha muhurta (school start — high search volume) | ✅ |
+| 22 | Shraddha timing (Pitru Paksha — high demand) | ✅ |
+| 23 | Antyeshti timing guidance | ✅ |
+| 24 | Bhoomi Puja muhurta | ✅ |
+| 25 | Shilanyas muhurta | ✅ |
+| 26 | Vastu Shanti muhurta | ✅ |
+| 27 | Griha Pravesh extended rules (Uttarayan, Pushya/Rohini) | ✅ |
+| 28 | Travel muhurta finder (direction × nakshatra matrix) | ✅ |
+| 29 | Pushya Nakshatra travel guide | ✅ |
+| 30 | Business/shop opening extended rules | ✅ |
+| 31 | Hora activity guide (best activity per planetary hora) | ✅ |
+| 32 | 27 Yoga interpretation text | ✅ |
+| 33 | Dagdha Nakshatra per month | ✅ |
+| 34 | Wire MuhuratTab to use `/finder` endpoint (not simplified) | ✅ |
+| 35 | Lagna windows display in MuhuratFinderTab | ✅ |
 
 ### P2 — Depth Features (Differentiation)
 - Dwiragamana muhurta
@@ -418,11 +418,11 @@ Our marriage muhurta has the basic framework but Muhurt Chintamani Vivaha chapte
 
 ## 9. Quick Wins (< 1 day each, high impact)
 
-1. **Wire `MuhuratTab` → `/api/muhurat/finder`** — 2 hours FE. Currently using simplified endpoint.
+1. **Wire `MuhuratTab` → `/api/muhurat/finder`** — ✅ Done.
 2. **Add Vyatipata + Vaidhriti hard blocks to finder** — ✅ Done.
 3. **Show Lagna windows in MuhuratFinderTab** — ✅ Done.
-4. **Chaturmasa dates** — static lookup table (dates don't change), add as a warning banner.
-5. **Dagdha Nakshatra** — static per-month table, add to panchang_yogas.py.
+4. **Chaturmasa dates** — ✅ Done.
+5. **Dagdha Nakshatra** — ✅ Done.
 6. **27 Yoga texts** — ✅ Done (exposed in response).
 
 ---
