@@ -69,6 +69,30 @@ SPECIAL_ASPECTS = {
     "Ketu": [5, 9],
 }
 
+# Natural (permanent) planetary friendships — used for Sloka 13 child-count
+_NAT_FRIENDS: Dict[str, set] = {
+    "Sun":     {"Moon", "Mars", "Jupiter"},
+    "Moon":    {"Sun", "Mercury"},
+    "Mars":    {"Sun", "Moon", "Jupiter"},
+    "Mercury": {"Sun", "Venus"},
+    "Jupiter": {"Sun", "Moon", "Mars"},
+    "Venus":   {"Mercury", "Saturn"},
+    "Saturn":  {"Mercury", "Venus"},
+    "Rahu":    {"Venus", "Saturn", "Mercury"},
+    "Ketu":    {"Mars", "Jupiter"},
+}
+_NAT_ENEMIES: Dict[str, set] = {
+    "Sun":     {"Venus", "Saturn"},
+    "Moon":    set(),
+    "Mars":    {"Mercury"},
+    "Mercury": {"Moon"},
+    "Jupiter": {"Mercury", "Venus"},
+    "Venus":   {"Sun", "Moon"},
+    "Saturn":  {"Sun", "Moon", "Mars"},
+    "Rahu":    {"Sun", "Moon"},
+    "Ketu":    {"Venus", "Saturn"},
+}
+
 
 # ───────────────────────────────────────────────────────────────
 # Helpers
@@ -154,6 +178,29 @@ def _planet_strength(planet: str, planets: Dict[str, Dict[str, Any]]) -> str:
     if house in KENDRAS or house in TRIKONAS:
         return "strong"
     return "moderate"
+
+
+def _sloka13_weight(planet: str, sign: str) -> tuple:
+    """
+    Per Phaladeepika Adh. 12 Sloka 13: planet's contribution to child count
+    based on its relationship with the sign it occupies.
+    Returns (weight: float, label: str).
+    Friendly/own/exalted=1.0, neutral=0.5, inimical=0.25, debilitated=0.0.
+    """
+    if not planet or not sign:
+        return 0.5, "neutral"
+    if _is_own_sign(planet, sign) or _is_exalted(planet, sign):
+        return 1.0, "own/exalted"
+    if _is_debilitated(planet, sign):
+        return 0.0, "debilitated"
+    sign_lord = SIGN_LORD.get(sign, "")
+    if not sign_lord or sign_lord == planet:
+        return 1.0, "own"
+    if sign_lord in _NAT_FRIENDS.get(planet, set()):
+        return 0.75, "friendly"
+    if sign_lord in _NAT_ENEMIES.get(planet, set()):
+        return 0.25, "inimical"
+    return 0.5, "neutral"
 
 
 def _malefic_aspects_house(house: int, planets: Dict[str, Dict[str, Any]]) -> List[str]:
@@ -1292,109 +1339,108 @@ def _children_timing_section(
 
 def estimate_child_count(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Sprint E item 10 — quantified child count estimate per Phaladeepika Adh. 12.
+    Child count per Phaladeepika Adhyaya 12, Sloka 13.
 
-    Encoding (pragmatic derivation from the classical rules):
-      base_count :   3 if 5th lord strong + Jupiter strong + no malefic in 5
-                     2 if 5th lord moderate or only one of the above holds
-                     1 if 5th lord or Jupiter afflicted
-                     0 if 5th house heavily afflicted (malefics in 5 + weak lord + Jupiter afflicted)
+    Classical method (literal):
+      "The number of issues should be determined by the consideration of
+       the planets in the 5th house or those posted along with the lord of
+       the 5th, as to how many of them are in friendly, depressed, or
+       inimical [Navamsas / sign positions]."
 
-      modifiers (integer deltas applied to base):
-        - Benefic in 5th:                    +1 (max once)
-        - Jupiter in own sign / exalted:     +1
-        - 5th lord in Kendra / Trikona:      +1
-        - Aspect of benefic on 5th:          +1 (Mercury/Venus)
-        - Malefic in 5th (each):             −1
-        - 5th lord in dusthana (6/8/12):     −1
-        - Debilitated 5th lord:              −1
+    Implementation:
+      relevant = planets in 5th house ∪ planets conjunct 5th lord ∪ {5th lord}
+      For each relevant planet, apply _sloka13_weight() based on its sign:
+        own/exalted  → 1.00 (full contribution)
+        friendly     → 0.75
+        neutral      → 0.50
+        inimical     → 0.25
+        debilitated  → 0.00
+      score = sum of weights
+      Jupiter own/exalted (Sloka 10 bonus) → +0.5 if not already counted
 
-    Returns {count_low, count_high, point_estimate, method_en/hi,
-             supporting_factors, sloka_ref, source}.
+    Score → count mapping (classical "few/some/many" buckets):
+      score >= 3.0  → 4 children (many)
+      score >= 2.0  → 3
+      score >= 1.25 → 2
+      score >= 0.5  → 1
+      score <  0.5  → uncertain/difficult
     """
     planets = chart_data.get("planets", {}) or {}
     fl = _fifth_lord_info(chart_data)
     ju = _jupiter_info(chart_data)
-    in5 = _planets_in_house(planets, 5)
-    benefics_in_5 = [p for p in in5 if p in BENEFICS]
-    malefics_in_5 = [p for p in in5 if p in MALEFICS]
 
-    fl_strength = fl.get("strength", "moderate")
-    ju_strength = ju.get("strength", "moderate")
+    fifth_lord = fl.get("lord", "")
+    fifth_lord_house = fl.get("placement", 0)
 
-    # Base count
-    if fl_strength == "strong" and ju_strength == "strong" and not malefics_in_5:
-        base = 3
-    elif fl_strength == "strong" or ju_strength == "strong":
-        base = 2
-    elif fl_strength == "weak" and ju_strength == "weak":
-        base = 0
-    elif fl_strength == "weak" or ju_strength == "weak":
-        base = 1
-    else:
-        base = 2
+    # Relevant planets per Sloka 13
+    in5: set = set(_planets_in_house(planets, 5))
+    lord_group: set = set()
+    if fifth_lord:
+        lord_group.add(fifth_lord)
+    if fifth_lord_house > 0:
+        lord_group.update(_planets_in_house(planets, fifth_lord_house))
+    relevant = list(in5 | lord_group) or ([fifth_lord] if fifth_lord else [])
 
-    delta = 0
-    factors: list[str] = [f"Base count: {base} (5th lord {fl_strength}, Jupiter {ju_strength})"]
+    # Score each planet
+    score = 0.0
+    factors: List[str] = []
+    for p in relevant:
+        p_sign = _sign_of_planet(p, planets)
+        weight, label = _sloka13_weight(p, p_sign)
+        score += weight
+        factors.append(f"{p} in {p_sign} ({label}) → {weight:.2f}")
 
-    if benefics_in_5:
-        delta += 1
-        factors.append(f"Benefic(s) in 5th: {', '.join(benefics_in_5)} (+1)")
+    # Jupiter own/exalted bonus (Sloka 10: male Navamsa of 5th lord + Sun
+    # leads to good number of children; Jupiter in own sign amplifies this)
     ju_sign = ju.get("sign", "")
-    if _is_exalted("Jupiter", ju_sign) or _is_own_sign("Jupiter", ju_sign):
-        delta += 1
-        factors.append(f"Jupiter {'exalted' if _is_exalted('Jupiter', ju_sign) else 'in own sign'} (+1)")
-    fl_house = fl.get("placement", 0)
-    if fl_house in {1, 4, 5, 7, 9, 10}:
-        delta += 1
-        factors.append(f"5th lord in Kendra/Trikona (house {fl_house}) (+1)")
+    if (_is_exalted("Jupiter", ju_sign) or _is_own_sign("Jupiter", ju_sign)) and "Jupiter" not in relevant:
+        score += 0.5
+        factors.append(f"Jupiter in own/exalted ({ju_sign}) +0.5 (Sloka 10 bonus)")
 
-    for m in malefics_in_5:
-        delta -= 1
-    if malefics_in_5:
-        factors.append(f"Malefic(s) in 5th: {', '.join(malefics_in_5)} (−{len(malefics_in_5)})")
+    # Score → count
+    if score >= 3.0:
+        point = 4
+    elif score >= 2.0:
+        point = 3
+    elif score >= 1.25:
+        point = 2
+    elif score >= 0.5:
+        point = 1
+    else:
+        point = 0
 
-    if fl_house in {6, 8, 12}:
-        delta -= 1
-        factors.append(f"5th lord in dusthana (house {fl_house}) (−1)")
-
-    fl_sign = fl.get("sign", "")
-    fl_lord = fl.get("lord", "")
-    if fl_lord and _is_debilitated(fl_lord, fl_sign):
-        delta -= 1
-        factors.append(f"5th lord {fl_lord} debilitated (−1)")
-
-    point = max(0, base + delta)
-    # Range: ±1 for MVP (reflects the inherent imprecision of quantified
-    # child counts in classical texts — "few/several/many" bucketing).
     low = max(0, point - 1)
-    high = point + 1 if point > 0 else (1 if base + delta > -2 else 0)
+    high = point + 1 if point > 0 else 0
+
+    if point == 0:
+        label_en = "Progeny uncertain — classical indicators suggest significant challenge"
+        label_hi = "संतान अनिश्चित — शास्त्रीय संकेत गंभीर बाधा बताते हैं"
+    else:
+        label_en = f"Approximately {low}–{high} children indicated"
+        label_hi = f"लगभग {low}–{high} संतान का संकेत"
 
     return {
         "point_estimate": point,
         "count_low": low,
         "count_high": high,
-        "label_en": (
-            "No children expected" if point == 0 else
-            f"Approximately {low}–{high} children expected"
-        ),
-        "label_hi": (
-            "संतान योग नहीं" if point == 0 else
-            f"लगभग {low}–{high} संतान की सम्भावना"
-        ),
+        "label_en": label_en,
+        "label_hi": label_hi,
         "method_en": (
-            "Base count derived from 5th-lord + Jupiter strength. Modifiers applied "
-            "for benefics/malefics in 5th, dignity of 5th lord, and Jupiter's own "
-            "condition. Range widened ±1 to reflect classical imprecision."
+            "Per Phaladeepika Adh. 12, Sloka 13: relevant planets are those in "
+            "the 5th house and those conjunct the 5th lord. Each is weighted by "
+            "its sign relationship — own/exalted=1.0, friendly=0.75, neutral=0.5, "
+            "inimical=0.25, debilitated=0. Jupiter in own/exalted adds 0.5 bonus "
+            "(Sloka 10). Score is mapped to a child count range."
         ),
         "method_hi": (
-            "पंचमेश एवं गुरु की स्थिति से आधार संख्या। पंचम में शुभ/पाप ग्रह, "
-            "पंचमेश की दिग्बलादि, गुरु की स्वगृह/उच्च स्थिति के आधार पर संशोधन। "
-            "शास्त्रीय अनिश्चितता को दर्शाने हेतु ±1 विस्तार।"
+            "फलदीपिका अध्याय 12, श्लोक 13: पंचम भाव के ग्रह एवं पंचमेश के साथ "
+            "स्थित ग्रहों को उनकी राशि-सम्बन्ध से भारित करके संतान-संख्या का निर्धारण। "
+            "स्वगृह/उच्च=1.0, मित्र=0.75, सम=0.5, शत्रु=0.25, नीच=0। "
+            "गुरु स्वगृह/उच्च हो तो 0.5 अतिरिक्त (श्लोक 10)।"
         ),
         "supporting_factors": factors,
-        "sloka_ref": "Phaladeepika Adh. 12 — santati quantification",
-        "source": "LK_DERIVED",
+        "sloka_ref": "Phaladeepika Adh. 12 sloka 13",
+        "source": "PHALADEEPIKA_SLOKA13",
     }
 
 
