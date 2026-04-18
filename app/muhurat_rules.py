@@ -103,6 +103,21 @@ MUHURAT_ACTIVITIES: Dict[str, Dict[str, str]] = {
         "description": "Auspicious time for opening a shop / commercial establishment",
         "description_hindi": "दुकान/व्यावसायिक प्रतिष्ठान उद्घाटन के लिए शुभ समय",
     },
+    "vidyarambha": {
+        "name": "Vidyarambha", "name_hindi": "विद्यारम्भ", "icon": "📚",
+        "description": "Auspicious time for starting education / school admission",
+        "description_hindi": "शिक्षा आरम्भ / विद्यालय प्रवेश हेतु शुभ समय",
+    },
+    "shraddha": {
+        "name": "Shraddha", "name_hindi": "श्राद्ध", "icon": "🕯️",
+        "description": "Auspicious time for Pitru Tarpan / Shraddha rituals",
+        "description_hindi": "पितृ तर्पण / श्राद्ध अनुष्ठान हेतु शुभ समय",
+    },
+    "antyeshti": {
+        "name": "Antyeshti", "name_hindi": "अंत्येष्टि", "icon": "🪦",
+        "description": "Guidance for funeral timings (avoid major doshas)",
+        "description_hindi": "अंत्येष्टि समय-निर्धारण (मुख्य दोषों से बचें)",
+    },
 }
 
 # ============================================================
@@ -371,6 +386,48 @@ MUHURAT_RULES: Dict[str, Dict[str, Any]] = {
         "avoid_krishna_paksha": False,
         "avoid_conditions": ["rahu_kaal", "bhadra", "panchaka", "ganda_moola", "amavasya", "sankranti"],
         "samskara": False,
+    },
+    "vidyarambha": {
+        "favorable_tithis": [2, 3, 5, 7, 10, 11, 12, 13],
+        "favorable_nakshatras": [
+            "Rohini", "Mrigashira", "Punarvasu", "Pushya", "Uttara Phalguni",
+            "Hasta", "Chitra", "Swati", "Anuradha", "Shravana",
+            "Dhanishta", "Revati",
+        ],
+        "favorable_weekdays": [0, 2, 3, 4],  # Mon, Wed, Thu, Fri
+        "favorable_lagnas": ["Mithuna", "Kanya", "Tula", "Dhanu"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": True,
+        "avoid_conditions": ["bhadra", "panchaka", "ganda_moola", "amavasya", "sankranti", "retrograde_jupiter"],
+        "samskara": True,
+    },
+    "shraddha": {
+        "favorable_tithis": [1, 2, 3, 5, 6, 7, 10, 11, 12, 13, 14, 15],
+        "favorable_nakshatras": [
+            "Rohini", "Pushya", "Hasta", "Swati", "Anuradha",
+            "Shravana", "Revati", "Uttara Phalguni", "Uttara Ashadha", "Uttara Bhadrapada",
+        ],
+        "favorable_weekdays": [0, 1, 2, 3, 4, 5, 6],
+        "favorable_lagnas": ["Karka", "Kanya", "Tula", "Dhanu", "Meena"],
+        "favorable_months": ["Bhadrapada", "Ashwin"],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["bhadra", "panchaka", "ganda_moola", "sankranti"],
+        "samskara": True,
+    },
+    "antyeshti": {
+        "favorable_tithis": [1, 2, 3, 5, 6, 7, 10, 11, 12, 13, 15],
+        "favorable_nakshatras": [
+            "Ashwini", "Rohini", "Mrigashira", "Ardra", "Punarvasu",
+            "Pushya", "Uttara Phalguni", "Hasta", "Swati", "Anuradha",
+            "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+            "Uttara Bhadrapada", "Revati",
+        ],
+        "favorable_weekdays": [0, 1, 2, 3, 4, 5, 6],
+        "favorable_lagnas": ["Vrishabha", "Mithuna", "Karka", "Kanya", "Tula", "Dhanu", "Meena"],
+        "favorable_months": [],
+        "avoid_krishna_paksha": False,
+        "avoid_conditions": ["bhadra", "panchaka", "ganda_moola", "sankranti"],
+        "samskara": True,
     },
 }
 

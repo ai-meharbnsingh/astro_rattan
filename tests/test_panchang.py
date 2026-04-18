@@ -99,6 +99,18 @@ class TestCalculatePanchang:
         assert 1 <= yoga["number"] <= 27
         assert yoga["name"] in YOGAS
 
+    def test_yoga_has_bilingual_interpretation_fields(self):
+        result = calculate_panchang("2024-03-14", 19.0760, 72.8777)
+        yoga = result["yoga"]
+        assert "interpretation" in yoga
+        assert "interpretation_en" in yoga
+        assert "interpretation_hi" in yoga
+        assert isinstance(yoga["interpretation"], dict)
+        assert yoga["interpretation_en"] == yoga["interpretation"].get("en", "")
+        assert yoga["interpretation_hi"] == yoga["interpretation"].get("hi", "")
+        assert len(yoga["interpretation_en"]) > 0
+        assert len(yoga["interpretation_hi"]) > 0
+
     def test_sunrise_sunset_format(self):
         result = calculate_panchang("2024-09-22", 28.6139, 77.2090)
         # Format: "HH:MM"

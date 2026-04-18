@@ -1500,6 +1500,45 @@ def get_pindayu(
     return result
 
 
+@router.get("/{kundli_id}/family-timing", status_code=status.HTTP_200_OK)
+def get_family_timing(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Cross-chart family timing indicators — Phaladeepika Adh. 15."""
+    from app.family_timing_engine import analyze_family_timing
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_family_timing(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/navamsha-profession", status_code=status.HTTP_200_OK)
+def get_navamsha_profession(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Profession from 10th Navamsha lord — Phaladeepika Adh. 5."""
+    from app.navamsha_profession_engine import analyze_navamsha_profession
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    planet_longitudes: dict = {}
+    for pname, pdata in chart.get("planets", {}).items():
+        if isinstance(pdata, dict) and "longitude" in pdata:
+            planet_longitudes[pname] = float(pdata["longitude"])
+    asc = chart.get("ascendant", {})
+    if isinstance(asc, dict) and "longitude" in asc:
+        planet_longitudes["Ascendant"] = float(asc["longitude"])
+    result = analyze_navamsha_profession(planet_longitudes)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
 # ── PDF Download ────────────────────────────────────────────
 
 # Sign → Lord mapping used for house lordships table

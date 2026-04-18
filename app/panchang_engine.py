@@ -1760,6 +1760,8 @@ def calculate_panchang(
             "auspicious": (yoga_index + 1) not in _BAD_YOGA_NUMBERS,
             "quality": "bad" if (yoga_index + 1) in _BAD_YOGA_NUMBERS else "good",
             "interpretation": YOGA_INTERPRETATIONS[yoga_index],
+            "interpretation_en": (YOGA_INTERPRETATIONS[yoga_index] or {}).get("en", ""),
+            "interpretation_hi": (YOGA_INTERPRETATIONS[yoga_index] or {}).get("hi", ""),
         },
         "karana": {
             "name": karana_name,

@@ -31,6 +31,33 @@ _CHANDRA_BALAM_GOOD = {1, 3, 6, 7, 10, 11}
 
 _SANKRANTI_CACHE: dict[int, list[datetime]] = {}
 
+_CHANDRA_BALAM_FRUITS: dict[int, dict[str, str]] = {
+    1: {"en": "Generally supportive for starting work.", "hi": "कार्य आरम्भ हेतु सामान्यतः अनुकूल।"},
+    2: {"en": "Risk of expense/instability; avoid major commitments.", "hi": "व्यय/अस्थिरता की सम्भावना; बड़े संकल्प टालें।"},
+    3: {"en": "Gains through effort; good for travel and initiative.", "hi": "परिश्रम से लाभ; यात्रा/पहल हेतु शुभ।"},
+    4: {"en": "Comfort-focused but mixed; proceed with caution.", "hi": "सुख केंद्रित पर मिश्रित; सावधानी से करें।"},
+    5: {"en": "Obstacles and delays likely; avoid important ceremonies.", "hi": "विघ्न/विलम्ब; महत्वपूर्ण संस्कार टालें।"},
+    6: {"en": "Overcomes enemies and hurdles; favorable for action.", "hi": "शत्रु/बाधा पर विजय; कार्य हेतु अनुकूल।"},
+    7: {"en": "Partnership support; good for agreements and rituals.", "hi": "सहयोग/साझेदारी; अनुबंध व अनुष्ठान हेतु शुभ।"},
+    8: {"en": "Loss/accident-prone; avoid travel and risky starts.", "hi": "हानि/दुर्घटना-योग; यात्रा व जोखिमपूर्ण आरम्भ टालें।"},
+    9: {"en": "Luck and dharma support; good for auspicious starts.", "hi": "भाग्य/धर्म समर्थन; शुभारम्भ हेतु अच्छा।"},
+    10: {"en": "Career/authority support; favorable for business openings.", "hi": "कर्म/अधिकार समर्थन; व्यवसाय हेतु शुभ।"},
+    11: {"en": "Strong gains; highly favorable for most activities.", "hi": "उत्तम लाभ; अधिकांश कार्यों हेतु बहुत शुभ।"},
+    12: {"en": "Fatigue/withdrawal; avoid major new beginnings.", "hi": "थकान/विरक्ति; बड़े नए कार्य टालें।"},
+}
+
+_TARA_BALAM_FRUITS: dict[int, dict[str, str]] = {
+    1: {"en": "Janma — sensitive; avoid critical beginnings.", "hi": "जन्म — संवेदनशील; महत्वपूर्ण आरम्भ टालें।"},
+    2: {"en": "Sampat — prosperity; favorable.", "hi": "सम्पत — समृद्धि; शुभ।"},
+    3: {"en": "Vipat — obstacles; avoid.", "hi": "विपत — बाधाएँ; वर्जित।"},
+    4: {"en": "Kshema — protection; favorable.", "hi": "क्षेम — संरक्षण; शुभ।"},
+    5: {"en": "Pratyari — opposition; caution.", "hi": "प्रत्यरी — विरोध; सावधानी।"},
+    6: {"en": "Sadhaka — success; favorable.", "hi": "साधक — सिद्धि; शुभ।"},
+    7: {"en": "Vadha/Naidhana — harm; avoid.", "hi": "वध/नैधन — हानि; वर्जित।"},
+    8: {"en": "Mitra — support; favorable.", "hi": "मित्र — सहयोग; शुभ।"},
+    9: {"en": "Ati-Mitra/Parama Mitra — best; highly favorable.", "hi": "अति-मित्र/परम-मित्र — सर्वोत्तम; अत्यंत शुभ।"},
+}
+
 
 def _sun_sign_index(dt_utc: datetime) -> int:
     """Return sidereal Sun sign index (0=Aries…11=Pisces) at a UTC datetime."""
@@ -216,6 +243,8 @@ def find_muhurat_dates(
 
         skip  = False
         avoid = rules.get("avoid_conditions", [])
+        chandra_balam_detail: dict[str, Any] | None = None
+        tara_balam_detail: dict[str, Any] | None = None
 
         # ── FIX 1 (previous session): Bhadra realm ──────────────────
         if "bhadra" in avoid:
@@ -357,6 +386,13 @@ def find_muhurat_dates(
             current_moon_ridx = _planet("Moon").get("rashi_index")
             if current_moon_ridx is not None:
                 house = ((current_moon_ridx - birth_moon_rashi) % 12) + 1
+                fruit = _CHANDRA_BALAM_FRUITS.get(house, {"en": "", "hi": ""})
+                chandra_balam_detail = {
+                    "house": house,
+                    "favorable": house in _CHANDRA_BALAM_GOOD,
+                    "interpretation_en": fruit["en"],
+                    "interpretation_hi": fruit["hi"],
+                }
                 if house in _CHANDRA_BALAM_GOOD:
                     result["reasons_good"].append(f"Chandra Balam strong (H{house} from birth Moon)")
                     result["score"] = min(100, result["score"] + 25)
@@ -371,6 +407,14 @@ def find_muhurat_dates(
             tara = ((nak_index - birth_nakshatra) % 9) + 1
             _TARA_NAMES = ["Janma","Sampat","Vipat","Kshema","Pratyari","Sadhaka","Vadha","Mitra","Ati-Mitra"]
             tara_name = _TARA_NAMES[tara - 1]
+            fruit = _TARA_BALAM_FRUITS.get(tara, {"en": "", "hi": ""})
+            tara_balam_detail = {
+                "tara": tara,
+                "tara_name": tara_name,
+                "favorable": tara in _GOOD_TARAS,
+                "interpretation_en": fruit["en"],
+                "interpretation_hi": fruit["hi"],
+            }
             if tara in _GOOD_TARAS:
                 result["reasons_good"].append(f"Tara Balam — {tara_name} tara (favorable)")
                 result["score"] = min(100, result["score"] + 25)
@@ -512,6 +556,8 @@ def find_muhurat_dates(
             "rahu_kaal":      panchang.get("rahu_kaal", {}),
             "lagna_windows":  lagna_windows,
             "recommended_hora_windows": recommended_hora_windows,
+            "chandra_balam": chandra_balam_detail,
+            "tara_balam": tara_balam_detail,
         }
         entry.update(marriage_extras)
         favorable_dates.append(entry)
