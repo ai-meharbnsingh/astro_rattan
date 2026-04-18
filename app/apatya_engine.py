@@ -378,6 +378,9 @@ def _detect_putra_hani_yoga(chart: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if not (sat_rahu_in_5 or lord_in_dusthana_with_mars):
         return None
 
+    # Severity balancer: benefic presence in 5th mitigates the yoga
+    benefics_in_5 = [p for p in occupants_5 if p in BENEFICS]
+
     factors: List[str] = []
     if sat_rahu_in_5:
         factors.append("Saturn + Rahu conjoin in 5th house")
@@ -385,13 +388,25 @@ def _detect_putra_hani_yoga(chart: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         factors.append(
             f"5th lord ({info5['lord']}) in Dusthana (house {info5['placement']}) aspected by Mars"
         )
+
+    if benefics_in_5:
+        probability = "moderate"
+        mitigation = f" Partially mitigated by benefic(s) in 5th house: {', '.join(benefics_in_5)}."
+        factors.append(f"Benefic mitigation — {', '.join(benefics_in_5)} in 5th reduces severity")
+        effect_en = f"Elevated risk of grief or difficulty related to children.{mitigation} Remedies advised."
+        effect_hi = f"संतान विषयक पीड़ा या विलम्ब का उन्नत खतरा।{' शुभ-ग्रहों की उपस्थिति कुछ शमन करती है।'} उपाय उपयोगी।"
+    else:
+        probability = "high"
+        effect_en = "Loss or grief related to children. Native may experience miscarriage, infant loss, or estrangement."
+        effect_hi = "संतान हानि या शोक। जातक को गर्भपात, शिशु-मृत्यु अथवा संतान-वियोग का कष्ट संभव है।"
+
     return {
         "key": "putra_hani_yoga",
         "name_en": "Putra-Hani Yoga",
         "name_hi": "पुत्र-हानि योग",
-        "effect_en": "Loss or grief related to children. Native may experience miscarriage, infant loss, or estrangement.",
-        "effect_hi": "संतान हानि या शोक। जातक को गर्भपात, शिशु-मृत्यु अथवा संतान-वियोग का कष्ट संभव है।",
-        "probability": "high",
+        "effect_en": effect_en,
+        "effect_hi": effect_hi,
+        "probability": probability,
         "sloka_ref": "Phaladeepika Adh. 12 sloka 14",
         "supporting_factors": factors,
     }
@@ -584,14 +599,30 @@ def _detect_female_child_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     fifth_sign = info5["fifth_sign"]
     fifth_is_female = _is_female_sign(fifth_sign)
 
+    # Saturn-ruled female signs give mixed rather than strong female indication
+    SATURN_RULED_FEMALE_SIGNS = {"Capricorn"}  # Capricorn is even/female but Saturn-ruled
+
     # Condition A: Moon in 5th
     if "Moon" in occupants_5:
         moon_sign = _sign_of_planet("Moon", planets)
         if moon_sign in FEMALE_SIGNS:
-            reasons.append({
-                "reason_en": f"Moon in 5th house in the female sign {moon_sign} — strongly favours female children.",
-                "reason_hi": f"चन्द्रमा पंचम भाव में स्त्री राशि {moon_sign} में — कन्या संतान का प्रबल योग।",
-            })
+            if moon_sign in SATURN_RULED_FEMALE_SIGNS:
+                # Saturn-ruled sign moderates the female indication
+                reasons.append({
+                    "reason_en": (
+                        f"Moon in 5th house in {moon_sign} (female/even sign but Saturn-ruled) — "
+                        f"slight female tendency; mixed children likely."
+                    ),
+                    "reason_hi": (
+                        f"चन्द्रमा पंचम भाव में {moon_sign} (स्त्री/सम राशि किन्तु शनि-शासित) — "
+                        f"हल्का कन्या-संकेत; मिश्रित संतान की सम्भावना।"
+                    ),
+                })
+            else:
+                reasons.append({
+                    "reason_en": f"Moon in 5th house in the female sign {moon_sign} — favours female children.",
+                    "reason_hi": f"चन्द्रमा पंचम भाव में स्त्री राशि {moon_sign} में — कन्या संतान का योग।",
+                })
         else:
             reasons.append({
                 "reason_en": f"Moon in 5th house (in {moon_sign}) — inclines toward female children.",
@@ -862,15 +893,36 @@ def _detect_child_loss_yogas_complete(chart: Dict[str, Any]) -> Dict[str, Any]:
         })
 
     # E) Saturn + Rahu both in 5th (combined affliction)
+    # Severity balancer: benefic in same house reduces High → Moderate
+    benefic_in_5 = any(p in BENEFICS for p in occupants_5)
     if "Saturn" in occupants_5 and "Rahu" in occupants_5:
-        yogas.append({
-            "key": "saturn_rahu_5th",
-            "name_en": "Saturn + Rahu in 5th (Combined Affliction)",
-            "name_hi": "पंचम में शनि + राहु (संयुक्त पीड़ा)",
-            "description_en": "Saturn and Rahu together in the 5th house — Putra-Hani yoga. Severe affliction of the 5th house. Remedies essential.",
-            "description_hi": "शनि और राहु दोनों पंचम भाव में — पुत्र-हानि योग। पंचम भाव की गंभीर पीड़ा। उपाय अनिवार्य।",
-            "severity": "high",
-        })
+        if benefic_in_5:
+            benefics_present = [p for p in occupants_5 if p in BENEFICS]
+            yogas.append({
+                "key": "saturn_rahu_5th",
+                "name_en": "Saturn + Rahu in 5th (Partially Mitigated)",
+                "name_hi": "पंचम में शनि + राहु (आंशिक शमन)",
+                "description_en": (
+                    f"Saturn and Rahu together in 5th house — Putra-Hani yoga present. "
+                    f"Elevated risk, partially mitigated by benefic(s) {', '.join(benefics_present)} "
+                    f"in the same house. Remedies advised."
+                ),
+                "description_hi": (
+                    f"शनि और राहु दोनों पंचम भाव में — पुत्र-हानि योग। "
+                    f"उन्नत खतरा, किन्तु शुभ-ग्रह {', '.join(benefics_present)} की उपस्थिति से "
+                    f"आंशिक शमन। उपाय उपयोगी।"
+                ),
+                "severity": "moderate",
+            })
+        else:
+            yogas.append({
+                "key": "saturn_rahu_5th",
+                "name_en": "Saturn + Rahu in 5th (Combined Affliction)",
+                "name_hi": "पंचम में शनि + राहु (संयुक्त पीड़ा)",
+                "description_en": "Saturn and Rahu together in the 5th house — Putra-Hani yoga. Severe affliction of the 5th house. Remedies essential.",
+                "description_hi": "शनि और राहु दोनों पंचम भाव में — पुत्र-हानि योग। पंचम भाव की गंभीर पीड़ा। उपाय अनिवार्य।",
+                "severity": "high",
+            })
 
     # Overall risk assessment
     high_count = sum(1 for y in yogas if y.get("severity") == "high")
@@ -1128,13 +1180,13 @@ def _children_timing_section(
             "favorable": False,
             "reason_en": (
                 "Saturn's Mahadasha or prominent Antardasha tends to delay progeny. "
-                "Children are more likely after age 32–36, or in Saturn's Antar within "
-                "a favorable Mahadasha once karmic dues are cleared."
+                "Children typically come in the late 20s to mid-30s, or in Saturn's Antar within "
+                "a favorable Mahadasha once karmic dues are cleared. Exact timing varies by chart."
             ),
             "reason_hi": (
                 "शनि की महादशा या प्रमुख अंतर्दशा में संतान-प्राप्ति में विलम्ब होता है। "
-                "32-36 वर्ष की आयु के पश्चात, शुभ महादशा में शनि के अंतर में, "
-                "जब कर्म-ऋण पूर्ण हो, संतान संभव है।"
+                "20 के दशक के अंत से 30 के मध्य तक, शुभ महादशा में शनि के अंतर में, "
+                "जब कर्म-ऋण पूर्ण हो, संतान संभव है। सटीक समय कुंडली-विशेष पर निर्भर है।"
             ),
         })
 
@@ -1197,13 +1249,13 @@ def _children_timing_section(
     # ── Summary ──────────────────────────────────────────────────────────────
     if delayed:
         summary_en = (
-            "Saturn's influence on the 5th house suggests children may arrive after age 32–36, "
-            "or during a favorable Antardasha within Jupiter's or 5th-lord's Mahadasha. "
+            "Saturn's influence on the 5th house suggests children may arrive in the late 20s "
+            "to mid-30s, or during a favorable Antardasha within Jupiter's or 5th-lord's Mahadasha. "
             "Remedies (Santan Gopal mantra, Putrakameshti Yagna) and patience are key."
         )
         summary_hi = (
-            "पंचम भाव पर शनि के प्रभाव से संतान 32-36 वर्ष की आयु के पश्चात अथवा गुरु / "
-            "पंचमेश की महादशा में शुभ अंतर में आ सकती है। "
+            "पंचम भाव पर शनि के प्रभाव से संतान 20 के दशक के अंत से 30 के मध्य तक "
+            "अथवा गुरु / पंचमेश की महादशा में शुभ अंतर में आ सकती है। "
             "उपाय (संतान गोपाल मंत्र, पुत्रकामेष्टि यज्ञ) एवं धैर्य आवश्यक हैं।"
         )
     elif "putra_yoga" in yoga_keys or "bahu_putra_yoga" in yoga_keys:
