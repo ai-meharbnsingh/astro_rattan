@@ -13,8 +13,11 @@ Swiss Ephemeris-powered panchang with accurate calculations for:
 from __future__ import annotations
 
 import math
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 # ---------- Try swisseph ----------
 try:
@@ -726,7 +729,7 @@ def _compute_sun_times(date_str: str, latitude: float, longitude: float, tz_offs
                 "moonset": _jd_to_local_time_str(ms_jd, tz_offset),
             }
         except Exception:
-            pass
+            logger.exception("Swiss Ephemeris sunrise/sunset computation failed; falling back to approximation")
 
     sr, ss = _approx_sunrise_sunset(date_str, latitude, longitude)
     # Approximate moonrise/moonset
@@ -2099,7 +2102,7 @@ def calculate_panchang(
             if _pk:
                 panchaka.update(_pk)
         except Exception:
-            pass
+            logger.exception("Panchaka rahita computation failed; returning basic Panchaka flags")
 
     # 28a. Active-now flags for inauspicious/auspicious periods
     # Compare current IST wall-clock time against each window
@@ -2125,7 +2128,7 @@ def calculate_panchang(
         abhijit["active_now"] = _active_now(abhijit)
         brahma["active_now"] = _active_now(brahma)
     except Exception:
-        pass
+        logger.exception("Failed to compute active_now flags for panchang windows")
 
     # 29. Panchanga Shuddhi — composite day-quality score (0-100)
     # Pass tithi["number"] (1-based) so the good/bad sets align correctly.

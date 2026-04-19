@@ -418,10 +418,20 @@ def calculate_nadi_insights(planet_positions: Dict[str, Any]) -> List[Dict[str, 
     if not planets:
         return []
 
+    def _safe_house(info: Any) -> int:
+        if not isinstance(info, dict):
+            return 0
+        h = info.get("house", 0)
+        try:
+            h_int = int(h or 0)
+        except (TypeError, ValueError):
+            return 0
+        return h_int if 1 <= h_int <= 12 else 0
+
     # Build house map
     house_map: Dict[int, List[str]] = {}
     for planet, info in planets.items():
-        h = info.get("house")
+        h = _safe_house(info)
         if h:
             house_map.setdefault(h, []).append(planet)
 
@@ -453,7 +463,7 @@ def calculate_nadi_insights(planet_positions: Dict[str, Any]) -> List[Dict[str, 
 
     # 2. Per-planet key house placements
     for planet, info in planets.items():
-        h = info.get("house", 0)
+        h = _safe_house(info)
         key = (planet, h)
         if key in _PLANET_HOUSE_INSIGHTS:
             entry = _PLANET_HOUSE_INSIGHTS[key]
@@ -470,8 +480,8 @@ def calculate_nadi_insights(planet_positions: Dict[str, Any]) -> List[Dict[str, 
     # 3. Mutual aspect insights (planets 7 houses apart)
     for rule in NADI_MUTUAL_ASPECT_INSIGHTS:
         p1, p2 = rule["planets"]
-        h1 = planets.get(p1, {}).get("house", 0)
-        h2 = planets.get(p2, {}).get("house", 0)
+        h1 = _safe_house(planets.get(p1, {}))
+        h2 = _safe_house(planets.get(p2, {}))
         if h1 and h2 and abs(h1 - h2) == 6:  # 7 houses apart (opposite houses)
             _add({
                 "house": None,

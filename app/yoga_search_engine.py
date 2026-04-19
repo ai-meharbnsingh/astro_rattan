@@ -63,7 +63,7 @@ try:
         if _name and _name not in YOGA_TYPES:
             YOGA_TYPES.append(_name)
 except Exception:
-    pass  # don't break existing behavior if JSON load fails
+    logger.exception("Failed to load declarative yoga rules; continuing with legacy yoga list")
 
 # Lowercase lookup set for quick matching
 _YOGA_LOWER = {y.lower() for y in YOGA_TYPES}

@@ -675,16 +675,6 @@ def get_sookshma_prana(
     return result
 
 
-@router.get("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
-def get_dasha_via_get(
-    kundli_id: str,
-    current_user: dict = Depends(get_current_user),
-    db: Any = Depends(get_db),
-):
-    """Calculate Vimshottari Dasha periods for a kundli (GET — no request body needed)."""
-    return _compute_dasha(db, kundli_id, current_user["sub"])
-
-
 @router.post("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
 def get_dasha(
     kundli_id: str,
@@ -712,6 +702,9 @@ def get_dasha_phala(
         chart_data=chart,
         birth_date=str(row["birth_date"]),
         as_of_date=as_of,
+        latitude=float(row.get("latitude") or 28.6),
+        longitude=float(row.get("longitude") or 77.2),
+        tz_offset=float(row.get("timezone_offset") or 5.5),
     )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
@@ -1013,6 +1006,7 @@ def get_yogas_and_doshas(
                 "sloka_ref": y.get("sloka_ref", ""),
                 "nature": y.get("nature", "mixed"),
                 "source": "rule_engine",
+                "planets_involved": y.get("fruition_dashas", []),
                 "fruition_dashas": y.get("fruition_dashas", []),
                 "fruition_note_en": y.get("fruition_note_en", ""),
                 "fruition_note_hi": y.get("fruition_note_hi", ""),
@@ -3037,73 +3031,6 @@ def get_sarvatobhadra(
 # ─────────────────────────────────────────────────────────────
 # Sarvatobhadra Chakra — 9x9 grid with Vedha analysis (POST — raw data)
 # ─────────────────────────────────────────────────────────────
-
-@router.post("/sarvatobhadra", status_code=status.HTTP_200_OK)
-def sarvatobhadra_chakra(
-    body: SarvatobhadraRequest,
-    current_user: dict = Depends(get_current_user),
-):
-    """
-    Calculate the Sarvatobhadra Chakra with natal and transit placements
-    and Vedha (obstruction) analysis.
-
-    Returns 9x9 grid, natal/transit placements, vedha relationships,
-    and auspicious/inauspicious transit effects.
-    """
-    try:
-        result = calculate_sarvatobhadra(
-            planet_positions=body.natal_positions,
-            transit_positions=body.transit_positions,
-        )
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(exc),
-        )
-    except Exception as exc:
-        logger.error("Sarvatobhadra chakra error: %s", exc, exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Calculation error — please try again",
-        )
-
-    return result
-
-
-# ─────────────────────────────────────────────────────────────
-# D108 Ashtottaramsa — deepest karmic divisional chart
-# ─────────────────────────────────────────────────────────────
-
-@router.post("/divisional/d108", status_code=status.HTTP_200_OK)
-def d108_analysis(
-    body: D108AnalysisRequest,
-    current_user: dict = Depends(get_current_user),
-):
-    """
-    Detailed D108 Ashtottaramsa analysis — deepest karmic chart.
-
-    D108 reveals past-life spiritual progress, moksha indicators, and
-    the deepest karmic patterns. Returns d108 positions, spiritual
-    indicators, moksha potential, past-life karma, and interpretation.
-    """
-    try:
-        result = calculate_d108_analysis(
-            planet_longitudes=body.planet_longitudes,
-        )
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(exc),
-        )
-    except Exception as exc:
-        logger.error("D108 analysis error: %s", exc, exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Calculation error — please try again",
-        )
-
-    return result
-
 
 # ─────────────────────────────────────────────────────────────
 # Nabhasa / Maha Yogas — Phaladeepika Adhyaya 6

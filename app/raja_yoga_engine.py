@@ -7,7 +7,10 @@ Integrated into analyze_yogas_and_doshas() via the public entry point:
     detect_adh7_raja_yogas(planets, asc_sign) -> List[dict]
 """
 from __future__ import annotations
+import logging
 from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 ZODIAC = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -527,5 +530,5 @@ def detect_adh7_raja_yogas(planets: dict, asc_sign: str) -> List[dict]:
         try:
             results.append(fn(planets, asc_sign))
         except Exception:
-            pass
+            logger.exception("Adh. 7 Raja Yoga checker failed: %s", getattr(fn, "__name__", "unknown"))
     return results

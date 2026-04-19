@@ -429,6 +429,7 @@ def assemble_section(
     period: str,
     language: str,
     fragment_offset: int = 0,
+    dasha_lord: str = None,
 ) -> str:
     """
     Combine relevant interpretation fragments into a coherent 3-5 sentence paragraph
@@ -454,7 +455,9 @@ def assemble_section(
     Returns:
         A single string paragraph.
     """
-    weights = PERIOD_WEIGHTS.get(period, PERIOD_WEIGHTS["daily"])
+    weights = dict(PERIOD_WEIGHTS.get(period, PERIOD_WEIGHTS["daily"]))
+    if dasha_lord:
+        weights[dasha_lord] = weights.get(dasha_lord, 1) * 2
     pick_count = FRAGMENT_COUNTS.get(period, 3)
 
     scored_fragments: List[Tuple[float, str, str, str]] = []
@@ -618,6 +621,7 @@ def generate_transit_horoscope(
     period: str,
     target_date: str = None,
     native_lagna: str = None,
+    dasha_lord: str = None,
 ) -> Dict[str, Any]:
     """
     Generate a complete bilingual horoscope response for a given sign and period.
@@ -648,8 +652,8 @@ def generate_transit_horoscope(
     sections: Dict[str, Dict[str, str]] = {}
     for area in AREAS:
         sections[area] = {
-            "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en"),
-            "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi"),
+            "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en", dasha_lord=dasha_lord),
+            "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi", dasha_lord=dasha_lord),
         }
 
     # Compute scores
@@ -1406,7 +1410,7 @@ def calculate_transits(
                     lon = s_idx * 30.0 + planet_info.get("sign_degree", 0.0)
                 kaksha = get_kaksha_info(planet_name, lon, natal_planet_signs, natal_asc_sign)
             except Exception:
-                pass
+                logger.exception("Failed to compute Kaksha info for planet=%s", planet_name)
 
         is_retrograde = planet_info.get("retrograde", False)
         retro_fx = _RETROGRADE_EFFECTS.get(planet_name, {}) if is_retrograde else {}
