@@ -77,7 +77,9 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                       {row.tara}
                       {row.interpretation && (
                         <p className="text-[11px] text-muted-foreground mt-0.5 italic">
-                          {hi ? row.interpretation_hi || row.interpretation : row.interpretation}
+                          {typeof row.interpretation === 'object'
+                            ? (hi ? row.interpretation.hi : row.interpretation.en)
+                            : (hi ? row.interpretation_hi || row.interpretation : row.interpretation)}
                         </p>
                       )}
                     </TableCell>
@@ -147,7 +149,9 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
                         {row.balam}
                         {row.interpretation && (
                           <p className="text-[11px] text-muted-foreground mt-0.5 italic">
-                            {hi ? row.interpretation_hi || row.interpretation : row.interpretation}
+                            {typeof row.interpretation === 'object'
+                              ? (hi ? row.interpretation.hi : row.interpretation.en)
+                              : (hi ? row.interpretation_hi || row.interpretation : row.interpretation)}
                           </p>
                         )}
                       </TableCell>

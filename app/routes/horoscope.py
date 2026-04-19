@@ -345,8 +345,10 @@ def get_weekly_horoscope(
 
     today = date.today()
     monday = today - timedelta(days=today.weekday())
-    week_date = monday.isoformat()
     week_end = (monday + timedelta(days=6)).isoformat()
+    # Use mid-week (Wednesday) for transit house calculation so fast-moving
+    # planets like Moon reflect current-week positions, not stale Monday coords.
+    week_date = (monday + timedelta(days=3)).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
     birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
@@ -427,6 +429,10 @@ def get_monthly_horoscope(
 
     today = date.today()
     month_start = today.replace(day=1).isoformat()
+    # Use mid-month (15th) for transit house calculation so Mars and other
+    # slow planets reflect mid-month positions, not stale 1st-of-month coords.
+    import calendar
+    month_mid = today.replace(day=min(15, calendar.monthrange(today.year, today.month)[1])).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
     birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
@@ -436,7 +442,7 @@ def get_monthly_horoscope(
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start, native_lagna=native_lagna, dasha_lord=dasha_lord)
+        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_mid, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             response = {
                 **_sign_meta(sign),
@@ -457,7 +463,7 @@ def get_monthly_horoscope(
             # Monthly extras: phases and key_dates
             try:
                 from app.transit_engine import generate_monthly_extras
-                extras = generate_monthly_extras(sign=sign, target_date=month_start, native_lagna=native_lagna)
+                extras = generate_monthly_extras(sign=sign, target_date=month_mid, native_lagna=native_lagna)
                 response["phases"] = extras.get("phases", [])
                 response["key_dates"] = extras.get("key_dates", [])
                 response["eclipse_alert"] = extras.get("eclipse_alert")
