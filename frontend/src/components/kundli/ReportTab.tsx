@@ -125,7 +125,8 @@ export default function ReportTab({
                             planets={planets.map(toPlanetEntry)}
                             ascendantSign={asc}
                             language={language}
-                            showRashiNumbers={false}
+                            showHouseNumbers={false}
+                            showRashiNumbers
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
@@ -163,7 +164,8 @@ export default function ReportTab({
                             planets={planets.map(toPlanetEntry)}
                             ascendantSign={asc}
                             language={language}
-                            showRashiNumbers={false}
+                            showHouseNumbers={false}
+                            showRashiNumbers
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
@@ -207,7 +209,8 @@ export default function ReportTab({
                             planets={transitPlanets.map(toPlanetEntry)}
                             ascendantSign={asc}
                             language={language}
-                            showRashiNumbers={false}
+                            showHouseNumbers={false}
+                            showRashiNumbers
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
