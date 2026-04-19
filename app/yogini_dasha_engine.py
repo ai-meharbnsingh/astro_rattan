@@ -31,7 +31,19 @@ NAKSHATRA_ORDER = [
     "Uttara Bhadrapada", "Revati"
 ]
 
-YOGINI_TOTAL = 36 # Years
+YOGINI_TOTAL = 36 # Years per cycle
+
+# Ruling planets for each Yogini (for nature/color display)
+YOGINI_LORDS = {
+    "Mangala": "Moon",
+    "Pingala": "Sun",
+    "Dhanya": "Jupiter",
+    "Bhramari": "Mars",
+    "Bhadrika": "Mercury",
+    "Ulka": "Saturn",
+    "Siddha": "Venus",
+    "Sankata": "Rahu",
+}
 
 def get_starting_yogini(nakshatra_name: str) -> str:
     try:
@@ -53,11 +65,13 @@ def get_starting_yogini(nakshatra_name: str) -> str:
 
 def calculate_yogini_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float) -> dict:
     """
-    Calculate Yogini Dasha periods. Returns 8 periods covering one 36-year cycle.
+    Calculate Yogini Dasha periods covering 120 years (multiple 36-year cycles).
+    Each period carries both 'yogini' (yogini name) and 'planet' (ruling planet)
+    so the frontend can display nature/color badges correctly.
     """
     start_yogini = get_starting_yogini(birth_nakshatra)
     start_idx = YOGINI_ORDER.index(start_yogini)
-    
+
     nak_index = NAKSHATRA_ORDER.index(birth_nakshatra)
     nak_start = nak_index * (13 + 20.0 / 60.0)
     traversed = moon_longitude - nak_start
@@ -66,48 +80,53 @@ def calculate_yogini_dasha(birth_nakshatra: str, birth_date: str, moon_longitude
     sp = 13 + 20.0 / 60.0
     if traversed > sp:
         traversed = sp
-    
+
     remaining_fraction = (sp - traversed) / sp
     balance = max(0.0, min(1.0, remaining_fraction))
 
     birth_dt = datetime.strptime(birth_date, "%Y-%m-%d")
     now = datetime.utcnow()
-    
+
     periods = []
-    
     current_start = birth_dt
-    
-    # Generate one 36-year cycle (8 periods)
-    for i in range(8):
-        curr_idx = (start_idx + i) % 8
-        planet = YOGINI_ORDER[curr_idx]
-        full_years = YOGINI_YEARS[planet]
+    total_years = 0.0
+    i_global = 0
 
-        if i == 0:
-            effective_years = full_years * balance
-        else:
-            effective_years = full_years
+    # Generate periods until 120 years of life is covered
+    while total_years < 120.0:
+        for i in range(8):
+            curr_idx = (start_idx + i) % 8
+            yogini_name = YOGINI_ORDER[curr_idx]
+            full_years = YOGINI_YEARS[yogini_name]
 
-        end_dt = current_start + timedelta(days=effective_years * 365.25)
-        is_current = current_start <= now <= end_dt
+            effective_years = full_years * balance if i_global == 0 else full_years
 
-        periods.append({
-            "planet": planet,
-            "start": current_start.strftime("%Y-%m-%d"),
-            "end": end_dt.strftime("%Y-%m-%d"),
-            "years": round(effective_years, 2),
-            "is_current": is_current
-        })
+            end_dt = current_start + timedelta(days=effective_years * 365.25)
+            is_current = current_start <= now <= end_dt
 
-        current_start = end_dt
-            
+            periods.append({
+                "yogini": yogini_name,
+                "planet": YOGINI_LORDS[yogini_name],
+                "start": current_start.strftime("%Y-%m-%d"),
+                "end": end_dt.strftime("%Y-%m-%d"),
+                "years": round(effective_years, 2),
+                "is_current": is_current,
+            })
+
+            current_start = end_dt
+            total_years += effective_years
+            i_global += 1
+
+            if total_years >= 120.0:
+                break
+
     current_dasha = "Unknown"
     for p in periods:
         if p["is_current"]:
-            current_dasha = p["planet"]
+            current_dasha = p["yogini"]
             break
-            
+
     return {
         "periods": periods,
-        "current_dasha": current_dasha
+        "current_dasha": current_dasha,
     }

@@ -1195,6 +1195,16 @@ def get_moola_dasha(
         planet_positions=planet_positions,
         birth_date=str(row["birth_date"]),
     )
+    # Normalize: add planet (sign lord) and yogini (sign name for display)
+    from app.moola_dasha_engine import SIGN_LORDS
+    for md in result.get("mahadasha", []):
+        sign = md.get("sign", "")
+        md["planet"] = SIGN_LORDS.get(sign, "")
+        md["yogini"] = sign
+        for sp in md.get("sub_periods", []):
+            sp_sign = sp.get("sign", "")
+            sp["planet"] = SIGN_LORDS.get(sp_sign, "")
+            sp["yogini"] = sp_sign
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
@@ -1216,6 +1226,13 @@ def get_tara_dasha(
         birth_date=str(row["birth_date"]),
         moon_longitude=moon_info.get("longitude", 0.0),
     )
+    # Normalize: add planet (tara lord) and yogini (tara name for display)
+    for md in result.get("mahadasha", []):
+        md["planet"] = md.get("lord", "")
+        md["yogini"] = md.get("tara", "")
+        for sp in md.get("sub_periods", []):
+            sp["planet"] = sp.get("lord", "")
+            sp["yogini"] = sp.get("tara", "")
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
