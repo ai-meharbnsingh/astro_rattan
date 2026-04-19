@@ -331,24 +331,29 @@ export default function KundliChartSVG({
         </text>
       ))}
 
-      {/* Rashi numbers (1..12) — rotate with Lagna (Aries=1..Pisces=12). */}
-      {showRashiNumbers && NUMBER_LABEL_POS.map((pos, i) => {
+      {/* Rashi numbers (1..12) — rotate with Lagna; render in house center to avoid line intersections. */}
+      {showRashiNumbers && Array.from({ length: 12 }, (_, i) => {
         const signIdx = lagnaSignIdx >= 0 ? (lagnaSignIdx + i) % 12 : i;
         const rashiNum = signIdx + 1;
-        const dy = pos.y > M ? -12 : 12;
-        const ry = Math.min(EI, Math.max(SI, pos.y + dy));
+        const c = HOUSE_CENTERS[i];
+        const count = (planetsByHousePos[i] || []).length;
+        const y = c.y - (count > 0 ? 18 : 0);
         return (
           <text
             key={`rashi-${i}`}
-            x={pos.x}
-            y={ry}
+            x={c.x}
+            y={y}
             textAnchor="middle"
             dominantBaseline="central"
-            fontSize="10"
-            fontWeight="700"
+            fontSize="16"
+            fontWeight="800"
             fill={GOLD}
-            opacity="0.35"
+            opacity="0.55"
             fontFamily="'Inter',sans-serif"
+            stroke="rgba(253, 251, 247, 0.9)"
+            strokeWidth="4"
+            paintOrder="stroke"
+            pointerEvents="none"
           >
             {rashiNum}
           </text>
