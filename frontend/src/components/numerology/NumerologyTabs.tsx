@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Hash, Sparkles, Loader2, Phone, User, Car, Home } from 'lucide-react';
+import { Hash, Sparkles, Loader2, Phone, User, Car, Home, Eye, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import NameNumerology from './NameNumerology';
 import VehicleNumerology from './VehicleNumerology';
 import HouseNumerology from './HouseNumerology';
 import InsightPanel from './InsightPanel';
+import MookPrashna from './MookPrashna';
 import { Heading } from "@/components/ui/heading";
 
 interface PredictionEntry {
@@ -133,7 +134,7 @@ interface MobileNumerologyResult {
   predictions?: string[];
 }
 
-type TabType = 'life_path' | 'mobile' | 'name' | 'vehicle' | 'house';
+type TabType = 'life_path' | 'mobile' | 'name' | 'vehicle' | 'house' | 'mook_prashna' | 'khoyi_vastu';
 
 const tabConfig = [
   { id: 'life_path' as TabType, labelKey: 'numerology.lifePath', icon: Hash },
@@ -141,6 +142,8 @@ const tabConfig = [
   { id: 'name' as TabType, labelKey: 'numerology.nameHeading', icon: User },
   { id: 'vehicle' as TabType, labelKey: 'numerology.vehicleHeading', icon: Car },
   { id: 'house' as TabType, labelKey: 'numerology.houseHeading', icon: Home },
+  { id: 'mook_prashna' as TabType, labelKey: 'numerology.mookPrashna', icon: Eye },
+  { id: 'khoyi_vastu' as TabType, labelKey: 'numerology.khoyiVastu', icon: Search },
 ];
 
 export default function NumerologyTabs() {
@@ -302,7 +305,7 @@ export default function NumerologyTabs() {
       )}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} className="space-y-6">
-        <TabsList className="grid grid-cols-5 h-auto p-1 gap-1">
+        <TabsList className="grid grid-cols-4 sm:grid-cols-7 h-auto p-1 gap-1">
           {tabConfig.map((tab) => (
             <TabsTrigger
               key={tab.id}
@@ -1569,6 +1572,12 @@ export default function NumerologyTabs() {
 
       {/* House Tab */}
       <TabsContent value="house"><HouseNumerology birthDate={numDob} /></TabsContent>
+
+      {/* Mook Prashna Tab */}
+      <TabsContent value="mook_prashna" className="py-4"><MookPrashna mode="mook" /></TabsContent>
+
+      {/* Khoyi Vastu Tab */}
+      <TabsContent value="khoyi_vastu" className="py-4"><MookPrashna mode="vastu" /></TabsContent>
     </Tabs>
   </div>
   );
