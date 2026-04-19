@@ -205,7 +205,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {pickLang(data.teva_type?.description?.ratondha, isHi)}
             </p>
           </div>
-          <div className={`mt-2 ${!data.teva_type.is_ratondha ? 'opacity-40 grayscale' : ''}`}>
+          <div className="mt-2">
             <LalKitabDiagnosticChart type="ratondha" planetPositions={planetPositions} />
           </div>
         </div>
@@ -220,7 +220,7 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {pickLang(data.teva_type?.description?.dharmi, isHi)}
             </p>
           </div>
-          <div className={`mt-2 ${!data.teva_type.is_dharmi ? 'opacity-40 grayscale' : ''}`}>
+          <div className="mt-2">
             <LalKitabDiagnosticChart type="dharmi" planetPositions={planetPositions} dharmiData={data.teva_type} />
           </div>
         </div>
