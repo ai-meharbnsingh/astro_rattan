@@ -401,6 +401,102 @@ PERSONAL_DAY_PREDICTIONS = {
 }
 
 
+# ─── Universal Year Predictions (collective energy for all of humanity) ───────
+
+UNIVERSAL_YEAR_PREDICTIONS = {
+    1: {
+        "theme": "Global Renewal",
+        "theme_hi": "वैश्विक नवीनीकरण",
+        "description": "Humanity begins new cycles. Fresh starts, innovation, and pioneering energy dominate globally. The world shifts toward independence and bold new directions.",
+        "description_hi": "मानवता नए चक्र शुरू करती है। नई शुरुआत, नवाचार और अग्रणी ऊर्जा वैश्विक स्तर पर हावी है। दुनिया स्वतंत्रता और साहसी नई दिशाओं की ओर बढ़ती है।",
+        "focus_areas": "Innovation, new beginnings, leadership, pioneering",
+        "focus_areas_hi": "नवाचार, नई शुरुआत, नेतृत्व, अग्रणी",
+        "advice": "Start what you have been delaying. This universal year rewards initiative.",
+        "advice_hi": "जो टाल रहे थे उसे शुरू करें। यह सार्वभौमिक वर्ष पहल करने वालों को पुरस्कृत करता है।",
+    },
+    2: {
+        "theme": "Global Cooperation",
+        "theme_hi": "वैश्विक सहयोग",
+        "description": "The world craves balance and diplomacy. International partnerships flourish. A year for listening, healing relationships, and building bridges across divides.",
+        "description_hi": "दुनिया संतुलन और कूटनीति चाहती है। अंतर्राष्ट्रीय साझेदारी फलती है। सुनने, रिश्ते ठीक करने और दरारों पर पुल बनाने का वर्ष।",
+        "focus_areas": "Diplomacy, peace, partnerships, healing, balance",
+        "focus_areas_hi": "कूटनीति, शांति, साझेदारी, उपचार, संतुलन",
+        "advice": "Collaborate rather than compete. Compromise builds lasting collective results.",
+        "advice_hi": "प्रतिस्पर्धा के बजाय सहयोग करें। समझौता स्थायी सामूहिक परिणाम बनाता है।",
+    },
+    3: {
+        "theme": "Global Creativity",
+        "theme_hi": "वैश्विक रचनात्मकता",
+        "description": "Art, communication, and cultural expression flourish worldwide. Social connection, optimism, and collective joy are the dominant energies.",
+        "description_hi": "कला, संचार और सांस्कृतिक अभिव्यक्ति विश्वभर में फलती है। सामाजिक संबंध, आशावाद और सामूहिक आनंद प्रमुख ऊर्जाएं हैं।",
+        "focus_areas": "Arts, culture, communication, entertainment, social connection",
+        "focus_areas_hi": "कला, संस्कृति, संचार, मनोरंजन, सामाजिक संबंध",
+        "advice": "Express. Create. Share. Optimism is the most powerful collective force this year.",
+        "advice_hi": "व्यक्त करें। बनाएं। साझा करें। आशावाद इस वर्ष की सबसे शक्तिशाली सामूहिक शक्ति है।",
+    },
+    4: {
+        "theme": "Global Foundations",
+        "theme_hi": "वैश्विक नींव निर्माण",
+        "description": "Building, organizing, and creating lasting infrastructure defines this cycle. Hard work and discipline prevail. Shortcuts fail; steady effort wins.",
+        "description_hi": "निर्माण, संगठन और स्थायी बुनियादी ढांचा बनाना इस चक्र को परिभाषित करता है। कठिन परिश्रम और अनुशासन जीतता है।",
+        "focus_areas": "Infrastructure, systems, stability, hard work, long-term planning",
+        "focus_areas_hi": "बुनियादी ढांचा, प्रणालियां, स्थिरता, कठिन परिश्रम, दीर्घकालिक योजना",
+        "advice": "Focus on fundamentals. The groundwork laid in a Universal 4 year lasts generations.",
+        "advice_hi": "मूल बातों पर ध्यान दें। सार्वभौमिक 4 वर्ष में रखी नींव पीढ़ियों तक चलती है।",
+    },
+    5: {
+        "theme": "Global Change",
+        "theme_hi": "वैश्विक परिवर्तन",
+        "description": "Rapid change, upheaval, and transformation sweep the world. Technology leaps forward. Adaptability and freedom are the dominant collective themes.",
+        "description_hi": "तीव्र परिवर्तन और उथल-पुथल दुनिया में फैलती है। प्रौद्योगिकी आगे बढ़ती है। अनुकूलनशीलता और स्वतंत्रता प्रमुख सामूहिक विषय हैं।",
+        "focus_areas": "Change, technology, travel, freedom, adaptability",
+        "focus_areas_hi": "परिवर्तन, प्रौद्योगिकी, यात्रा, स्वतंत्रता, अनुकूलनशीलता",
+        "advice": "Embrace change as the engine of collective progress. Resistance costs more than adaptation.",
+        "advice_hi": "परिवर्तन को सामूहिक प्रगति के इंजन के रूप में अपनाएं।",
+    },
+    6: {
+        "theme": "Global Responsibility",
+        "theme_hi": "वैश्विक जिम्मेदारी",
+        "description": "Humanity focuses on care, community, and healing. Environmental responsibility, family values, and social welfare rise to prominence. Love in action.",
+        "description_hi": "मानवता देखभाल, समुदाय और उपचार पर ध्यान केंद्रित करती है। पर्यावरण, परिवार और सामाजिक कल्याण प्रमुखता से उभरते हैं।",
+        "focus_areas": "Community, healing, environment, family, social welfare",
+        "focus_areas_hi": "समुदाय, उपचार, पर्यावरण, परिवार, सामाजिक कल्याण",
+        "advice": "Serve your community. Small collective acts of care have outsized global impact.",
+        "advice_hi": "अपने समुदाय की सेवा करें। देखभाल के छोटे सामूहिक कार्यों का वैश्विक प्रभाव बड़ा होता है।",
+    },
+    7: {
+        "theme": "Global Reflection",
+        "theme_hi": "वैश्विक आत्मनिरीक्षण",
+        "description": "A year of seeking truth, wisdom, and deeper meaning. Science, spirituality, and philosophy take center stage. The world slows to ask deeper questions.",
+        "description_hi": "सत्य, ज्ञान और गहरे अर्थ की खोज का वर्ष। विज्ञान, आध्यात्मिकता और दर्शन केंद्र में आते हैं।",
+        "focus_areas": "Research, spirituality, truth-seeking, science, wisdom",
+        "focus_areas_hi": "अनुसंधान, आध्यात्मिकता, सत्य-खोज, विज्ञान, ज्ञान",
+        "advice": "Seek depth over distraction. The answers humanity needs emerge from collective inner work.",
+        "advice_hi": "विकर्षण के बजाय गहराई खोजें। मानवता को जो उत्तर चाहिए वे सामूहिक आंतरिक कार्य से उभरते हैं।",
+    },
+    8: {
+        "theme": "Global Power",
+        "theme_hi": "वैश्विक शक्ति",
+        "description": "Economic activity, power shifts, and material manifestation define this year. Business, finance, and governance are transformed. Karma plays out on a collective stage.",
+        "description_hi": "आर्थिक गतिविधि, शक्ति बदलाव और भौतिक अभिव्यक्ति इस वर्ष को परिभाषित करती है। कर्म सामूहिक मंच पर खेलता है।",
+        "focus_areas": "Economy, finance, governance, power, karma",
+        "focus_areas_hi": "अर्थव्यवस्था, वित्त, शासन, शक्ति, कर्म",
+        "advice": "Use collective power ethically. Economic decisions made this year echo for decades.",
+        "advice_hi": "सामूहिक शक्ति का नैतिक उपयोग करें। इस वर्ष के आर्थिक निर्णय दशकों तक गूंजते हैं।",
+    },
+    9: {
+        "theme": "Global Completion",
+        "theme_hi": "वैश्विक पूर्णता",
+        "description": "A 9-year cycle ends for humanity. Release old systems, outmoded beliefs, and destructive patterns. Compassion and forgiveness lead to collective healing.",
+        "description_hi": "मानवता के लिए 9 वर्ष का चक्र समाप्त होता है। पुरानी प्रणालियों और मान्यताओं को छोड़ें। करुणा और क्षमा सामूहिक उपचार की ओर ले जाती है।",
+        "focus_areas": "Completion, forgiveness, release, humanitarianism, healing",
+        "focus_areas_hi": "पूर्णता, क्षमा, मुक्ति, मानवतावाद, उपचार",
+        "advice": "Let go gracefully. What humanity releases creates space for the new 9-year cycle.",
+        "advice_hi": "सहजता से छोड़ें। मानवता जो छोड़ती है वह नए 9 वर्षीय चक्र के लिए जगह बनाती है।",
+    },
+}
+
+
 # ─── Main Forecast Function ──────────────────────────────────────────────────
 
 def calculate_forecast(birth_date: str, target_date: Optional[str] = None) -> dict:
@@ -444,6 +540,9 @@ def calculate_forecast(birth_date: str, target_date: Optional[str] = None) -> di
     py_pred = PERSONAL_YEAR_PREDICTIONS.get(py, PERSONAL_YEAR_PREDICTIONS.get(_reduce_to_single(py), {}))
     pm_pred = PERSONAL_MONTH_PREDICTIONS.get(pm, PERSONAL_MONTH_PREDICTIONS.get(_reduce_to_single(pm), {}))
     pd_pred = PERSONAL_DAY_PREDICTIONS.get(pd_, PERSONAL_DAY_PREDICTIONS.get(_reduce_to_single(pd_), {}))
+    uy_pred = UNIVERSAL_YEAR_PREDICTIONS.get(uy, UNIVERSAL_YEAR_PREDICTIONS.get(_reduce_to_single(uy), {}))
+    um_pred = PERSONAL_MONTH_PREDICTIONS.get(um, PERSONAL_MONTH_PREDICTIONS.get(_reduce_to_single(um), {}))
+    ud_pred = PERSONAL_DAY_PREDICTIONS.get(ud, PERSONAL_DAY_PREDICTIONS.get(_reduce_to_single(ud), {}))
 
     return {
         "personal_year": py,
@@ -458,5 +557,8 @@ def calculate_forecast(birth_date: str, target_date: Optional[str] = None) -> di
             "personal_year": py_pred,
             "personal_month": pm_pred,
             "personal_day": pd_pred,
+            "universal_year": uy_pred,
+            "universal_month": um_pred,
+            "universal_day": ud_pred,
         },
     }

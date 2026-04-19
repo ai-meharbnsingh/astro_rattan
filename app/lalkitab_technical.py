@@ -286,8 +286,8 @@ def calculate_soya_ghar(
         house = p["house"]
         pakka = _PAKKA.get(planet, 0)
         strength = (planet_strengths or {}).get(planet, 0.5)
-        # Waking if in Pakka Ghar, or strong (>0.5) and not in dusthana
-        if house == pakka or (strength > 0.5 and house not in {6, 8, 12}):
+        # Waking if in Pakka Ghar, or neutral/strong (>=0.5) and not in dusthana
+        if house == pakka or (strength >= 0.5 and house not in {6, 8, 12}):
             if planet not in waking_planets:
                 waking_planets.append(planet)
 

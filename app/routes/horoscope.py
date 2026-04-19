@@ -30,31 +30,38 @@ def _resolve_birth_nakshatra(
     birth_lat: Optional[float],
     birth_lon: Optional[float],
     birth_tz: Optional[float],
-) -> Optional[str]:
-    """Return natal Moon nakshatra for Dasha calculation. Returns None on missing input or error."""
+) -> tuple:
+    """Return (nakshatra, moon_longitude) for Dasha calculation. Returns (None, None) on error."""
     if not (birth_date and birth_lat is not None and birth_lon is not None):
-        return None
+        return None, None
     try:
         from app.astro_engine import calculate_planet_positions
         t = birth_time if birth_time else "12:00:00"
         tz = birth_tz if birth_tz is not None else round(birth_lon / 15.0, 1)
         result = calculate_planet_positions(birth_date, t, float(birth_lat), float(birth_lon), tz)
-        return result.get("planets", {}).get("Moon", {}).get("nakshatra") or None
+        moon = result.get("planets", {}).get("Moon", {})
+        nakshatra = moon.get("nakshatra") or None
+        # Compute sidereal longitude from sign index + sign_degree
+        from app.transit_engine import SIGN_INDEX
+        sign_lon = SIGN_INDEX.get(moon.get("sign", "").lower(), 0) * 30
+        moon_lon = sign_lon + float(moon.get("sign_degree", 0))
+        return nakshatra, moon_lon
     except Exception:
         logger.exception("Failed to resolve birth nakshatra")
-        return None
+        return None, None
 
 
 def _resolve_active_dasha(
     birth_nakshatra: Optional[str],
     birth_date: Optional[str],
+    moon_longitude: Optional[float] = None,
 ) -> Optional[dict]:
-    """Return active Mahadasha + Antardasha for today. Returns None on missing input or error."""
+    """Return active Mahadasha + Antardasha for today using birth balance. Returns None on error."""
     if not birth_nakshatra or not birth_date:
         return None
     try:
         from app.dasha_engine import calculate_dasha
-        result = calculate_dasha(birth_nakshatra, birth_date)
+        result = calculate_dasha(birth_nakshatra, birth_date, moon_longitude=moon_longitude)
         mahadasha = result.get("current_dasha")
         antardasha = result.get("current_antardasha")
         if mahadasha and mahadasha != "Unknown":
@@ -201,8 +208,8 @@ def get_daily_horoscope(
         target_date = date.today().isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date, moon_longitude=moon_lon)
     dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
@@ -279,8 +286,8 @@ def get_tomorrow_horoscope(
 
     tomorrow = (date.today() + timedelta(days=1)).isoformat()
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date, moon_longitude=moon_lon)
     dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     try:
@@ -342,8 +349,8 @@ def get_weekly_horoscope(
     week_end = (monday + timedelta(days=6)).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date, moon_longitude=moon_lon)
     dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
@@ -422,8 +429,8 @@ def get_monthly_horoscope(
     month_start = today.replace(day=1).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date, moon_longitude=moon_lon)
     dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
@@ -517,8 +524,8 @@ def get_yearly_horoscope(
     year_start = date.today().replace(month=1, day=1).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
-    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    birth_nak, moon_lon = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date, moon_longitude=moon_lon)
     dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response

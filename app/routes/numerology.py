@@ -11,6 +11,7 @@ from app.numerology_engine import (
     calculate_house_numerology
 )
 from app.numerology_forecast_engine import calculate_forecast
+from app.numerology_insight_engine import generate_insights
 
 router = APIRouter()
 
@@ -69,6 +70,7 @@ def numerology_calculate(req: NumerologyRequest):
     _validate_birth_date_or_400(req.birth_date)
     try:
         result = calculate_numerology(req.name, req.birth_date)
+        result["insights"] = generate_insights(result, req.birth_date)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

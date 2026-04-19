@@ -306,6 +306,80 @@ SIGN_DISPLAY: Dict[str, Dict[str, str]] = {
 }
 
 
+# -- House ordinals (EN / HI) --
+
+_HOUSE_ORDINAL_EN: Dict[int, str] = {
+    1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", 6: "6th",
+    7: "7th", 8: "8th", 9: "9th", 10: "10th", 11: "11th", 12: "12th",
+}
+_HOUSE_ORDINAL_HI: Dict[int, str] = {
+    1: "पहले", 2: "दूसरे", 3: "तीसरे", 4: "चौथे", 5: "पाँचवें", 6: "छठे",
+    7: "सातवें", 8: "आठवें", 9: "नौवें", 10: "दसवें", 11: "ग्यारहवें", 12: "बारहवें",
+}
+
+# -- Planet Hindi names --
+
+_PLANET_HINDI: Dict[str, str] = {
+    "Sun": "सूर्य", "Moon": "चंद्र", "Mars": "मंगल", "Mercury": "बुध",
+    "Jupiter": "गुरु", "Venus": "शुक्र", "Saturn": "शनि", "Rahu": "राहु", "Ketu": "केतु",
+}
+
+# -- P2: Section transit planet priority (area → planets in relevance order) --
+
+SECTION_TRANSIT_PLANET: Dict[str, List[str]] = {
+    "love":    ["Venus", "Moon", "Jupiter", "Mars"],
+    "career":  ["Saturn", "Mars", "Sun", "Jupiter"],
+    "finance": ["Jupiter", "Venus", "Mercury", "Saturn"],
+    "health":  ["Saturn", "Mars", "Sun", "Moon"],
+}
+
+# -- P2: Per-section, per-planet transit effect phrases (EN, HI) --
+
+_PLANET_SECTION_EFFECT: Dict[str, Dict[str, Tuple[str, str]]] = {
+    "love": {
+        "Venus":   ("highlights romance and sensory pleasure",       "प्रेम और संवेदनशीलता को उजागर करता है"),
+        "Moon":    ("stirs deep emotional bonds",                    "गहरे भावनात्मक संबंधों को जगाता है"),
+        "Jupiter": ("blesses partnerships with warmth and wisdom",   "संबंधों को गर्माहट और ज्ञान से संपन्न करता है"),
+        "Mars":    ("intensifies passion and desire",                "जुनून और इच्छाशक्ति को तीव्र करता है"),
+    },
+    "career": {
+        "Saturn":  ("demands sustained discipline and long-term planning", "दीर्घकालिक अनुशासन और योजना की माँग करता है"),
+        "Mars":    ("energizes ambition, initiative, and drive",           "महत्वाकांक्षा और पहल को ऊर्जा देता है"),
+        "Sun":     ("spotlights authority, recognition, and leadership",   "अधिकार, पहचान और नेतृत्व को उजागर करता है"),
+        "Jupiter": ("expands opportunities and professional reputation",   "अवसरों और पेशेवर प्रतिष्ठा का विस्तार करता है"),
+    },
+    "finance": {
+        "Jupiter": ("expands material opportunities and abundance",  "भौतिक अवसरों और समृद्धि का विस्तार करता है"),
+        "Venus":   ("attracts wealth, luxury, and financial ease",   "धन, विलासिता और आर्थिक सुगमता को आकर्षित करता है"),
+        "Mercury": ("sharpens financial judgment and communication", "वित्तीय विवेक और संचार को तेज करता है"),
+        "Saturn":  ("enforces financial discipline and caution",     "वित्तीय अनुशासन और सावधानी लागू करता है"),
+    },
+    "health": {
+        "Saturn":  ("tests physical endurance and structural vitality",  "शारीरिक सहनशक्ति और संरचनात्मक स्वास्थ्य की परीक्षा लेता है"),
+        "Mars":    ("drives physical energy, recovery, and resilience",  "शारीरिक ऊर्जा, स्वास्थ्य लाभ और लचीलापन देता है"),
+        "Sun":     ("vitalizes constitution, immunity, and stamina",     "संविधान, रोग प्रतिरोधक क्षमता और सहनशक्ति को जीवंत करता है"),
+        "Moon":    ("sensitizes the nervous system and emotional health", "तंत्रिका तंत्र और भावनात्मक स्वास्थ्य को संवेदनशील बनाता है"),
+    },
+}
+
+# -- P3: Tithi suffix (30 tithis in 6 bands of 5) --
+
+_TITHI_SUFFIX: List[Dict[str, str]] = [
+    {"en": "Tithi favors new beginnings and fresh initiatives.",
+     "hi": "तिथि नई शुरुआत और ताज़े प्रयासों के लिए अनुकूल है।"},
+    {"en": "Waxing moon amplifies your intentions and builds momentum.",
+     "hi": "बढ़ता चंद्रमा आपके इरादों को बल देता और गति बनाता है।"},
+    {"en": "Moon reaches peak luminosity — actions taken now carry maximum force.",
+     "hi": "चंद्रमा पूर्ण चमक पर है — अभी किए गए कार्य अधिकतम फल देते हैं।"},
+    {"en": "Waning moon calls for releasing what no longer serves you.",
+     "hi": "घटता चंद्रमा उन चीज़ों को छोड़ने का आह्वान करता है जो अब उपयोगी नहीं।"},
+    {"en": "Krishna paksha favors inner work and consolidation over outward action.",
+     "hi": "कृष्ण पक्ष बाहरी क्रिया की बजाय आंतरिक कार्य और समेकन का समय है।"},
+    {"en": "Amavasya energy highlights roots, ancestors, and deep spiritual renewal.",
+     "hi": "अमावस्या ऊर्जा जड़ों, पूर्वजों और गहरे आध्यात्मिक नवीनीकरण को उजागर करती है।"},
+]
+
+
 # ===================================================================
 # 1. get_full_transits
 # ===================================================================
@@ -430,6 +504,8 @@ def assemble_section(
     language: str,
     fragment_offset: int = 0,
     dasha_lord: str = None,
+    moon_nakshatra_index: int = 0,
+    moon_pada: int = 1,
 ) -> str:
     """
     Combine relevant interpretation fragments into a coherent 3-5 sentence paragraph
@@ -460,6 +536,9 @@ def assemble_section(
         weights[dasha_lord] = weights.get(dasha_lord, 1) * 2
     pick_count = FRAGMENT_COUNTS.get(period, 3)
 
+    # P1: Nakshatra-seed gives 108 unique positions (27 × 4) → daily freshness
+    nak_seed = moon_nakshatra_index * 4 + (moon_pada - 1)
+
     scored_fragments: List[Tuple[float, str, str, str]] = []
     # (score, fragment_text, planet_name, dignity)
 
@@ -468,8 +547,8 @@ def assemble_section(
         if house is None:
             continue
 
-        # Look up fragment text
-        fragment = _lookup_fragment(planet, house, area, language)
+        # Look up fragment text using nakshatra-derived seed
+        fragment = _lookup_fragment(planet, house, area, language, seed=nak_seed)
         if not fragment:
             continue
 
@@ -504,7 +583,15 @@ def assemble_section(
                 text = modifier + " " + text
         parts.append(text)
 
-    return " ".join(parts)
+    result = " ".join(parts)
+
+    # P2: Prepend explicit transit sentence for non-general sections
+    if area != "general":
+        opener = _section_transit_opener(area, planet_houses, planet_data, language)
+        if opener:
+            result = opener + " " + result
+
+    return result
 
 
 # ===================================================================
@@ -648,21 +735,31 @@ def generate_transit_horoscope(
     lagna_sign = native_lagna.lower() if native_lagna and native_lagna.lower() in SIGN_INDEX else sign_lower
     planet_houses = calculate_transit_houses(lagna_sign, planet_data)
 
-    # Assemble sections (bilingual) — use lagna_sign for sign-display context
-    sections: Dict[str, Dict[str, str]] = {}
-    for area in AREAS:
-        sections[area] = {
-            "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en", dasha_lord=dasha_lord),
-            "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi", dasha_lord=dasha_lord),
-        }
-
-    # Compute scores
-    scores = compute_scores(lagna_sign, planet_houses, planet_data)
-
-    # Extract Moon nakshatra data for lucky derivations
+    # Extract Moon nakshatra early — needed for P1 nakshatra seed + lucky derivations
     moon_info = planet_data.get("Moon", {})
     moon_nak_idx = _nakshatra_name_to_index(moon_info.get("nakshatra", "Ashwini"))
     moon_pada = moon_info.get("nakshatra_pada", 1)
+
+    # Assemble sections (bilingual) with nakshatra seed (P1) and transit openers (P2)
+    sections: Dict[str, Dict[str, str]] = {}
+    for area in AREAS:
+        sections[area] = {
+            "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en",
+                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada),
+            "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi",
+                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada),
+        }
+
+    # P3: Append tithi suffix to general section for daily period
+    if period_lower == "daily":
+        tithi = _compute_tithi(planet_data)
+        band = min(5, (tithi - 1) // 5)  # 0–5
+        suffix = _TITHI_SUFFIX[band]
+        sections["general"]["en"] += " " + suffix["en"]
+        sections["general"]["hi"] += " " + suffix["hi"]
+
+    # Compute scores
+    scores = compute_scores(lagna_sign, planet_houses, planet_data)
 
     # Build dignity map for all planets
     planet_dignities = {p: get_planet_dignity(p, planet_data.get(p, {})) for p in MAIN_PLANETS}
@@ -934,20 +1031,58 @@ def _nakshatra_name_to_index(name: str) -> int:
         return 0
 
 
-def _lookup_fragment(planet: str, house: int, area: str, language: str) -> str:
-    """Look up a text fragment, preferring a random variant if available, else base fragment."""
+def _lookup_fragment(planet: str, house: int, area: str, language: str, seed: int = 0) -> str:
+    """Look up a text fragment. Uses nakshatra-derived seed for deterministic variant selection (P1)."""
     try:
         from app.transit_variants import TRANSIT_VARIANTS
         variants = TRANSIT_VARIANTS.get(planet, {}).get(house, {}).get(area)
         if variants:
-            import random
-            return random.choice(variants)[language]
+            return variants[seed % len(variants)][language]
     except (ImportError, KeyError, TypeError, IndexError):
         pass
     try:
         return TRANSIT_FRAGMENTS[planet][house][area][language]
     except (KeyError, TypeError):
         return ""
+
+
+def _section_transit_opener(
+    area: str,
+    planet_houses: Dict[str, int],
+    planet_data: Dict[str, Any],
+    language: str,
+) -> str:
+    """Return an explicit 'Planet transiting your Nth house...' opener for a section's domain (P2)."""
+    candidates = SECTION_TRANSIT_PLANET.get(area, [])
+    effects = _PLANET_SECTION_EFFECT.get(area, {})
+    for planet in candidates:
+        house = planet_houses.get(planet)
+        if house is None:
+            continue
+        effect = effects.get(planet)
+        if not effect:
+            continue
+        if language == "en":
+            ordinal = _HOUSE_ORDINAL_EN.get(house, f"{house}th")
+            return f"{planet} transiting your {ordinal} house {effect[0]}."
+        else:
+            planet_hi = _PLANET_HINDI.get(planet, planet)
+            ordinal_hi = _HOUSE_ORDINAL_HI.get(house, f"{house}वें")
+            return f"{planet_hi} आपके {ordinal_hi} भाव में भ्रमण करते हुए {effect[1]}।"
+    return ""
+
+
+def _compute_tithi(planet_data: Dict[str, Any]) -> int:
+    """Compute lunar tithi (1-30) from Sun and Moon sign+degree positions (P3)."""
+    try:
+        moon = planet_data.get("Moon", {})
+        sun = planet_data.get("Sun", {})
+        moon_lon = SIGN_INDEX.get(moon.get("sign", "aries"), 0) * 30 + float(moon.get("sign_degree", 0))
+        sun_lon = SIGN_INDEX.get(sun.get("sign", "aries"), 0) * 30 + float(sun.get("sign_degree", 0))
+        diff = (moon_lon - sun_lon) % 360
+        return int(diff / 12) + 1  # 1–30
+    except Exception:
+        return 1
 
 
 def _get_dignity_modifier(dignity: str, language: str) -> str:

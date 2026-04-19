@@ -4260,3 +4260,136 @@ def get_sapt_var(
         "note_en": "Each day's energy is determined by its ruling planet's strength in your natal Lal Kitab chart (Pakka Ghar system).",
         "note_hi": "प्रत्येक दिन की ऊर्जा उसके शासक ग्रह की आपकी जन्म लाल किताब कुंडली में शक्ति (पक्का घर प्रणाली) से निर्धारित होती है।",
     }
+
+
+# ═══════════════════════════════════════════════════════════════════
+# MASTER SUMMARY
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/master-summary/{kundli_id}")
+def get_master_summary(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Single-call master summary: core life pattern, main problem, top-3 remedy
+    actions, and 2-year dasha outlook. All derived from actual chart data.
+    """
+    from app.lalkitab_master_summary import generate_master_summary
+    from app.lalkitab_sacrifice import analyze_sacrifice
+    from app.lalkitab_dasha import get_dasha_timeline
+
+    row = db.execute(
+        "SELECT chart_data, birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"]) if isinstance(row["chart_data"], str) else (row["chart_data"] or {})
+
+    # Build position list: [{planet, house, sign, dignity, strength}]
+    planet_positions_sign = {
+        p: info.get("sign")
+        for p, info in chart_data.get("planets", {}).items()
+        if isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+    }
+    remedies_raw = get_remedies(planet_positions_sign, chart_data=chart_data) if planet_positions_sign else {}
+    enriched_remedies = []
+    urgency_order = {"high": 0, "medium": 1, "low": 2}
+    for planet, info in remedies_raw.items():
+        r = info["remedy"]
+        enriched_remedies.append({
+            "planet": planet,
+            "planet_hi": PLANET_NAMES_HI.get(planet, planet),
+            "sign": info["sign"],
+            "lk_house": info["lk_house"],
+            "dignity": info["dignity"],
+            "strength": info["strength"],
+            "has_remedy": info["has_remedy"],
+            "urgency": r.get("urgency", "low"),
+            "remedy_en": r.get("en", ""),
+            "remedy_hi": r.get("hi", ""),
+            "problem_en": r.get("problem_en", ""),
+            "problem_hi": r.get("problem_hi", ""),
+            "how_en": r.get("how_en", ""),
+            "how_hi": r.get("how_hi", ""),
+            "day": r.get("day", ""),
+            "classification": r.get("classification", ""),
+        })
+    enriched_remedies.sort(key=lambda x: (0 if x["has_remedy"] else 1, urgency_order.get(x["urgency"], 2), x["lk_house"]))
+
+    # Positions list for sacrifice engine
+    positions, _ = _get_lk_positions(kundli_id, user["sub"], db)
+    sacrifice_results = analyze_sacrifice(positions)
+
+    # Karmic debts
+    try:
+        karmic_debts = calculate_karmic_debts(positions)
+    except Exception:
+        karmic_debts = []
+
+    # Dasha timeline
+    dasha_data = get_dasha_timeline(
+        birth_date=str(row["birth_date"]),
+        current_date=_date.today().isoformat(),
+    )
+
+    summary = generate_master_summary(
+        positions=positions,
+        remedies=enriched_remedies,
+        karmic_debts=karmic_debts,
+        sacrifice_results=sacrifice_results,
+        dasha_data=dasha_data,
+    )
+
+    return {"kundli_id": kundli_id, **summary}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# MARRIAGE / H7 ANALYSIS
+# ═══════════════════════════════════════════════════════════════════
+
+@router.get("/api/lalkitab/marriage/{kundli_id}")
+def get_marriage_analysis(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    Lal Kitab marriage and relationship analysis.
+    Derives all predictions from actual H7 planets, Venus house/dignity,
+    Moon house/dignity, and Saturn placement — no hardcoded text.
+    """
+    from app.lalkitab_marriage import analyze_marriage
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"]) if isinstance(row["chart_data"], str) else (row["chart_data"] or {})
+
+    # Build enriched positions with sign, dignity, strength from remedy engine
+    planet_positions_sign = {
+        p: info.get("sign")
+        for p, info in chart_data.get("planets", {}).items()
+        if isinstance(info.get("sign"), str) and info.get("sign") in _SIGN_TO_LK_HOUSE
+    }
+    remedies_raw = get_remedies(planet_positions_sign, chart_data=chart_data) if planet_positions_sign else {}
+
+    enriched_positions = []
+    for planet, info in remedies_raw.items():
+        enriched_positions.append({
+            "planet": planet,
+            "house": info["lk_house"],
+            "sign": info["sign"],
+            "dignity": info["dignity"],
+            "strength": info["strength"],
+        })
+
+    result = analyze_marriage(enriched_positions)
+    return {"kundli_id": kundli_id, **result}

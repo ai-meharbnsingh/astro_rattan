@@ -606,15 +606,16 @@ def get_muhurat(
 
     if cached:
         raw_results = json.loads(cached["results"])
-        dates = [
-            {
-                "date": r.get("date", ""),
-                "time_range": f"Sunrise to Sunset ({r.get('tithi', 'Shukla')} {r.get('nakshatra', '')})",
-                "quality": r.get("quality", "auspicious"),
-            }
-            for r in raw_results
-        ]
-        return {"dates": dates}
+        if raw_results:  # skip empty cache — treat 0-result as stale/invalid
+            dates = [
+                {
+                    "date": r.get("date", ""),
+                    "time_range": f"Sunrise to Sunset ({r.get('tithi', 'Shukla')} {r.get('nakshatra', '')})",
+                    "quality": r.get("quality", "auspicious"),
+                }
+                for r in raw_results
+            ]
+            return {"dates": dates}
 
     days_in_month = calendar.monthrange(target_year, target_month)[1]
     auspicious_dates = []

@@ -14,6 +14,7 @@ import type { ClientData } from '@/components/ClientSelector';
 import NameNumerology from './NameNumerology';
 import VehicleNumerology from './VehicleNumerology';
 import HouseNumerology from './HouseNumerology';
+import InsightPanel from './InsightPanel';
 import { Heading } from "@/components/ui/heading";
 
 interface PredictionEntry {
@@ -62,6 +63,7 @@ interface NumerologyResult {
   loshu_planes?: any;
   missing_numbers?: Array<any>;
   repeated_numbers?: Array<any>;
+  insights?: any;
 }
 
 interface MobileCombination {
@@ -337,6 +339,12 @@ export default function NumerologyTabs() {
           </Card>
         </div>
 
+          {numResult?.insights && (
+            <div className="max-w-4xl mx-auto w-full">
+              <InsightPanel insights={numResult.insights} />
+            </div>
+          )}
+
 	          {numResult && (
 	            <Card className="bg-card border-sacred-gold/10 shadow-soft-lg">
 	              <CardContent className="p-6 space-y-8">
@@ -465,6 +473,34 @@ export default function NumerologyTabs() {
                             </p>
                           )}
                         </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Personal Year (from calculate endpoint) */}
+                {numResult.personal_year != null && numResult.personal_year_prediction && (
+                  <div className="space-y-2">
+                    <Heading as={5} variant={5}>{isHi ? 'वर्तमान व्यक्तिगत वर्ष' : 'Current Personal Year'}</Heading>
+                    <div className="rounded-xl border border-sacred-gold/25 bg-white p-4 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <Badge className="text-xl px-3 py-1 bg-sacred-gold text-background">{numResult.personal_year}</Badge>
+                        {numResult.personal_year_prediction?.theme && (
+                          <span className="text-sm font-medium text-sacred-gold-dark">
+                            {pick(numResult.personal_year_prediction, 'theme')}
+                          </span>
+                        )}
+                      </div>
+                      {numResult.personal_year_prediction?.description && (
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {pick(numResult.personal_year_prediction, 'description')}
+                        </p>
+                      )}
+                      {numResult.personal_year_prediction?.advice && (
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">{isHi ? 'सलाह' : 'Advice'}:</span>{' '}
+                          {pick(numResult.personal_year_prediction, 'advice')}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -666,20 +702,53 @@ export default function NumerologyTabs() {
 
                       <div className="rounded-xl border border-sacred-gold/25 bg-white p-4 space-y-2">
                         <p className="text-sm font-medium text-foreground">{t('numerology.universalForecast')}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {t('numerology.universalYear')}: <span className="font-semibold text-foreground">{forecastResult.universal_year}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {t('numerology.universalMonth')}: <span className="font-semibold text-foreground">{forecastResult.universal_month}</span>
-                          {forecastResult.predictions?.universal_month?.theme && (
-                            <span className="ml-1 text-sacred-gold-dark font-medium">
-                              · {pick(forecastResult.predictions.universal_month, 'theme')}
-                            </span>
+
+                        {/* Universal Year */}
+                        <div>
+                          <p className="text-xs text-muted-foreground">
+                            {t('numerology.universalYear')}: <span className="font-semibold text-foreground">{forecastResult.universal_year}</span>
+                            {forecastResult.predictions?.universal_year?.theme && (
+                              <span className="ml-1 text-sacred-gold-dark font-medium">
+                                · {pick(forecastResult.predictions.universal_year, 'theme')}
+                              </span>
+                            )}
+                          </p>
+                          {forecastResult.predictions?.universal_year?.description && (
+                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                              {pick(forecastResult.predictions.universal_year, 'description')}
+                            </p>
                           )}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {t('numerology.universalDay')}: <span className="font-semibold text-foreground">{forecastResult.universal_day}</span>
-                        </p>
+                          {forecastResult.predictions?.universal_year?.advice && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              <span className="font-medium text-foreground">{isHi ? 'सलाह' : 'Advice'}:</span>{' '}
+                              {pick(forecastResult.predictions.universal_year, 'advice')}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Universal Month */}
+                        <div className="pt-2 border-t border-sacred-gold/10">
+                          <p className="text-xs text-muted-foreground">
+                            {t('numerology.universalMonth')}: <span className="font-semibold text-foreground">{forecastResult.universal_month}</span>
+                            {forecastResult.predictions?.universal_month?.theme && (
+                              <span className="ml-1 text-sacred-gold-dark font-medium">
+                                · {pick(forecastResult.predictions.universal_month, 'theme')}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+
+                        {/* Universal Day */}
+                        <div className="pt-2 border-t border-sacred-gold/10">
+                          <p className="text-xs text-muted-foreground">
+                            {t('numerology.universalDay')}: <span className="font-semibold text-foreground">{forecastResult.universal_day}</span>
+                            {forecastResult.predictions?.universal_day?.theme && (
+                              <span className="ml-1 text-sacred-gold-dark font-medium">
+                                · {pick(forecastResult.predictions.universal_day, 'theme')}
+                              </span>
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -735,14 +804,14 @@ export default function NumerologyTabs() {
                                   {isHi ? (c.prediction.title_hi || c.prediction.title) : c.prediction.title}
                                 </p>
                               )}
-                              {c.prediction?.opportunity && (
+                              {c.prediction?.obstacle && (
                                 <p className="text-xs text-green-700 mt-1 leading-relaxed">
-                                  ✦ {isHi ? (c.prediction.opportunity_hi || c.prediction.opportunity) : c.prediction.opportunity}
+                                  ✦ {isHi ? (c.prediction.obstacle_hi || c.prediction.obstacle) : c.prediction.obstacle}
                                 </p>
                               )}
-                              {c.prediction?.lesson && (
+                              {c.prediction?.growth && (
                                 <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                                  ◈ {isHi ? (c.prediction.lesson_hi || c.prediction.lesson) : c.prediction.lesson}
+                                  ◈ {isHi ? (c.prediction.growth_hi || c.prediction.growth) : c.prediction.growth}
                                 </p>
                               )}
                             </div>
@@ -771,14 +840,14 @@ export default function NumerologyTabs() {
                                   {isHi ? (c.prediction.title_hi || c.prediction.title) : c.prediction.title}
                                 </p>
                               )}
-                              {c.prediction?.opportunity && (
+                              {c.prediction?.theme && (
                                 <p className="text-xs text-green-700 mt-1 leading-relaxed">
-                                  ✦ {isHi ? (c.prediction.opportunity_hi || c.prediction.opportunity) : c.prediction.opportunity}
+                                  ✦ {isHi ? (c.prediction.theme_hi || c.prediction.theme) : c.prediction.theme}
                                 </p>
                               )}
-                              {c.prediction?.lesson && (
+                              {c.prediction?.advice && (
                                 <p className="text-xs text-amber-700 mt-1 leading-relaxed">
-                                  ◈ {isHi ? (c.prediction.lesson_hi || c.prediction.lesson) : c.prediction.lesson}
+                                  ◈ {isHi ? (c.prediction.advice_hi || c.prediction.advice) : c.prediction.advice}
                                 </p>
                               )}
                             </div>

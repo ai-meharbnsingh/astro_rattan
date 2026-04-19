@@ -69,6 +69,109 @@ def _compute_house(lon: float, asc_lon: float) -> int:
     return ((lon_sign_idx - asc_sign_idx) % 12) + 1
 
 
+# Sign → Lord mapping (for house-lord strength check)
+_SIGN_LORD_U: Dict[str, str] = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+}
+_ZODIAC_U = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+_EXALTATION_U: Dict[str, str] = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn", "Mercury": "Virgo",
+    "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra",
+}
+_OWN_SIGNS_U: Dict[str, set] = {
+    "Sun": {"Leo"}, "Moon": {"Cancer"}, "Mars": {"Aries", "Scorpio"},
+    "Mercury": {"Gemini", "Virgo"}, "Jupiter": {"Sagittarius", "Pisces"},
+    "Venus": {"Taurus", "Libra"}, "Saturn": {"Capricorn", "Aquarius"},
+}
+_SPECIAL_ASPECTS_U: Dict[str, list] = {
+    "Mars": [4, 8], "Jupiter": [5, 9], "Saturn": [3, 10],
+    "Rahu": [5, 9], "Ketu": [5, 9],
+}
+
+
+def _planet_aspects_house_u(planet: str, planet_house: int, target_house: int) -> bool:
+    """Return True if planet in planet_house aspects target_house (Vedic drishti)."""
+    if not (1 <= planet_house <= 12) or not (1 <= target_house <= 12):
+        return False
+    offsets = [7] + list(_SPECIAL_ASPECTS_U.get(planet, []))
+    for n in offsets:
+        if ((planet_house - 1 + (n - 1)) % 12) + 1 == target_house:
+            return True
+    return False
+
+
+def _build_mitigating_factors(
+    house: int,
+    asc_sign: str,
+    planet_houses: dict | None,
+    planet_signs: dict | None,
+) -> Tuple[list, str, str]:
+    """
+    Compute mitigating factors for an upagraha in `house`.
+
+    Returns:
+        (factors_list, mitigated_en, mitigated_hi)
+        factors_list: list of dicts describing each mitigant
+        mitigated_en / mitigated_hi: non-empty if any mitigant found
+    """
+    factors = []
+    ph = planet_houses or {}
+    ps = planet_signs or {}
+
+    # Factor 1: Jupiter aspects the house
+    jup_house = ph.get("Jupiter", 0)
+    if jup_house and _planet_aspects_house_u("Jupiter", jup_house, house):
+        factors.append({
+            "factor": "Jupiter aspect",
+            "detail_en": f"Jupiter (natural benefic) in house {jup_house} aspects house {house}, reducing severity.",
+            "detail_hi": f"बृहस्पति (शुभ ग्रह) भाव {jup_house} से भाव {house} को दृष्टि दे रहे हैं, तीव्रता घट जाती है।",
+        })
+
+    # Factor 2: House lord is strong (exalted or own sign)
+    house_sign = ""
+    if asc_sign in _ZODIAC_U:
+        asc_idx = _ZODIAC_U.index(asc_sign)
+        house_sign = _ZODIAC_U[(asc_idx + house - 1) % 12]
+    house_lord = _SIGN_LORD_U.get(house_sign, "")
+    if house_lord:
+        lord_sign = ps.get(house_lord, "")
+        if lord_sign:
+            lord_is_exalted = _EXALTATION_U.get(house_lord) == lord_sign
+            lord_in_own = lord_sign in _OWN_SIGNS_U.get(house_lord, set())
+            if lord_is_exalted:
+                factors.append({
+                    "factor": "House lord exalted",
+                    "detail_en": f"{house_lord} (lord of house {house}) is exalted in {lord_sign} — strong house lord counters the upagraha's malefic effect.",
+                    "detail_hi": f"{house_lord} (भाव {house} का स्वामी) {lord_sign} में उच्च — बलवान भावेश उपग्रह के पापी प्रभाव को प्रतिरोधित करता है।",
+                })
+            elif lord_in_own:
+                factors.append({
+                    "factor": "House lord in own sign",
+                    "detail_en": f"{house_lord} (lord of house {house}) is in its own sign {lord_sign} — protects house significations from the upagraha's full malefic impact.",
+                    "detail_hi": f"{house_lord} (भाव {house} का स्वामी) अपनी राशि {lord_sign} में — भाव के विषयों को उपग्रह के पूर्ण पापी प्रभाव से बचाता है।",
+                })
+
+    if not factors:
+        return [], "", ""
+
+    factor_labels_en = "; ".join(f["detail_en"] for f in factors)
+    factor_labels_hi = "; ".join(f["detail_hi"] for f in factors)
+    mitigated_en = (
+        f"Classical indication of adversity — however, {factor_labels_en} "
+        f"These factors reduce the severity of the classical indication."
+    )
+    mitigated_hi = (
+        f"शास्त्रोक्त प्रतिकूलता का संकेत — परन्तु {factor_labels_hi} "
+        f"ये कारक शास्त्रोक्त संकेत की तीव्रता को कम करते हैं।"
+    )
+    return factors, mitigated_en, mitigated_hi
+
+
 def _build_interpretation(name: str, house: int) -> Tuple[str, str]:
     """Return (en, hi) interpretation for an upagraha in a given house."""
     data = _UPAGRAHA_NATURES.get(name)
@@ -98,10 +201,17 @@ def calculate_upagrahas(
     lon: float,
     tz_offset: float,
     planet_houses: dict | None = None,
+    planet_signs: dict | None = None,
+    asc_sign: str = "",
 ) -> Dict[str, Any]:
     """
     Calculate Upagrahas (sub-planets) including Aprakasha Grahas and Kala Velas.
-    Each entry includes classical house placement + bilingual interpretation.
+    Each entry includes classical house placement + bilingual interpretation,
+    plus mitigating_factors when Jupiter aspects the house or the house lord is strong.
+
+    planet_houses: {planet_name: house_number}  (optional — enhances mitigant detection)
+    planet_signs:  {planet_name: sign_name}     (optional — enables house-lord strength check)
+    asc_sign:      ascendant sign name           (optional — needed for house-lord derivation)
     """
     # 1. Get Sun and ascendant positions
     pos_data = calculate_planet_positions(birth_date, birth_time, lat, lon, tz_offset)
@@ -123,6 +233,11 @@ def calculate_upagrahas(
         {"name": "Upaketu",   "longitude": upaketu},
     ]
 
+    # Derive asc_sign from computed asc_lon if not provided
+    _asc_sign = asc_sign
+    if not _asc_sign:
+        _asc_sign = _ZODIAC_U[int(asc_lon / 30) % 12]
+
     results = {}
     for p in aprakasha:
         l = p["longitude"]
@@ -132,6 +247,9 @@ def calculate_upagrahas(
         name = p["name"]
         interp_en, interp_hi = _build_interpretation(name, house)
         nature_data = _UPAGRAHA_NATURES.get(name, ("malefic", "", ""))
+        mit_factors, mit_en, mit_hi = _build_mitigating_factors(
+            house, _asc_sign, planet_houses, planet_signs
+        )
         results[name] = {
             "longitude": round(l, 4),
             "sign": sign,
@@ -144,6 +262,9 @@ def calculate_upagrahas(
             "classical_meaning_hi": nature_data[2],
             "interpretation_en": interp_en,
             "interpretation_hi": interp_hi,
+            "mitigating_factors": mit_factors,
+            "mitigating_effect_en": mit_en or None,
+            "mitigating_effect_hi": mit_hi or None,
         }
 
     # --- GULIKA & MANDI (KALA VELAS) ---
@@ -193,6 +314,9 @@ def calculate_upagrahas(
     gulika_house = _compute_house(gulika_lon, asc_lon)
     g_interp_en, g_interp_hi = _build_interpretation("Gulika", gulika_house)
     g_nature = _UPAGRAHA_NATURES["Gulika"]
+    g_mit_factors, g_mit_en, g_mit_hi = _build_mitigating_factors(
+        gulika_house, _asc_sign, planet_houses, planet_signs
+    )
     results["Gulika"] = {
         "longitude": round(gulika_lon, 4),
         "sign": g_sign,
@@ -205,6 +329,9 @@ def calculate_upagrahas(
         "classical_meaning_hi": g_nature[2],
         "interpretation_en": g_interp_en,
         "interpretation_hi": g_interp_hi,
+        "mitigating_factors": g_mit_factors,
+        "mitigating_effect_en": g_mit_en or None,
+        "mitigating_effect_hi": g_mit_hi or None,
     }
 
     # Rule: Gulika in 8th/12th intensifies Mrita effect
@@ -264,6 +391,9 @@ def calculate_upagrahas(
     mandi_house = _compute_house(mandi_lon, asc_lon)
     m_interp_en, m_interp_hi = _build_interpretation("Mandi", mandi_house)
     m_nature = _UPAGRAHA_NATURES["Mandi"]
+    m_mit_factors, m_mit_en, m_mit_hi = _build_mitigating_factors(
+        mandi_house, _asc_sign, planet_houses, planet_signs
+    )
     results["Mandi"] = {
         "longitude": round(mandi_lon, 4),
         "sign": m_sign,
@@ -276,6 +406,9 @@ def calculate_upagrahas(
         "classical_meaning_hi": m_nature[2],
         "interpretation_en": m_interp_en,
         "interpretation_hi": m_interp_hi,
+        "mitigating_factors": m_mit_factors,
+        "mitigating_effect_en": m_mit_en or None,
+        "mitigating_effect_hi": m_mit_hi or None,
     }
 
     return results
