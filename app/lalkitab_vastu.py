@@ -195,6 +195,57 @@ _HOUSE_VASTU_TIPS: Dict[int, Dict[str, str]] = {
 
 # ─── Main Engine ──────────────────────────────────────────────────────────────
 
+# ─── Compound Planet Warnings ────────────────────────────────────────────────
+# LK Vastu: specific multi-planet combinations in the same house create
+# amplified afflictions beyond the sum of individual planet effects.
+
+_COMPOUND_WARNINGS: List[Dict[str, Any]] = [
+    {
+        "planets": {"Saturn", "Rahu"},
+        "en": "Saturn + Rahu (Shrapit Yoga) in the same Vastu zone creates double affliction — structural decay and illusion compound each other. This zone may have hidden defects, persistent blockages, or unexplained bad luck.",
+        "hi": "शनि + राहु (श्रापित योग) एक ही वास्तु क्षेत्र में दोहरी पीड़ा — संरचनात्मक क्षय और भ्रम एक-दूसरे को बढ़ाते हैं। इस क्षेत्र में छिपे दोष, स्थायी अवरोध, या अकारण दुर्भाग्य हो सकता है।",
+        "fix_en": "Clear all hidden debris and old items from this zone. Perform Shani-Rahu shanti puja. Avoid storing unused electronics or metal objects here.",
+        "fix_hi": "इस क्षेत्र से सभी छिपे मलबे और पुरानी वस्तुएं हटाएं। शनि-राहु शांति पूजा करें। अनुपयोगी इलेक्ट्रॉनिक्स या धातु की वस्तुएं यहाँ न रखें।",
+        "severity": "critical",
+    },
+    {
+        "planets": {"Saturn", "Ketu"},
+        "en": "Saturn + Ketu in the same Vastu zone creates spiritual abandonment energy — the zone may feel cold, disconnected, or abandoned. Ancestral karmas intensify.",
+        "hi": "शनि + केतु एक ही वास्तु क्षेत्र में आध्यात्मिक परित्याग की ऊर्जा — यह क्षेत्र ठंडा, बिछड़ा, या उपेक्षित महसूस हो सकता है। पितृ ऋण तीव्र होता है।",
+        "fix_en": "Light a ghee lamp in this zone daily. Place a Ketu yantra. Avoid keeping dead plants or broken objects. Donate black sesame on Saturdays.",
+        "fix_hi": "इस क्षेत्र में रोज घी का दीपक जलाएं। केतु यंत्र रखें। मरे हुए पौधे या टूटी वस्तुएं न रखें।",
+        "severity": "high",
+    },
+    {
+        "planets": {"Mars", "Rahu"},
+        "en": "Mars + Rahu (Angarak Yoga) in the same Vastu zone creates explosive, accident-prone energy. Risk of fire, electrical accidents, or sudden disputes in this area.",
+        "hi": "मंगल + राहु (अंगारक योग) एक ही वास्तु क्षेत्र में विस्फोटक, दुर्घटना-प्रवण ऊर्जा। इस क्षेत्र में आग, विद्युत दुर्घटना, या अचानक विवाद का खतरा।",
+        "fix_en": "Install a fire extinguisher near this zone. Avoid open flames. Place red coral and a Mangal yantra. Ensure all electrical wiring is checked.",
+        "fix_hi": "इस क्षेत्र के पास अग्निशामक यंत्र रखें। खुली आग से बचें। लाल मूंगा और मंगल यंत्र रखें।",
+        "severity": "critical",
+    },
+    {
+        "planets": {"Jupiter", "Rahu"},
+        "en": "Jupiter + Rahu (Guru-Chandal Yoga) in the same Vastu zone creates wisdom corruption — advice given and received in this space may be misleading. False gurus or deceptive advisors linked to this zone.",
+        "hi": "गुरु + राहु (गुरु-चांडाल योग) एक ही वास्तु क्षेत्र में ज्ञान भ्रष्टता — इस स्थान पर दी/ली गई सलाह भ्रामक हो सकती है। झूठे गुरु या धोखेबाज सलाहकार इस क्षेत्र से जुड़े।",
+        "fix_en": "Keep a sacred scripture or spiritual text in this zone. Avoid placing a TV or entertainment device here. Place a Guru yantra.",
+        "fix_hi": "इस क्षेत्र में धर्मग्रंथ रखें। टीवी या मनोरंजन उपकरण यहाँ न रखें। गुरु यंत्र रखें।",
+        "severity": "medium",
+    },
+    {
+        "planets": {"Sun", "Saturn"},
+        "en": "Sun + Saturn in the same Vastu zone creates authority conflict — ego and restriction fight each other. Leadership disputes, father-son conflicts, and government issues may originate from this zone.",
+        "hi": "सूर्य + शनि एक ही वास्तु क्षेत्र में अधिकार-संघर्ष — अहंकार और प्रतिबंध आपस में लड़ते हैं। नेतृत्व विवाद, पिता-पुत्र संघर्ष, और सरकारी समस्याएं इस क्षेत्र से उत्पन्न हो सकती हैं।",
+        "fix_en": "Place a copper sun disc facing East in this zone. Offer water to Sun daily. Place Suryashtakavarga yantra. Avoid dark colors here.",
+        "fix_hi": "इस क्षेत्र में तांबे की सूर्य-प्रतिमा पूर्व की ओर रखें। सूर्य को जल अर्पित करें। सूर्याष्टकवर्ग यंत्र रखें।",
+        "severity": "medium",
+    },
+]
+
+# Severity-to-score mapping for remedy_priority_score
+_SEVERITY_SCORE = {"critical": 90, "high": 70, "medium": 50, "low": 30}
+
+
 def get_vastu_diagnosis(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Generate Vastu home layout diagnosis from Lal Kitab planet positions.
@@ -231,7 +282,7 @@ def get_vastu_diagnosis(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any
             "is_empty": len(planets_here) == 0,
         })
 
-    # Planet-specific warnings
+    # Planet-specific warnings (with remedy_priority_score)
     planet_warnings = []
     for planet, rules in _VASTU_PLANET_RULES.items():
         house = p_map.get(planet)
@@ -241,6 +292,7 @@ def get_vastu_diagnosis(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any
             rule = rules[house]
             direction = HOUSE_DIRECTION[house]
             zone_key = direction["zone"]
+            is_critical = "CRITICAL" in rule.get("warning_en", "") or planet in {"Rahu", "Saturn"}
             planet_warnings.append({
                 "planet": planet,
                 "house": house,
@@ -248,14 +300,41 @@ def get_vastu_diagnosis(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any
                 "zone": {"en": ZONE_LABEL[zone_key]["en"], "hi": ZONE_LABEL[zone_key]["hi"]},
                 "warning": {"en": rule["warning_en"], "hi": rule["warning_hi"]},
                 "fix": {"en": rule["fix_en"], "hi": rule["fix_hi"]},
-                "is_critical": "CRITICAL" in rule.get("warning_en", "") or planet in {"Rahu", "Saturn"},
+                "is_critical": is_critical,
+                "remedy_priority_score": 90 if is_critical else 50,
             })
 
-    # Sort by criticality
-    planet_warnings.sort(key=lambda x: (0 if x["is_critical"] else 1))
+    # Compound planet warnings: two or more afflicting planets in the same house
+    compound_warnings = []
+    for compound in _COMPOUND_WARNINGS:
+        required = compound["planets"]
+        if not required.issubset(p_map):
+            continue
+        # All planets of this compound must be in the same house
+        houses_for_compound = {p: p_map[p] for p in required}
+        unique_houses = set(houses_for_compound.values())
+        if len(unique_houses) == 1:
+            house = list(unique_houses)[0]
+            direction = HOUSE_DIRECTION[house]
+            zone_key = direction["zone"]
+            compound_warnings.append({
+                "planets": sorted(required),
+                "house": house,
+                "direction": {"en": direction["en"], "hi": direction["hi"]},
+                "zone": {"en": ZONE_LABEL[zone_key]["en"], "hi": ZONE_LABEL[zone_key]["hi"]},
+                "warning": {"en": compound["en"], "hi": compound["hi"]},
+                "fix": {"en": compound["fix_en"], "hi": compound["fix_hi"]},
+                "severity": compound["severity"],
+                "remedy_priority_score": _SEVERITY_SCORE.get(compound["severity"], 50),
+            })
 
-    # Priority fixes (top 3 most critical)
-    priority_fixes = planet_warnings[:3]
+    # Sort by remedy_priority_score (higher = more urgent)
+    planet_warnings.sort(key=lambda x: -x["remedy_priority_score"])
+    compound_warnings.sort(key=lambda x: -x["remedy_priority_score"])
+
+    # Priority fixes (top 3 most urgent, compound warnings first)
+    all_fixes = compound_warnings + planet_warnings
+    priority_fixes = all_fixes[:3]
 
     # General layout advice
     general_layout = []
@@ -272,10 +351,11 @@ def get_vastu_diagnosis(planet_positions: List[Dict[str, Any]]) -> Dict[str, Any
     return {
         "directional_map": directional_map,
         "planet_warnings": planet_warnings,
+        "compound_warnings": compound_warnings,
         "priority_fixes": priority_fixes,
         "general_layout": general_layout,
-        "total_warnings": len(planet_warnings),
-        "critical_count": sum(1 for w in planet_warnings if w["is_critical"]),
+        "total_warnings": len(planet_warnings) + len(compound_warnings),
+        "critical_count": sum(1 for w in planet_warnings if w["is_critical"]) + sum(1 for w in compound_warnings if w["severity"] == "critical"),
     }
 
 
