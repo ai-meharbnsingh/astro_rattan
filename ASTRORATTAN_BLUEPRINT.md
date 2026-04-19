@@ -623,13 +623,29 @@ Natal & transit planets displayed in respective cells. Vedha lines (mutual affli
 
 ---
 
+### 1.28 Kundli Interpretations Tab
+
+**KundliInterpretationsTab** (`kundli-interpretations` · `app/routes/interpretations.py`)  
+- `GET /api/interpretations/kundli/{id}/full`
+- Renders 6 accordion sections:
+  1. **Ascendant Personality** — `lagna_nature.nature[]` bullets; talent/weakness/lucky-stone cards
+  2. **Nakshatra** — pada prediction + character description
+  3. **Life Area Predictions** — 6 areas (career / marriage / health / finance / education / family) with icons
+  4. **Planet in House Effects** — all 9 planets with `general`, `auspicious`, `inauspicious` fields
+  5. **Mahadasha Interpretations** — per-planet dasha with `general`, `career`, `health` sub-fields
+  6. **Gemstone Recommendations** — planet → stone + benefits grid
+
+Wires all 6 previously-zero-call `/api/interpretations/kundli/` sub-routes through the single `/full` aggregated endpoint.
+
+---
+
 ---
 
 ## 2. LAL KITAAB — Red Book System
 
 ### What It Is
 
-Lal Kitab (Red Book) is an ancient Hindi astrological tradition using a fixed-sign-to-house mapping where Aries always = House 1 regardless of the ascendant. It emphasizes karmic debts (Rin), practical remedies (Upay), and house-based life predictions. The Astrorattan implementation delivers **33 frontend tabs**, **58 API endpoints**, and **21+ backend Python modules**.
+Lal Kitab (Red Book) is an ancient Hindi astrological tradition using a fixed-sign-to-house mapping where Aries always = House 1 regardless of the ascendant. It emphasizes karmic debts (Rin), practical remedies (Upay), and house-based life predictions. The Astrorattan implementation delivers **34 frontend tabs**, **58 API endpoints**, and **21+ backend Python modules**.
 
 **Fixed House Mapping:**
 ```
@@ -638,7 +654,7 @@ Libra=H7  Scorpio=H8  Sagittarius=H9  Capricorn=H10  Aquarius=H11  Pisces=H12
 ```
 
 **Entry point:** `frontend/src/components/lalkitab/`  
-**Primary backend:** `app/routes/lalkitab.py`, 21 engine modules
+**Primary backend:** `app/routes/kp_lalkitab.py`, `app/routes/lalkitab_farmaan.py`, 21 engine modules
 
 ---
 
@@ -664,7 +680,7 @@ Libra=H7  Scorpio=H8  Sagittarius=H9  Capricorn=H10  Aquarius=H11  Pisces=H12
 5. Detected doshas
 6. Karmic debts (active/passive)
 7. Prediction Studio scores
-8. Remedies (full list with savdhaniyan)
+8. Remedies (full list with savdhaniyan, andhe_grah_warning, remedy_matrix — read from `info` level of engine output, not nested `remedy` dict)
 9. Varshphal (solar return, muntha, mudda dasha)
 10. Sources & references (tagged bibliography)
 
@@ -723,12 +739,18 @@ Detected doshas sorted first; clean-chart doshas shown separately.
 ### 2.6 Karmic Debts (Rin)
 
 **Frontend:** `LalKitabRinTab.tsx`  
-**Backend:** `lalkitab_advanced.py:calculate_karmic_debts()`, `lalkitab_compound_debt.py:rank_compound_debts()`
+**Backend:** `lalkitab_advanced.py:calculate_karmic_debts()`, `calculate_karmic_debts_with_hora()`, `lalkitab_compound_debt.py:rank_compound_debts()`
 
 **11 Debt Types:**
 पितृ ऋण (Father) · मातृ ऋण (Mother) · भ्रातृ ऋण (Sibling) · देव ऋण (God) · स्त्री ऋण (Female) · शत्रु ऋण (Enemy) · पितामह ऋण (Grandfather) · प्रपितामह ऋण (Great-grandfather) · ऋषि ऋण (Sage) · नृ ऋण (Human) · भूत ऋण (Past being)
 
 Per debt: Associated planet · Description & indication · Active flag (planet in 6/8/12 houses) · Remedy text
+
+**Hora-Based Karmic Debt:**  
+- Uses real sunrise (via `panchang_engine._compute_sun_times`) to compute Hora lord at birth
+- Hora debt activates when birth Hora lord matches a debt-trigger planet
+- Geocoding fallback: if kundli lacks lat/lon, `_lookup_city_coords()` resolves from `birth_place` text using `_INDIA_CITY_COORDS` (100+ Indian cities + diaspora cities)
+- When geocoding also fails: Hora analysis gracefully skips (`_skipped=True`), standard debts returned
 
 **Compound Debt Analysis (P2.9):**
 - Priority rank & score
@@ -944,7 +966,7 @@ Per planet: Current sign · Sign degree · Nakshatra · Retrograde status (R ind
 |---|---|---|
 | Forbidden Remedies | `lalkitab_forbidden.py` | Contraindicated remedies per chart with alternatives |
 | Nishaniyan (Omens) | via routes | Planet-based daily omens (category: animal/color/food/dream), severity |
-| Farmaan (Decrees) | via routes | Direct LK text instructions with source references |
+| Farmaan (Decrees) | `lalkitab_farmaan.py` / `app/routes/lalkitab_farmaan.py` | 108 canonical LK decrees (9 planets × 12 houses); each entry: `english`, `hindi`, `urdu_latin` (classical Urdu-Latin couplet — primary display), `traditional_commentary_en/hi`, `confidence_level`, `planet_tags`, `house_tags` |
 | Family Harmony | `lalkitab_family.py` | Harmony score 0–100, dominant planet, cross-waking narrative, member linking |
 | Vastu Correlation | `lalkitab_vastu.py` | Vastu recommendations by direction (NE/E/SE/S/SW/W/NW/N) |
 | Milestones | `lalkitab_milestones.py` | 7-year cycles, life milestone events, activated house themes |
