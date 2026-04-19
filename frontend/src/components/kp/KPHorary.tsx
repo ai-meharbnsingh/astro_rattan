@@ -249,7 +249,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
             <select
               value={questionType}
               onChange={(e) => setQuestionType(e.target.value)}
-              className="w-full bg-white border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:border-primary focus:outline-none"
+              className="input-sacred"
             >
               {QUESTION_TYPES.map((qt) => (
                 <option key={qt.key} value={qt.key}>

@@ -132,7 +132,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
             entranceDegrees: e.target.value ? parseFloat(e.target.value) : null,
           }))}
           placeholder={t('auto.eG455')}
-          className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-foreground placeholder-white/30 focus:border-sacred-gold focus:outline-none"
+          className="input-sacred"
         />
       </div>
 
@@ -166,7 +166,7 @@ export default function VastuForm({ onGenerate, loading }: Props) {
       <Button
         type="submit"
         disabled={loading}
-        className="w-full bg-gradient-to-r from-sacred-gold to-amber-600 text-black font-bold py-3 text-base"
+        className="w-full"
       >
         {loading ? (
           <>
