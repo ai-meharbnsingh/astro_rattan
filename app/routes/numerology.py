@@ -12,6 +12,7 @@ from app.numerology_engine import (
 )
 from app.numerology_forecast_engine import calculate_forecast
 from app.numerology_insight_engine import generate_insights
+from app.numerology_mook_prashna_engine import calculate_mook_prashna
 
 router = APIRouter()
 
@@ -146,6 +147,26 @@ def house_numerology(req: HouseNumerologyRequest):
             address=req.address,
             birth_date=req.birth_date,
         )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+    return result
+
+
+class MookPrashnaRequest(BaseModel):
+    numbers: list[int] = Field(min_length=9, max_length=9)
+
+
+@router.post("/api/numerology/mook-prashna")
+def mook_prashna(req: MookPrashnaRequest):
+    """
+    Mook Prashna & Khoyi Vastu — Ancient Indian silent question technique.
+    Enter 9 spontaneous numbers (0-9 each); sum+3 reveals question topic and lost item location.
+    """
+    try:
+        result = calculate_mook_prashna(req.numbers)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -2383,6 +2383,7 @@ export const translations: Record<Language, TranslationMap> = {
 
     // House Numerology
     'numerology.houseHeading': 'House Number Numerology',
+    'numerology.mookPrashna': 'Mook Prashna',
     'numerology.houseSubtitle': 'Discover the energy of your home',
     'numerology.houseAnalyzeHeading': 'Analyze House Number',
     'numerology.fullAddress': 'Full Address',
@@ -5013,6 +5014,7 @@ export const translations: Record<Language, TranslationMap> = {
 
     // House Numerology Hindi
     'numerology.houseHeading': 'मकान नंबर अंकशास्त्र',
+    'numerology.mookPrashna': 'मूक प्रश्न',
     'numerology.houseSubtitle': 'अपने घर की ऊर्जा को जानें',
     'numerology.houseAnalyzeHeading': 'मकान नंबर का विश्लेषण करें',
     'numerology.fullAddress': 'पूरा पता',
