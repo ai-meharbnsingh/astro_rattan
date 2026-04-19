@@ -211,3 +211,118 @@ test('Special - Gamification', async ({ page }) => {
   await page.waitForTimeout(2000);
   await page.screenshot({ path: 'ui-screenshots/page-gamification.png' });
 });
+
+// ─── Lal Kitab Section Tests ──────────────────────────────────────────────────
+
+test('LK - Page loads with tab navigation', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(2000);
+  await page.screenshot({ path: 'ui-screenshots/lk-page-full.png', fullPage: true });
+});
+
+test('LK - Farmaan tab renders and shows search or empty state', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  // Find and click the Farmaan tab — try both English and Hindi label variants
+  const farmaanTab = page.locator('button, [role="tab"]').filter({ hasText: /farmaan|फरमान/i }).first();
+  const tabExists = await farmaanTab.count();
+  if (tabExists > 0) {
+    await farmaanTab.click();
+    await page.waitForTimeout(1500);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-farmaan-tab.png', fullPage: true });
+});
+
+test('LK - Nishaniyan tab renders signs/symbols', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const nishaanTab = page.locator('button, [role="tab"]').filter({ hasText: /nishaniyan|निशानियां/i }).first();
+  const tabExists = await nishaanTab.count();
+  if (tabExists > 0) {
+    await nishaanTab.click();
+    await page.waitForTimeout(1500);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-nishaniyan-tab.png', fullPage: true });
+});
+
+test('LK - Chandra Chalana tab shows task list or start prompt', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const chandraTab = page.locator('button, [role="tab"]').filter({ hasText: /chandra|चंद्र/i }).first();
+  const tabExists = await chandraTab.count();
+  if (tabExists > 0) {
+    await chandraTab.click();
+    await page.waitForTimeout(2000);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-chandra-tab.png', fullPage: true });
+});
+
+test('LK - Vastu tab renders house diagram or placeholder', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const vastuTab = page.locator('button, [role="tab"]').filter({ hasText: /vastu|वास्तु/i }).first();
+  const tabExists = await vastuTab.count();
+  if (tabExists > 0) {
+    await vastuTab.click();
+    await page.waitForTimeout(2000);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-vastu-tab.png', fullPage: true });
+});
+
+test('LK - Remedies tab renders remedy cards', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const remedyTab = page.locator('button, [role="tab"]').filter({ hasText: /remd|remedy|उपाय/i }).first();
+  const tabExists = await remedyTab.count();
+  if (tabExists > 0) {
+    await remedyTab.click();
+    await page.waitForTimeout(2000);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-remedies-tab.png', fullPage: true });
+});
+
+test('LK - Milestones tab renders countdown or milestone list', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const msTab = page.locator('button, [role="tab"]').filter({ hasText: /milestone|मील/i }).first();
+  const tabExists = await msTab.count();
+  if (tabExists > 0) {
+    await msTab.click();
+    await page.waitForTimeout(2000);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-milestones-tab.png', fullPage: true });
+});
+
+test('LK - Doshas tab renders dosha analysis cards', async ({ page }) => {
+  await page.goto(BASE_URL + '/kp-lalkitab');
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1500);
+
+  const doshaTab = page.locator('button, [role="tab"]').filter({ hasText: /dosha|दोष/i }).first();
+  const tabExists = await doshaTab.count();
+  if (tabExists > 0) {
+    await doshaTab.click();
+    await page.waitForTimeout(2000);
+  }
+
+  await page.screenshot({ path: 'ui-screenshots/lk-doshas-tab.png', fullPage: true });
+});

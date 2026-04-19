@@ -324,9 +324,9 @@ def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user)
 # ─────────────────────────────────────────────────────────────
 
 @router.get("/api/lalkitab/chandra")
-def get_chandra_state(user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
-    """Return the user's Chandra protocol state."""
-    from app.lalkitab_chandra_tasks import CHANDRA_CHAALANA_TASKS
+def get_chandra_state(kundli_id: Optional[int] = None, user: dict = Depends(get_current_user), db: Any = Depends(get_db)):
+    """Return the user's Chandra protocol state with personalized tasks when kundli_id is supplied."""
+    from app.lalkitab_chandra_tasks import CHANDRA_CHAALANA_TASKS, get_personalized_tasks
     user_id = user["sub"]
     row = db.execute(
         "SELECT start_date, completed_days FROM lk_chandra_protocol WHERE user_id = %s",
@@ -336,19 +336,36 @@ def get_chandra_state(user: dict = Depends(get_current_user), db: Any = Depends(
         "SELECT date, note FROM lk_journal_entries WHERE user_id = %s AND source = 'chandra' ORDER BY created_at DESC LIMIT 60",
         (user_id,),
     ).fetchall()
-    if row:
-        return {
-            "start_date": row["start_date"],
-            "completed_days": json.loads(row["completed_days"] or "[]"),
-            "journal": [{"date": r["date"], "note": r["note"]} for r in journal],
-            "tasks": CHANDRA_CHAALANA_TASKS,
-        }
-    return {
-        "start_date": None,
-        "completed_days": [],
+
+    tasks = CHANDRA_CHAALANA_TASKS
+    moon_house = None
+    if kundli_id:
+        try:
+            lk_row = db.execute(
+                "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+                (kundli_id, user_id),
+            ).fetchone()
+            if lk_row:
+                chart = json.loads(lk_row["chart_data"] or "{}")
+                planets = chart.get("planets", chart.get("lalkitab_planets", []))
+                for p in planets:
+                    name = (p.get("name") or p.get("planet") or "").lower()
+                    if name in ("moon", "chandra"):
+                        moon_house = int(p.get("lk_house") or p.get("house") or 0) or None
+                        break
+                if moon_house:
+                    tasks = get_personalized_tasks(moon_house)
+        except Exception:
+            pass  # fall back to universal tasks silently
+
+    base = {
         "journal": [{"date": r["date"], "note": r["note"]} for r in journal],
-        "tasks": CHANDRA_CHAALANA_TASKS,
+        "tasks": tasks,
+        "moon_house": moon_house,
     }
+    if row:
+        return {**base, "start_date": row["start_date"], "completed_days": json.loads(row["completed_days"] or "[]")}
+    return {**base, "start_date": None, "completed_days": []}
 
 
 @router.post("/api/lalkitab/chandra/start")
@@ -2896,9 +2913,14 @@ def get_lalkitab_full(
         logger.warning("full: doshas section failed: %s", e, exc_info=True)
         result["_errors"]["doshas"] = str(e)
 
-    # Strip _errors if empty (clean response when everything succeeds)
-    if not result["_errors"]:
-        del result["_errors"]
+    # Always expose diagnostics so callers can distinguish success from silent failure
+    errors = result["_errors"]
+    result["_diagnostics"] = {
+        "sections_ok": sum(1 for k in ("advanced","remedies","dasha","technical","sacrifice","forbidden","milestones","doshas") if k not in errors),
+        "sections_failed": len(errors),
+        "errors": errors,
+    }
+    del result["_errors"]
 
     return result
 
