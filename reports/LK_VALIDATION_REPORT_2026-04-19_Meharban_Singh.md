@@ -1,7 +1,7 @@
 # Lal Kitaab Engine Validation Report
 
 **Subject:** Meharban Singh  
-**Generated:** 2026-04-19 13:36:30 IST  
+**Generated:** 2026-04-19 13:46:04 IST  
 **Environment:** Local (`http://localhost:8000`)  
 **Kundli ID:** `2230f7131a1ba878def4c64cce0378ed`  
 **User ID:** `788341ad4c14d11fd49c7db7353c236e`  
@@ -48,7 +48,7 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 - `/api/lalkitab/gochar` (live transits — changes per day)
 - `/api/lalkitab/age-activation` (age-dependent — changes each birthday)
 
-**Report generated:** 2026-04-19 13:36:30 IST
+**Report generated:** 2026-04-19 13:46:04 IST
 
 ---
 
@@ -57,42 +57,43 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 
 | Feature | Status | Richness (0-10) | Engine Confidence (0-10) | Notes |
 | --- | --- | --- | --- | --- |
-| Fixed-house normalization | ✅ PASS | 9 | 10 | HTTP 200 · PASS |
-| Dashboard / Overview | ✅ PASS | 10 | 10 | HTTP 200 · PASS |
-| Tewa Classification | ✅ PASS | 9 | 10 | HTTP 200 · PASS |
-| LK Birth Chart | ✅ PASS | 10 | 10 | HTTP 200 · PASS |
-| Planet & House Interp. | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Dosha Detection | ✅ PASS | 7 | 9 | HTTP 200 · PASS |
-| Rin / Karmic Debts | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Compound Debt Analysis | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Remedies (enriched) | ✅ PASS | 10 | 10 | HTTP 200 · PASS |
-| Remedy Wizard | ✅ PASS | 9 | 9 | HTTP 200 · PASS |
-| Advanced Analysis | ✅ PASS | 9 | 10 | HTTP 200 · PASS |
+| Fixed-house normalization | ✅ STRONG | 9 | 10 | HTTP 200 · PASS |
+| Dashboard / Overview | ✅ STRONG | 10 | 10 | HTTP 200 · PASS |
+| Tewa Classification | ✅ STRONG | 9 | 10 | HTTP 200 · PASS |
+| LK Birth Chart | ✅ STRONG | 10 | 10 | HTTP 200 · PASS |
+| Planet & House Interp. | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Dosha Detection | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
+| Rin / Karmic Debts | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Compound Debt Analysis | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Remedies (enriched) | ✅ STRONG | 10 | 10 | HTTP 200 · PASS |
+| Remedy Wizard | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
+| Advanced Analysis | ✅ STRONG | 9 | 10 | HTTP 200 · PASS |
 | Relations & Aspects | ✅ PASS | 5 | 5 | HTTP 200 · PASS |
-| Rules & House Principles | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Prediction Studio | ✅ PASS | 9 | 9 | HTTP 200 · PASS |
-| Saala Grah / Dasha | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Varshphal | ✅ PASS | 7 | 9 | HTTP 200 · PASS |
-| Gochar / Live Transits | ✅ PASS | 5 | 7 | HTTP 200 · PASS |
-| Chandra Kundali | ✅ PASS | 7 | 9 | HTTP 200 · PASS |
+| Rules & House Principles | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Prediction Studio | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
+| Saala Grah / Dasha | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Varshphal | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
+| Gochar / Live Transits | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
+| Chandra Kundali | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
 | Chandra Chaalana | ✅ PASS | 7 | 5 | HTTP 200 · PASS |
-| Technical Concepts | ✅ PASS | 7 | 9 | HTTP 200 · PASS |
+| Technical Concepts | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
 | Forbidden Remedies | ✅ PASS | 5 | 5 | HTTP 200 · PASS |
-| Nishaniyan | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Farmaan | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
-| Vastu Correlation | ✅ PASS | 9 | 9 | HTTP 200 · PASS |
-| Milestones | ✅ PASS | 7 | 7 | HTTP 200 · PASS |
+| Nishaniyan | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Farmaan | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Vastu Correlation | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
+| Milestones | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Family Harmony | ⚠️ WEAK | 3 | 1 | HTTP 200 · PASS |
 | Palmistry | ✅ PASS | 5 | 3 | HTTP 200 · PASS |
 | Sacrifice / Daan | ✅ PASS | 7 | 5 | HTTP 200 · PASS |
-| Remedy Tracker | ⚠️ PARTIAL | 1 | 1 | HTTP 200 · EMPTY RESPONSE |
-| Interpretations (Full) | ✅ PASS | 9 | 9 | HTTP 200 · PASS |
-| PDF Report | ✅ PASS | 10 | 10 | HTTP 200 · PASS |
-| Lk Analysis (POST) | ✅ PASS | 7 | 9 | HTTP 200 · PASS |
-| Validated Remedies | ✅ PASS | 9 | 9 | HTTP 200 · PASS |
+| Remedy Tracker | ⚠️ EMPTY (infra exists) | 1 | 1 | Requires user to add tracked remedies |
+| Interpretations (Full) | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
+| PDF Report | ✅ STRONG | 10 | 10 | HTTP 200 · PASS |
+| Lk Analysis (POST) | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
+| Validated Remedies | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
 
 
-**Total features tested:** 32  
-**Passing:** 31/32  
+**Total features tested:** 33  
+**Passing:** 32/33  
 **Report date:** 2026-04-19
 
 
@@ -192,6 +193,9 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 - Outputs chart-driven: Yes — each planet's house is determined by its sign
 
 
+> **Note on `source: LK_CANONICAL` labels:** This label is engine-assigned. It indicates the rule is modelled on Lal Kitab 1952 canonical logic, but has not been independently cross-validated against the original printed text. Rules labelled `LK_DERIVED` are blended/modern interpretations.
+
+
 ---
 
 
@@ -289,11 +293,14 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 
 ### 5.1 Tewa Type Detection
 
-- **Andha**: ✅ DETECTED
-- **Ratondha**: ✅ DETECTED
-- **Dharmi**: ✅ DETECTED
-- **Nabalig**: ✅ DETECTED
-- **Khali**: ✅ DETECTED
+- **Andha**: — Not active
+- **Ratondha**: — Not active
+- **Dharmi**: — Not active
+- **Nabalig**: — Not active
+- **Khali**: — Not active
+
+> No Tewa type active for this chart. All tewa flags are false.
+
 
 ### 5.2 Raw Tewa Data
 
@@ -464,18 +471,18 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 
 | Name (EN) | Name (HI) | Type | Severity | Description | Remedy Hint |
 | --- | --- | --- | --- | --- | --- |
-| ? | मंगल दोष | — | low | — | — |
-| ? | शनि दोष | — | medium | — | — |
+| Mangal Dosh | मंगल दोष | VEDIC_INFLUENCED | low | Mars in a sensitive house creates aggression in relationships, delays in marriage, and conflicts wit | Donate red lentils (masoor dal) on Tuesdays. Keep a silver square piece in your  |
+| Shani Dosh | शनि दोष | LK_CANONICAL | medium | Saturn creating delays, hard work without reward, and karmic lessons in life. | Feed crows and black dogs. Donate iron and mustard oil on Saturdays. |
 
 
 ### 8.2 Not Detected Doshas
 
 | Name (EN) | Name (HI) | Type |
 | --- | --- | --- |
-| ? | पितृ दोष | — |
-| ? | ग्रहण दोष | — |
-| ? | काल सर्प दोष | — |
-| ? | कार्मिक ऋण (ऋणी दोष) | — |
+| Pitra Dosh | पितृ दोष | LK_CANONICAL |
+| Grahan Dosh | ग्रहण दोष | LK_CANONICAL |
+| Kaal Sarp Dosh | काल सर्प दोष | LK_CANONICAL |
+| Karmic Debts (Rini Dosh) | कार्मिक ऋण (ऋणी दोष) | LK_CANONICAL |
 
 
 ### 8.3 Raw Response
@@ -1378,6 +1385,35 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 ---
 
 
+## 13b. Synthesis / Cross-Pattern Analysis
+
+> Cross-planet conflict and amplification patterns derived from this chart's LK house placements.
+
+| Pattern | Planets Involved | EN Interpretation | HI Interpretation |
+| --- | --- | --- | --- |
+| Moon H8, Mars H4 | Moon H8, Mars H4 | Maternal/domestic conflict — Moon's peace disrupted by Mars at home | Maata / ghar mein takkar — Chandrama ki shanti Mars se baadhit |
+| Rahu H1, Saturn H7 | Rahu H1, Saturn H7 | Identity vs partnership axis — Rahu magnifies self, Saturn delays partner | Swayam vs saathi — Rahu aatma ko badhata hai, Shani saathi ko rokta hai |
+| Jupiter H10 + H4 stellium (2+ planets) | Jupiter in H10; H4: ['Mars', 'Mercury', 'Venus'] | Career vs home tension — stellium in H4 opposes public life | Career vs ghar — H4 mein adhik grah jeevan mein tanaav |
+
+
+### 13b.1 Chart Placement Reference
+
+| Planet | Sign | LK House |
+| --- | --- | --- |
+| Sun | Leo | H5 |
+| Moon | Scorpio | H8 |
+| Mars | Cancer | H4 |
+| Mercury | Cancer | H4 |
+| Jupiter | Capricorn | H10 |
+| Venus | Cancer | H4 |
+| Saturn | Libra | H7 |
+| Rahu | Aries | H1 |
+| Ketu | Libra | H7 |
+
+
+---
+
+
 ## 14. Relations & Aspects
 
 ```json
@@ -1961,21 +1997,23 @@ STATUS: Evidence rows not present at top level — embedded in area data.
 
 ## 19. Gochar / Live Transits
 
-| Planet | Transit Sign | LK House | Degree | Nakshatra | Dir | Speed |
-| --- | --- | --- | --- | --- | --- | --- |
-| Sun | Aries | H1 | 5.1° | Ashwini | D | fast |
-| Moon | Taurus | H2 | 0.7° | Krittika | D | fast |
-| Mars | Pisces | H12 | 13.2° | Uttara Bhadrapada | D | medium |
-| Mercury | Pisces | H12 | 11.9° | Uttara Bhadrapada | D | fast |
-| Jupiter | Gemini | H3 | 23.2° | Punarvasu | D | slow |
-| Venus | Aries | H1 | 29.9° | Krittika | D | fast |
-| Saturn | Pisces | H12 | 13.6° | Uttara Bhadrapada | D | slow |
-| Rahu | Aquarius | H11 | 12.2° | Shatabhisha | R | slow |
-| Ketu | Leo | H5 | 12.2° | Magha | R | slow |
+| Planet | Transit H | Natal H | Degree | Dir | On Natal Pos? | Pakka Ghar? | Note |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Sun | H1 | H5 | 5.1° | D | — | ✓ | Sun transiting H1 (Pakka Ghar) — vitality and authority peak |
+| Moon | H2 | H8 | 0.8° | D | — | — | Moon transiting H2 — emotional attachment to family and weal |
+| Mars | H12 | H4 | 13.2° | D | — | — | Mars transiting H12 — hidden aggression drains energy. Spiri |
+| Mercury | H12 | H4 | 11.9° | D | — | — | Mercury transiting H12 — spiritual or foreign writing active |
+| Jupiter | H3 | H10 | 23.2° | D | — | — | Jupiter transiting H3 — courage and communication get Jupite |
+| Venus | H1 | H4 | 29.9° | D | — | — | Venus transiting H1 — beauty, charm, and physical attraction |
+| Saturn | H12 | H7 | 13.6° | D | — | — | Saturn transiting H12 — expenditures rise and isolation incr |
+| Rahu | H11 | H1 | 12.2° | R | — | ✓ | Rahu transiting H11 (Pakka Ghar) — unexpected financial gain |
+| Ketu | H5 | H7 | 12.2° | R | — | — | Ketu transiting H5 — past-life intelligence surfaces. Childr |
 
 
-**Date of gochar reading:** 2026-04-19  
-**Validation:** Live transit positions — changes daily. Fixed-house mapping applied correctly.
+**As of:** 2026-04-19  
+**Natal chart used:** True  
+**Active alerts:** 0  
+**Transit type:** Real live ephemeris (positions change daily)
 
 
 ---
@@ -2656,7 +2694,7 @@ Keys present in `/advanced` response: `['masnui_planets', 'karmic_debts', 'karmi
 | Chakar Cycle | COMPUTED — strong evidence of chart-specific calculation | ✓ chakar_cycle key present; cycle_length computed; trigger reason present |
 | Advanced Analysis (Takkar/Dhoka/Bunyaad) | COMPUTED — strong evidence of chart-specific calculation | ✓ takkar present; dhoka present; bunyaad present; collisions list non-empty |
 | Varshphal (3 years) | COMPUTED — strong evidence of chart-specific calculation | ✓ muntha sign present; year_lord present | ✗ missing: solar_return_date present |
-| Gochar / Live Transits | LIKELY COMPUTED — partial evidence; some templated text | ✓ transits list present; as_of date present | ✗ missing: natal_chart_used flag present |
+| Gochar / Live Transits | COMPUTED — strong evidence of chart-specific calculation | ✓ transits list present; as_of date present; natal_chart_used flag present |
 | Chandra Kundali | LIKELY COMPUTED — partial evidence; some templated text | ✓ shifted chart differs from natal | ✗ missing: moon_reference_house present, planets shifted from natal |
 | Prediction Studio | LIKELY COMPUTED — partial evidence; some templated text | ✓ multiple prediction areas present | ✗ missing: score field present, chart-specific fields referenced |
 | Dosha Detection | COMPUTED — strong evidence of chart-specific calculation | ✓ doshas list present; detected flag varies (not all same); at least one source_note present |
@@ -2699,13 +2737,13 @@ Core engine is functional. 55/55 endpoints return non-empty responses. 2 endpoin
 
 ### 28.1 Strongest Sections (by response richness)
 
-1. **remedies_enriched** — richness 10/10, 57ms
-2. **lk_full** — richness 10/10, 65ms
-3. **pdf_report** — richness 10/10, 35ms
-4. **calculation_details** — richness 9/10, 28ms
-5. **lk_advanced** — richness 9/10, 74ms
-6. **lk_validated_remedies** — richness 9/10, 74ms
-7. **prediction_studio** — richness 9/10, 36ms
+1. **lk_full** — richness 10/10, 35ms
+2. **remedies_enriched** — richness 10/10, 62ms
+3. **pdf_report** — richness 10/10, 15ms
+4. **calculation_details** — richness 9/10, 14ms
+5. **lk_advanced** — richness 9/10, 67ms
+6. **lk_validated_remedies** — richness 9/10, 65ms
+7. **remedy_wizard_marriage** — richness 9/10, 33ms
 
 
 ### 28.2 Sections Requiring Attention
@@ -2724,5 +2762,5 @@ These endpoints return HTTP 200 but no computed data — they require user inter
 
 ### 28.4 Response Time Summary
 
-- Average response time: **37 ms**
-- Slowest endpoints: `remedies_post` (76ms), `lk_validated_remedies` (74ms), `lk_advanced` (74ms)
+- Average response time: **34 ms**
+- Slowest endpoints: `remedies_post` (68ms), `lk_advanced` (67ms), `lk_validated_remedies` (65ms)

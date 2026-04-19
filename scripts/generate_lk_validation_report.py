@@ -258,7 +258,7 @@ def build_endpoint_calls(kid: str) -> list[dict]:
         {"name": "relationship_engine",    "method": "GET",  "url": f"{B}/api/lalkitab/relationship-engine/{kid}"},
         {"name": "lk_rules",               "method": "GET",  "url": f"{B}/api/lalkitab/rules/{kid}"},
         # Gochar
-        {"name": "lk_gochar",              "method": "GET",  "url": f"{B}/api/lalkitab/gochar"},
+        {"name": "lk_gochar",              "method": "GET",  "url": f"{B}/api/lalkitab/gochar?kundli_id={kid}"},
         # Chandra
         {"name": "chandra_kundali",        "method": "GET",  "url": f"{B}/api/lalkitab/chandra-kundali/{kid}"},
         {"name": "chandra_chaalana",       "method": "GET",  "url": f"{B}/api/lalkitab/chandra"},
@@ -535,49 +535,67 @@ def section_2_summary(results: dict[str, EndpointResult]) -> str:
     out = [h(2, "2. Executive Validation Summary")]
 
     FEATURE_MAP = [
-        ("Fixed-house normalization",  "calculation_details"),
-        ("Dashboard / Overview",       "lk_full"),
-        ("Tewa Classification",        "lk_advanced"),
-        ("LK Birth Chart",             "lk_full"),
-        ("Planet & House Interp.",     "lk_interpretations"),
-        ("Dosha Detection",            "lk_doshas"),
-        ("Rin / Karmic Debts",         "lk_rin"),
-        ("Compound Debt Analysis",     "lk_rin_active"),
-        ("Remedies (enriched)",        "remedies_enriched"),
-        ("Remedy Wizard",              "remedy_wizard_marriage"),
-        ("Advanced Analysis",          "lk_advanced"),
-        ("Relations & Aspects",        "lk_relations"),
-        ("Rules & House Principles",   "lk_rules"),
-        ("Prediction Studio",          "prediction_studio"),
-        ("Saala Grah / Dasha",         "lk_dasha"),
-        ("Varshphal",                  "varshphal_curr"),
-        ("Gochar / Live Transits",     "lk_gochar"),
-        ("Chandra Kundali",            "chandra_kundali"),
-        ("Chandra Chaalana",           "chandra_chaalana"),
-        ("Technical Concepts",         "lk_technical"),
-        ("Forbidden Remedies",         "lk_forbidden"),
-        ("Nishaniyan",                 "lk_nishaniyan"),
-        ("Farmaan",                    "farmaan_sun"),
-        ("Vastu Correlation",          "lk_vastu"),
-        ("Milestones",                 "lk_milestones"),
-        ("Palmistry",                  "palm_correlate"),
-        ("Sacrifice / Daan",           "lk_sacrifice"),
-        ("Remedy Tracker",             "remedy_tracker"),
-        ("Interpretations (Full)",     "interpretations_full"),
-        ("PDF Report",                 "pdf_report"),
-        ("Lk Analysis (POST)",         "lk_analysis"),
-        ("Validated Remedies",         "lk_validated_remedies"),
+        ("Fixed-house normalization",  "calculation_details",   None),
+        ("Dashboard / Overview",       "lk_full",               None),
+        ("Tewa Classification",        "lk_advanced",           None),
+        ("LK Birth Chart",             "lk_full",               None),
+        ("Planet & House Interp.",     "lk_interpretations",    None),
+        ("Dosha Detection",            "lk_doshas",             None),
+        ("Rin / Karmic Debts",         "lk_rin",                None),
+        ("Compound Debt Analysis",     "lk_rin_active",         None),
+        ("Remedies (enriched)",        "remedies_enriched",     None),
+        ("Remedy Wizard",              "remedy_wizard_marriage", None),
+        ("Advanced Analysis",          "lk_advanced",           None),
+        ("Relations & Aspects",        "lk_relations",          None),
+        ("Rules & House Principles",   "lk_rules",              None),
+        ("Prediction Studio",          "prediction_studio",     None),
+        ("Saala Grah / Dasha",         "lk_dasha",              None),
+        ("Varshphal",                  "varshphal_curr",        None),
+        ("Gochar / Live Transits",     "lk_gochar",             None),
+        ("Chandra Kundali",            "chandra_kundali",       None),
+        ("Chandra Chaalana",           "chandra_chaalana",      None),
+        ("Technical Concepts",         "lk_technical",          None),
+        ("Forbidden Remedies",         "lk_forbidden",          None),
+        ("Nishaniyan",                 "lk_nishaniyan",         None),
+        ("Farmaan",                    "farmaan_sun",           None),
+        ("Vastu Correlation",          "lk_vastu",              None),
+        ("Milestones",                 "lk_milestones",         None),
+        ("Family Harmony",             "lk_family",             "Requires family members to be linked"),
+        ("Palmistry",                  "palm_correlate",        "Requires palm marks input"),
+        ("Sacrifice / Daan",           "lk_sacrifice",          "No matching sacrifice rules for this chart"),
+        ("Remedy Tracker",             "remedy_tracker",        "Requires user to add tracked remedies"),
+        ("Interpretations (Full)",     "interpretations_full",  None),
+        ("PDF Report",                 "pdf_report",            None),
+        ("Lk Analysis (POST)",         "lk_analysis",           None),
+        ("Validated Remedies",         "lk_validated_remedies", None),
     ]
 
     rows = []
-    for feature, key in FEATURE_MAP:
+    for feature, key, why_empty in FEATURE_MAP:
         r = results.get(key)
         if r is None:
             rows.append([feature, "⚠️ NOT RUN", "—", "—", "Not in endpoint catalog"])
             continue
         sl = r.status_label
-        pass_fail = "✅ PASS" if sl == "PASS" else ("⚠️ PARTIAL" if sl == "EMPTY RESPONSE" else "❌ FAIL")
-        rows.append([feature, pass_fail, str(richness_score(r)), str(engine_confidence(r, key)), f"HTTP {r.status} · {sl}"])
+        rs = richness_score(r)
+        ec = engine_confidence(r, key)
+        if sl == "PASS":
+            if rs >= 7 and ec >= 7:
+                pass_fail = "✅ STRONG"
+            elif rs >= 4 or ec >= 4:
+                pass_fail = "✅ PASS"
+            else:
+                pass_fail = "⚠️ WEAK"
+        elif sl == "EMPTY RESPONSE":
+            pass_fail = "⚠️ EMPTY (infra exists)"
+        else:
+            pass_fail = "❌ FAIL"
+        # Notes column: show why_empty when empty, otherwise HTTP status
+        if sl == "EMPTY RESPONSE" and why_empty:
+            notes = why_empty
+        else:
+            notes = f"HTTP {r.status} · {sl}"
+        rows.append([feature, pass_fail, str(rs), str(ec), notes])
 
     out.append(table(
         ["Feature", "Status", "Richness (0-10)", "Engine Confidence (0-10)", "Notes"],
@@ -586,7 +604,7 @@ def section_2_summary(results: dict[str, EndpointResult]) -> str:
 
     # Count stats
     total = len(FEATURE_MAP)
-    pass_count = sum(1 for _, k in FEATURE_MAP if results.get(k) and results[k].status_label == "PASS")
+    pass_count = sum(1 for _, k, _ in FEATURE_MAP if results.get(k) and results[k].status_label == "PASS")
     out.append(f"\n**Total features tested:** {total}  ")
     out.append(f"**Passing:** {pass_count}/{total}  ")
     out.append(f"**Report date:** {datetime.date.today().isoformat()}\n")
@@ -670,6 +688,12 @@ def section_3_foundation(results: dict[str, EndpointResult], lk_positions: dict)
         out.append(f"- Fixed-house mapping applied correctly: **{'YES' if consistent else 'NO — MISMATCH DETECTED'}**\n"
                    f"- Combust status stripped in LK: Yes (LK ignores combustion)\n"
                    f"- Outputs chart-driven: Yes — each planet's house is determined by its sign\n")
+    out.append(
+        "\n> **Note on `source: LK_CANONICAL` labels:** This label is engine-assigned. "
+        "It indicates the rule is modelled on Lal Kitab 1952 canonical logic, but has not been "
+        "independently cross-validated against the original printed text. Rules labelled "
+        "`LK_DERIVED` are blended/modern interpretations.\n"
+    )
     return "\n".join(out)
 
 
@@ -731,12 +755,20 @@ def section_5_tewa(results: dict[str, EndpointResult]) -> str:
         ]
     ))
 
-    # Check for each tewa type
-    teva_str = str(teva).lower()
+    # Check for each tewa type — read boolean flags directly, not substring match
     out.append(h(3, "5.1 Tewa Type Detection"))
+    active_types = teva.get("active_types", []) if isinstance(teva, dict) else []
+    any_detected = False
     for ttype in ["Andha", "Ratondha", "Dharmi", "Nabalig", "Khali"]:
-        detected = ttype.lower() in teva_str
-        out.append(f"- **{ttype}**: {'✅ DETECTED' if detected else '— Not detected'}")
+        flag_key = f"is_{ttype.lower()}"
+        detected = bool(teva.get(flag_key, False)) if isinstance(teva, dict) else (ttype.lower() in [t.lower() for t in active_types])
+        if detected:
+            any_detected = True
+        out.append(f"- **{ttype}**: {'✅ ACTIVE' if detected else '— Not active'}")
+    if not any_detected:
+        out.append("\n> No Tewa type active for this chart. All tewa flags are false.\n")
+    else:
+        out.append(f"\n> Active types from API: {active_types}\n")
 
     out.append(h(3, "5.2 Raw Tewa Data"))
     out.append(code_block(format_json_snippet(teva, 600)))
@@ -866,12 +898,12 @@ def section_8_doshas(results: dict[str, EndpointResult]) -> str:
         rows = []
         for x in detected:
             rows.append([
-                x.get("name", x.get("dosha", "?")),
+                x.get("name_en", x.get("name", x.get("dosha", "?"))),
                 x.get("name_hi", "—"),
-                x.get("dosha_type", x.get("type", "—")),
+                x.get("source", x.get("dosha_type", x.get("type", "—"))),
                 x.get("severity", "—"),
-                str(x.get("description", x.get("desc", "—")))[:100],
-                str(x.get("remedy_hint", x.get("remedy", "—")))[:80],
+                str(x.get("description_en", x.get("description", x.get("desc", "—"))))[:100],
+                str(x.get("remedy_hint_en", x.get("remedy_hint", x.get("remedy", "—"))))[:80],
             ])
         out.append(table(
             ["Name (EN)", "Name (HI)", "Type", "Severity", "Description", "Remedy Hint"],
@@ -882,7 +914,7 @@ def section_8_doshas(results: dict[str, EndpointResult]) -> str:
 
     out.append(h(3, "8.2 Not Detected Doshas"))
     if not_detected:
-        rows = [[x.get("name", "?"), x.get("name_hi", "—"), x.get("dosha_type", "—")] for x in not_detected]
+        rows = [[x.get("name_en", x.get("name", "?")), x.get("name_hi", "—"), x.get("source", x.get("dosha_type", "—"))] for x in not_detected]
         out.append(table(["Name (EN)", "Name (HI)", "Type"], rows))
 
     out.append(h(3, "8.3 Raw Response"))
@@ -1159,6 +1191,109 @@ def section_13_advanced(results: dict[str, EndpointResult]) -> str:
     return "\n".join(out)
 
 
+def section_13b_synthesis(results: dict[str, EndpointResult], lk_positions: dict) -> str:
+    out = [h(2, "13b. Synthesis / Cross-Pattern Analysis")]
+    out.append(
+        "> Cross-planet conflict and amplification patterns derived from this chart's LK house placements.\n"
+    )
+
+    PATTERNS = [
+        {
+            "planets": [("Moon", 8), ("Mars", 4)],
+            "en": "Maternal/domestic conflict — Moon's peace disrupted by Mars at home",
+            "hi": "Maata / ghar mein takkar — Chandrama ki shanti Mars se baadhit",
+        },
+        {
+            "planets": [("Rahu", 1), ("Saturn", 7)],
+            "en": "Identity vs partnership axis — Rahu magnifies self, Saturn delays partner",
+            "hi": "Swayam vs saathi — Rahu aatma ko badhata hai, Shani saathi ko rokta hai",
+        },
+        {
+            "planets": [("Jupiter", 10)],
+            "extra_check": "h4_stellium",
+            "en": "Career vs home tension — stellium in H4 opposes public life",
+            "hi": "Career vs ghar — H4 mein adhik grah jeevan mein tanaav",
+        },
+        {
+            "planets_any_h8_h12": True,
+            "en": "Dual dusthana occupation — chronic losses amplified",
+            "hi": "Dono dusthana mein grah — nuksaan aur vyay ka yogam",
+        },
+    ]
+
+    detected_patterns = []
+
+    # Build a quick lookup: house → [planets]
+    house_map: dict[int, list[str]] = {}
+    for planet in PLANET_ORDER:
+        lk_h = lk_positions.get(planet, {}).get("lk_house", 0)
+        if lk_h:
+            house_map.setdefault(lk_h, []).append(planet)
+
+    for pat in PATTERNS:
+        if pat.get("planets_any_h8_h12"):
+            h8 = house_map.get(8, [])
+            h12 = house_map.get(12, [])
+            if h8 and h12:
+                detected_patterns.append({
+                    "pattern": "Any planet H8 + Any planet H12",
+                    "planets_involved": f"H8: {h8}, H12: {h12}",
+                    "en": pat["en"],
+                    "hi": pat.get("hi", "—"),
+                })
+        elif "extra_check" in pat and pat["extra_check"] == "h4_stellium":
+            jup_house = lk_positions.get("Jupiter", {}).get("lk_house", 0)
+            h4_planets = house_map.get(4, [])
+            if jup_house == 10 and len(h4_planets) >= 2:
+                detected_patterns.append({
+                    "pattern": "Jupiter H10 + H4 stellium (2+ planets)",
+                    "planets_involved": f"Jupiter in H10; H4: {h4_planets}",
+                    "en": pat["en"],
+                    "hi": pat.get("hi", "—"),
+                })
+        else:
+            all_match = all(
+                lk_positions.get(planet_name, {}).get("lk_house", 0) == expected_house
+                for planet_name, expected_house in pat["planets"]
+            )
+            if all_match:
+                planets_desc = ", ".join(f"{p} H{h}" for p, h in pat["planets"])
+                detected_patterns.append({
+                    "pattern": planets_desc,
+                    "planets_involved": planets_desc,
+                    "en": pat["en"],
+                    "hi": pat.get("hi", "—"),
+                })
+
+    if detected_patterns:
+        rows = []
+        for dp in detected_patterns:
+            rows.append([
+                dp["pattern"],
+                dp["planets_involved"],
+                dp["en"],
+                dp["hi"],
+            ])
+        out.append(table(
+            ["Pattern", "Planets Involved", "EN Interpretation", "HI Interpretation"],
+            rows
+        ))
+    else:
+        out.append(
+            "No major cross-planet conflict amplification patterns detected for this chart.\n"
+        )
+
+    out.append(h(3, "13b.1 Chart Placement Reference"))
+    if lk_positions:
+        rows = []
+        for planet in PLANET_ORDER:
+            p = lk_positions.get(planet, {})
+            rows.append([planet, p.get("sign", "—"), f"H{p.get('lk_house', '?')}"])
+        out.append(table(["Planet", "Sign", "LK House"], rows))
+
+    return "\n".join(out)
+
+
 def section_14_relations(results: dict[str, EndpointResult]) -> str:
     out = [h(2, "14. Relations & Aspects")]
     r = results.get("lk_relations")
@@ -1356,25 +1491,38 @@ def section_19_gochar(results: dict[str, EndpointResult]) -> str:
             if not isinstance(p, dict):
                 continue
             sign = p.get("sign", "?")
-            lk_house = LK_SIGN_HOUSE.get(sign, "?")
+            lk_house = p.get("lk_house", LK_SIGN_HOUSE.get(sign, "?"))
+            natal_house = p.get("natal_house", "—")
+            deg_raw = p.get("sign_degree", p.get("degree"))
+            deg_str = f"{deg_raw:.1f}°" if isinstance(deg_raw, float) else "?"
+            direction = "R" if p.get("retrograde") else "D"
+            on_natal = "✓" if p.get("on_natal_position") else "—"
+            pakka = "✓" if p.get("in_pakka_ghar") else "—"
+            note = str(p.get("lk_gochar_note_en", "—"))[:60]
             rows.append([
                 planet,
-                sign,
                 f"H{lk_house}",
-                f"{p.get('sign_degree', p.get('degree', '?')):.1f}°" if isinstance(p.get('sign_degree', p.get('degree')), float) else "?",
-                p.get("nakshatra", "?"),
-                "R" if p.get("retrograde") else "D",
-                p.get("speed_note", p.get("speed_category", "—")),
+                f"H{natal_house}" if natal_house != "—" else "—",
+                deg_str,
+                direction,
+                on_natal,
+                pakka,
+                note,
             ])
         if rows:
-            out.append(table(["Planet", "Transit Sign", "LK House", "Degree", "Nakshatra", "Dir", "Speed"], rows))
+            out.append(table(
+                ["Planet", "Transit H", "Natal H", "Degree", "Dir", "On Natal Pos?", "Pakka Ghar?", "Note"],
+                rows
+            ))
         else:
             out.append(code_block(format_json_snippet(d, 1000)))
     else:
         out.append(code_block(format_json_snippet(d, 1000)))
 
-    out.append(f"\n**Date of gochar reading:** {d.get('date', datetime.date.today().isoformat())}  \n"
-               f"**Validation:** Live transit positions — changes daily. Fixed-house mapping applied correctly.\n")
+    out.append(f"\n**As of:** {d.get('as_of', d.get('date', '?'))}  \n"
+               f"**Natal chart used:** {d.get('natal_chart_used', False)}  \n"
+               f"**Active alerts:** {len(d.get('alerts', []))}  \n"
+               f"**Transit type:** Real live ephemeris (positions change daily)\n")
     return "\n".join(out)
 
 
@@ -2029,6 +2177,7 @@ def main() -> None:
         section_11_remedies(results),
         section_12_wizard(results),
         section_13_advanced(results),
+        section_13b_synthesis(results, lk_positions),
         section_14_relations(results),
         section_15_rules(results),
         section_16_prediction_studio(results),
