@@ -44,22 +44,25 @@ class TestNormaliseTithi:
 # ============================================================
 
 class TestSarvarthaSiddhi:
-    def test_active_tithi_match_sunday_dwitiya(self):
-        """Sunday (0) + Dwitiya (2) → active via tithi."""
-        result = calculate_sarvartha_siddhi(0, 2, "Bharani")
+    def test_active_tithi_match_sunday_shashthi(self):
+        """Sunday (0) + Shashthi (6) → active via tithi (Nanda tithi group for Sunday).
+        Drik cross-validation Apr 19 2026 confirmed Dwitiya/Sunday is NOT SS;
+        Sunday uses Nanda tithis [1,6,11] per Muhurta Martand."""
+        result = calculate_sarvartha_siddhi(0, 6, "Bharani")
         assert result["active"] is True
         assert result["type"] == "partial"
         assert result["name"] == "Sarvartha Siddhi Yoga"
         assert result["name_hindi"] == "सर्वार्थ सिद्धि योग"
 
     def test_active_nakshatra_match_sunday_pushya(self):
-        """Sunday (0) + Pushya nakshatra → active via nakshatra."""
+        """Sunday (0) + Pushya nakshatra → active via nakshatra → whole_day.
+        Nakshatra spans the full day, so nakshatra-match type is whole_day."""
         result = calculate_sarvartha_siddhi(0, 4, "Pushya")  # tithi 4 not in Sunday list
         assert result["active"] is True
-        assert result["type"] == "partial"
+        assert result["type"] == "whole_day"
 
-    def test_active_both_match_whole_day(self):
-        """Sunday (0) + Dwitiya (2) + Hasta → whole_day (both match)."""
+    def test_active_nakshatra_match_whole_day(self):
+        """Sunday (0) + Hasta → nakshatra match → whole_day (nakshatra spans all day)."""
         result = calculate_sarvartha_siddhi(0, 2, "Hasta")
         assert result["active"] is True
         assert result["type"] == "whole_day"
@@ -80,8 +83,9 @@ class TestSarvarthaSiddhi:
         assert result["active"] is True
 
     def test_krishna_paksha_tithi_normalised(self):
-        """Sunday (0) + Krishna Dwitiya (17) → normalises to 2 → active."""
-        result = calculate_sarvartha_siddhi(0, 17, "Bharani")
+        """Sunday (0) + Krishna Shashthi (21) → normalises to 6 → active via tithi.
+        Drik confirmed Sunday uses Nanda tithis [1,6,11]; 21 normalises to 6."""
+        result = calculate_sarvartha_siddhi(0, 21, "Bharani")
         assert result["active"] is True
 
     def test_wednesday_anuradha(self):

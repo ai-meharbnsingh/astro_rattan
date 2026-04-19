@@ -23,7 +23,7 @@ from typing import Any, Dict, List
 # We normalise tithi_index to 1-15 range internally.
 
 SARVARTHA_SIDDHI_TITHI: Dict[int, List[int]] = {
-    0: [2, 7, 12],   # Sunday:    Dwitiya, Saptami, Dwadashi
+    0: [1, 6, 11],   # Sunday:    Pratipada, Shashthi, Ekadashi  (Nanda tithis — Muhurta Martand)
     1: [2, 7, 12],   # Monday:    Dwitiya, Saptami, Dwadashi
     2: [1, 6, 11],   # Tuesday:   Pratipada, Shashthi, Ekadashi
     3: [3, 8, 13],   # Wednesday: Tritiya, Ashtami, Trayodashi
@@ -39,7 +39,7 @@ SARVARTHA_SIDDHI_NAKSHATRA: Dict[int, List[str]] = {
     2: ["Ashwini", "Krittika", "Uttara Phalguni"],        # Tuesday
     3: ["Anuradha", "Hasta", "Revati"],                   # Wednesday
     4: ["Punarvasu", "Pushya", "Revati"],                 # Thursday
-    5: ["Revati", "Anuradha", "Pushya", "Ashwini"],       # Friday
+    5: ["Revati", "Anuradha", "Ashwini"],                   # Friday
     6: ["Swati", "Rohini", "Shravana"],                   # Saturday
 }
 
@@ -225,9 +225,11 @@ def calculate_sarvartha_siddhi(
     tithi_match = norm_tithi in SARVARTHA_SIDDHI_TITHI.get(weekday, [])
     nakshatra_match = nakshatra_name in SARVARTHA_SIDDHI_NAKSHATRA.get(weekday, [])
 
-    if tithi_match and nakshatra_match:
+    # Nakshatra spans the full day → whole_day when nakshatra condition met.
+    # Tithi-only match → partial (tithi can change mid-day).
+    if nakshatra_match:
         yoga_type = "whole_day"
-    elif tithi_match or nakshatra_match:
+    elif tithi_match:
         yoga_type = "partial"
     else:
         yoga_type = "partial"  # not used when inactive
