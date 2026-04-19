@@ -1,9 +1,9 @@
 import { Loader2 } from 'lucide-react';
-import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
 import { getDivisionalChartOptions } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 
 // ── Lord Significance sub-components ──────────────────────────
 
@@ -122,8 +122,25 @@ interface DivisionalTabProps {
 
 export default function DivisionalTab({
   divisionalData, loadingDivisional, selectedDivision, changeDivision,
-  handlePlanetClick, handleHouseClick, language, t,
+  handlePlanetClick, language, t,
 }: DivisionalTabProps) {
+  const ascFromHouses = (houses: any): string => {
+    const list = Array.isArray(houses) ? houses : [];
+    const h1 = list.find((h: any) => Number(h?.number) === 1);
+    return String(h1?.sign || '').trim();
+  };
+  const toPlanetEntry = (p: any): PlanetEntry => ({
+    planet: p.planet,
+    sign: p.sign || p.current_sign || '',
+    house: p.house,
+    sign_degree: Number(p.sign_degree ?? p.degree ?? 0) || 0,
+    status: typeof p.status === 'string' ? p.status : '',
+    is_retrograde: !!p.is_retrograde,
+    is_combust: !!p.is_combust,
+    is_vargottama: !!p.is_vargottama,
+    is_exalted: !!p.is_exalted,
+    is_debilitated: !!p.is_debilitated,
+  } as any);
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-4">
@@ -157,24 +174,25 @@ export default function DivisionalTab({
             {divisionalData.planet_positions && (
               <div className="flex justify-center">
                 <div className="w-full max-w-[420px]">
-                  <InteractiveKundli
-                    chartData={{
-                      planets: divisionalData.planet_positions.map((p: any) => ({
-                        planet: p.planet,
-                        sign: p.sign,
-                        house: p.house,
-                        nakshatra: p.nakshatra || '',
-                        sign_degree: p.sign_degree || 0,
-                        status: '',
-                      })),
-                      houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
-                        number: i + 1,
-                        sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-                      })),
-                    } as ChartData}
-                    onPlanetClick={handlePlanetClick}
-                    onHouseClick={handleHouseClick}
-                  />
+                  <div className="w-full aspect-square">
+                    <KundliChartSVG
+                      planets={(divisionalData.planet_positions || []).map(toPlanetEntry)}
+                      ascendantSign={
+                        ascFromHouses(divisionalData.houses)
+                        || divisionalData.chart_data?.ascendant?.sign
+                        || divisionalData.ascendant?.sign
+                        || (divisionalData.planet_positions || []).find((p: any) => p.planet === 'Lagna' || p.planet === 'Ascendant')?.sign
+                        || ''
+                      }
+                      language={language}
+                      className="w-full h-full"
+                      showHouseNumbers={false}
+                      showRashiNumbers
+                      rashiNumberPlacement="corner"
+                      showAscendantMarker={false}
+                      onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+                    />
+                  </div>
                 </div>
               </div>
             )}

@@ -47,6 +47,7 @@ const PLANET_ABBR_HI: Record<string, string> = {
 const GOLD_MED = '#C4611F';
 const DARK = '#1a1a2e';
 const GOLD = '#8B4513';
+const LINE = '#5B3417'; // darker kundli lines for better contrast
 const MALEFIC = new Set(['Sun', 'Mars', 'Saturn', 'Rahu', 'Ketu']);
 
 // Zodiac sign images — same orange images as transit wheel
@@ -247,16 +248,29 @@ export default function KundliChartSVG({
       className={className || ''} style={{ width: '100%', height: '100%' }}>
 
       {/* Single outer box */}
-      <rect x={S} y={S} width={E-S} height={E-S} fill="none" stroke={GOLD} strokeWidth="1.5" opacity="0.5" />
+      <rect x={S} y={S} width={E-S} height={E-S} fill="none" stroke={LINE} strokeWidth="1.8" opacity="0.82" />
 
       {/* Inner diamond — connects midpoints of each side */}
-      <polygon points={`${M},${S} ${E},${M} ${M},${E} ${S},${M}`} fill="none" stroke={GOLD} strokeWidth="1" opacity="0.4" />
+      <polygon points={`${M},${S} ${E},${M} ${M},${E} ${S},${M}`} fill="none" stroke={LINE} strokeWidth="1.2" opacity="0.78" />
 
       {/* Corner-to-center diagonals — equal triangles */}
-      <line x1={S} y1={S} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
-      <line x1={E} y1={S} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
-      <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
-      <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
+      <line x1={S} y1={S} x2={M} y2={M} stroke={LINE} strokeWidth="0.9" opacity="0.74" />
+      <line x1={E} y1={S} x2={M} y2={M} stroke={LINE} strokeWidth="0.9" opacity="0.74" />
+      <line x1={S} y1={E} x2={M} y2={M} stroke={LINE} strokeWidth="0.9" opacity="0.74" />
+      <line x1={E} y1={E} x2={M} y2={M} stroke={LINE} strokeWidth="0.9" opacity="0.74" />
+
+      {/* House region borders (makes all house lines visible) */}
+      {housePolys.map(({ house, points }) => (
+        <polygon
+          key={`house-border-${house}`}
+          points={points}
+          fill="none"
+          stroke={LINE}
+          strokeWidth="0.9"
+          opacity="0.72"
+          pointerEvents="none"
+        />
+      ))}
 
       {/* Ascendant marker (degree-in-sign) */}
       {showAscendantMarker && lagnaSignIdx >= 0 && (
@@ -313,6 +327,7 @@ export default function KundliChartSVG({
             x={pos.x - imgSize / 2} y={pos.y - imgSize / 2}
             width={imgSize} height={imgSize}
             opacity="0.15"
+            pointerEvents="none"
           />
         );
       })}
@@ -327,9 +342,10 @@ export default function KundliChartSVG({
           dominantBaseline="central"
           fontSize="12"
           fontWeight="800"
-          fill={GOLD_MED}
-          opacity="0.55"
+          fill={DARK}
+          opacity="0.7"
           fontFamily="'Inter',sans-serif"
+          pointerEvents="none"
         >
           {i + 1}
         </text>
@@ -351,8 +367,8 @@ export default function KundliChartSVG({
             dominantBaseline="central"
             fontSize={rashiNumberPlacement === 'center' ? '16' : '12'}
             fontWeight="800"
-            fill={rashiNumberPlacement === 'center' ? GOLD : GOLD_MED}
-            opacity="0.55"
+            fill={rashiNumberPlacement === 'center' ? DARK : DARK}
+            opacity={rashiNumberPlacement === 'center' ? '0.72' : '0.65'}
             fontFamily="'Inter',sans-serif"
             stroke={rashiNumberPlacement === 'center' ? "rgba(253, 251, 247, 0.9)" : undefined}
             strokeWidth={rashiNumberPlacement === 'center' ? '4' : undefined}

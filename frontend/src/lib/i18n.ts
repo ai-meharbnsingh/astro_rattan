@@ -2140,6 +2140,9 @@ export const translations: Record<Language, TranslationMap> = {
     'table.details': 'Details',
     'table.period': 'Period',
     'table.name': 'Name',
+    'table.parameter': 'Parameter',
+    'table.value': 'Value',
+    'table.dashaLord': 'Dasha Lord',
 
     // Section headers
     'section.lagna': 'Lagna',
@@ -4772,6 +4775,9 @@ export const translations: Record<Language, TranslationMap> = {
     'table.details': 'विवरण',
     'table.period': 'अवधि',
     'table.name': 'नाम',
+    'table.parameter': 'विवरण',
+    'table.value': 'मान',
+    'table.dashaLord': 'दशा स्वामी',
 
     // Section headers
     'section.lagna': 'लग्न',
