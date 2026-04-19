@@ -398,58 +398,60 @@ export default function KundliGenerator() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            {/* 4 category tabs — always visible, same row style as primary tabs */}
-            <div className="mt-1 grid grid-cols-4 bg-sacred-gold/5 border border-sacred-gold/20 rounded-lg p-1.5 gap-1">
-              {groupedMoreTabs.map(group => {
-                const isCatActive = group.tabs.some(t => t.value === activeTab);
-                const isExpanded = expandedCategory === group.category;
-                return (
-                  <button
-                    key={group.category}
-                    onClick={() => setExpandedCategory(isExpanded ? null : group.category)}
-                    className={`min-h-[42px] px-1 py-2 rounded-md text-[11px] md:text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
-                      isCatActive
-                        ? 'bg-sacred-gold-dark text-white shadow-md'
-                        : isExpanded
-                        ? 'bg-sacred-gold/20 text-sacred-gold-dark border border-sacred-gold/50'
-                        : 'text-sacred-gold-dark/70 hover:bg-sacred-gold/10 hover:text-sacred-gold-dark'
-                    }`}
-                  >
-                    <span>{hi ? group.label.hi : group.label.en}</span>
-                    <ChevronDown className={`w-3 h-3 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Expanded item strip for selected category */}
-            {expandedCategory && (
-              <div className="mt-1 p-2 bg-sacred-gold/5 border border-sacred-gold/20 rounded-lg flex flex-wrap gap-1">
-                {groupedMoreTabs.find(g => g.category === expandedCategory)?.tabs.map(tab => (
-                  <div key={tab.value} className="relative">
+            {/* 4 category tabs + hover-reveal item strip — single hover zone */}
+            <div className="mt-1" onMouseLeave={() => { setExpandedCategory(null); setHoveredTabValue(null); }}>
+              {/* Category header row */}
+              <div className="grid grid-cols-4 bg-sacred-gold/5 border border-sacred-gold/20 rounded-lg p-1.5 gap-1">
+                {groupedMoreTabs.map(group => {
+                  const isCatActive = group.tabs.some(t => t.value === activeTab);
+                  const isExpanded = expandedCategory === group.category;
+                  return (
                     <button
-                      onClick={() => handleTabChange(tab.value)}
-                      onMouseEnter={() => setHoveredTabValue(tab.value)}
-                      onMouseLeave={() => setHoveredTabValue(null)}
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                        activeTab === tab.value
-                          ? 'bg-sacred-gold-dark text-white shadow-sm'
-                          : 'bg-white border border-sacred-gold/25 text-foreground hover:bg-sacred-gold/10 hover:border-sacred-gold/50'
+                      key={group.category}
+                      onMouseEnter={() => setExpandedCategory(group.category)}
+                      onClick={() => setExpandedCategory(isExpanded ? null : group.category)}
+                      className={`min-h-[42px] px-1 py-2 rounded-md text-[11px] md:text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+                        isCatActive
+                          ? 'bg-sacred-gold-dark text-white shadow-md'
+                          : isExpanded
+                          ? 'bg-sacred-gold/15 text-sacred-gold-dark border border-sacred-gold/40'
+                          : 'text-sacred-gold-dark/70 hover:bg-sacred-gold/10 hover:text-sacred-gold-dark'
                       }`}
                     >
-                      {hi ? tab.labelHi : tab.labelEn}
+                      {hi ? group.label.hi : group.label.en}
                     </button>
-                    {/* Tooltip on hover */}
-                    {hoveredTabValue === tab.value && tab.descriptionEn && (
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-sacred-brown text-white rounded-lg shadow-xl px-3 py-2 w-48 pointer-events-none text-center">
-                        <p className="text-[10px] leading-relaxed opacity-90">{tab.descriptionEn}</p>
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-sacred-brown" />
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            )}
+
+              {/* Item strip — shown on hover, hidden on mouse-leave of whole zone */}
+              {expandedCategory && (
+                <div className="mt-0.5 p-2 bg-white border border-sacred-gold/20 rounded-lg flex flex-wrap gap-1.5 shadow-sm">
+                  {groupedMoreTabs.find(g => g.category === expandedCategory)?.tabs.map(tab => (
+                    <div key={tab.value} className="relative">
+                      <button
+                        onClick={() => handleTabChange(tab.value)}
+                        onMouseEnter={() => setHoveredTabValue(tab.value)}
+                        onMouseLeave={() => setHoveredTabValue(null)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                          activeTab === tab.value
+                            ? 'bg-sacred-gold-dark text-white shadow-sm'
+                            : 'bg-sacred-gold/5 border border-sacred-gold/25 text-foreground hover:bg-sacred-gold/15 hover:border-sacred-gold/50'
+                        }`}
+                      >
+                        {hi ? tab.labelHi : tab.labelEn}
+                      </button>
+                      {hoveredTabValue === tab.value && tab.descriptionEn && (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-sacred-brown text-white rounded-lg shadow-xl px-3 py-2 w-48 pointer-events-none text-center">
+                          <p className="text-[10px] leading-relaxed opacity-90">{tab.descriptionEn}</p>
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-sacred-brown" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {tabError && (
