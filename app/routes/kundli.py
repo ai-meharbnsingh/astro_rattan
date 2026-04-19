@@ -3164,6 +3164,15 @@ def get_gochara_vedha(
         )
         raw_transits = transit_result.get("transits", [])
         enriched = enrich_transits(raw_transits, chart)
+        # Map engine field names → frontend field names
+        for t in enriched:
+            t["current_house"]   = t.get("house")
+            t["house_from_moon"] = t.get("natal_house_from_moon") or t.get("house_from_moon")
+            t["latta_effect"]    = t.get("latta_description_en") or t.get("latta_effect")
+            t["latta_effect_hi"] = t.get("latta_description_hi") or t.get("latta_effect_hi")
+            ef = t.get("effect_final") or t.get("effect", "")
+            t["net_result_en"]   = ef.title() if ef else None
+            t["net_result_hi"]   = t.get("net_result_hi")
         return {
             "kundli_id": kundli_id,
             "person_name": row["person_name"],
@@ -3325,6 +3334,19 @@ def get_transit_lucky(
             planet_dignities=planet_dignities,
             transit_dignities=transit_dignities,
         )
+        # Map gemstone structure: {gem:{en,hi}, metal:{en,hi}, ...} → {name_en, name_hi, benefit_en, benefit_hi}
+        gs = lucky.get("gemstone", {})
+        if isinstance(gs, dict) and "gem" in gs:
+            lucky["gemstone"] = {
+                "name_en":    gs["gem"].get("en", ""),
+                "name_hi":    gs["gem"].get("hi", ""),
+                "benefit_en": gs.get("metal", {}).get("en", ""),
+                "benefit_hi": gs.get("metal", {}).get("hi", ""),
+                "finger_en":  gs.get("finger", {}).get("en", ""),
+                "finger_hi":  gs.get("finger", {}).get("hi", ""),
+                "day_en":     gs.get("day", {}).get("en", ""),
+                "day_hi":     gs.get("day", {}).get("hi", ""),
+            }
         lucky["kundli_id"] = kundli_id
         lucky["person_name"] = row["person_name"]
         return lucky
