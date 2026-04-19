@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CalendarDays, Sun, Star, Users, Orbit, ChevronDown } from 'lucide-react';
+import { Calendar, CalendarDays, CalendarCheck, Sun, Star, Users, Orbit, ChevronDown } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { useAuth } from '@/hooks/useAuth';
@@ -73,11 +73,13 @@ export default function HoroscopePage() {
   const [weeklyData, setWeeklyData] = useState<any>(null);
   const [monthlyData, setMonthlyData] = useState<any>(null);
   const [yearlyData, setYearlyData] = useState<any>(null);
+  const [tomorrowData, setTomorrowData] = useState<any>(null);
   const [allSignsData, setAllSignsData] = useState<any>(null);
   const [transitData, setTransitData] = useState<any>(null);
 
   // Loading states
   const [dailyLoading, setDailyLoading] = useState(false);
+  const [tomorrowLoading, setTomorrowLoading] = useState(false);
   const [weeklyLoading, setWeeklyLoading] = useState(false);
   const [monthlyLoading, setMonthlyLoading] = useState(false);
   const [yearlyLoading, setYearlyLoading] = useState(false);
@@ -123,6 +125,21 @@ export default function HoroscopePage() {
     fetchDaily();
     return () => { cancelled = true; };
   }, [selectedSign, selectedDate, birthQuery]);
+
+  // Fetch tomorrow's horoscope when sign or birth params change
+  useEffect(() => {
+    let cancelled = false;
+    const fetchTomorrow = async () => {
+      setTomorrowLoading(true);
+      try {
+        const data = await api.get(`/api/horoscope/tomorrow?sign=${selectedSign}${birthQuery}`);
+        if (!cancelled && data) setTomorrowData(data);
+      } catch { /* keep previous */ }
+      finally { if (!cancelled) setTomorrowLoading(false); }
+    };
+    fetchTomorrow();
+    return () => { cancelled = true; };
+  }, [selectedSign, birthQuery]);
 
   // Fetch weekly when sign or birth params change
   useEffect(() => {
@@ -322,9 +339,10 @@ export default function HoroscopePage() {
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-card rounded-xl">
+          <TabsList className="grid w-full grid-cols-7 h-auto p-1 bg-card rounded-xl">
             {[
               { id: 'daily', label: t('auto.daily'), icon: Sun },
+              { id: 'tomorrow', label: language === 'hi' ? 'कल' : 'Tomorrow', icon: CalendarCheck },
               { id: 'weekly', label: t('auto.weekly'), icon: Calendar },
               { id: 'monthly', label: t('auto.monthly'), icon: CalendarDays },
               { id: 'yearly', label: t('auto.yearly'), icon: Star },
@@ -341,6 +359,9 @@ export default function HoroscopePage() {
           <div className="mt-4">
             <TabsContent value="daily">
               <DailyTab data={dailyData} loading={dailyLoading} language={language} t={t} />
+            </TabsContent>
+            <TabsContent value="tomorrow">
+              <DailyTab data={tomorrowData} loading={tomorrowLoading} language={language} t={t} />
             </TabsContent>
             <TabsContent value="weekly">
               <WeeklyTab data={weeklyData} loading={weeklyLoading} language={language} t={t} />
