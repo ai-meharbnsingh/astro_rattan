@@ -930,7 +930,15 @@ def _nakshatra_name_to_index(name: str) -> int:
 
 
 def _lookup_fragment(planet: str, house: int, area: str, language: str) -> str:
-    """Look up a text fragment from the interpretation matrix, returning empty string if missing."""
+    """Look up a text fragment, preferring a random variant if available, else base fragment."""
+    try:
+        from app.transit_variants import TRANSIT_VARIANTS
+        variants = TRANSIT_VARIANTS.get(planet, {}).get(house, {}).get(area)
+        if variants:
+            import random
+            return random.choice(variants)[language]
+    except (ImportError, KeyError, TypeError, IndexError):
+        pass
     try:
         return TRANSIT_FRAGMENTS[planet][house][area][language]
     except (KeyError, TypeError):
@@ -1098,7 +1106,12 @@ def _sign_change_meaning_hi(planet: str) -> str:
 
 
 def _fallback_planet_data() -> Dict[str, Dict]:
-    """Return a minimal fallback planet data dict when calculation fails."""
+    """Return hardcoded planet positions used only when Swiss Ephemeris is completely unavailable.
+    CALLER MUST LOG THIS — content generated from these positions is not astronomically accurate."""
+    logger.error(
+        "[transit_engine] CRITICAL: Swiss Ephemeris unavailable — using hardcoded fallback planet positions. "
+        "Horoscope content will NOT reflect actual transits. Fix EPHE_PATH or swisseph installation."
+    )
     default_signs = {
         "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
         "Mercury": "Gemini", "Jupiter": "Sagittarius", "Venus": "Taurus",
@@ -1114,7 +1127,7 @@ def _fallback_planet_data() -> Dict[str, Dict]:
             "house": 1,
             "retrograde": False,
             "is_combust": False,
-            "status": "",
+            "status": "fallback",
         }
     return result
 
@@ -1144,7 +1157,7 @@ def _fallback_horoscope(sign: str, period: str) -> Dict[str, Any]:
         },
         "dos": [{"en": "Stay positive and focused.", "hi": "\u0938\u0915\u093e\u0930\u093e\u0924\u094d\u092e\u0915 \u0914\u0930 \u0915\u0947\u0902\u0926\u094d\u0930\u093f\u0924 \u0930\u0939\u0947\u0902\u0964"}],
         "donts": [{"en": "Avoid impulsive decisions.", "hi": "\u0906\u0935\u0947\u0917\u092a\u0942\u0930\u094d\u0923 \u0928\u093f\u0930\u094d\u0923\u092f\u094b\u0902 \u0938\u0947 \u092c\u091a\u0947\u0902\u0964"}],
-        "source": "transit_engine",
+        "source": "fallback",
     }
 
 
@@ -1453,6 +1466,72 @@ def calculate_transits(
     }
 
 
+def _detect_special_transits(
+    transit_planets: Dict[str, Any],
+    natal_planets: Dict[str, Any],
+    natal_saturn_sign: str,
+) -> List[Dict[str, str]]:
+    """Detect Saturn return and Guru-Chandal yoga in current transit positions."""
+    alerts: List[Dict[str, str]] = []
+
+    # Saturn Return: transit Saturn within same sign as natal Saturn
+    tr_saturn_sign = (transit_planets.get("Saturn") or {}).get("sign", "")
+    if tr_saturn_sign and tr_saturn_sign == natal_saturn_sign:
+        alerts.append({
+            "type": "saturn_return",
+            "en": f"Saturn Return active — transit Saturn in natal Saturn's sign ({natal_saturn_sign}). Major life checkpoint: career, responsibility, and maturity themes intensify.",
+            "hi": f"शनि प्रत्यावर्तन — गोचर शनि जन्म-शनि की राशि ({natal_saturn_sign}) में। जीवन का महत्वपूर्ण पड़ाव: करियर, जिम्मेदारी और परिपक्वता के विषय प्रबल।",
+        })
+
+    # Guru-Chandal: transit Jupiter conjunct Rahu or Ketu (same sign)
+    tr_jupiter_sign = (transit_planets.get("Jupiter") or {}).get("sign", "")
+    tr_rahu_sign = (transit_planets.get("Rahu") or {}).get("sign", "")
+    tr_ketu_sign = (transit_planets.get("Ketu") or {}).get("sign", "")
+    if tr_jupiter_sign:
+        if tr_jupiter_sign == tr_rahu_sign:
+            alerts.append({
+                "type": "guru_chandal",
+                "en": f"Guru-Chandal Yoga — transit Jupiter conjunct Rahu in {tr_jupiter_sign}. Unconventional wisdom; guard against deception and over-expansion.",
+                "hi": f"गुरु-चांडाल योग — गोचर गुरु-राहु {tr_jupiter_sign} में। अपरंपरागत ज्ञान; छल और अति-विस्तार से सावधान।",
+            })
+        elif tr_jupiter_sign == tr_ketu_sign:
+            alerts.append({
+                "type": "guru_chandal",
+                "en": f"Guru-Chandal Yoga — transit Jupiter conjunct Ketu in {tr_jupiter_sign}. Spiritual detachment intensifies; material pursuits may feel hollow.",
+                "hi": f"गुरु-चांडाल योग — गोचर गुरु-केतु {tr_jupiter_sign} में। आध्यात्मिक वैराग्य गहरा होता है; भौतिक लक्ष्य अधूरे लग सकते हैं।",
+            })
+
+    return alerts
+
+
+def _detect_natal_hits(
+    transit_planets: Dict[str, Any],
+    natal_planets: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """Flag transit planets crossing natal planet signs (house-exact transit hit)."""
+    hits: List[Dict[str, Any]] = []
+    _SLOW_PLANETS = {"Jupiter", "Saturn", "Rahu", "Ketu"}
+    for planet_name, tr_info in transit_planets.items():
+        tr_sign = (tr_info or {}).get("sign", "")
+        if not tr_sign:
+            continue
+        for natal_planet, natal_info in natal_planets.items():
+            if not isinstance(natal_info, dict):
+                continue
+            natal_sign = natal_info.get("sign", "")
+            if tr_sign and natal_sign and tr_sign == natal_sign and planet_name != natal_planet:
+                importance = "high" if planet_name in _SLOW_PLANETS else "medium"
+                hits.append({
+                    "transit_planet": planet_name,
+                    "natal_planet": natal_planet,
+                    "sign": tr_sign,
+                    "importance": importance,
+                    "en": f"Transit {planet_name} conjunct natal {natal_planet} in {tr_sign}.",
+                    "hi": f"गोचर {planet_name} जन्म {natal_planet} के साथ {tr_sign} में।",
+                })
+    return hits
+
+
 def calculate_transit_forecast(
     natal_chart_data: Dict[str, Any],
     latitude: float = 0.0,
@@ -1461,10 +1540,12 @@ def calculate_transit_forecast(
 ) -> List[Dict[str, Any]]:
     """
     Calculate transit intensity scores for the next N days.
-
-    Preserved from original transit_engine for backward compatibility.
+    Enhanced with natal hit detection, Saturn return, and Guru-Chandal alerts.
     """
     from datetime import timedelta
+
+    natal_planets = natal_chart_data.get("planets", {}) or {}
+    natal_saturn_sign = (natal_planets.get("Saturn") or {}).get("sign", "")
 
     forecast = []
     now = datetime.now(timezone.utc)
@@ -1474,11 +1555,26 @@ def calculate_transit_forecast(
         date_str = target_date.strftime("%Y-%m-%d")
 
         res = calculate_transits(natal_chart_data, latitude, longitude, transit_date=date_str, transit_time="12:00:00")
+        transit_planets_day = res.get("transit_positions") or {}
 
+        # Fall back to computing positions directly if calculate_transits doesn't expose them
+        if not transit_planets_day:
+            try:
+                _pos = get_full_transits(date_str)
+                transit_planets_day = {k: {"sign": v.get("sign", "")} for k, v in _pos.items()}
+            except Exception:
+                transit_planets_day = {}
+
+        special_alerts = _detect_special_transits(transit_planets_day, natal_planets, natal_saturn_sign)
+        natal_hits = _detect_natal_hits(transit_planets_day, natal_planets)
+
+        score = res["daily_score"]
         forecast.append({
             "date": date_str,
-            "score": res["daily_score"],
-            "summary": "Good" if res["daily_score"] >= 70 else "Average" if res["daily_score"] >= 40 else "Challenging",
+            "score": score,
+            "summary": "Good" if score >= 70 else "Average" if score >= 40 else "Challenging",
+            "alerts": special_alerts,
+            "natal_hits": [h for h in natal_hits if h["importance"] == "high"],
         })
 
     return forecast

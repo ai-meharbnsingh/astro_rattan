@@ -24,114 +24,462 @@ MASTER_NUMBERS = {11, 22, 33}
 
 # Life path prediction templates keyed by number
 LIFE_PATH_PREDICTIONS = {
-    1: "Natural leader with pioneering spirit. Independent, ambitious, and driven to forge new paths. "
-       "This period favors bold initiatives and self-reliance.",
-    2: "Diplomat and peacemaker. Cooperation, sensitivity, and partnerships define your journey. "
-       "Seek harmony in relationships and trust your intuition.",
-    3: "Creative expression and joyful communication. Artistic talents blossom. "
-       "Social connections and optimism bring abundance.",
-    4: "Builder and organizer. Stability, discipline, and hard work create lasting foundations. "
-       "Patience and systematic effort lead to mastery.",
-    5: "Freedom seeker and adventurer. Change, travel, and versatility are your allies. "
-       "Embrace new experiences while maintaining inner balance.",
-    6: "Nurturer and healer. Responsibility to family and community. "
-       "Love, beauty, and domestic harmony are your life themes.",
-    7: "Spiritual seeker and analyst. Inner wisdom, contemplation, and research. "
-       "Solitude and study unlock deeper truths.",
-    8: "Material mastery and karmic balance. Business acumen and authority. "
-       "Power must be wielded with integrity for lasting success.",
-    9: "Humanitarian and universal lover. Compassion, generosity, and completion. "
-       "Service to others fulfills your highest purpose.",
-    11: "Master Intuitive. Heightened spiritual awareness and visionary insight. "
-        "Channel inspiration into tangible form. Avoid nervous tension.",
-    22: "Master Builder. Ability to turn grand visions into reality on a massive scale. "
-        "Practical idealism and global impact are your calling.",
-    33: "Master Teacher. Selfless service, healing, and uplifting humanity. "
-        "The highest expression of love in action.",
+    1: {
+        "theme": "The Pioneer",
+        "theme_hi": "अग्रदूत",
+        "description": "Natural leader with pioneering spirit. Independent, ambitious, and driven to forge new paths. This period favors bold initiatives and self-reliance.",
+        "description_hi": "प्राकृतिक नेता और अग्रदूत। स्वतंत्र, महत्वाकांक्षी और नए रास्ते बनाने के लिए प्रेरित। यह समय साहसी पहल और आत्मनिर्भरता का पक्षधर है।",
+        "focus_areas": "Leadership, entrepreneurship, innovation, self-development, new ventures",
+        "focus_areas_hi": "नेतृत्व, उद्यमिता, नवाचार, आत्म-विकास, नई शुरुआत",
+        "advice": "Trust your instincts and act decisively. Avoid stubbornness — great leaders also listen.",
+        "advice_hi": "अपनी सहज बुद्धि पर भरोसा करें और निर्णायक रूप से कार्य करें। जिद से बचें — महान नेता सुनते भी हैं।",
+        "lucky_months": [1, 4, 7, 10],
+    },
+    2: {
+        "theme": "The Peacemaker",
+        "theme_hi": "शांतिदूत",
+        "description": "Diplomat and peacemaker. Cooperation, sensitivity, and partnerships define your journey. Seek harmony in relationships and trust your intuition.",
+        "description_hi": "कूटनीतिज्ञ और शांतिदूत। सहयोग, संवेदनशीलता और साझेदारी आपकी यात्रा को परिभाषित करती है। रिश्तों में सामंजस्य खोजें और अंतर्ज्ञान पर भरोसा करें।",
+        "focus_areas": "Partnerships, diplomacy, counseling, music, healing, mediation",
+        "focus_areas_hi": "साझेदारी, कूटनीति, परामर्श, संगीत, उपचार, मध्यस्थता",
+        "advice": "Your sensitivity is a gift, not a weakness. Speak up for yourself while maintaining harmony.",
+        "advice_hi": "आपकी संवेदनशीलता एक उपहार है, कमज़ोरी नहीं। सामंजस्य बनाए रखते हुए खुद के लिए बोलें।",
+        "lucky_months": [2, 6, 11],
+    },
+    3: {
+        "theme": "The Creative Communicator",
+        "theme_hi": "रचनात्मक संचारक",
+        "description": "Creative expression and joyful communication. Artistic talents blossom. Social connections and optimism bring abundance.",
+        "description_hi": "रचनात्मक अभिव्यक्ति और आनंदमय संवाद। कलात्मक प्रतिभाएं खिलती हैं। सामाजिक संबंध और आशावाद समृद्धि लाते हैं।",
+        "focus_areas": "Writing, art, performance, social media, teaching, public speaking, entertainment",
+        "focus_areas_hi": "लेखन, कला, प्रदर्शन, शिक्षण, सार्वजनिक भाषण, मनोरंजन",
+        "advice": "Focus your creative gifts — scatter your energy and nothing gets completed. Depth matters.",
+        "advice_hi": "अपनी रचनात्मक शक्ति को केंद्रित करें — ऊर्जा बिखेरने से कुछ पूरा नहीं होता। गहराई मायने रखती है।",
+        "lucky_months": [3, 6, 9, 12],
+    },
+    4: {
+        "theme": "The Builder",
+        "theme_hi": "निर्माता",
+        "description": "Builder and organizer. Stability, discipline, and hard work create lasting foundations. Patience and systematic effort lead to mastery.",
+        "description_hi": "निर्माता और संयोजक। स्थिरता, अनुशासन और कठिन परिश्रम स्थायी नींव बनाते हैं। धैर्य और व्यवस्थित प्रयास महारत की ओर ले जाते हैं।",
+        "focus_areas": "Construction, engineering, management, finance, systems, law, real estate",
+        "focus_areas_hi": "निर्माण, इंजीनियरिंग, प्रबंधन, वित्त, प्रणाली, कानून, अचल संपत्ति",
+        "advice": "Embrace structure without becoming rigid. Rest is not laziness — it is part of building.",
+        "advice_hi": "कठोर हुए बिना संरचना अपनाएं। आराम आलस्य नहीं है — यह निर्माण का हिस्सा है।",
+        "lucky_months": [4, 8, 1],
+    },
+    5: {
+        "theme": "The Freedom Seeker",
+        "theme_hi": "स्वतंत्रता खोजी",
+        "description": "Freedom seeker and adventurer. Change, travel, and versatility are your allies. Embrace new experiences while maintaining inner balance.",
+        "description_hi": "स्वतंत्रता खोजी और साहसी। परिवर्तन, यात्रा और बहुमुखी प्रतिभा आपके साथी हैं। आंतरिक संतुलन बनाए रखते हुए नए अनुभवों को अपनाएं।",
+        "focus_areas": "Travel, sales, media, adventure, technology, communication, marketing",
+        "focus_areas_hi": "यात्रा, बिक्री, मीडिया, साहसिक कार्य, प्रौद्योगिकी, संचार, विपणन",
+        "advice": "Freedom is earned through commitment, not avoided through escape. Choose one path and go deep.",
+        "advice_hi": "स्वतंत्रता प्रतिबद्धता से अर्जित होती है, पलायन से नहीं। एक राह चुनें और गहराई से जाएं।",
+        "lucky_months": [5, 7, 11],
+    },
+    6: {
+        "theme": "The Nurturer",
+        "theme_hi": "पालनकर्ता",
+        "description": "Nurturer and healer. Responsibility to family and community. Love, beauty, and domestic harmony are your life themes.",
+        "description_hi": "पालनकर्ता और उपचारक। परिवार और समुदाय के प्रति जिम्मेदारी। प्रेम, सौंदर्य और घरेलू सामंजस्य आपके जीवन के विषय हैं।",
+        "focus_areas": "Family, healing, teaching, counseling, art, home, community service, medicine",
+        "focus_areas_hi": "परिवार, उपचार, शिक्षण, परामर्श, कला, घर, सामुदायिक सेवा, चिकित्सा",
+        "advice": "Give generously but set boundaries — martyrdom does not serve those you love.",
+        "advice_hi": "उदारता से दें लेकिन सीमाएं निर्धारित करें — आत्म-बलिदान उन्हें नहीं जो आप प्यार करते हैं।",
+        "lucky_months": [6, 3, 9],
+    },
+    7: {
+        "theme": "The Seeker of Truth",
+        "theme_hi": "सत्य के खोजी",
+        "description": "Spiritual seeker and analyst. Inner wisdom, contemplation, and research. Solitude and study unlock deeper truths.",
+        "description_hi": "आध्यात्मिक खोजी और विश्लेषक। आंतरिक ज्ञान, चिंतन और अनुसंधान। एकांत और अध्ययन गहरे सत्य को उजागर करते हैं।",
+        "focus_areas": "Research, science, philosophy, spirituality, writing, analysis, psychology, astrology",
+        "focus_areas_hi": "अनुसंधान, विज्ञान, दर्शन, आध्यात्मिकता, लेखन, विश्लेषण, मनोविज्ञान, ज्योतिष",
+        "advice": "Share your wisdom — isolation protects you but also hides your greatest gift from the world.",
+        "advice_hi": "अपना ज्ञान साझा करें — एकांत आपकी रक्षा करता है लेकिन दुनिया से आपका सबसे बड़ा उपहार भी छुपाता है।",
+        "lucky_months": [7, 2, 11],
+    },
+    8: {
+        "theme": "The Material Master",
+        "theme_hi": "भौतिक स्वामी",
+        "description": "Material mastery and karmic balance. Business acumen and authority. Power must be wielded with integrity for lasting success.",
+        "description_hi": "भौतिक निपुणता और कर्म संतुलन। व्यावसायिक कुशाग्रता और अधिकार। स्थायी सफलता के लिए शक्ति को ईमानदारी से उपयोग करना होगा।",
+        "focus_areas": "Business, finance, real estate, law, politics, corporate leadership, banking",
+        "focus_areas_hi": "व्यापार, वित्त, अचल संपत्ति, कानून, राजनीति, कॉर्पोरेट नेतृत्व, बैंकिंग",
+        "advice": "Integrity is your greatest asset. Wealth gained through shortcuts invites karmic loss.",
+        "advice_hi": "ईमानदारी आपकी सबसे बड़ी संपत्ति है। शॉर्टकट से अर्जित धन कर्म की हानि आमंत्रित करता है।",
+        "lucky_months": [8, 4, 1],
+    },
+    9: {
+        "theme": "The Humanitarian",
+        "theme_hi": "मानवतावादी",
+        "description": "Humanitarian and universal lover. Compassion, generosity, and completion. Service to others fulfills your highest purpose.",
+        "description_hi": "मानवतावादी और सार्वभौमिक प्रेमी। करुणा, उदारता और समापन। दूसरों की सेवा आपका सर्वोच्च उद्देश्य पूरा करती है।",
+        "focus_areas": "Philanthropy, teaching, healing, arts, spirituality, social work, global causes",
+        "focus_areas_hi": "परोपकार, शिक्षण, उपचार, कला, आध्यात्मिकता, सामाजिक कार्य, वैश्विक उद्देश्य",
+        "advice": "Release attachment to outcomes. Give without expectation. Forgiveness is your superpower.",
+        "advice_hi": "परिणामों से आसक्ति छोड़ें। बिना अपेक्षा के दें। क्षमा आपकी महाशक्ति है।",
+        "lucky_months": [3, 6, 9, 12],
+    },
+    11: {
+        "theme": "The Master Intuitive",
+        "theme_hi": "मास्टर अंतर्ज्ञानी",
+        "description": "Master Intuitive. Heightened spiritual awareness and visionary insight. Channel inspiration into tangible form. Avoid nervous tension.",
+        "description_hi": "मास्टर अंतर्ज्ञानी। उच्च आध्यात्मिक जागरूकता और दूरदर्शी अंतर्दृष्टि। प्रेरणा को ठोस रूप में प्रकट करें। तंत्रिका तनाव से बचें।",
+        "focus_areas": "Spiritual leadership, counseling, art, healing, innovation, teaching, inspiration",
+        "focus_areas_hi": "आध्यात्मिक नेतृत्व, परामर्श, कला, उपचार, नवाचार, शिक्षण, प्रेरणा",
+        "advice": "Ground your visions in daily practice. Your light is needed — don't dim it with self-doubt.",
+        "advice_hi": "अपने दृष्टिकोण को दैनिक अभ्यास में उतारें। आपका प्रकाश जरूरी है — आत्म-संदेह से इसे धुंधला मत करें।",
+        "lucky_months": [1, 2, 11],
+    },
+    22: {
+        "theme": "The Master Builder",
+        "theme_hi": "मास्टर निर्माता",
+        "description": "Master Builder. Ability to turn grand visions into reality on a massive scale. Practical idealism and global impact are your calling.",
+        "description_hi": "मास्टर निर्माता। भव्य दृष्टिकोण को बड़े पैमाने पर वास्तविकता में बदलने की क्षमता। व्यावहारिक आदर्शवाद और वैश्विक प्रभाव आपकी पुकार है।",
+        "focus_areas": "Large-scale construction, global organizations, philanthropy, infrastructure, leadership",
+        "focus_areas_hi": "बड़े पैमाने पर निर्माण, वैश्विक संगठन, परोपकार, बुनियादी ढांचा, नेतृत्व",
+        "advice": "Think big but act in disciplined steps. Grandiosity without execution wastes the gift.",
+        "advice_hi": "बड़ा सोचें लेकिन अनुशासित कदमों से काम करें। क्रियान्वयन के बिना भव्यता उपहार को बर्बाद करती है।",
+        "lucky_months": [4, 8, 11, 22],
+    },
+    33: {
+        "theme": "The Master Teacher",
+        "theme_hi": "मास्टर शिक्षक",
+        "description": "Master Teacher. Selfless service, healing, and uplifting humanity. The highest expression of love in action.",
+        "description_hi": "मास्टर शिक्षक। निःस्वार्थ सेवा, उपचार और मानवता का उत्थान। क्रिया में प्रेम की सर्वोच्च अभिव्यक्ति।",
+        "focus_areas": "Healing, teaching, counseling, spiritual guidance, humanitarian service, arts",
+        "focus_areas_hi": "उपचार, शिक्षण, परामर्श, आध्यात्मिक मार्गदर्शन, मानवतावादी सेवा, कला",
+        "advice": "Your compassion must be boundless but your energy is finite — honour both.",
+        "advice_hi": "आपकी करुणा असीमित होनी चाहिए लेकिन आपकी ऊर्जा सीमित है — दोनों का सम्मान करें।",
+        "lucky_months": [3, 6, 9, 33],
+    },
 }
 
-# Destiny number prediction templates (derived from full name)
+# Destiny number predictions (derived from full name)
 DESTINY_PREDICTIONS = {
-    1: "Your destiny calls you to lead and innovate. You are meant to carve original paths and inspire "
-       "others through decisive action. Embrace independence and trust your unique vision to leave a lasting mark.",
-    2: "Your destiny is rooted in partnership and diplomacy. You are here to mediate, unite, and bring "
-       "balance to those around you. Your greatest achievements come through collaboration and gentle persuasion.",
-    3: "Your destiny is one of creative self-expression. Writing, speaking, art, or performance are natural "
-       "outlets for your vibrant energy. You uplift others through joy and are meant to inspire with your words.",
-    4: "Your destiny demands structure and dedication. You are the architect of lasting systems and "
-       "institutions. Through methodical effort and unwavering integrity, you build what endures beyond a lifetime.",
-    5: "Your destiny thrives on change and exploration. You are meant to experience the full breadth of life "
-       "and share those adventures with others. Adaptability and curiosity are your greatest gifts.",
-    6: "Your destiny centers on love, responsibility, and service to family and community. You are a natural "
-       "counselor and protector. Your fulfillment comes from creating beauty and harmony in your surroundings.",
-    7: "Your destiny lies in the pursuit of truth and wisdom. You are a natural researcher, philosopher, and "
-       "spiritual seeker. Depth of understanding, not breadth, is your path to mastery.",
-    8: "Your destiny is tied to material achievement and the responsible use of power. You are meant to "
-       "build prosperity and influence, but karmic balance demands that you wield authority with fairness.",
-    9: "Your destiny is humanitarian service on a grand scale. You are meant to give selflessly and inspire "
-       "compassion in others. Letting go of personal attachment frees you to serve your highest calling.",
-    11: "Your destiny carries the weight of spiritual illumination. As a master number, you channel higher "
-        "truths into the world. Visionary leadership and inspired teaching are your sacred responsibilities.",
-    22: "Your destiny is to manifest visionary ideals in concrete form. You possess rare ability to combine "
-        "spiritual insight with practical genius. Large-scale projects that serve humanity are your life work.",
-    33: "Your destiny is the highest form of loving service. You are called to heal, teach, and uplift on a "
-        "profound level. Selfless devotion to others transforms both you and those you touch.",
+    1: {
+        "theme": "Leader & Innovator",
+        "theme_hi": "नेता और नवप्रवर्तक",
+        "description": "Your destiny calls you to lead and innovate. You are meant to carve original paths and inspire others through decisive action. Embrace independence and trust your unique vision to leave a lasting mark.",
+        "description_hi": "आपकी नियति आपको नेतृत्व और नवाचार के लिए बुलाती है। आप मौलिक रास्ते बनाने और दूसरों को निर्णायक कार्रवाई से प्रेरित करने के लिए बने हैं।",
+        "focus_areas": "Pioneer new fields, take initiative, build your own enterprise",
+        "focus_areas_hi": "नए क्षेत्र खोलें, पहल करें, अपना उद्यम बनाएं",
+        "advice": "Your originality is your greatest asset — never dilute it to fit in.",
+        "advice_hi": "आपकी मौलिकता आपकी सबसे बड़ी संपत्ति है — इसे कभी मत घटाएं।",
+    },
+    2: {
+        "theme": "Diplomat & Unifier",
+        "theme_hi": "कूटनीतिज्ञ और एकजुट करने वाला",
+        "description": "Your destiny is rooted in partnership and diplomacy. You are here to mediate, unite, and bring balance to those around you. Your greatest achievements come through collaboration and gentle persuasion.",
+        "description_hi": "आपकी नियति साझेदारी और कूटनीति में निहित है। आप मध्यस्थता, एकता और संतुलन लाने के लिए यहाँ हैं।",
+        "focus_areas": "Build bridges between people, support others' visions, create harmony",
+        "focus_areas_hi": "लोगों के बीच पुल बनाएं, दूसरों के दृष्टिकोण का समर्थन करें, सामंजस्य बनाएं",
+        "advice": "Your power lies in influence, not control. Work behind the scenes with confidence.",
+        "advice_hi": "आपकी शक्ति प्रभाव में है, नियंत्रण में नहीं। आत्मविश्वास के साथ पर्दे के पीछे काम करें।",
+    },
+    3: {
+        "theme": "Creative Inspirer",
+        "theme_hi": "रचनात्मक प्रेरक",
+        "description": "Your destiny is one of creative self-expression. Writing, speaking, art, or performance are natural outlets for your vibrant energy. You uplift others through joy and are meant to inspire with your words.",
+        "description_hi": "आपकी नियति रचनात्मक आत्म-अभिव्यक्ति की है। लेखन, भाषण, कला या प्रदर्शन आपकी जीवंत ऊर्जा के प्राकृतिक माध्यम हैं।",
+        "focus_areas": "Create, communicate, perform, teach joy and possibility",
+        "focus_areas_hi": "बनाएं, संवाद करें, प्रदर्शन करें, आनंद और संभावना सिखाएं",
+        "advice": "Discipline your creativity — inspiration without execution is just daydreaming.",
+        "advice_hi": "अपनी रचनात्मकता को अनुशासित करें — क्रियान्वयन के बिना प्रेरणा सिर्फ दिवास्वप्न है।",
+    },
+    4: {
+        "theme": "Architect of Endurance",
+        "theme_hi": "स्थायित्व का वास्तुकार",
+        "description": "Your destiny demands structure and dedication. You are the architect of lasting systems and institutions. Through methodical effort and unwavering integrity, you build what endures beyond a lifetime.",
+        "description_hi": "आपकी नियति संरचना और समर्पण की मांग करती है। आप स्थायी प्रणालियों और संस्थाओं के वास्तुकार हैं।",
+        "focus_areas": "Build systems that outlast you, master your craft, establish lasting order",
+        "focus_areas_hi": "ऐसी प्रणालियां बनाएं जो आपसे आगे जाएं, अपनी कला में निपुण हों, स्थायी व्यवस्था स्थापित करें",
+        "advice": "Consistency over time is your magic. Show up every day, even when uninspired.",
+        "advice_hi": "समय के साथ निरंतरता आपका जादू है। हर दिन आएं, भले ही प्रेरणा न हो।",
+    },
+    5: {
+        "theme": "Adventurer & Change Agent",
+        "theme_hi": "साहसी और परिवर्तन दूत",
+        "description": "Your destiny thrives on change and exploration. You are meant to experience the full breadth of life and share those adventures with others. Adaptability and curiosity are your greatest gifts.",
+        "description_hi": "आपकी नियति परिवर्तन और अन्वेषण पर फलती है। आप जीवन की पूरी विस्तृत श्रृंखला का अनुभव करने और उन साहसिक कार्यों को दूसरों के साथ साझा करने के लिए बने हैं।",
+        "focus_areas": "Explore widely, adapt fearlessly, share discoveries, champion freedom",
+        "focus_areas_hi": "व्यापक रूप से खोजें, निडरता से अनुकूल हों, खोजें साझा करें, स्वतंत्रता की वकालत करें",
+        "advice": "Your restlessness is a signal to grow, not to escape. Find the adventure within commitment.",
+        "advice_hi": "आपकी बेचैनी बढ़ने का संकेत है, पलायन का नहीं। प्रतिबद्धता के भीतर साहस खोजें।",
+    },
+    6: {
+        "theme": "Guardian of Love",
+        "theme_hi": "प्रेम का संरक्षक",
+        "description": "Your destiny centers on love, responsibility, and service to family and community. You are a natural counselor and protector. Your fulfillment comes from creating beauty and harmony in your surroundings.",
+        "description_hi": "आपकी नियति प्रेम, जिम्मेदारी और परिवार तथा समुदाय की सेवा पर केंद्रित है। आप एक प्राकृतिक परामर्शदाता और रक्षक हैं।",
+        "focus_areas": "Heal relationships, beautify spaces, counsel and protect, serve community",
+        "focus_areas_hi": "रिश्तों को ठीक करें, स्थानों को सुंदर बनाएं, परामर्श दें और रक्षा करें, समुदाय की सेवा करें",
+        "advice": "You cannot pour from an empty cup — nurture yourself first, then others.",
+        "advice_hi": "खाली कप से नहीं डाल सकते — पहले खुद का पोषण करें, फिर दूसरों का।",
+    },
+    7: {
+        "theme": "Wisdom Seeker",
+        "theme_hi": "ज्ञान खोजी",
+        "description": "Your destiny lies in the pursuit of truth and wisdom. You are a natural researcher, philosopher, and spiritual seeker. Depth of understanding, not breadth, is your path to mastery.",
+        "description_hi": "आपकी नियति सत्य और ज्ञान की खोज में निहित है। आप एक प्राकृतिक शोधकर्ता, दार्शनिक और आध्यात्मिक खोजी हैं।",
+        "focus_areas": "Research deeply, develop expertise, teach what you discover, seek spiritual truth",
+        "focus_areas_hi": "गहराई से शोध करें, विशेषज्ञता विकसित करें, जो खोजें उसे सिखाएं, आध्यात्मिक सत्य खोजें",
+        "advice": "Trust the process of going inward — your answers live in silence, not noise.",
+        "advice_hi": "भीतर जाने की प्रक्रिया पर भरोसा करें — आपके उत्तर शांति में हैं, शोर में नहीं।",
+    },
+    8: {
+        "theme": "Master of Power & Karma",
+        "theme_hi": "शक्ति और कर्म के स्वामी",
+        "description": "Your destiny is tied to material achievement and the responsible use of power. You are meant to build prosperity and influence, but karmic balance demands that you wield authority with fairness.",
+        "description_hi": "आपकी नियति भौतिक उपलब्धि और शक्ति के जिम्मेदार उपयोग से जुड़ी है। आप समृद्धि और प्रभाव बनाने के लिए बने हैं, लेकिन कर्म संतुलन के लिए न्यायपूर्ण अधिकार की आवश्यकता है।",
+        "focus_areas": "Build wealth with integrity, lead organizations, master financial systems",
+        "focus_areas_hi": "ईमानदारी से धन बनाएं, संगठनों का नेतृत्व करें, वित्तीय प्रणालियों में निपुण हों",
+        "advice": "Power is your destiny, not your identity. Serve through it, don't be consumed by it.",
+        "advice_hi": "शक्ति आपकी नियति है, आपकी पहचान नहीं। इसके माध्यम से सेवा करें, इसमें डूबें नहीं।",
+    },
+    9: {
+        "theme": "Universal Servant",
+        "theme_hi": "सार्वभौमिक सेवक",
+        "description": "Your destiny is humanitarian service on a grand scale. You are meant to give selflessly and inspire compassion in others. Letting go of personal attachment frees you to serve your highest calling.",
+        "description_hi": "आपकी नियति बड़े पैमाने पर मानवतावादी सेवा है। आप निःस्वार्थ रूप से देने और दूसरों में करुणा जगाने के लिए बने हैं।",
+        "focus_areas": "Philanthropy, global healing, inspire through art, teach universal love",
+        "focus_areas_hi": "परोपकार, वैश्विक उपचार, कला के माध्यम से प्रेरित करें, सार्वभौमिक प्रेम सिखाएं",
+        "advice": "Everything you release comes back tenfold. The more you give, the more you receive.",
+        "advice_hi": "आप जो छोड़ते हैं वह दस गुना लौटता है। जितना देते हैं, उतना पाते हैं।",
+    },
+    11: {
+        "theme": "Spiritual Illuminator",
+        "theme_hi": "आध्यात्मिक प्रकाशक",
+        "description": "Your destiny carries the weight of spiritual illumination. As a master number, you channel higher truths into the world. Visionary leadership and inspired teaching are your sacred responsibilities.",
+        "description_hi": "आपकी नियति आध्यात्मिक प्रकाश का भार वहन करती है। एक मास्टर अंक के रूप में, आप उच्च सत्यों को दुनिया में प्रसारित करते हैं।",
+        "focus_areas": "Inspire millions, channel higher wisdom, lead through example",
+        "focus_areas_hi": "लाखों को प्रेरित करें, उच्च ज्ञान को प्रसारित करें, उदाहरण के माध्यम से नेतृत्व करें",
+        "advice": "Your sensitivity is the antenna that picks up what others miss. Protect it, don't suppress it.",
+        "advice_hi": "आपकी संवेदनशीलता वह एंटीना है जो दूसरों से छूटा हुआ पकड़ती है। इसे संरक्षित करें, दबाएं नहीं।",
+    },
+    22: {
+        "theme": "Master Manifestor",
+        "theme_hi": "मास्टर प्रकटक",
+        "description": "Your destiny is to manifest visionary ideals in concrete form. You possess rare ability to combine spiritual insight with practical genius. Large-scale projects that serve humanity are your life work.",
+        "description_hi": "आपकी नियति दूरदर्शी आदर्शों को ठोस रूप में प्रकट करना है। आपके पास आध्यात्मिक अंतर्दृष्टि को व्यावहारिक प्रतिभा के साथ जोड़ने की दुर्लभ क्षमता है।",
+        "focus_areas": "Build institutions, create systems at scale, combine vision with discipline",
+        "focus_areas_hi": "संस्थाएं बनाएं, बड़े पैमाने पर प्रणालियां बनाएं, दृष्टि को अनुशासन के साथ जोड़ें",
+        "advice": "Dream at the level of 22, execute at the level of 4. Both are you.",
+        "advice_hi": "22 के स्तर पर सपने देखें, 4 के स्तर पर क्रियान्वित करें। दोनों आप हैं।",
+    },
+    33: {
+        "theme": "Master of Compassionate Service",
+        "theme_hi": "करुणामय सेवा के स्वामी",
+        "description": "Your destiny is the highest form of loving service. You are called to heal, teach, and uplift on a profound level. Selfless devotion to others transforms both you and those you touch.",
+        "description_hi": "आपकी नियति प्रेमपूर्ण सेवा का सर्वोच्च रूप है। आपको गहरे स्तर पर उपचार करने, सिखाने और उत्थान करने के लिए बुलाया गया है।",
+        "focus_areas": "Heal at the deepest level, teach unconditional love, serve without ego",
+        "focus_areas_hi": "गहरे स्तर पर उपचार करें, बिना शर्त प्रेम सिखाएं, अहंकार रहित सेवा करें",
+        "advice": "You carry the world's pain — learn to transmute it rather than absorb it.",
+        "advice_hi": "आप दुनिया का दर्द उठाते हैं — इसे अवशोषित करने के बजाय रूपांतरित करना सीखें।",
+    },
 }
 
-# Soul urge prediction templates (derived from vowels in name)
+# Soul Urge predictions (derived from vowels in name)
 SOUL_URGE_PREDICTIONS = {
-    1: "Deep within, you crave autonomy and the freedom to chart your own course. Your inner drive is to "
-       "be first, to originate, and to stand apart. Honoring this need for independence fuels your spirit.",
-    2: "Your soul yearns for deep connection and emotional harmony. You find inner peace through loving "
-       "partnerships and quiet acts of kindness. Being truly seen and valued by another fulfills you profoundly.",
-    3: "At your core, you desire joyful self-expression and creative freedom. Your inner world is vivid and "
-       "imaginative. Sharing your ideas, humor, and artistic vision with others nourishes your deepest self.",
-    4: "Your soul craves order, security, and a sense of accomplishment. You feel most at peace when life is "
-       "stable and your efforts produce tangible results. Building a solid foundation satisfies your inner need.",
-    5: "Your innermost desire is for freedom, variety, and sensory experience. Routine stifles your spirit. "
-       "You need adventure, travel, and the thrill of the unknown to feel truly alive.",
-    6: "Your soul longs to nurture, protect, and create a harmonious home. Love and family are your deepest "
-       "motivations. You feel most fulfilled when those you care for are happy and safe.",
-    7: "Your inner world craves solitude, reflection, and spiritual understanding. You need time alone to "
-       "think, meditate, and explore the mysteries of existence. Inner peace comes through contemplation.",
-    8: "Deep down, you desire recognition, achievement, and material security. You are driven to prove your "
-       "competence and build something of lasting value. Success and respect satisfy your soul.",
-    9: "Your soul urges you toward universal love and selfless giving. You feel most fulfilled when serving "
-       "a cause greater than yourself. Compassion and idealism are the wellsprings of your inner life.",
-    11: "Your soul carries an intense longing for spiritual truth and inspired purpose. You sense a higher "
-        "calling and feel restless until you align with it. Intuition is your most trusted inner guide.",
-    22: "Your deepest desire is to build something of lasting significance for humanity. Ordinary ambitions "
-        "feel hollow. You are driven by a vision so large that only disciplined mastery can bring it to life.",
-    33: "Your soul burns with compassion and a desire to heal the world. You carry the weight of empathy "
-        "for all living things. Channeling this love into service brings you the deepest possible fulfillment.",
+    1: {
+        "theme": "Inner Independence",
+        "theme_hi": "आंतरिक स्वतंत्रता",
+        "description": "Deep within, you crave autonomy and the freedom to chart your own course. Your inner drive is to be first, to originate, and to stand apart. Honoring this need for independence fuels your spirit.",
+        "description_hi": "गहरे भीतर, आप स्वायत्तता और अपना रास्ता खुद बनाने की स्वतंत्रता चाहते हैं। आपकी आंतरिक प्रेरणा पहले रहने, मौलिक होने और अलग खड़े होने की है।",
+        "advice": "Honour your need to lead from within. Don't shrink to fit others' comfort.",
+        "advice_hi": "भीतर से नेतृत्व करने की अपनी जरूरत का सम्मान करें। दूसरों की सुविधा के लिए खुद को छोटा मत करें।",
+    },
+    2: {
+        "theme": "Inner Harmony",
+        "theme_hi": "आंतरिक सामंजस्य",
+        "description": "Your soul yearns for deep connection and emotional harmony. You find inner peace through loving partnerships and quiet acts of kindness. Being truly seen and valued by another fulfills you profoundly.",
+        "description_hi": "आपकी आत्मा गहरे संबंध और भावनात्मक सामंजस्य के लिए तरसती है। आप प्रेमपूर्ण साझेदारी और दयालुता के शांत कार्यों के माध्यम से आंतरिक शांति पाते हैं।",
+        "advice": "Your need for connection is valid. Ask for what you need — others cannot read your silence.",
+        "advice_hi": "संबंध की आपकी जरूरत वैध है। जो चाहिए वह मांगें — दूसरे आपकी चुप्पी नहीं पढ़ सकते।",
+    },
+    3: {
+        "theme": "Inner Creative Fire",
+        "theme_hi": "आंतरिक रचनात्मक अग्नि",
+        "description": "At your core, you desire joyful self-expression and creative freedom. Your inner world is vivid and imaginative. Sharing your ideas, humor, and artistic vision with others nourishes your deepest self.",
+        "description_hi": "अपने मूल में, आप आनंदपूर्ण आत्म-अभिव्यक्ति और रचनात्मक स्वतंत्रता चाहते हैं। आपकी आंतरिक दुनिया जीवंत और कल्पनाशील है।",
+        "advice": "Create daily — not for perfection, but for the joy of it. Your art is therapy.",
+        "advice_hi": "प्रतिदिन बनाएं — पूर्णता के लिए नहीं, बल्कि इसके आनंद के लिए। आपकी कला चिकित्सा है।",
+    },
+    4: {
+        "theme": "Inner Security",
+        "theme_hi": "आंतरिक सुरक्षा",
+        "description": "Your soul craves order, security, and a sense of accomplishment. You feel most at peace when life is stable and your efforts produce tangible results. Building a solid foundation satisfies your inner need.",
+        "description_hi": "आपकी आत्मा व्यवस्था, सुरक्षा और उपलब्धि की भावना चाहती है। आप तब सबसे अधिक शांति में होते हैं जब जीवन स्थिर हो।",
+        "advice": "Security comes from within. No external structure will ever feel 'enough' until you trust yourself.",
+        "advice_hi": "सुरक्षा भीतर से आती है। जब तक आप खुद पर भरोसा नहीं करते, कोई बाहरी ढांचा 'पर्याप्त' नहीं लगेगा।",
+    },
+    5: {
+        "theme": "Inner Freedom",
+        "theme_hi": "आंतरिक स्वतंत्रता",
+        "description": "Your innermost desire is for freedom, variety, and sensory experience. Routine stifles your spirit. You need adventure, travel, and the thrill of the unknown to feel truly alive.",
+        "description_hi": "आपकी सबसे गहरी इच्छा स्वतंत्रता, विविधता और संवेदी अनुभव के लिए है। दिनचर्या आपकी आत्मा को दबाती है।",
+        "advice": "True freedom is internal. Master discipline so that you choose your adventures rather than flee from discomfort.",
+        "advice_hi": "सच्ची स्वतंत्रता आंतरिक है। अनुशासन में महारत हासिल करें ताकि आप असुविधा से भागने के बजाय अपने साहसिक कार्य चुनें।",
+    },
+    6: {
+        "theme": "Inner Love",
+        "theme_hi": "आंतरिक प्रेम",
+        "description": "Your soul longs to nurture, protect, and create a harmonious home. Love and family are your deepest motivations. You feel most fulfilled when those you care for are happy and safe.",
+        "description_hi": "आपकी आत्मा पोषण करने, सुरक्षा करने और सामंजस्यपूर्ण घर बनाने के लिए तरसती है। प्रेम और परिवार आपकी सबसे गहरी प्रेरणाएं हैं।",
+        "advice": "You are not responsible for everyone's happiness. Love generously but release the need to fix everything.",
+        "advice_hi": "आप सबकी खुशी के लिए जिम्मेदार नहीं हैं। उदारता से प्यार करें लेकिन सब कुछ ठीक करने की जरूरत छोड़ें।",
+    },
+    7: {
+        "theme": "Inner Wisdom",
+        "theme_hi": "आंतरिक ज्ञान",
+        "description": "Your inner world craves solitude, reflection, and spiritual understanding. You need time alone to think, meditate, and explore the mysteries of existence. Inner peace comes through contemplation.",
+        "description_hi": "आपकी आंतरिक दुनिया एकांत, चिंतन और आध्यात्मिक समझ चाहती है। आपको सोचने, ध्यान करने और अस्तित्व के रहस्यों का पता लगाने के लिए अकेले समय चाहिए।",
+        "advice": "Protect your inner silence fiercely. The world will pull you out — let your solitude be sacred.",
+        "advice_hi": "अपनी आंतरिक शांति की दृढ़ता से रक्षा करें। दुनिया आपको बाहर खींचेगी — अपने एकांत को पवित्र रहने दें।",
+    },
+    8: {
+        "theme": "Inner Achievement Drive",
+        "theme_hi": "आंतरिक उपलब्धि की प्रेरणा",
+        "description": "Deep down, you desire recognition, achievement, and material security. You are driven to prove your competence and build something of lasting value. Success and respect satisfy your soul.",
+        "description_hi": "गहरे भीतर, आप पहचान, उपलब्धि और भौतिक सुरक्षा चाहते हैं। आप अपनी क्षमता साबित करने और स्थायी मूल्य का कुछ बनाने के लिए प्रेरित हैं।",
+        "advice": "Chase significance, not just success. Build legacy — money is a byproduct, not the goal.",
+        "advice_hi": "सिर्फ सफलता नहीं, महत्व की ओर बढ़ें। विरासत बनाएं — पैसा उपोत्पाद है, लक्ष्य नहीं।",
+    },
+    9: {
+        "theme": "Inner Universal Love",
+        "theme_hi": "आंतरिक सार्वभौमिक प्रेम",
+        "description": "Your soul urges you toward universal love and selfless giving. You feel most fulfilled when serving a cause greater than yourself. Compassion and idealism are the wellsprings of your inner life.",
+        "description_hi": "आपकी आत्मा आपको सार्वभौमिक प्रेम और निःस्वार्थ दान की ओर प्रेरित करती है। जब आप खुद से बड़े किसी उद्देश्य की सेवा करते हैं तो आप सबसे अधिक संतुष्ट होते हैं।",
+        "advice": "Let go of what is finished. Clinging to the past blocks the universal flow meant for you.",
+        "advice_hi": "जो समाप्त हो गया उसे छोड़ दें। अतीत से चिपकना आपके लिए निर्धारित सार्वभौमिक प्रवाह को रोकता है।",
+    },
+    11: {
+        "theme": "Inner Spiritual Calling",
+        "theme_hi": "आंतरिक आध्यात्मिक पुकार",
+        "description": "Your soul carries an intense longing for spiritual truth and inspired purpose. You sense a higher calling and feel restless until you align with it. Intuition is your most trusted inner guide.",
+        "description_hi": "आपकी आत्मा आध्यात्मिक सत्य और प्रेरित उद्देश्य के लिए तीव्र लालसा वहन करती है। आप एक उच्च पुकार महसूस करते हैं और जब तक आप इसके साथ संरेखित नहीं होते तब तक बेचैन रहते हैं।",
+        "advice": "Stop seeking permission to be spiritual. Your calling is real — act on it now.",
+        "advice_hi": "आध्यात्मिक होने की अनुमति मांगना बंद करें। आपकी पुकार वास्तविक है — अभी इस पर कार्य करें।",
+    },
+    22: {
+        "theme": "Inner Vision for Humanity",
+        "theme_hi": "मानवता के लिए आंतरिक दृष्टि",
+        "description": "Your deepest desire is to build something of lasting significance for humanity. Ordinary ambitions feel hollow. You are driven by a vision so large that only disciplined mastery can bring it to life.",
+        "description_hi": "आपकी सबसे गहरी इच्छा मानवता के लिए स्थायी महत्व की कुछ चीज़ बनाना है। सामान्य महत्वाकांक्षाएं खोखली लगती हैं।",
+        "advice": "Your vision is not arrogance — it is your assignment. Find the team that can help you execute it.",
+        "advice_hi": "आपका दृष्टिकोण अहंकार नहीं है — यह आपका कार्यभार है। वह टीम खोजें जो इसे क्रियान्वित करने में मदद कर सके।",
+    },
+    33: {
+        "theme": "Inner Compassionate Fire",
+        "theme_hi": "आंतरिक करुणामय अग्नि",
+        "description": "Your soul burns with compassion and a desire to heal the world. You carry the weight of empathy for all living things. Channeling this love into service brings you the deepest possible fulfillment.",
+        "description_hi": "आपकी आत्मा करुणा और दुनिया को ठीक करने की इच्छा से जलती है। आप सभी जीवित प्राणियों के लिए सहानुभूति का बोझ वहन करते हैं।",
+        "advice": "Feel it all, but don't drown in it. Boundaries are acts of love, not betrayal.",
+        "advice_hi": "सब कुछ महसूस करें, लेकिन उसमें डूबें नहीं। सीमाएं प्रेम के कार्य हैं, विश्वासघात नहीं।",
+    },
 }
 
-# Personality number prediction templates (derived from consonants in name)
+# Personality predictions (derived from consonants in name)
 PERSONALITY_PREDICTIONS = {
-    1: "Others perceive you as confident, assertive, and self-assured. You project an image of strength and "
-       "capability. People naturally look to you for direction and are drawn to your decisive energy.",
-    2: "You come across as warm, approachable, and tactful. Others see you as a supportive listener and "
-       "a calming presence. Your gentle demeanor invites trust and puts people at ease.",
-    3: "You radiate charm, wit, and social magnetism. Others see you as entertaining, expressive, and full "
-       "of life. Your outward personality draws people in and makes social situations effortless.",
-    4: "Others perceive you as reliable, grounded, and hardworking. You project stability and competence. "
-       "People trust you with responsibility because your exterior signals discipline and dependability.",
-    5: "You appear dynamic, energetic, and magnetically attractive. Others see you as someone who embraces "
-       "life fully. Your outward persona suggests excitement, versatility, and a love of the unconventional.",
-    6: "Others see you as caring, responsible, and devoted. You project an aura of warmth and domestic "
-       "grace. People turn to you for comfort and counsel, sensing your genuine concern for their well-being.",
-    7: "You come across as reserved, intellectual, and somewhat mysterious. Others sense depth beneath "
-       "your calm exterior. Your dignified bearing commands respect and invites curiosity rather than casual approach.",
-    8: "Others perceive you as powerful, successful, and authoritative. You project an image of material "
-       "competence and executive ability. Your presence commands attention in professional settings.",
-    9: "You appear compassionate, worldly, and sophisticated. Others see you as someone with broad vision "
-       "and generous spirit. Your exterior projects tolerance, wisdom, and a noble bearing.",
-    11: "Others perceive you as inspired, charismatic, and slightly otherworldly. You project a luminous "
-        "quality that draws attention. People sense your heightened awareness and visionary nature.",
-    22: "You come across as exceptionally capable and ambitious on a grand scale. Others see a master "
-        "organizer with the power to transform ideas into reality. Your presence inspires confidence in large endeavors.",
-    33: "Others perceive you as deeply compassionate and selflessly devoted. You project an almost saintly "
-        "warmth that draws people seeking guidance. Your exterior radiates unconditional love and healing energy.",
+    1: {
+        "theme": "Projects Confidence",
+        "theme_hi": "आत्मविश्वास प्रकट करता है",
+        "description": "Others perceive you as confident, assertive, and self-assured. You project an image of strength and capability. People naturally look to you for direction and are drawn to your decisive energy.",
+        "description_hi": "दूसरे आपको आत्मविश्वासी, दृढ़ और आश्वस्त मानते हैं। आप शक्ति और क्षमता की छवि प्रकट करते हैं। लोग स्वाभाविक रूप से दिशा के लिए आपकी ओर देखते हैं।",
+        "advice": "Soften your exterior occasionally — vulnerability builds deeper trust than strength alone.",
+        "advice_hi": "कभी-कभी अपनी बाहरी कठोरता को नरम करें — भेद्यता अकेली ताकत से गहरा विश्वास बनाती है।",
+    },
+    2: {
+        "theme": "Projects Warmth",
+        "theme_hi": "गर्मजोशी प्रकट करता है",
+        "description": "You come across as warm, approachable, and tactful. Others see you as a supportive listener and a calming presence. Your gentle demeanor invites trust and puts people at ease.",
+        "description_hi": "आप गर्म, सुलभ और चतुर लगते हैं। दूसरे आपको एक सहायक श्रोता और शांत उपस्थिति के रूप में देखते हैं।",
+        "advice": "Your softness is not weakness. Own it as your most disarming and powerful trait.",
+        "advice_hi": "आपकी कोमलता कमज़ोरी नहीं है। इसे अपनी सबसे निरस्त्रीकरण और शक्तिशाली विशेषता के रूप में स्वीकार करें।",
+    },
+    3: {
+        "theme": "Projects Charisma",
+        "theme_hi": "करिश्मा प्रकट करता है",
+        "description": "You radiate charm, wit, and social magnetism. Others see you as entertaining, expressive, and full of life. Your outward personality draws people in and makes social situations effortless.",
+        "description_hi": "आप आकर्षण, बुद्धिमत्ता और सामाजिक चुंबकत्व विकीर्ण करते हैं। दूसरे आपको मनोरंजक, अभिव्यंजक और जीवन से भरपूर देखते हैं।",
+        "advice": "Don't perform joy — embody it. People sense when the mask slips.",
+        "advice_hi": "आनंद का प्रदर्शन मत करें — इसे जिएं। लोग तब महसूस करते हैं जब नकाब फिसलता है।",
+    },
+    4: {
+        "theme": "Projects Reliability",
+        "theme_hi": "विश्वसनीयता प्रकट करता है",
+        "description": "Others perceive you as reliable, grounded, and hardworking. You project stability and competence. People trust you with responsibility because your exterior signals discipline and dependability.",
+        "description_hi": "दूसरे आपको विश्वसनीय, ज़मीन से जुड़े और मेहनती मानते हैं। आप स्थिरता और क्षमता प्रकट करते हैं।",
+        "advice": "Let people see your passion, not just your process. Warmth builds loyalty beyond competence.",
+        "advice_hi": "लोगों को अपनी प्रक्रिया नहीं, अपना जुनून देखने दें। गर्मजोशी क्षमता से परे वफादारी बनाती है।",
+    },
+    5: {
+        "theme": "Projects Dynamic Energy",
+        "theme_hi": "गतिशील ऊर्जा प्रकट करता है",
+        "description": "You appear dynamic, energetic, and magnetically attractive. Others see you as someone who embraces life fully. Your outward persona suggests excitement, versatility, and a love of the unconventional.",
+        "description_hi": "आप गतिशील, ऊर्जावान और चुंबकीय रूप से आकर्षक दिखते हैं। दूसरे आपको ऐसे व्यक्ति के रूप में देखते हैं जो जीवन को पूरी तरह अपनाता है।",
+        "advice": "Your energy inspires — channel it with focus so others can follow, not just admire.",
+        "advice_hi": "आपकी ऊर्जा प्रेरित करती है — इसे केंद्रित रूप से प्रसारित करें ताकि दूसरे अनुसरण कर सकें, न केवल प्रशंसा।",
+    },
+    6: {
+        "theme": "Projects Nurturing Care",
+        "theme_hi": "पोषणकारी देखभाल प्रकट करता है",
+        "description": "Others see you as caring, responsible, and devoted. You project an aura of warmth and domestic grace. People turn to you for comfort and counsel, sensing your genuine concern for their well-being.",
+        "description_hi": "दूसरे आपको देखभाल करने वाले, जिम्मेदार और समर्पित देखते हैं। आप गर्मजोशी और घरेलू अनुग्रह का आभामंडल प्रकट करते हैं।",
+        "advice": "You attract those who need healing — discern who is growing versus who is draining.",
+        "advice_hi": "आप उन लोगों को आकर्षित करते हैं जिन्हें उपचार की जरूरत है — जो बढ़ रहे हैं और जो थका रहे हैं उनमें भेद करें।",
+    },
+    7: {
+        "theme": "Projects Mysterious Depth",
+        "theme_hi": "रहस्यमय गहराई प्रकट करता है",
+        "description": "You come across as reserved, intellectual, and somewhat mysterious. Others sense depth beneath your calm exterior. Your dignified bearing commands respect and invites curiosity rather than casual approach.",
+        "description_hi": "आप आरक्षित, बौद्धिक और कुछ हद तक रहस्यमय लगते हैं। दूसरे आपकी शांत बाहरी उपस्थिति के नीचे गहराई महसूस करते हैं।",
+        "advice": "Let a few chosen people in. True intimacy is not a threat to your solitude — it deepens it.",
+        "advice_hi": "कुछ चुने हुए लोगों को अंदर आने दें। सच्ची अंतरंगता आपके एकांत के लिए खतरा नहीं है — यह इसे गहरा करती है।",
+    },
+    8: {
+        "theme": "Projects Authority",
+        "theme_hi": "अधिकार प्रकट करता है",
+        "description": "Others perceive you as powerful, successful, and authoritative. You project an image of material competence and executive ability. Your presence commands attention in professional settings.",
+        "description_hi": "दूसरे आपको शक्तिशाली, सफल और अधिकारपूर्ण मानते हैं। आप भौतिक क्षमता और कार्यकारी योग्यता की छवि प्रकट करते हैं।",
+        "advice": "Approachability is a superpower for those in authority. Lower the walls occasionally.",
+        "advice_hi": "सुलभता उन लोगों के लिए महाशक्ति है जो अधिकार में हैं। कभी-कभी दीवारें कम करें।",
+    },
+    9: {
+        "theme": "Projects Worldly Wisdom",
+        "theme_hi": "सांसारिक ज्ञान प्रकट करता है",
+        "description": "You appear compassionate, worldly, and sophisticated. Others see you as someone with broad vision and generous spirit. Your exterior projects tolerance, wisdom, and a noble bearing.",
+        "description_hi": "आप करुणामय, सांसारिक और परिष्कृत दिखते हैं। दूसरे आपको व्यापक दृष्टि और उदार आत्मा वाले व्यक्ति के रूप में देखते हैं।",
+        "advice": "Don't give so much that you disappear. Your identity matters as much as your generosity.",
+        "advice_hi": "इतना मत दें कि आप गायब हो जाएं। आपकी पहचान आपकी उदारता जितनी ही मायने रखती है।",
+    },
+    11: {
+        "theme": "Projects Luminous Inspiration",
+        "theme_hi": "प्रकाशमान प्रेरणा प्रकट करता है",
+        "description": "Others perceive you as inspired, charismatic, and slightly otherworldly. You project a luminous quality that draws attention. People sense your heightened awareness and visionary nature.",
+        "description_hi": "दूसरे आपको प्रेरित, करिश्माई और थोड़ा अलौकिक मानते हैं। आप एक प्रकाशमान गुण प्रकट करते हैं जो ध्यान आकर्षित करता है।",
+        "advice": "Your presence already inspires — trust that and stop trying to earn the room's approval.",
+        "advice_hi": "आपकी उपस्थिति पहले से प्रेरित करती है — उस पर भरोसा करें और कमरे की स्वीकृति अर्जित करने की कोशिश बंद करें।",
+    },
+    22: {
+        "theme": "Projects Masterful Capability",
+        "theme_hi": "दक्ष क्षमता प्रकट करता है",
+        "description": "You come across as exceptionally capable and ambitious on a grand scale. Others see a master organizer with the power to transform ideas into reality. Your presence inspires confidence in large endeavors.",
+        "description_hi": "आप बड़े पैमाने पर असाधारण रूप से सक्षम और महत्वाकांक्षी लगते हैं। दूसरे आपको विचारों को वास्तविकता में बदलने की शक्ति वाले मास्टर आयोजक के रूप में देखते हैं।",
+        "advice": "Show your humanity alongside your mastery. Greatness with warmth endures longest.",
+        "advice_hi": "अपनी महारत के साथ अपनी मानवता दिखाएं। गर्मजोशी के साथ महानता सबसे लंबे समय तक टिकती है।",
+    },
+    33: {
+        "theme": "Projects Unconditional Compassion",
+        "theme_hi": "बिना शर्त करुणा प्रकट करता है",
+        "description": "Others perceive you as deeply compassionate and selflessly devoted. You project an almost saintly warmth that draws people seeking guidance. Your exterior radiates unconditional love and healing energy.",
+        "description_hi": "दूसरे आपको गहरे करुणामय और निःस्वार्थ रूप से समर्पित मानते हैं। आप एक लगभग संत जैसी गर्मजोशी प्रकट करते हैं जो मार्गदर्शन मांगने वाले लोगों को आकर्षित करती है।",
+        "advice": "You cannot save everyone. Discern where your healing is wanted versus where it is projected onto you.",
+        "advice_hi": "आप सबको नहीं बचा सकते। पहचानें कि आपका उपचार कहाँ चाहा जाता है बनाम कहाँ आप पर प्रक्षेपित किया जाता है।",
+    },
 }
 
 
@@ -2019,9 +2367,13 @@ def calculate_mobile_numerology(
     }
 
     # DOB-based features (only present when birth_date provided)
+    # NOTE: loshu_grid, loshu_values, missing_numbers here are derived from the
+    # owner's date of birth — NOT from the phone number digits. Shown for
+    # compatibility reference alongside the phone vibration analysis.
     if loshu_data is not None:
         result["loshu_grid"] = loshu_data["grid"]
         result["loshu_values"] = loshu_data["values"]
+        result["loshu_source"] = "birth_date"
         # Lo Shu interpretation features
         dob_digits = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"] if birth_date else []
         if dob_digits:
@@ -2355,6 +2707,89 @@ def _reduce_to_single(n: int) -> int:
     return n
 
 
+# Personal Year predictions keyed by number (1-9)
+_PERSONAL_YEAR_PREDICTIONS: dict = {
+    1: {
+        "theme": "New Beginnings", "theme_hi": "नई शुरुआत",
+        "description": "A year of planting seeds. Start new projects, establish independence, and take bold action. What you initiate now sets the tone for the next 9-year cycle.",
+        "description_hi": "बीज बोने का वर्ष। नई परियोजनाएं शुरू करें, स्वतंत्रता स्थापित करें और साहसी कदम उठाएं। आप जो अभी शुरू करते हैं वह अगले 9 वर्षों के चक्र का आधार बनता है।",
+        "focus": "Initiation, independence, leadership, self-development",
+        "focus_hi": "शुरुआत, स्वतंत्रता, नेतृत्व, आत्म-विकास",
+    },
+    2: {
+        "theme": "Cooperation & Patience", "theme_hi": "सहयोग और धैर्य",
+        "description": "A year of relationships and diplomacy. Focus on partnerships, building trust, and developing patience. Progress is subtle but foundations are strengthening.",
+        "description_hi": "रिश्तों और कूटनीति का वर्ष। साझेदारी पर ध्यान दें, विश्वास बनाएं और धैर्य विकसित करें। प्रगति सूक्ष्म है लेकिन नींव मजबूत हो रही है।",
+        "focus": "Partnerships, diplomacy, emotional healing, listening",
+        "focus_hi": "साझेदारी, कूटनीति, भावनात्मक उपचार, सुनना",
+    },
+    3: {
+        "theme": "Expression & Growth", "theme_hi": "अभिव्यक्ति और विकास",
+        "description": "A vibrant year of creativity and social expansion. Express yourself boldly — through art, writing, or communication. Joy and abundance follow authentic self-expression.",
+        "description_hi": "रचनात्मकता और सामाजिक विस्तार का जीवंत वर्ष। साहसपूर्वक खुद को व्यक्त करें — कला, लेखन या संवाद के माध्यम से।",
+        "focus": "Creativity, joy, socializing, self-expression, communication",
+        "focus_hi": "रचनात्मकता, आनंद, सामाजिकता, आत्म-अभिव्यक्ति",
+    },
+    4: {
+        "theme": "Work & Foundation", "theme_hi": "कार्य और नींव",
+        "description": "A year of building and consolidating. Hard work, discipline, and practical systems are required. Avoid shortcuts — what you build now lasts decades.",
+        "description_hi": "निर्माण और समेकन का वर्ष। कठिन परिश्रम, अनुशासन और व्यावहारिक प्रणालियां आवश्यक हैं। शॉर्टकट से बचें।",
+        "focus": "Discipline, organization, health, career foundations, financial planning",
+        "focus_hi": "अनुशासन, संगठन, स्वास्थ्य, करियर की नींव, वित्तीय योजना",
+    },
+    5: {
+        "theme": "Freedom & Change", "theme_hi": "स्वतंत्रता और परिवर्तन",
+        "description": "A dynamic year of change and new experiences. Travel, opportunities, and unexpected shifts keep life exciting. Stay adaptable and embrace transformation.",
+        "description_hi": "परिवर्तन और नए अनुभवों का गतिशील वर्ष। यात्रा, अवसर और अप्रत्याशित बदलाव जीवन को रोमांचक बनाते हैं।",
+        "focus": "Travel, change, freedom, versatility, adventure",
+        "focus_hi": "यात्रा, परिवर्तन, स्वतंत्रता, बहुमुखी प्रतिभा, साहस",
+    },
+    6: {
+        "theme": "Home & Responsibility", "theme_hi": "घर और जिम्मेदारी",
+        "description": "A year of love, family, and service. Focus on home, relationships, and community. Healing occurs in close relationships when you lead with compassion.",
+        "description_hi": "प्रेम, परिवार और सेवा का वर्ष। घर, रिश्तों और समुदाय पर ध्यान दें। करुणा के साथ नेतृत्व करने पर घनिष्ठ संबंधों में उपचार होता है।",
+        "focus": "Family, home, service, healing, beauty, responsibility",
+        "focus_hi": "परिवार, घर, सेवा, उपचार, सौंदर्य, जिम्मेदारी",
+    },
+    7: {
+        "theme": "Reflection & Wisdom", "theme_hi": "चिंतन और ज्ञान",
+        "description": "A year of inner work and spiritual deepening. Study, meditate, and go within. Answers come from silence, not external activity. Trust the process.",
+        "description_hi": "आंतरिक कार्य और आध्यात्मिक गहराई का वर्ष। अध्ययन करें, ध्यान करें और भीतर जाएं। उत्तर मौन से आते हैं, बाहरी गतिविधि से नहीं।",
+        "focus": "Spirituality, research, introspection, analysis, solitude",
+        "focus_hi": "आध्यात्मिकता, शोध, आत्म-चिंतन, विश्लेषण, एकांत",
+    },
+    8: {
+        "theme": "Power & Achievement", "theme_hi": "शक्ति और उपलब्धि",
+        "description": "A year of material achievement and karmic harvest. Business, finance, and authority matters come to a head. Reap what you have sown in previous years.",
+        "description_hi": "भौतिक उपलब्धि और कर्म फल का वर्ष। व्यवसाय, वित्त और अधिकार के मामले प्रमुख हो जाते हैं।",
+        "focus": "Business, finances, career advancement, authority, manifestation",
+        "focus_hi": "व्यापार, वित्त, करियर उन्नति, अधिकार, अभिव्यक्ति",
+    },
+    9: {
+        "theme": "Completion & Release", "theme_hi": "समापन और मुक्ति",
+        "description": "A year of endings and release. Let go of what no longer serves you — relationships, habits, beliefs. Compassionate service to others accelerates your own healing.",
+        "description_hi": "अंत और मुक्ति का वर्ष। जो आपकी सेवा नहीं करता उसे जाने दें — रिश्ते, आदतें, विश्वास। दूसरों की करुणामय सेवा आपके अपने उपचार को तेज करती है।",
+        "focus": "Completion, forgiveness, service, letting go, compassion",
+        "focus_hi": "समापन, क्षमा, सेवा, त्याग, करुणा",
+    },
+}
+
+
+def _personal_year_number(birth_date: str, target_year: int = None) -> int:
+    """
+    Personal Year Number = reduce(birth_month + birth_day + target_year_digits).
+    Changes on January 1 of each year.
+    """
+    from datetime import date as _date
+    if target_year is None:
+        target_year = _date.today().year
+    parts = birth_date.split("-")
+    month_sum = _reduce_to_single(int(parts[1]))
+    day_sum = _reduce_to_single(int(parts[2]))
+    year_sum = _reduce_to_single(sum(int(d) for d in str(target_year)))
+    return _reduce_to_single(month_sum + day_sum + year_sum)
+
+
 def _life_path(birth_date: str) -> int:
     """
     Calculate life path number from birth date string (YYYY-MM-DD).
@@ -2576,12 +3011,18 @@ def _calculate_life_cycles(birth_date: str) -> dict:
 
     cycles = [
         {"number": month_cycle, "period": "Early Life (Birth to ~28)", "period_hi": "प्रारंभिक जीवन (जन्म से ~28)",
+         "stage_note": "In early life, this number shapes identity formation, family patterns, and foundational beliefs.",
+         "stage_note_hi": "प्रारंभिक जीवन में यह अंक पहचान, पारिवारिक स्वरूप और मूल विश्वासों को आकार देता है।",
          "theme": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(month_cycle, LIFE_CYCLE_PREDICTIONS[9])},
         {"number": day_cycle, "period": "Middle Life (~28 to ~56)", "period_hi": "मध्य जीवन (~28 से ~56)",
+         "stage_note": "In middle life, this number governs career ambitions, relationships, and material achievement.",
+         "stage_note_hi": "मध्य जीवन में यह अंक करियर, रिश्ते और भौतिक उपलब्धि को नियंत्रित करता है।",
          "theme": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(day_cycle, LIFE_CYCLE_PREDICTIONS[9])},
         {"number": year_cycle, "period": "Later Life (~56+)", "period_hi": "उत्तर जीवन (~56 से आगे)",
+         "stage_note": "In later life, this number reflects legacy, wisdom, and spiritual completions.",
+         "stage_note_hi": "उत्तर जीवन में यह अंक विरासत, ज्ञान और आध्यात्मिक पूर्णता को दर्शाता है।",
          "theme": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])["theme"],
          "prediction": LIFE_CYCLE_PREDICTIONS.get(year_cycle, LIFE_CYCLE_PREDICTIONS[9])},
     ]
@@ -2678,11 +3119,15 @@ def analyze_name_numerology(
     if birth_date and '-' in birth_date:
         try:
             life_path = _life_path(birth_date)
+            _lp_friends = PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set())
+            _lp_enemies = PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set())
+            _name_friendly = pythagorean_total in _lp_friends or pythagorean_total == life_path
+            _name_enemy = pythagorean_total in _lp_enemies
             life_path_compat = {
                 "life_path": life_path,
                 "name_number": pythagorean_total,
-                "is_compatible": pythagorean_total in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set())
-                               or pythagorean_total == life_path,
+                "is_compatible": _name_friendly,
+                "is_neutral": not _name_friendly and not _name_enemy,
                 "compatibility_note": _get_name_life_path_compatibility(pythagorean_total, life_path)
             }
         except (ValueError, IndexError):
@@ -2787,10 +3232,14 @@ def calculate_vehicle_numerology(vehicle_number: str, owner_name: str = "", birt
     if birth_date and '-' in birth_date:
         try:
             life_path = _life_path(birth_date)
+            _veh_recommended = vehicle_number_vibration in RECOMMENDED_TOTALS.get(life_path, [])
+            _veh_friendly = vehicle_number_vibration in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set())
+            _veh_enemy = vehicle_number_vibration in PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set())
             owner_compat = {
                 "owner_life_path": life_path,
                 "vehicle_number": vehicle_number_vibration,
-                "is_favorable": vehicle_number_vibration in RECOMMENDED_TOTALS.get(life_path, []),
+                "is_favorable": _veh_recommended or _veh_friendly,
+                "is_neutral": not _veh_recommended and not _veh_friendly and not _veh_enemy,
                 "recommendation": _get_vehicle_recommendation(vehicle_number_vibration, life_path)
             }
         except (ValueError, IndexError):
@@ -2967,10 +3416,14 @@ def calculate_house_numerology(address: str, birth_date: str = "") -> dict:
     if birth_date and '-' in birth_date:
         try:
             life_path = _life_path(birth_date)
+            _house_recommended = house_vibration in RECOMMENDED_TOTALS.get(life_path, [])
+            _house_friendly = house_vibration in PLANET_RELATIONSHIPS.get(life_path, {}).get("friends", set())
+            _house_enemy = house_vibration in PLANET_RELATIONSHIPS.get(life_path, {}).get("enemies", set())
             resident_compat = {
                 "resident_life_path": life_path,
                 "house_number": house_vibration,
-                "is_ideal": house_vibration in RECOMMENDED_TOTALS.get(life_path, []),
+                "is_ideal": _house_recommended or house_vibration == life_path,
+                "is_neutral": not _house_recommended and not _house_friendly and not _house_enemy and house_vibration != life_path,
                 "compatibility_score": _calculate_house_compatibility(house_vibration, life_path),
                 "recommendation": _get_house_recommendation(house_vibration, life_path)
             }
@@ -3191,6 +3644,7 @@ def _hidden_passion(name: str) -> dict:
         "count": counts[max_num],
         "tie_detected": tie_detected,
         "tied_numbers": top_nums if tie_detected else [],
+        "tied_meanings": {str(n): HIDDEN_PASSION_PREDICTIONS.get(n, {}) for n in top_nums} if tie_detected else {},
         **HIDDEN_PASSION_PREDICTIONS.get(max_num, {}),
     }
 
@@ -3426,6 +3880,16 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
     birthday_reduced = _birthday_number(birth_date)  # reduced to single/master
     maturity = _maturity_number(life_path, destiny)
 
+    from datetime import date as _today_date
+    current_year = _today_date.today().year
+    personal_year = _personal_year_number(birth_date, current_year)
+    next_year_personal = _personal_year_number(birth_date, current_year + 1)
+
+    def _py_pred(n: int) -> dict:
+        # Master numbers 11→2, 22→4, 33→6 for prediction lookup
+        base = {11: 2, 22: 4, 33: 6}.get(n, n)
+        return _PERSONAL_YEAR_PREDICTIONS.get(base, _PERSONAL_YEAR_PREDICTIONS[9])
+
     return {
         "life_path": life_path,
         "destiny": destiny,
@@ -3451,5 +3915,11 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "loshu_arrows": analyze_loshu_arrows(dob_digits),
         "loshu_planes": analyze_loshu_planes(dob_digits),
         "missing_numbers": analyze_missing_numbers(dob_digits),
+        "missing_numbers_source": "birth_date",
         "repeated_numbers": analyze_repeated_numbers(dob_digits),
+        # Personal Year Number — changes each Jan 1
+        "personal_year": personal_year,
+        "personal_year_prediction": _py_pred(personal_year),
+        "next_personal_year": next_year_personal,
+        "next_personal_year_prediction": _py_pred(next_year_personal),
     }

@@ -16,11 +16,23 @@ import VehicleNumerology from './VehicleNumerology';
 import HouseNumerology from './HouseNumerology';
 import { Heading } from "@/components/ui/heading";
 
+interface PredictionEntry {
+  theme?: string;
+  theme_hi?: string;
+  description?: string;
+  description_hi?: string;
+  focus_areas?: string[];
+  focus_areas_hi?: string[];
+  advice?: string;
+  advice_hi?: string;
+  lucky_months?: number[];
+}
+
 interface NumerologyPredictions {
-  life_path: string;
-  destiny: string;
-  soul_urge: string;
-  personality: string;
+  life_path: string | PredictionEntry;
+  destiny: string | PredictionEntry;
+  soul_urge: string | PredictionEntry;
+  personality: string | PredictionEntry;
 }
 
 interface NumerologyResult {
@@ -366,16 +378,45 @@ export default function NumerologyTabs() {
                         { key: 'soul_urge' as const, label: t('numerology.soulUrge'), headerColor: 'bg-green-100 text-green-800', borderColor: 'border-green-300' },
                         { key: 'personality' as const, label: t('numerology.personality'), headerColor: 'bg-yellow-100 text-yellow-800', borderColor: 'border-yellow-500' },
                       ].map((section) => {
-                        const text = (numResult.predictions as NumerologyPredictions)[section.key];
-                        if (!text) return null;
+                        const pred = (numResult.predictions as NumerologyPredictions)[section.key];
+                        if (!pred) return null;
+                        const isStructured = typeof pred === 'object';
+                        const theme = isStructured ? pick(pred as any, 'theme') : '';
+                        const description = isStructured ? pick(pred as any, 'description') : (pred as string);
+                        const focusAreas: string[] = isStructured
+                          ? ((isHi && (pred as any).focus_areas_hi) ? (pred as any).focus_areas_hi : (pred as any).focus_areas) || []
+                          : [];
+                        const advice = isStructured ? pick(pred as any, 'advice') : '';
+                        const luckyMonths: number[] = isStructured ? (pred as any).lucky_months || [] : [];
                         return (
                           <div key={section.key} className={`rounded-xl border ${section.borderColor} overflow-hidden`}>
                             <div className={`px-4 py-2 ${section.headerColor} font-medium text-sm flex items-center gap-2`}>
                               <Sparkles className="w-4 h-4 shrink-0" />
                               {section.label} {t('numerology.number')}
+                              {theme && <span className="ml-auto text-xs font-normal opacity-80">{theme}</span>}
                             </div>
-                            <div className="px-4 py-3">
-                              <p className="text-sm text-muted-foreground leading-relaxed">{text}</p>
+                            <div className="px-4 py-3 space-y-2">
+                              {description && <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>}
+                              {!!focusAreas.length && (
+                                <p className="text-xs text-muted-foreground">
+                                  <span className="font-medium text-foreground">{isHi ? 'फोकस क्षेत्र' : 'Focus Areas'}:</span>{' '}
+                                  {Array.isArray(focusAreas) ? focusAreas.join(', ') : focusAreas}
+                                </p>
+                              )}
+                              {advice && (
+                                <p className="text-xs text-muted-foreground">
+                                  <span className="font-medium text-foreground">{isHi ? 'सलाह' : 'Advice'}:</span>{' '}
+                                  {advice}
+                                </p>
+                              )}
+                              {!!luckyMonths.length && (
+                                <div className="flex gap-1 items-center flex-wrap">
+                                  <span className="text-xs text-muted-foreground font-medium">{isHi ? 'भाग्यशाली महीने' : 'Lucky Months'}:</span>
+                                  {luckyMonths.map((m: number) => (
+                                    <Badge key={m} className="bg-sacred-gold/20 text-sacred-gold-dark text-[10px] px-1.5 py-0">{m}</Badge>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -476,6 +517,23 @@ export default function NumerologyTabs() {
                           <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                             {isHi ? (numResult.hidden_passion.meaning_hi || numResult.hidden_passion.meaning) : numResult.hidden_passion.meaning}
                           </p>
+                        )}
+                        {numResult.hidden_passion.tie_detected && !!numResult.hidden_passion.tied_numbers?.length && (
+                          <div className="mt-2 border-t border-amber-200 pt-2">
+                            <p className="text-[10px] text-amber-700 font-medium">
+                              {isHi ? 'बंधे हुए अंक' : 'Tied with'}: {numResult.hidden_passion.tied_numbers.join(', ')}
+                            </p>
+                            {numResult.hidden_passion.tied_meanings && Object.keys(numResult.hidden_passion.tied_meanings).length > 1 && (
+                              <div className="mt-1 space-y-1">
+                                {Object.entries(numResult.hidden_passion.tied_meanings).map(([n, m]: [string, any]) => (
+                                  <p key={n} className="text-[10px] text-muted-foreground">
+                                    <span className="font-medium text-foreground">{n}:</span>{' '}
+                                    {isHi ? (m.meaning_hi || m.meaning) : m.meaning}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     )}
@@ -702,6 +760,11 @@ export default function NumerologyTabs() {
                               <p className="text-xs text-muted-foreground mt-1">
                                 {isHi ? (c.period_hi || c.period) : c.period}
                               </p>
+                              {c.stage_note && (
+                                <p className="text-[10px] text-blue-600 italic mt-0.5">
+                                  {isHi ? (c.stage_note_hi || c.stage_note) : c.stage_note}
+                                </p>
+                              )}
                               <Badge className="mt-2 bg-green-100 text-green-800">{c.number}</Badge>
                               {c.prediction?.title && (
                                 <p className="text-xs text-muted-foreground mt-2 font-medium">
@@ -821,7 +884,14 @@ export default function NumerologyTabs() {
                 {/* Missing Numbers Remedies (DOB) */}
                 {!!numResult.missing_numbers?.length && (
                   <div className="space-y-3">
-                    <Heading as={5} variant={5}>{t('numerology.missingNumbers')}</Heading>
+                    <div className="flex items-center gap-2">
+                      <Heading as={5} variant={5}>{t('numerology.missingNumbers')}</Heading>
+                      {(numResult as any).missing_numbers_source && (
+                        <Badge className="bg-gray-100 text-gray-600 text-[10px] font-normal">
+                          {isHi ? 'स्रोत: जन्म तिथि' : 'Source: Birth Date'}
+                        </Badge>
+                      )}
+                    </div>
                     <div className="space-y-2">
                       {numResult.missing_numbers.map((m: any) => (
                         <div key={m.number} className="rounded-xl border border-sacred-gold/25 bg-sacred-gold/5 p-4">

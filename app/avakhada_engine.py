@@ -577,6 +577,10 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
     # --- Ghatak (malefics) ---
     ghatak = _calculate_ghatak(nakshatra_idx)
 
+    # Planets appearing in both good_planets and ghatak.bad_planets — classical ambiguity
+    # (two independent systems: nakshatra-lord friendship vs nakshatra-group malefics)
+    conflict_planets = [p for p in good_planets if p in ghatak.get("bad_planets", [])]
+
     return {
         "ascendant": asc_sign,
         "ascendant_lord": asc_lord,
@@ -611,6 +615,7 @@ def calculate_avakhada(chart_data: dict, birth_date: str = "") -> dict:
         "good_years": good_years,
         "lucky_days": lucky_days,
         "good_planets": good_planets,
+        "conflict_planets": conflict_planets,
         # Lagna-based fields
         "friendly_signs": friendly_signs,
         "good_lagna": good_lagna,

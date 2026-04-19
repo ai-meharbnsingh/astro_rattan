@@ -44,22 +44,25 @@ class TestNormaliseTithi:
 # ============================================================
 
 class TestSarvarthaSiddhi:
-    def test_active_tithi_match_sunday_dwitiya(self):
-        """Sunday (0) + Dwitiya (2) → active via tithi."""
-        result = calculate_sarvartha_siddhi(0, 2, "Bharani")
+    def test_active_tithi_match_sunday_shashthi(self):
+        """Sunday (0) + Shashthi (6) → active via tithi (Nanda tithi group for Sunday).
+        Drik cross-validation Apr 19 2026 confirmed Dwitiya/Sunday is NOT SS;
+        Sunday uses Nanda tithis [1,6,11] per Muhurta Martand."""
+        result = calculate_sarvartha_siddhi(0, 6, "Bharani")
         assert result["active"] is True
         assert result["type"] == "partial"
         assert result["name"] == "Sarvartha Siddhi Yoga"
         assert result["name_hindi"] == "सर्वार्थ सिद्धि योग"
 
     def test_active_nakshatra_match_sunday_pushya(self):
-        """Sunday (0) + Pushya nakshatra → active via nakshatra."""
+        """Sunday (0) + Pushya nakshatra → active via nakshatra → whole_day.
+        Nakshatra spans the full day, so nakshatra-match type is whole_day."""
         result = calculate_sarvartha_siddhi(0, 4, "Pushya")  # tithi 4 not in Sunday list
         assert result["active"] is True
-        assert result["type"] == "partial"
+        assert result["type"] == "whole_day"
 
-    def test_active_both_match_whole_day(self):
-        """Sunday (0) + Dwitiya (2) + Hasta → whole_day (both match)."""
+    def test_active_nakshatra_match_whole_day(self):
+        """Sunday (0) + Hasta → nakshatra match → whole_day (nakshatra spans all day)."""
         result = calculate_sarvartha_siddhi(0, 2, "Hasta")
         assert result["active"] is True
         assert result["type"] == "whole_day"
@@ -80,8 +83,9 @@ class TestSarvarthaSiddhi:
         assert result["active"] is True
 
     def test_krishna_paksha_tithi_normalised(self):
-        """Sunday (0) + Krishna Dwitiya (17) → normalises to 2 → active."""
-        result = calculate_sarvartha_siddhi(0, 17, "Bharani")
+        """Sunday (0) + Krishna Shashthi (21) → normalises to 6 → active via tithi.
+        Drik confirmed Sunday uses Nanda tithis [1,6,11]; 21 normalises to 6."""
+        result = calculate_sarvartha_siddhi(0, 21, "Bharani")
         assert result["active"] is True
 
     def test_wednesday_anuradha(self):
@@ -146,46 +150,48 @@ class TestAmritSiddhi:
 # ============================================================
 
 class TestDwipushkar:
-    def test_active_sunday_dwitiya_chitra(self):
-        """Sunday (0) + Dwitiya (2) + Chitra → active."""
-        result = calculate_dwipushkar(0, 2, "Chitra")
+    # Dwipushkar tithis corrected to [3,8,13] (Tritiya/Ashtami/Trayodashi)
+    # verified: Drik Panchang fires Tripushkar (not Dwipushkar) for Dwitiya+Krittika+Sunday (Apr 19 2026)
+    def test_active_sunday_tritiya_chitra(self):
+        """Sunday (0) + Tritiya (3) + Chitra → active."""
+        result = calculate_dwipushkar(0, 3, "Chitra")
         assert result["active"] is True
         assert result["name"] == "Dwipushkar Yoga"
         assert result["name_hindi"] == "द्विपुष्कर योग"
 
-    def test_active_tuesday_saptami_mrigashira(self):
-        """Tuesday (2) + Saptami (7) + Mrigashira → active."""
-        result = calculate_dwipushkar(2, 7, "Mrigashira")
+    def test_active_tuesday_ashtami_mrigashira(self):
+        """Tuesday (2) + Ashtami (8) + Mrigashira → active."""
+        result = calculate_dwipushkar(2, 8, "Mrigashira")
         assert result["active"] is True
 
-    def test_active_saturday_dwadashi_vishakha(self):
-        """Saturday (6) + Dwadashi (12) + Vishakha → active."""
-        result = calculate_dwipushkar(6, 12, "Vishakha")
+    def test_active_saturday_trayodashi_vishakha(self):
+        """Saturday (6) + Trayodashi (13) + Vishakha → active."""
+        result = calculate_dwipushkar(6, 13, "Vishakha")
         assert result["active"] is True
 
     def test_inactive_wrong_weekday(self):
-        """Monday (1) + Dwitiya (2) + Chitra → inactive (Monday not valid)."""
-        result = calculate_dwipushkar(1, 2, "Chitra")
+        """Monday (1) + Tritiya (3) + Chitra → inactive (Monday not valid)."""
+        result = calculate_dwipushkar(1, 3, "Chitra")
         assert result["active"] is False
 
     def test_inactive_wrong_tithi(self):
-        """Sunday (0) + Tritiya (3) + Chitra → inactive (wrong tithi)."""
-        result = calculate_dwipushkar(0, 3, "Chitra")
+        """Sunday (0) + Dwitiya (2) + Chitra → inactive (Dwitiya not in Dwipushkar tithis)."""
+        result = calculate_dwipushkar(0, 2, "Chitra")
         assert result["active"] is False
 
     def test_inactive_wrong_nakshatra(self):
-        """Sunday (0) + Dwitiya (2) + Rohini → inactive (wrong nakshatra)."""
-        result = calculate_dwipushkar(0, 2, "Rohini")
+        """Sunday (0) + Tritiya (3) + Rohini → inactive (wrong nakshatra)."""
+        result = calculate_dwipushkar(0, 3, "Rohini")
         assert result["active"] is False
 
     def test_krishna_paksha_normalised(self):
-        """Sunday (0) + Krishna Dwitiya (17) + Chitra → active."""
-        result = calculate_dwipushkar(0, 17, "Chitra")
+        """Sunday (0) + Krishna Tritiya (18) + Chitra → active (18 normalises to 3)."""
+        result = calculate_dwipushkar(0, 18, "Chitra")
         assert result["active"] is True
 
     def test_purva_ashadha(self):
-        """Tuesday (2) + Saptami (7) + Purva Ashadha → active."""
-        result = calculate_dwipushkar(2, 7, "Purva Ashadha")
+        """Tuesday (2) + Ashtami (8) + Purva Ashadha → active."""
+        result = calculate_dwipushkar(2, 8, "Purva Ashadha")
         assert result["active"] is True
 
 
@@ -194,46 +200,48 @@ class TestDwipushkar:
 # ============================================================
 
 class TestTripushkar:
-    def test_active_sunday_tritiya_krittika(self):
-        """Sunday (0) + Tritiya (3) + Krittika → active."""
-        result = calculate_tripushkar(0, 3, "Krittika")
+    # Tripushkar tithis corrected to [2,7,12] (Dwitiya/Saptami/Dwadashi)
+    # verified: Drik Panchang fires Tripushkar for Dwitiya+Krittika+Sunday (Apr 19 2026, Delhi)
+    def test_active_sunday_dwitiya_krittika(self):
+        """Sunday (0) + Dwitiya (2) + Krittika → active."""
+        result = calculate_tripushkar(0, 2, "Krittika")
         assert result["active"] is True
         assert result["name"] == "Tripushkar Yoga"
         assert result["name_hindi"] == "त्रिपुष्कर योग"
 
-    def test_active_tuesday_ashtami_punarvasu(self):
-        """Tuesday (2) + Ashtami (8) + Punarvasu → active."""
-        result = calculate_tripushkar(2, 8, "Punarvasu")
+    def test_active_tuesday_saptami_punarvasu(self):
+        """Tuesday (2) + Saptami (7) + Punarvasu → active."""
+        result = calculate_tripushkar(2, 7, "Punarvasu")
         assert result["active"] is True
 
-    def test_active_saturday_trayodashi_vishakha(self):
-        """Saturday (6) + Trayodashi (13) + Vishakha → active."""
-        result = calculate_tripushkar(6, 13, "Vishakha")
+    def test_active_saturday_dwadashi_vishakha(self):
+        """Saturday (6) + Dwadashi (12) + Vishakha → active."""
+        result = calculate_tripushkar(6, 12, "Vishakha")
         assert result["active"] is True
 
     def test_inactive_wrong_weekday(self):
-        """Thursday (4) + Tritiya (3) + Krittika → inactive."""
-        result = calculate_tripushkar(4, 3, "Krittika")
+        """Thursday (4) + Dwitiya (2) + Krittika → inactive (Thursday not valid)."""
+        result = calculate_tripushkar(4, 2, "Krittika")
         assert result["active"] is False
 
     def test_inactive_wrong_tithi(self):
-        """Sunday (0) + Dwitiya (2) + Krittika → inactive (wrong tithi)."""
-        result = calculate_tripushkar(0, 2, "Krittika")
+        """Sunday (0) + Tritiya (3) + Krittika → inactive (Tritiya not in Tripushkar tithis)."""
+        result = calculate_tripushkar(0, 3, "Krittika")
         assert result["active"] is False
 
     def test_inactive_wrong_nakshatra(self):
-        """Sunday (0) + Tritiya (3) + Rohini → inactive (wrong nakshatra)."""
-        result = calculate_tripushkar(0, 3, "Rohini")
+        """Sunday (0) + Dwitiya (2) + Rohini → inactive (wrong nakshatra)."""
+        result = calculate_tripushkar(0, 2, "Rohini")
         assert result["active"] is False
 
     def test_krishna_paksha_normalised(self):
-        """Sunday (0) + Krishna Tritiya (18) + Krittika → active."""
-        result = calculate_tripushkar(0, 18, "Krittika")
+        """Sunday (0) + Krishna Dwitiya (17) + Krittika → active (17 normalises to 2)."""
+        result = calculate_tripushkar(0, 17, "Krittika")
         assert result["active"] is True
 
     def test_uttara_ashadha(self):
-        """Tuesday (2) + Ashtami (8) + Uttara Ashadha → active."""
-        result = calculate_tripushkar(2, 8, "Uttara Ashadha")
+        """Tuesday (2) + Saptami (7) + Uttara Ashadha → active."""
+        result = calculate_tripushkar(2, 7, "Uttara Ashadha")
         assert result["active"] is True
 
 
@@ -327,11 +335,11 @@ class TestCalculateAllSpecialYogas:
         assert result["ganda_moola"]["active"] is True
 
     def test_dwipushkar_active_scenario(self):
-        """Sunday (0) + Dwitiya (2) + Chitra → dwipushkar active."""
-        result = calculate_all_special_yogas(0, 2, "Chitra")
+        """Sunday (0) + Tritiya (3) + Chitra → dwipushkar active."""
+        result = calculate_all_special_yogas(0, 3, "Chitra")
         assert result["dwipushkar"]["active"] is True
 
     def test_tripushkar_active_scenario(self):
-        """Saturday (6) + Trayodashi (13) + Vishakha → tripushkar active."""
-        result = calculate_all_special_yogas(6, 13, "Vishakha")
+        """Saturday (6) + Dwadashi (12) + Vishakha → tripushkar active."""
+        result = calculate_all_special_yogas(6, 12, "Vishakha")
         assert result["tripushkar"]["active"] is True

@@ -84,6 +84,13 @@ NAKSHATRA_ORDER = [
 VIMSHOTTARI_TOTAL = 120  # years
 NAKSHATRA_SPAN = 13 + 20.0 / 60.0  # 13°20' = 13.3333°
 
+# Maps dasha quality tag to a normalized strength label
+_QUALITY_TAG_TO_STRENGTH = {
+    "Auspicious": "strong",
+    "Challenging": "weak",
+    "Neutral": "neutral",
+}
+
 
 def _get_dasha_sequence(starting_lord: str) -> list:
     """Return the 9-planet dasha sequence starting from a given lord."""
@@ -242,7 +249,7 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
@@ -358,7 +365,7 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitu
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
@@ -801,10 +808,17 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     entry = (data.get("mahadasha_effects") or {}).get(planet, {})
 
     if not entry:
+        _fallback_assessment = _assess_planet_strength(planet, chart_data or {})
+        _fallback_quality = _dasha_quality_tag(planet, chart_data or {}, _fallback_assessment["factors"])
+        _fb_strength = _QUALITY_TAG_TO_STRENGTH.get(
+            _fallback_quality["tag"], _fallback_assessment["strength"]
+        )
         return {
             "planet": planet,
-            "strength": "neutral",
-            "factors": [],
+            "strength": _fb_strength,
+            "factors": _fallback_assessment["factors"],
+            "factors_detail": _fallback_quality.get("reasons") or [],
+            "dasha_quality": _fallback_quality,
             "effect_en": "",
             "effect_hi": "",
             "sloka_ref": "",
@@ -814,6 +828,11 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     assessment = _assess_planet_strength(planet, chart_data or {})
     strength = assessment["strength"]
     quality_tag = _dasha_quality_tag(planet, chart_data or {}, assessment["factors"])
+
+    # Sync strength with dasha_quality to prevent neutral/Auspicious conflicts
+    quality_strength = _QUALITY_TAG_TO_STRENGTH.get(quality_tag["tag"], "neutral")
+    if strength == "neutral" and quality_strength != "neutral":
+        strength = quality_strength
 
     if strength == "strong":
         effect_en = entry.get("when_strong_en", entry.get("general_en", ""))
@@ -933,10 +952,25 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
             f"भाव-स्थिति और गोचर पर निर्भर।"
         )
 
+    # Dasha Strength Score (0–100): combines dignity, house, and quality signals
+    _score = 50
+    _f_set = set(assessment["factors"])
+    if "exalted" in _f_set:         _score += 20
+    if is_vargottama_dm:             _score += 15
+    if "own_sign" in _f_set:        _score += 12
+    if "trikona" in _f_set:         _score += 8
+    if "kendra" in _f_set:          _score += 6
+    if "debilitated" in _f_set:     _score -= 22
+    if "combust" in _f_set:         _score -= 15
+    if "dusthana" in _f_set:        _score -= 10
+    if is_papakartari_dm:           _score -= 8
+    dasha_strength_score = max(0, min(100, _score))
+
     return {
         "planet": planet,
         "strength": strength,
         "factors": assessment["factors"],
+        "factors_detail": quality_tag.get("reasons") or [],
         "effect_en": effect_en,
         "effect_hi": effect_hi,
         "general_en": entry.get("general_en", ""),
@@ -955,6 +989,7 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         "dignity_modifier": dignity_modifier,
         "dignity_note_en": dignity_note_en,
         "dignity_note_hi": dignity_note_hi,
+        "dasha_strength_score": dasha_strength_score,
     }
 
 
@@ -1510,7 +1545,7 @@ def get_current_dasha_phala(
 
     if moon_nakshatra not in NAKSHATRA_LORD:
         return {
-            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "as_of": as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "error": f"Unknown nakshatra: {moon_nakshatra}",
             "mahadasha": None,
             "antardasha": None,
@@ -1522,7 +1557,7 @@ def get_current_dasha_phala(
         birth_dt = _parse_date(birth_date)
     except (ValueError, TypeError):
         return {
-            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "as_of": as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "error": f"Invalid birth_date: {birth_date}",
             "mahadasha": None,
             "antardasha": None,
@@ -1532,9 +1567,9 @@ def get_current_dasha_phala(
         try:
             now = _parse_date(as_of_date)
         except ValueError:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
     else:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     balance = _calculate_dasha_balance(moon_nakshatra, moon_longitude)
 
@@ -1589,10 +1624,55 @@ def get_current_dasha_phala(
             break
         ad_start = ad_end
 
+    # Transit-Dasha correlation: flag when Mahadasha lord currently transits
+    # within 15° of its natal position (intensification period).
+    transit_correlation = None
+    try:
+        from app.astro_engine import calculate_planet_positions
+        today_str = now.strftime("%Y-%m-%d")
+        transit_result = calculate_planet_positions(today_str, "12:00:00", 28.6, 77.2, 5.5)
+        transit_planets = transit_result.get("planets", {})
+        natal_planets = (chart_data or {}).get("planets", {}) or {}
+
+        transit_lon = float((transit_planets.get(md_planet) or {}).get("longitude", -1) or -1)
+        natal_lon = float((natal_planets.get(md_planet) or {}).get("longitude", -1) or -1)
+
+        if transit_lon >= 0 and natal_lon >= 0:
+            diff = abs(transit_lon - natal_lon) % 360
+            if diff > 180:
+                diff = 360 - diff
+            transit_sign = (transit_planets.get(md_planet) or {}).get("sign", "")
+            natal_sign = (natal_planets.get(md_planet) or {}).get("sign", "")
+            intensified = diff <= 15.0
+            transit_correlation = {
+                "md_planet": md_planet,
+                "natal_longitude": round(natal_lon, 2),
+                "transit_longitude": round(transit_lon, 2),
+                "orb_degrees": round(diff, 2),
+                "natal_sign": natal_sign,
+                "transit_sign": transit_sign,
+                "intensified": intensified,
+                "note_en": (
+                    f"{md_planet} is currently transiting within {diff:.1f}° of its natal position "
+                    f"— this is an intensification window; dasha results amplify now."
+                    if intensified else
+                    f"{md_planet} transit ({transit_sign}) is {diff:.1f}° from natal ({natal_sign})."
+                ),
+                "note_hi": (
+                    f"{md_planet} अभी अपनी जन्म-राशि के {diff:.1f}° के भीतर गोचर कर रहा है "
+                    f"— यह तीव्रता की खिड़की है; दशा फल अभी प्रबल होते हैं।"
+                    if intensified else
+                    f"{md_planet} गोचर ({transit_sign}) जन्म-स्थिति ({natal_sign}) से {diff:.1f}° दूर है।"
+                ),
+            }
+    except Exception:
+        pass  # Transit correlation is best-effort
+
     return {
         "as_of": now.strftime("%Y-%m-%d"),
         "mahadasha": mahadasha_record,
         "antardasha": antardasha_record,
+        "transit_correlation": transit_correlation,
     }
 
 

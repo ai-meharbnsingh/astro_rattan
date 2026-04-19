@@ -472,14 +472,6 @@ export function useKundliData() {
     setActivePredictionPeriod(period);
     if (predictionsData[period]) return;
     setLoadingPredictions(true);
-    try {
-      const data = await api.post('/api/ai/interpret', { kundli_id: result.id, prediction_type: period });
-      setPredictionsData(prev => ({ ...prev, [period]: data }));
-      setLoadingPredictions(false);
-      return;
-    } catch {
-      // Backend failed — try Puter.js
-    }
 
     if (isPuterAvailable()) {
       try {

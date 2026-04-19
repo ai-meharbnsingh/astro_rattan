@@ -63,6 +63,7 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
     planet_signs = {}
     planet_houses = {}
     planet_longitudes = {}
+    planet_speeds = {}
     retrograde_planets = set()
     for pn, pi in planets.items():
         if not isinstance(pi, dict):
@@ -71,6 +72,8 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
         planet_houses[pn] = pi.get("house", 1)
         if "longitude" in pi:
             planet_longitudes[pn] = pi["longitude"]
+        if "speed" in pi:
+            planet_speeds[pn] = pi["speed"]
         if pi.get("retrograde") or "Retrograde" in pi.get("status", "") or "retrograde" in pi.get("status", ""):
             retrograde_planets.add(pn)
 
@@ -98,6 +101,7 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
         "is_daytime": 6.0 <= birth_hour < 18.0,
         "retrograde_planets": retrograde_planets,
         "planet_longitudes": planet_longitudes,
+        "planet_speeds": planet_speeds if planet_speeds else None,
         "birth_hour": birth_hour,
         "moon_sun_elongation": (moon_lon - sun_lon) % 360.0,
         "weekday": weekday,
@@ -814,6 +818,15 @@ def get_divisional_chart(
         logger.exception("Varga-strength grading failed")
         varga_strength = None
 
+    # D108 moksha potential — computed for all requests so the frontend can
+    # always display the spiritual score regardless of which divisional is active.
+    try:
+        d108_result = calculate_d108_analysis(planet_longitudes)
+        moksha_potential = d108_result.get("moksha_potential")
+    except Exception:  # pragma: no cover — defensive guard only
+        logger.exception("D108 moksha-potential calculation failed")
+        moksha_potential = None
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
@@ -825,6 +838,7 @@ def get_divisional_chart(
         "houses": houses,
         "d60_analysis": d60_analysis,
         "varga_strength": varga_strength,
+        "moksha_potential": moksha_potential,
     }
 
 
@@ -1006,6 +1020,18 @@ def get_yogas_and_doshas(
         result["yogas"] = existing_yogas
     except Exception:
         logger.exception("Rule-engine yoga merge failed for kundli %s", kundli_id)
+
+    # Post-process any yogas still missing strength/trigger_houses (e.g. from rule_engine)
+    from app.dosha_engine import _compute_yoga_strength
+    for yoga in result.get("yogas", []):
+        if not yoga.get("strength"):
+            yoga["strength"] = _compute_yoga_strength(yoga, planets)
+        if yoga.get("trigger_houses") is None:
+            yoga["trigger_houses"] = sorted({
+                planets.get(p, {}).get("house", 0)
+                for p in (yoga.get("planets_involved") or [])
+                if planets.get(p, {}).get("house", 0)
+            })
 
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
@@ -2429,6 +2455,7 @@ def get_kp_analysis(
             "star_lord": pinfo.get("star_lord", ""),
             "sub_lord": pinfo.get("sub_lord", ""),
             "sub_sub_lord": pinfo.get("sub_sub_lord", ""),
+            "star_lord_of_sub_lord": pinfo.get("star_lord_of_sub_lord", ""),
             "nakshatra": pinfo.get("nakshatra", ""),
             "pada": pinfo.get("pada", 0),
             "degree": pinfo.get("longitude", 0.0),
@@ -2637,7 +2664,7 @@ def free_kundli_preview(
                 "nakshatra": p.get("nakshatra", ""),
                 "nakshatra_pada": p.get("nakshatra_pada", ""),
                 "status": p.get("status", ""),
-                "retrograde": p.get("is_retrograde", False),
+                "retrograde": p.get("retrograde", p.get("is_retrograde", False)),
             })
 
     # 4. Current Dasha

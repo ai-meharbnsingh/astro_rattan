@@ -580,7 +580,11 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {present.map((yoga: any, idx: number) => (
+                      {present.map((yoga: YogaObject, idx: number) => {
+                        const rajaHasStrength = !!yoga.strength;
+                        const rajaSStyle = rajaHasStrength ? (STRENGTH_STYLE[yoga.strength!] || '') : '';
+                        const rajaHasTriggerHouses = Array.isArray(yoga.trigger_houses) && yoga.trigger_houses.length > 0;
+                        return (
                         <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
                           <TableCell className="p-1.5 align-top">
                             <p className="font-semibold text-violet-800 leading-tight">{yoga.name}</p>
@@ -589,6 +593,22 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                                 {yoga.planets_involved.map((p: string) => (
                                   <span key={p} className="px-1 py-0.5 rounded bg-violet-100 text-violet-700 font-medium text-[10px]">
                                     {translatePlanet(p, language)}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {rajaHasStrength && (
+                              <div className="mt-1">
+                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${rajaSStyle}`}>
+                                  {getStrengthLabel(yoga.strength!, hi)}
+                                </span>
+                              </div>
+                            )}
+                            {rajaHasTriggerHouses && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {yoga.trigger_houses!.map((h: number) => (
+                                  <span key={h} className="px-1 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium text-[10px] border border-indigo-100">
+                                    H{h}
                                   </span>
                                 ))}
                               </div>
@@ -606,7 +626,8 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                             )}
                           </TableCell>
                         </TableRow>
-                      ))}
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>

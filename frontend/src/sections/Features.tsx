@@ -864,10 +864,10 @@ export default function Features() {
       imagePosition: 'center center',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
       title: l('Vastu Shastra Analyzer', 'वास्तु शास्त्र विश्लेषक'),
-      subtitle: l('AI + Mandala', 'एआई + मंडल'),
+      subtitle: l('Mandala + Remedies', 'मंडल + उपाय'),
       desc: l(
-        '45-Devta Vastu Purusha Mandala scoring with zone-wise energy mapping. AI-powered floor plan detection, 32-entrance Pada analysis, direction optimization for every room, metal remedies (copper, iron, silver, gold), color therapy — for homes and offices.',
-        '45-देवता वास्तु पुरुष मंडल स्कोरिंग। एआई-संचालित फ्लोर प्लान पहचान, 32-प्रवेश पद विश्लेषण, हर कमरे के लिए दिशा अनुकूलन, धातु उपाय (तांबा, लोहा, चांदी, सोना), रंग चिकित्सा — घरों और कार्यालयों के लिए।'
+        '45-Devta Vastu Purusha Mandala scoring with zone-wise energy mapping. 32-entrance Pada analysis, direction optimization for every room, metal remedies (copper, iron, silver, gold), color therapy — for homes and offices.',
+        '45-देवता वास्तु पुरुष मंडल स्कोरिंग। 32-प्रवेश पद विश्लेषण, हर कमरे के लिए दिशा अनुकूलन, धातु उपाय (तांबा, लोहा, चांदी, सोना), रंग चिकित्सा — घरों और कार्यालयों के लिए।'
       ),
       badge: l('AI + MANDALA', 'एआई + मंडल'),
     },

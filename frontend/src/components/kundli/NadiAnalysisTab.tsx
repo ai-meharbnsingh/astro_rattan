@@ -10,6 +10,8 @@ interface NadiInsight {
   desc_en: string;
   desc_hi: string;
   planets: string[];
+  type?: string;
+  houses?: number[];
 }
 
 interface NadiAnalysisData {
@@ -41,6 +43,13 @@ const PLANET_COLORS: Record<string, string> = {
   Saturn: 'bg-gray-100 border-gray-300 text-gray-700',
   Rahu: 'bg-purple-100 border-purple-300 text-purple-700',
   Ketu: 'bg-orange-100 border-orange-300 text-orange-700',
+};
+
+const INSIGHT_TYPE_CONFIG: Record<string, { label: string; classes: string }> = {
+  conjunction:   { label: 'Conjunction',   classes: 'bg-indigo-100 text-indigo-800 border-indigo-300' },
+  placement:     { label: 'Placement',     classes: 'bg-teal-100 text-teal-800 border-teal-300' },
+  mutual_aspect: { label: 'Mutual Aspect', classes: 'bg-purple-100 text-purple-800 border-purple-300' },
+  cluster:       { label: 'Cluster',       classes: 'bg-gray-100 text-gray-700 border-gray-300' },
 };
 
 export default function NadiAnalysisTab({ kundliId, language }: Props) {
@@ -122,6 +131,13 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
                 {/* Card header */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      {insight.type && INSIGHT_TYPE_CONFIG[insight.type] && (
+                        <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${INSIGHT_TYPE_CONFIG[insight.type].classes}`}>
+                          {INSIGHT_TYPE_CONFIG[insight.type].label}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-bold text-sacred-gold-dark text-base leading-tight">
                       {title}
                     </h3>
@@ -133,11 +149,16 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
                       <p className="text-xs text-muted-foreground mt-0.5">{insight.title_en}</p>
                     )}
                   </div>
-                  {insight.house > 0 && (
+                  {/* For mutual_aspect with two houses, show H3 ↔ H9 style; otherwise single house badge */}
+                  {insight.type === 'mutual_aspect' && (insight.houses?.length ?? 0) >= 2 ? (
+                    <span className="shrink-0 px-2.5 py-1 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-xs font-semibold whitespace-nowrap">
+                      H{insight.houses![0]} ↔ H{insight.houses![1]}
+                    </span>
+                  ) : insight.house > 0 ? (
                     <span className="shrink-0 px-2.5 py-1 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-xs font-semibold">
                       {isHi ? `${houseLabel} भाव` : `${houseLabel} House`}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Planets as badges */}

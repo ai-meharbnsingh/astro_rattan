@@ -188,6 +188,67 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
           );
         })}
       </div>
+
+      {/* Lucky & Conflict Indicators from avakhada engine */}
+      {(avakhadaData.lucky_number || avakhadaData.good_planets?.length > 0 || avakhadaData.conflict_planets?.length > 0) && (
+        <div className="mt-6">
+          <h3 className="text-base font-semibold mb-3 text-foreground">Lucky & Conflict Indicators</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {avakhadaData.lucky_number != null && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-1 text-muted-foreground">Lucky Number</p>
+                <p className="font-semibold text-base text-foreground">{avakhadaData.lucky_number}</p>
+              </div>
+            )}
+            {avakhadaData.lucky_metal && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-1 text-muted-foreground">Lucky Metal</p>
+                <p className="font-semibold text-base text-foreground">{avakhadaData.lucky_metal}</p>
+              </div>
+            )}
+            {avakhadaData.good_planets?.length > 0 && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">Favourable Planets</p>
+                <div className="flex flex-wrap gap-2">
+                  {avakhadaData.good_planets.map((p: string) => (
+                    <span key={p} className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{translatePlanet(p, language)}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {avakhadaData.conflict_planets?.length > 0 && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">Conflict Planets</p>
+                <div className="flex flex-wrap gap-2">
+                  {avakhadaData.conflict_planets.map((p: string) => (
+                    <span key={p} className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{translatePlanet(p, language)}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {avakhadaData.lucky_days?.length > 0 && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">Lucky Days</p>
+                <div className="flex flex-wrap gap-2">
+                  {avakhadaData.lucky_days.map((d: string) => (
+                    <span key={d} className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{d}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {avakhadaData.good_numbers?.length > 0 && (
+              <div className="rounded-xl p-4 border" style={{ backgroundColor: 'var(--parchment)', borderColor: 'rgba(184,134,11,0.2)' }}>
+                <p className="text-sm font-medium mb-2 text-muted-foreground">Good Numbers</p>
+                <div className="flex flex-wrap gap-2">
+                  {avakhadaData.good_numbers.map((n: number) => (
+                    <span key={n} className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">{n}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

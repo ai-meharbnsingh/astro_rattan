@@ -39,18 +39,6 @@ JWT_EXPIRE_HOURS = 24
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8028"))
 FRONTEND_PORT = int(os.getenv("FRONTEND_PORT", "5198"))
 
-# AI Provider: "gemini" or "openai" (auto-detects from which key is set)
-AI_PROVIDER = os.getenv("AI_PROVIDER", "auto")  # auto | gemini | openai
-
-# OpenAI
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4")
-
-# Google Gemini (free tier available)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-
-
 # Frontend URL (used in payment redirect URLs)
 FRONTEND_URL = os.getenv("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}")
 SITE_URL = _env_first("SITE_URL", default="https://astrorattan.com")

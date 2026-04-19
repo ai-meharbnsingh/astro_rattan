@@ -162,6 +162,7 @@ def get_panchang(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     lang: str = Query(default="en"),
+    natal_moon_sign: str = Query(default=None, description="Natal Moon sign for Chandrashtama detection (e.g. 'Taurus')"),
     db: Any = Depends(get_db),
 ):
     """Calculate complete Panchang for a given date and location."""
@@ -234,6 +235,12 @@ def get_panchang(
         
         # Inject Hindi names if missing in cache (for backward compatibility or new lang support)
         _inject_hindi_fields(result)
+        # Chandrashtama — not cached, always computed on demand
+        if natal_moon_sign:
+            from app.panchang_engine import calculate_chandrashtama
+            transit_ms = result.get("moon_sign", "")
+            if transit_ms:
+                result["chandrashtama"] = calculate_chandrashtama(natal_moon_sign, transit_ms)
         return result
 
     # Calculate fresh
@@ -290,13 +297,22 @@ def get_panchang(
     db.commit()
 
     # Build full response
-    return {
+    response = {
         "date": target_date,
         "latitude": latitude,
         "longitude": longitude,
         **panchang,
         "festivals": festivals,
     }
+
+    # Chandrashtama — optional, injected when caller provides natal Moon sign
+    if natal_moon_sign:
+        from app.panchang_engine import calculate_chandrashtama
+        transit_moon_sign = panchang.get("moon_sign", "")
+        if transit_moon_sign:
+            response["chandrashtama"] = calculate_chandrashtama(natal_moon_sign, transit_moon_sign)
+
+    return response
 
 def _inject_hindi_fields(panchang: dict):
     """Deep-inject Hindi names into panchang dict based on English keys."""
@@ -593,14 +609,15 @@ def get_muhurat(
             })
 
     results_json = json.dumps(auspicious_dates)
-    db.execute(
-        """INSERT INTO muhurat_cache
-           (muhurat_type, year, month, latitude, longitude, results)
-           VALUES (%s, %s, %s, %s, %s, %s)
-           ON CONFLICT (muhurat_type, year, month, latitude, longitude) DO NOTHING""",
-        (muhurat_type, target_year, target_month, latitude, longitude, results_json),
-    )
-    db.commit()
+    try:
+        db.execute(
+            """INSERT INTO muhurat_cache (muhurat_type, year, month, latitude, longitude, results)
+               VALUES (%s, %s, %s, %s, %s, %s)""",
+            (muhurat_type, target_year, target_month, latitude, longitude, results_json),
+        )
+        db.commit()
+    except Exception:
+        db.rollback()
 
     dates = [
         {
@@ -657,14 +674,41 @@ def list_festivals(
     lang: str = Query(default="en"),
     db: Any = Depends(get_db),
 ):
-    """List festivals for a given year and optionally month, filtered by category.
+    """List festivals for a given year and optionally month, filtered by category."""
+    from datetime import datetime as _dt
+    target_year = year or _dt.now().year
 
-    Note: Festivals are calculated dynamically per-date in panchang responses.
-    This endpoint returns an empty list as festivals database is not currently populated.
-    Use the main /api/panchang endpoint for daily festivals.
-    """
-    # Return empty list - festivals are included in panchang responses via detect_festivals()
-    return {"festivals": []}
+    conditions = ["year = %s"]
+    params: list = [target_year]
+
+    if month:
+        # date column is stored as YYYY-MM-DD text
+        conditions.append("date LIKE %s")
+        params.append(f"{target_year}-{month:02d}-%")
+
+    if category:
+        conditions.append("category = %s")
+        params.append(category)
+
+    where = " AND ".join(conditions)
+    rows = db.execute(
+        f"SELECT name, name_hindi, date, description, category, year FROM festivals WHERE {where} ORDER BY date",
+        tuple(params),
+    ).fetchall()
+
+    festivals = []
+    for r in (rows or []):
+        festivals.append({
+            "name": r["name"] if lang != "hi" else (r["name_hindi"] or r["name"]),
+            "name_en": r["name"],
+            "name_hi": r["name_hindi"] or "",
+            "date": r["date"],
+            "description": r["description"] or "",
+            "category": r["category"],
+            "year": r["year"],
+        })
+
+    return {"festivals": festivals, "total": len(festivals), "year": target_year}
 
 
 # ============================================================

@@ -300,6 +300,7 @@ def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: st
     planets_result: Dict[str, Dict[str, Any]] = {}
     planet_longitudes: Dict[str, float] = {}
     planet_retrograde: Dict[str, bool] = {}
+    planet_speeds: Dict[str, float] = {}
 
     for pname, pid in PLANETS.items():
         # Override Rahu's planet ID based on node_type
@@ -310,17 +311,19 @@ def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: st
         daily_speed = pos[3]  # daily speed in longitude
         sid_lon = (trop_lon - ayanamsa) % 360.0
         planet_longitudes[pname] = sid_lon
+        planet_speeds[pname] = daily_speed
 
         # Retrograde: negative daily speed means the planet appears to move backward
         # Rahu (mean node) is always retrograde by nature
         is_retrograde = daily_speed < 0 or pname == "Rahu"
         planet_retrograde[pname] = is_retrograde
 
-    # Ketu longitude
+    # Ketu longitude (always retrograde, same speed magnitude as Rahu)
     rahu_lon = planet_longitudes["Rahu"]
     ketu_lon = (rahu_lon + 180.0) % 360.0
     planet_longitudes["Ketu"] = ketu_lon
     planet_retrograde["Ketu"] = True
+    planet_speeds["Ketu"] = -abs(planet_speeds.get("Rahu", 0.0))
 
     # Get Sun longitude for combust checks
     sun_lon = planet_longitudes.get("Sun", 0.0)
@@ -348,6 +351,7 @@ def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: st
             "nakshatra_pada": nak["pada"],
             "house": house,
             "retrograde": is_retrograde,
+            "speed": round(planet_speeds.get(pname, 0.0), 6),
             "is_combust": combust,
             "is_vargottama": vargottama,
             "is_sandhi": sandhi,
@@ -570,6 +574,7 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
             "nakshatra_pada": nak["pada"],
             "house": house,
             "retrograde": is_retrograde,
+            "speed": round(planet_speeds.get(pname, 0.0), 6),
             "is_combust": combust,
             "is_vargottama": vargottama,
             "is_sandhi": sandhi,
