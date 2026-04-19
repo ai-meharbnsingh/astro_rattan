@@ -640,6 +640,22 @@ def _compute_dasha(db: Any, kundli_id: str, user_id: str) -> dict:
     moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
     moon_longitude = moon_info.get("longitude", None)
     result = calculate_dasha(moon_nakshatra, str(row["birth_date"]), moon_longitude=moon_longitude)
+
+    # Normalize mahadasha_periods → mahadasha (start_date/end_date → start/end)
+    # so the frontend DashaSelector can read result.mahadasha directly.
+    current_dasha = result.get("current_dasha")
+    mahadasha = [
+        {
+            "planet": p["planet"],
+            "start": p.get("start_date", ""),
+            "end": p.get("end_date", ""),
+            "years": p.get("years", ""),
+            "is_current": p["planet"] == current_dasha,
+            "antardasha": [],
+        }
+        for p in result.get("mahadasha_periods", [])
+    ]
+    result["mahadasha"] = mahadasha
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
