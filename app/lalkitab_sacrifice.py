@@ -149,6 +149,81 @@ SACRIFICE_RULES: List[Dict[str, Any]] = [
         "severity": "low",
         "remedy": {"en": "Recite Vishnu Sahasranama on Wednesdays. Keep green items at your workstation.", "hi": "बुधवार को विष्णु सहस्रनाम का पाठ करें।"},
     },
+    {
+        "rule_id": "LK_SAC_009_MOON_8_SAC_PEACE",
+        "sacrificer": "Moon",
+        "victim": "Moon",
+        "condition": "Moon in 8th house",
+        "check": lambda p_map, aspects: p_map.get("Moon") == 8,
+        "message": {
+            "en": "Your Moon in the 8th sacrifices its own domains. Emotional peace and mother's health are compromised while you gain deep intuition and psychic awareness.",
+            "hi": "आठवें घर में चंद्रमा अपने ही कारकत्व की बलि देता है। भावनात्मक शांति और माता का स्वास्थ्य प्रभावित होता है जबकि गहरी अंतर्दृष्टि और अनुभव मिलता है।"
+        },
+        "growth_area": "Moon",
+        "cost_area": "Moon",
+        "severity": "high",
+        "remedy": {"en": "Offer milk and white flowers to Moon on Mondays. Serve your mother sincerely. Keep a silver vessel filled with water at home.", "hi": "सोमवार को चंद्रमा को दूध और सफेद फूल चढ़ाएं। माता की सेवा करें। घर में चांदी के पात्र में पानी रखें।"},
+    },
+    {
+        "rule_id": "LK_SAC_010_RAHU_1_SAC_IDENTITY",
+        "sacrificer": "Rahu",
+        "victim": "Sun",
+        "condition": "Rahu in 1st house",
+        "check": lambda p_map, aspects: p_map.get("Rahu") == 1,
+        "message": {
+            "en": "Your Rahu in the 1st house sacrifices authentic selfhood. Worldly ambition and external image grow at the cost of inner clarity, health, and father's blessings.",
+            "hi": "प्रथम भाव में राहु प्रामाणिक स्व-चेतना की बलि देता है। सांसारिक महत्वाकांक्षा और बाहरी छवि आत्मिक स्पष्टता, स्वास्थ्य और पितृ आशीर्वाद की कीमत पर बढ़ती है।"
+        },
+        "growth_area": "Rahu",
+        "cost_area": "Sun",
+        "severity": "high",
+        "remedy": {"en": "Offer water to the Sun at sunrise daily. Seek your father's blessings. Avoid ego-driven decisions on Sundays.", "hi": "प्रतिदिन सूर्योदय पर जल अर्पण करें। पिता का आशीर्वाद लें। रविवार को अहंकार-चालित निर्णय न लें।"},
+    },
+    {
+        "rule_id": "LK_SAC_011_SATURN_7_SAC_MARRIAGE",
+        "sacrificer": "Saturn",
+        "victim": "Venus",
+        "condition": "Saturn in 7th house",
+        "check": lambda p_map, aspects: p_map.get("Saturn") == 7,
+        "message": {
+            "en": "Your Saturn in the 7th sacrifices Venus's domain. Career discipline and karmic work grow at the cost of partnership harmony, marriage timing, and creative pleasures.",
+            "hi": "सातवें घर में शनि शुक्र के क्षेत्र की बलि देता है। करियर अनुशासन और कर्म-कार्य विवाह सामंजस्य, विवाह-काल और सृजनात्मक सुखों की कीमत पर बढ़ते हैं।"
+        },
+        "growth_area": "Saturn",
+        "cost_area": "Venus",
+        "severity": "medium",
+        "remedy": {"en": "Offer mustard oil at a Shani temple on Saturdays. Respect your spouse. Donate black sesame seeds on Saturdays.", "hi": "शनिवार को शनि मंदिर में सरसों का तेल चढ़ाएं। जीवनसाथी का सम्मान करें। शनिवार को काले तिल दान करें।"},
+    },
+    {
+        "rule_id": "LK_SAC_012_MARS_4_SAC_HOME",
+        "sacrificer": "Mars",
+        "victim": "Moon",
+        "condition": "Mars in 4th house",
+        "check": lambda p_map, aspects: p_map.get("Mars") == 4,
+        "message": {
+            "en": "Your Mars in the 4th sacrifices domestic peace. Courage, property drive, and action grow at the cost of home harmony, mother's peace, and emotional security.",
+            "hi": "चौथे घर में मंगल घरेलू शांति की बलि देता है। साहस, संपत्ति की चाह और क्रियाशीलता घर के सामंजस्य, माता की शांति और भावनात्मक सुरक्षा की कीमत पर बढ़ते हैं।"
+        },
+        "growth_area": "Mars",
+        "cost_area": "Moon",
+        "severity": "medium",
+        "remedy": {"en": "Place a copper vessel with water near the home's main door. Avoid arguments at home. Donate red lentils on Tuesdays.", "hi": "घर के मुख्य द्वार के पास तांबे के पात्र में पानी रखें। घर में विवाद से बचें। मंगलवार को लाल दाल दान करें।"},
+    },
+    {
+        "rule_id": "LK_SAC_013_JUPITER_10_SAC_CHILDREN",
+        "sacrificer": "Jupiter",
+        "victim": "Jupiter",
+        "condition": "Jupiter in 10th house",
+        "check": lambda p_map, aspects: p_map.get("Jupiter") == 10,
+        "message": {
+            "en": "Your Jupiter in the 10th sacrifices its own softer domains. Career and public status grow at the cost of children's welfare, dharmic practice, and guru relationships.",
+            "hi": "दसवें घर में गुरु अपने कोमल कारकत्व की बलि देता है। करियर और सार्वजनिक प्रतिष्ठा संतान-कल्याण, धार्मिक अनुष्ठान और गुरु-संबंधों की कीमत पर बढ़ते हैं।"
+        },
+        "growth_area": "Jupiter",
+        "cost_area": "Jupiter",
+        "severity": "low",
+        "remedy": {"en": "Donate yellow things on Thursdays. Spend quality time with your children. Visit a guru or temple regularly.", "hi": "गुरुवार को पीली वस्तुएं दान करें। संतान के साथ गुणवत्तापूर्ण समय बिताएं। नियमित गुरु या मंदिर जाएं।"},
+    },
 ]
 
 
