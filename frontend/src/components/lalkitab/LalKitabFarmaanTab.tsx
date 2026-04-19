@@ -136,7 +136,7 @@ export default function LalKitabFarmaanTab() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') runSearch(); }}
-            placeholder={isHi ? 'फ़रमान में खोजें…' : 'Search within Farmaan…'}
+            placeholder={isHi ? 'जैसे: विवाह, स्वास्थ्य, धन, शत्रु, संतान…' : 'e.g. marriage, health, wealth, enemy, property…'}
             className="flex-1 px-3 py-2 rounded-lg border border-border text-sm bg-white focus:border-sacred-gold focus:outline-none"
           />
           <button
