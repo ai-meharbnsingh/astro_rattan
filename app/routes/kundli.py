@@ -1591,6 +1591,22 @@ def get_panchadha_maitri(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     result = analyze_panchadha_maitri(chart)
+    # Engine: {planet_pairs: [{panchadha_relation, panchadha_relation_hi, ...}]}
+    # Frontend: {friendships: [{combined_relation_en, combined_relation_hi, ...}]}
+    friendships = []
+    for p in result.get("planet_pairs", []):
+        friendships.append({
+            "planet_a":            p.get("planet_a", ""),
+            "planet_b":            p.get("planet_b", ""),
+            "natural_relation":    p.get("natural_relation", ""),
+            "temporary_relation":  p.get("temporary_relation", ""),
+            "combined_relation_en": p.get("panchadha_relation", p.get("combined_relation_en", "")),
+            "combined_relation_hi": p.get("panchadha_relation_hi", p.get("combined_relation_hi", "")),
+            "effect_en":           p.get("effect_en", ""),
+            "effect_hi":           p.get("effect_hi", ""),
+            "sloka_ref":           p.get("sloka_ref", result.get("sloka_ref", "")),
+        })
+    result["friendships"] = friendships
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
