@@ -1140,6 +1140,82 @@ def calculate_yamaganda(weekday: int, sunrise: str, sunset: str) -> Dict[str, st
 
 
 # ============================================================
+# CHANDRASHTAMA (Moon in 8th from natal Moon = caution day)
+# ============================================================
+
+_ZODIAC_ORDER = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+]
+
+
+def calculate_chandrashtama(natal_moon_sign: str, transit_moon_sign: str) -> Dict[str, Any]:
+    """
+    Chandrashtama: transit Moon in the 8th sign from natal Moon sign.
+    Classical rule (Muhurta Chintamani): avoid important activities on
+    Chandrashtama days — the 8th Moon from birth Moon.
+
+    Returns:
+        {
+            active: bool,
+            natal_moon: str,
+            transit_moon: str,
+            house_from_natal: int,
+            note_en: str,
+            note_hi: str,
+        }
+    """
+    natal_normalized = natal_moon_sign.strip().title()
+    transit_normalized = transit_moon_sign.strip().title()
+
+    try:
+        natal_idx = _ZODIAC_ORDER.index(natal_normalized)
+        transit_idx = _ZODIAC_ORDER.index(transit_normalized)
+    except ValueError:
+        return {
+            "active": False,
+            "natal_moon": natal_moon_sign,
+            "transit_moon": transit_moon_sign,
+            "house_from_natal": 0,
+            "note_en": "Unable to compute Chandrashtama — invalid sign input.",
+            "note_hi": "चंद्राष्टम की गणना नहीं हो सकी — अमान्य राशि।",
+        }
+
+    house_from_natal = ((transit_idx - natal_idx) % 12) + 1
+    active = house_from_natal == 8
+
+    if active:
+        note_en = (
+            f"Chandrashtama active — Moon transiting {transit_normalized} (8th from natal "
+            f"Moon in {natal_normalized}). Avoid surgery, travel, new ventures, and major "
+            f"decisions today. Rest and spiritual practice are recommended."
+        )
+        note_hi = (
+            f"चंद्राष्टम सक्रिय — चंद्र {transit_normalized} राशि में (जन्म चंद्र {natal_normalized} "
+            f"से अष्टम)। आज शल्य-क्रिया, यात्रा, नई शुरुआत और महत्वपूर्ण निर्णयों से बचें। "
+            f"विश्राम और आध्यात्मिक साधना उपयुक्त है।"
+        )
+    else:
+        note_en = (
+            f"Moon in {transit_normalized} — house {house_from_natal} from natal Moon "
+            f"({natal_normalized}). No Chandrashtama today."
+        )
+        note_hi = (
+            f"चंद्र {transit_normalized} में — जन्म चंद्र ({natal_normalized}) से {house_from_natal}वाँ "
+            f"भाव। आज चंद्राष्टम नहीं है।"
+        )
+
+    return {
+        "active": active,
+        "natal_moon": natal_normalized,
+        "transit_moon": transit_normalized,
+        "house_from_natal": house_from_natal,
+        "note_en": note_en,
+        "note_hi": note_hi,
+    }
+
+
+# ============================================================
 # AUSPICIOUS TIMINGS
 # ============================================================
 

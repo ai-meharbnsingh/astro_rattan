@@ -162,6 +162,7 @@ def get_panchang(
     latitude: float = Query(default=28.6139),
     longitude: float = Query(default=77.2090),
     lang: str = Query(default="en"),
+    natal_moon_sign: str = Query(default=None, description="Natal Moon sign for Chandrashtama detection (e.g. 'Taurus')"),
     db: Any = Depends(get_db),
 ):
     """Calculate complete Panchang for a given date and location."""
@@ -234,6 +235,12 @@ def get_panchang(
         
         # Inject Hindi names if missing in cache (for backward compatibility or new lang support)
         _inject_hindi_fields(result)
+        # Chandrashtama — not cached, always computed on demand
+        if natal_moon_sign:
+            from app.panchang_engine import calculate_chandrashtama
+            transit_ms = result.get("moon_sign", "")
+            if transit_ms:
+                result["chandrashtama"] = calculate_chandrashtama(natal_moon_sign, transit_ms)
         return result
 
     # Calculate fresh
@@ -290,13 +297,22 @@ def get_panchang(
     db.commit()
 
     # Build full response
-    return {
+    response = {
         "date": target_date,
         "latitude": latitude,
         "longitude": longitude,
         **panchang,
         "festivals": festivals,
     }
+
+    # Chandrashtama — optional, injected when caller provides natal Moon sign
+    if natal_moon_sign:
+        from app.panchang_engine import calculate_chandrashtama
+        transit_moon_sign = panchang.get("moon_sign", "")
+        if transit_moon_sign:
+            response["chandrashtama"] = calculate_chandrashtama(natal_moon_sign, transit_moon_sign)
+
+    return response
 
 def _inject_hindi_fields(panchang: dict):
     """Deep-inject Hindi names into panchang dict based on English keys."""
