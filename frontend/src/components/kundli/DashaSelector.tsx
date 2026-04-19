@@ -105,6 +105,14 @@ function cloneResponse<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+const EMPTY_DATA: Record<DashaSystem, DashaResponse | null> = {
+  vimshottari: null,
+  yogini: null,
+  ashtottari: null,
+  moola: null,
+  tara: null,
+};
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -120,28 +128,32 @@ export default function DashaSelector({
   const [selectedSystem, setSelectedSystem] = useState<DashaSystem>('vimshottari');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<Record<DashaSystem, DashaResponse | null>>({
-    vimshottari: null,
-    yogini: null,
-    ashtottari: null,
-    moola: null,
-    tara: null,
-  });
+  const [data, setData] = useState<Record<DashaSystem, DashaResponse | null>>(EMPTY_DATA);
 
-  // Track which systems have been fetched — avoids stale-closure cascade
-  const fetchedRef = React.useRef<Set<DashaSystem>>(new Set());
+  // Ensure loading/error are driven by the latest request (avoid race confusion)
+  const latestReqRef = React.useRef(0);
 
   // Accordion state
   const [expandedMD, setExpandedMD] = useState<string | null>(null);
   const [expandedAD, setExpandedAD] = useState<string | null>(null);
 
+  // Reset state when the kundli changes (e.g., regenerate / load saved)
+  useEffect(() => {
+    setSelectedSystem('vimshottari');
+    setExpandedMD(null);
+    setExpandedAD(null);
+    setError(null);
+    setLoading(false);
+    setData(EMPTY_DATA);
+    latestReqRef.current = 0;
+  }, [kundliId]);
+
   /* Fetch on system change — stable callback (no data dependency) */
   const fetchDasha = useCallback(async (system: DashaSystem) => {
-    if (fetchedRef.current.has(system)) return;
     if (!kundliId) return;
-    fetchedRef.current.add(system);
-    setLoading(true);
+    const reqId = ++latestReqRef.current;
     setError(null);
+    setLoading(true);
     try {
       const meta = DASHA_SYSTEMS.find((s) => s.key === system)!;
       const url = meta.endpoint.replace('{id}', kundliId);
@@ -151,10 +163,14 @@ export default function DashaSelector({
         : ({ system } as DashaResponse);
       setData((prev) => ({ ...prev, [system]: cloneResponse(normalized) }));
     } catch (err: any) {
-      fetchedRef.current.delete(system); // allow retry on error
-      setError(err?.message || 'Failed to load dasha data');
+      // Only surface the error if this is still the latest request (prevents stale errors)
+      if (reqId === latestReqRef.current) {
+        setError(err?.message || 'Failed to load dasha data');
+      }
     } finally {
-      setLoading(false);
+      if (reqId === latestReqRef.current) {
+        setLoading(false);
+      }
     }
   }, [kundliId]);
 
@@ -170,6 +186,7 @@ export default function DashaSelector({
 
   const currentData = data[selectedSystem];
   const periods: DashaPeriod[] = currentData?.mahadasha || currentData?.periods || currentData?.dashas || [];
+  const showBlockingLoader = loading && !currentData;
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
@@ -193,10 +210,16 @@ export default function DashaSelector({
             </option>
           ))}
         </select>
+        {loading && currentData && (
+          <span className="inline-flex items-center gap-2 text-xs text-foreground/70">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+            {l('Refreshing…', 'अपडेट हो रहा है…')}
+          </span>
+        )}
       </div>
 
       {/* Loading */}
-      {loading && (
+      {showBlockingLoader && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
           <span className="ml-2 text-foreground">{l('Loading dasha...', 'दशा लोड हो रही है...')}</span>
@@ -204,17 +227,25 @@ export default function DashaSelector({
       )}
 
       {/* Error */}
-      {error && !loading && (
+      {error && !showBlockingLoader && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
           {error}
-          <Button size="sm" variant="outline" className="ml-3" onClick={() => { fetchedRef.current.delete(selectedSystem); setData((prev) => ({ ...prev, [selectedSystem]: null })); fetchDasha(selectedSystem); }}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="ml-3"
+            onClick={() => {
+              setData((prev) => ({ ...prev, [selectedSystem]: null }));
+              fetchDasha(selectedSystem);
+            }}
+          >
             {l('Retry', 'पुनः प्रयास')}
           </Button>
         </div>
       )}
 
       {/* Current period summary */}
-      {!loading && currentData && (
+      {currentData && (
         <div className="bg-muted rounded-xl border border-border p-4">
           <div className="flex items-center justify-between mb-3">
             <Heading as={4} variant={4} className="uppercase tracking-wide">
@@ -266,7 +297,7 @@ export default function DashaSelector({
       )}
 
       {/* Full timeline with expandable tree */}
-      {!loading && periods.length > 0 && (
+      {periods.length > 0 && (
         <div className="bg-muted rounded-xl border border-border p-4">
           <Heading as={4} variant={4} className="mb-3">
             {l('Dasha Timeline', 'दशा समयरेखा')}
@@ -407,7 +438,7 @@ export default function DashaSelector({
       )}
 
       {/* Empty state */}
-      {!loading && !error && periods.length === 0 && !currentData && (
+      {!showBlockingLoader && !error && periods.length === 0 && !currentData && (
         <div className="flex flex-col items-center justify-center py-12">
           <p className="text-foreground mb-3 text-sm">
             {l('Select a dasha system to view planetary periods', 'ग्रहीय दशा देखने के लिए एक दशा पद्धति चुनें')}
