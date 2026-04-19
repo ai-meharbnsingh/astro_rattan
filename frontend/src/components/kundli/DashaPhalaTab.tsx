@@ -508,7 +508,7 @@ function DashaTimingSection({
   const PLANET_ORDER = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
 
   return (
-    <div className="rounded-xl border border-border bg-muted overflow-hidden">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
       <button
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/10 transition-colors"
         onClick={toggle}
@@ -558,7 +558,7 @@ function DashaTimingSection({
               </div>
 
               {/* Per-planet table */}
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <table className="table-sacred w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-muted/50">

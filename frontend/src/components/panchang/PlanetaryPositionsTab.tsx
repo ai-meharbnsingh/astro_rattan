@@ -52,7 +52,7 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border p-2">
+      <div className="rounded-lg border border-sacred-gold/20 bg-transparent p-2">
         <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
           <Orbit className="h-4 w-4 text-sacred-gold" />
           {t('auto.navgrahaPositionsPla')}

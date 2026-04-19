@@ -26,7 +26,7 @@ export default function KPTab(props: KPTabProps) {
       ) : kpData ? (
         <div className="space-y-6">
           {/* 1. KP Planet Table — full reference chart style */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">{t('auto.krishnamurtiPaddhati')}</Heading>
             <div className="overflow-x-auto">
               <Table className="w-full text-sm">
@@ -96,11 +96,11 @@ export default function KPTab(props: KPTabProps) {
 
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-muted rounded-xl border border-border p-4">
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                   <Heading as={4} variant={4} className="mb-2 text-center">{t('section.vedicBirthChart')}</Heading>
                   <InteractiveKundli chartData={{ planets: birthPlanets, houses: birthHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
-                <div className="bg-muted rounded-xl border border-border p-4">
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                   <Heading as={4} variant={4} className="mb-2 text-center">{t('auto.cuspalChart')}</Heading>
                   <InteractiveKundli chartData={{ planets: cuspalPlanets, houses: cuspalHouses, ascendant: result?.chart_data?.ascendant } as ChartData} compact />
                 </div>
@@ -109,7 +109,7 @@ export default function KPTab(props: KPTabProps) {
           })()}
 
           {/* 2. Bhava Details (Placidus) — House Cusps */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">{t('auto.bhavaDetailsPlacidus')}</Heading>
             <div className="overflow-x-auto">
               <Table className="w-full text-sm">
@@ -154,7 +154,7 @@ export default function KPTab(props: KPTabProps) {
 
           {/* 3. Significations of Houses */}
           {kpData.house_significations && Object.keys(kpData.house_significations).length > 0 && (
-            <div className="bg-muted rounded-xl border border-border p-4">
+            <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
               <Heading as={4} variant={4} className="mb-3">{t('auto.significationsOfHous')}</Heading>
               <div className="overflow-x-auto">
                 <Table className="w-full text-sm">
@@ -186,7 +186,7 @@ export default function KPTab(props: KPTabProps) {
 
           {/* 4. Houses Signified by Planets */}
           {kpData.planet_significator_strengths && Object.keys(kpData.planet_significator_strengths).length > 0 && (
-            <div className="bg-muted rounded-xl border border-border p-4">
+            <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
               <Heading as={4} variant={4} className="mb-3">{t('auto.housesSignifiedByPla')}</Heading>
               <div className="overflow-x-auto">
                 <Table className="w-full text-sm">
@@ -215,7 +215,7 @@ export default function KPTab(props: KPTabProps) {
 
           {/* 5. Ruling Planets */}
           {kpData.ruling_planets && Object.keys(kpData.ruling_planets).length > 0 && (
-            <div className="bg-muted rounded-xl border border-border p-4">
+            <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
               <Heading as={4} variant={4} className="mb-3">{t('auto.rulingPlanets')}</Heading>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 {[

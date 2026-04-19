@@ -157,7 +157,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
               </div>
 
               {/* Koot Scores Table */}
-              <div className="bg-muted rounded-xl border border-border overflow-hidden">
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <div className="bg-muted px-4 py-2">
                   <Heading as={4} variant={4}>{t('milan.koot')} {t('milan.score')}</Heading>
                 </div>

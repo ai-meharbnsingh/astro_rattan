@@ -20,7 +20,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <Table className="w-full text-sm">
           <TableHeader className="bg-muted">
             <TableRow>

@@ -49,7 +49,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                       </Heading>
 
                       {sadesatiData.cycles.map((cycle: any, idx: number) => (
-                        <div key={idx} className="bg-muted rounded-xl border border-border overflow-hidden">
+                        <div key={idx} className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                           {/* Cycle Header */}
                           <div className={`p-4 ${cycle.severity === 'high' ? 'bg-red-50' : cycle.severity === 'extreme' ? 'bg-red-100' : 'bg-muted/10'}`}>
                             <div className="flex items-center justify-between">
@@ -115,7 +115,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         {t('sadeSati.otherTransits')}
                       </Heading>
 
-                      <div className="bg-muted rounded-xl border border-border overflow-hidden">
+                      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                         <div className="p-4 overflow-x-auto">
                           <Table className="w-full text-sm">
                             <TableHeader>
@@ -179,7 +179,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         ["दीर्घकालिक रोग और दुर्घटनाएं", "अपमानित होने का भय", "कार्य क्षेत्र में परिवर्तन", "धन में कमी आ सकती है", "बच्चों को कष्ट हो सकता है", "सबसे चुनौतीपूर्ण अवधि", "बच्चों से अलगाव की संभावना"] :
                         ["Long term ailments and accidents", "Fear of being insulted", "Change in work-sphere", "Wealth may diminish", "Children may suffer", "Most challenging period", "Possibilities of separation from children"] }
                     ].map((phase) => (
-                      <div key={phase.key} className="bg-muted rounded-xl border border-border p-4">
+                      <div key={phase.key} className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                         <Heading as={5} variant={5} className="mb-2">{phase.title}</Heading>
                         <ul className="space-y-1">
                           {phase.effects.map((effect: string, idx: number) => (
@@ -203,7 +203,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
 
                       {/* Mantra Remedies */}
                       {sadesatiData.detailed_remedies.mantra && (
-                        <div className="bg-muted rounded-xl border border-border p-4">
+                        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                           <Heading as={5} variant={5} className="mb-3">{translateBackend(sadesatiData.detailed_remedies.mantra.title, language)}</Heading>
                           <div className="space-y-3">
                             {sadesatiData.detailed_remedies.mantra.items.map((item: any, idx: number) => (
@@ -222,7 +222,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
                         const data = sadesatiData.detailed_remedies[category];
                         if (!data) return null;
                         return (
-                          <div key={category} className="bg-muted rounded-xl border border-border p-4">
+                          <div key={category} className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                             <Heading as={5} variant={5} className="mb-3">{translateBackend(data.title, language)}</Heading>
                             <ul className="space-y-1">
                               {(data.items || []).map((item: any, idx: number) => (
@@ -240,7 +240,7 @@ export default function SadesatiTab(props: SadesatiTabProps) {
 
                   {/* Fallback General Remedies */}
                   {(!sadesatiData.detailed_remedies) && sadesatiData.remedies && (
-                    <div className="bg-muted rounded-xl border border-border p-4">
+                    <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
                       <Heading as={4} variant={4} className="mb-3">{t('section.remedies')}</Heading>
                       <ul className="space-y-2">
                         {sadesatiData.remedies.map((remedy: string, idx: number) => (

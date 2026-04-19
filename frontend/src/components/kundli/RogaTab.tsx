@@ -244,7 +244,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
             <ShieldAlert className="w-5 h-5" />
             {isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}
           </h3>
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
             <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="bg-muted/30">

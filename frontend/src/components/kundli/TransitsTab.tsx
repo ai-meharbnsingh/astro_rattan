@@ -330,7 +330,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                   </div>
 
                   {/* Transit Table */}
-                  <div className="rounded-xl border overflow-hidden shadow-sm h-fit border-border/25 bg-card">
+                  <div className="rounded-xl border overflow-hidden h-fit border-sacred-gold/20 bg-transparent">
                     <Table className="w-full text-sm">
                       <TableHeader>
                         <TableRow className="bg-primary/10">

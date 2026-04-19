@@ -307,7 +307,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
           <Info className="w-5 h-5" />
           {t('auto.bestWorstTransitRasi')}
         </h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <table className="table-sacred w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-sacred-gold/30 bg-sacred-gold/5">

@@ -188,7 +188,7 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
       )}
 
       {/* ── Planet Properties Table (Stage / Guna / Baladi / Metal / Grain / Tree) ── */}
-      <div className="rounded-xl border border-border overflow-x-auto">
+      <div className="rounded-xl border border-sacred-gold/20 overflow-x-auto bg-transparent">
         <div className="px-4 py-2 bg-muted border-b border-border">
           <span className="text-xs font-semibold text-primary uppercase tracking-wide">
             {hi ? 'ग्रह गुण — धातु, अन्न, वृक्ष' : 'Planet Properties — Metal, Grain, Tree'}
@@ -263,7 +263,7 @@ function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; lang
   };
 
   return (
-    <div className="mt-6 overflow-x-auto rounded-xl border border-border">
+    <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
       <div className="px-4 py-2 bg-muted border-b border-border">
         <span className="text-xs font-semibold text-primary uppercase tracking-wide">
           {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
@@ -491,7 +491,7 @@ export default function PlanetsTab({
         )}
 
         {/* Planet table */}
-        <div className="mt-6 overflow-x-auto rounded-xl border border-border">
+        <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
           <Table className="w-full text-xs">
             <TableHeader className="bg-muted">
               <TableRow>

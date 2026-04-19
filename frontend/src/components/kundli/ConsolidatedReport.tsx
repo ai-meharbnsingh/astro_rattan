@@ -344,7 +344,7 @@ export default function ConsolidatedReport({
           {/* Row 1: Four charts */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-1">
             {/* Birth Chart (D1) */}
-            <div className="border border-border rounded-lg p-1">
+            <div className="border border-sacred-gold/20 rounded-lg p-1">
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('section.rashiD1')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
@@ -380,7 +380,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* D9 Navamsha */}
-            <div className="border border-border rounded-lg p-1">
+            <div className="border border-sacred-gold/20 rounded-lg p-1">
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('section.navamshaD9')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
@@ -418,7 +418,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* D10 Dashamsha */}
-            <div className="border border-border rounded-lg p-1">
+            <div className="border border-sacred-gold/20 rounded-lg p-1">
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('kundli.d10')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
@@ -456,7 +456,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Gochar (Transit) — clickable */}
-            <div className="border border-border rounded-lg p-1">
+            <div className="border border-sacred-gold/20 rounded-lg p-1">
               <Heading as={4} variant={4} className="text-data text-center mb-1">
                 {t('kundli.gochar')} <span className="text-sm font-normal text-muted-foreground">{t('report.clickHouseLagan')}</span>
               </Heading>
@@ -496,7 +496,7 @@ export default function ConsolidatedReport({
           </div>
 
           {/* Row 2: Planet Table (full width) */}
-          <div className="border border-border rounded-lg p-3">
+          <div className="border border-sacred-gold/20 rounded-lg p-3">
             <Heading as={4} variant={4} className="text-data mb-2">
               {t('section.detailedPlanetPositions')}
             </Heading>
@@ -550,7 +550,7 @@ export default function ConsolidatedReport({
           {/* Row 3: Avakhada Chakra + Vimshottari Dasha + Yogini Dasha */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* Avakhada Chakra */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('avakhada.title')}
               </Heading>
@@ -584,7 +584,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Vimshottari Dasha */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.vimshottariDasha')}
               </Heading>
@@ -629,7 +629,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Yogini Dasha */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.yoginiDasha')}
               </Heading>
@@ -677,7 +677,7 @@ export default function ConsolidatedReport({
           {/* Row 4: Yogas + Doshas + Lifelong Sade Sati + Lordships */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Yogas (present only) */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3 text-green-500" />
                 {t('section.yogas')}
@@ -701,7 +701,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Doshas (present only) */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2 flex items-center gap-1">
                 <Shield className="w-3 h-3 text-red-500" />
                 {t('section.doshas')}
@@ -725,7 +725,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Lifelong Sade Sati */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2 flex items-center gap-1">
                 <Shield className="w-3 h-3 text-primary" />
                 {t('section.lifelongSadeSati')}
@@ -763,7 +763,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Lordships */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.houseLordships')}
               </Heading>
@@ -776,7 +776,7 @@ export default function ConsolidatedReport({
           {/* Row 5: Ashtakvarga SAV + Shadbala */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Ashtakvarga SAV */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.sarvashtakvarga')}
               </Heading>
@@ -815,7 +815,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Shadbala */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.shadbalaStrength')}
               </Heading>
@@ -853,7 +853,7 @@ export default function ConsolidatedReport({
           {/* Row 6: KP Analysis + Varshphal */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
             {/* KP Analysis */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.kpAnalysis')}
               </Heading>
@@ -910,7 +910,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Varshphal (Annual Return) */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.varshphalCurrentYear')}
               </Heading>
@@ -958,7 +958,7 @@ export default function ConsolidatedReport({
 
           {/* Row 7: Upagrahas */}
           <div className="grid grid-cols-1 mt-3">
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.upagrahasTitle')}
               </Heading>
@@ -1000,7 +1000,7 @@ export default function ConsolidatedReport({
 
           {/* Row 8: Sodashvarga — By Sign (16 Divisional Charts Table) */}
           <div className="grid grid-cols-1 mt-3">
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.sodashvargaTitle')}
               </Heading>
@@ -1096,7 +1096,7 @@ export default function ConsolidatedReport({
           {/* Row 9: Aspects on Planets + Aspects on Bhavas */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
             {/* Aspects on Planets */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.aspectsOnPlanets')}
               </Heading>
@@ -1162,7 +1162,7 @@ export default function ConsolidatedReport({
             </div>
 
             {/* Aspects on Bhavas */}
-            <div className="border border-border rounded-lg p-3">
+            <div className="border border-sacred-gold/20 rounded-lg p-3">
               <Heading as={4} variant={4} className="text-data mb-2">
                 {t('section.aspectsOnBhavas')}
               </Heading>
@@ -1218,7 +1218,7 @@ export default function ConsolidatedReport({
           {/* Row 10: Bhinnashtakvarga Detail Table */}
           {ashtakvargaData?.planet_bindus && (
             <div className="grid grid-cols-1 mt-3">
-              <div className="border border-border rounded-lg p-3">
+              <div className="border border-sacred-gold/20 rounded-lg p-3">
                 <Heading as={4} variant={4} className="text-data mb-2">
                   {t('section.bhinnashtakvarga')}
                 </Heading>

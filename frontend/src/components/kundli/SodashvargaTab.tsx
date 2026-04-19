@@ -77,7 +77,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   return (
     <div className="space-y-6">
       {/* Varga Table */}
-      <div className="bg-muted rounded-xl border border-border p-4 overflow-x-auto">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 overflow-x-auto">
         <Heading as={4} variant={4} className="mb-3">{t('section.sodashvargaTitle')}</Heading>
         {(() => {
           const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
@@ -146,7 +146,7 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
 
       {/* Vimshopak Bala */}
       {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
-        <div className="bg-muted rounded-xl border border-border p-4 overflow-x-auto">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 overflow-x-auto">
           <Heading as={4} variant={4} className="mb-3">{t('section.vimshopakBala')}</Heading>
           <div className="space-y-3 min-w-[420px]">
             {(() => {

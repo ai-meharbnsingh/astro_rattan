@@ -38,7 +38,7 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
       {/* Tarabalam Section */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
         <div className="px-3 py-2 bg-sacred-gold/10 border-b border-sacred-gold/20">
           <h3 className="font-bold text-foreground text-sm">
             {t('panchang.tarabalam')}
@@ -103,7 +103,7 @@ export default function TarabalamTab({ panchang, language, t }: Props) {
       </div>
 
       {/* Chandrabalam Section */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
         <div className="px-3 py-2 bg-sacred-gold/10 border-b border-sacred-gold/20">
           <h3 className="font-bold text-foreground text-sm">
             {t('panchang.chandrabalam')}

@@ -124,7 +124,7 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
       )}
 
       {/* Lagna Table */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
         <h3 className="font-bold text-foreground p-2 flex items-center gap-1 bg-card/30">
           <Sunrise className="h-4 w-4 text-sacred-gold" />
           {language === 'hi' ? 'दिन के लग्न (उदय लग्न)' : "Today's Uday Lagna (Rising Sign)"}

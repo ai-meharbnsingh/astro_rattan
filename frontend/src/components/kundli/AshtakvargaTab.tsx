@@ -121,7 +121,7 @@ function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; lan
         </div>
       )}
       {planetReadings.length > 0 && (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <Table className="w-full text-sm">
             <TableHeader>
               <TableRow className="border-b border-border">
@@ -183,14 +183,14 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
       ) : ashtakvargaData ? (
         <div className="space-y-6">
           {/* SAV Chart — Custom North Indian style with large bindu numbers */}
-          <div className="bg-muted rounded-xl p-5 border border-border">
+          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
             <Heading as={4} variant={4} className="mb-4">{t('section.sarvashtakvarga')} {t('kundli.chart')}</Heading>
             <SAVKundliChart savData={ashtakvargaData.sarvashtakvarga || {}} language={language} lagnaSign={result?.chart_data?.ascendant?.sign || 'Aries'} t={t} />
             <p className="text-sm text-center text-foreground mt-2">{t('ashtakvarga.savDescription')}</p>
           </div>
 
           {/* SAV Bar Chart */}
-          <div className="bg-muted rounded-xl p-5 border border-border">
+          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
             <Heading as={4} variant={4} className="mb-4">{t('section.sarvashtakvarga')}</Heading>
             <div className="overflow-x-auto">
             <div className="flex items-end gap-2 h-48 min-w-[400px]">
@@ -256,7 +256,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
           </div>
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}
-          <div className="bg-muted rounded-xl p-5 border border-border">
+          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
             <Heading as={4} variant={4} className="mb-1">{t('auto.bhinnaAshtakvargaCha')}</Heading>
             <p className="text-sm text-muted-foreground mb-1">{t('auto.individualPlanetBind')} (Parashara Light format)</p>
             <p className="text-xs text-violet-700 bg-violet-50 border border-violet-200 rounded px-3 py-1.5 mb-4">
@@ -292,7 +292,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 ];
 
                 return (
-                  <div key={planet} className="bg-white rounded-lg border border-border overflow-hidden">
+                  <div key={planet} className="bg-transparent rounded-lg border border-sacred-gold/20 overflow-hidden">
                     {/* Planet header */}
                     <div className="bg-muted px-4 py-2 border-b border-border flex items-center justify-between">
                       <Heading as={5} variant={5}>
@@ -409,9 +409,9 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
 
-          <div className="bg-muted rounded-xl p-5 border border-border">
+          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
             <Heading as={4} variant={4} className="mb-4">{t('section.bhinnashtakvarga')}</Heading>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
               <Table className="w-full text-sm">
                 <TableHeader>
                   <TableRow className="border-b border-border">
@@ -448,7 +448,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             </div>
           </div>
 
-          <div className="bg-muted rounded-xl p-5 border border-border">
+          <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
             <Heading as={4} variant={4} className="mb-2">{t('ashtakvarga.purifiedPoints')}</Heading>
             <p className="text-sm text-muted-foreground mb-4">{t('ashtakvarga.purificationDesc')}</p>
 
@@ -458,7 +458,7 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 if (!purified) return null;
 
                 return (
-                  <div key={planet} className="bg-white rounded-lg border border-border overflow-hidden">
+                  <div key={planet} className="bg-transparent rounded-lg border border-sacred-gold/20 overflow-hidden">
                     <div className="bg-muted px-4 py-2 flex items-center justify-between">
                       <Heading as={5} variant={5}>
                         {translatePlanet(planet, language)} - {t('ashtakvarga.purifiedPoints')}

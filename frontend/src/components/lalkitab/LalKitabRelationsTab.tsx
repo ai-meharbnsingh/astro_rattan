@@ -138,7 +138,7 @@ export default function LalKitabRelationsTab() {
           {t('auto.aspectsDrishti')}
         </h3>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <Table className="w-full text-sm">
             <TableHeader>
               <TableRow className="border-b border-sacred-gold/10">
