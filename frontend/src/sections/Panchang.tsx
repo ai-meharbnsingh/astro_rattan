@@ -78,7 +78,14 @@ export interface FullPanchangData {
   tarabalam?: TarabalamRow[] | null;
   gowri_panchang?: GowriRow[] | null;
   do_ghati_muhurta?: DoGhatiRow[] | null;
-  panchaka?: { active: boolean; rahita: boolean } | null;
+  panchaka?: {
+    active: boolean; rahita: boolean;
+    type?: string; type_hindi?: string;
+    unsafe_window?: { start: string; end: string } | null;
+    unsafe_window_label?: string;
+    safe_window?: { start: string; end: string } | null;
+    safe_window_label?: string;
+  } | null;
   special_yogas?: {
     sarvartha_siddhi?: { active: boolean; type?: string; name: string; name_hindi: string };
     amrit_siddhi?: { active: boolean; name: string; name_hindi: string };
@@ -571,6 +578,7 @@ function normalizePanchang(data: Record<string, unknown>): FullPanchangData {
     gowri_panchang: d.gowri_panchang || null,
     do_ghati_muhurta: d.do_ghati_muhurta || null,
     panchaka: d.panchaka || null,
+    special_yogas: d.special_yogas || null,
     misc: d.misc || null,
   };
 }
