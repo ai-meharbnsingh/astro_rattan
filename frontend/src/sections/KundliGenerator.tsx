@@ -70,6 +70,7 @@ interface TabDef {
   value: string;
   labelEn: string;
   labelHi: string;
+  descriptionEn?: string;
   i18nKey?: string; // if we use t() for label
   primary: boolean;
   category?: 'charts' | 'timing' | 'analysis' | 'advanced';
@@ -86,55 +87,55 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'divisional',    labelEn: 'Divisional',     labelHi: 'विभाजन चार्ट',     primary: true, icon: Grid3X3 },
   { value: 'aspects',       labelEn: 'Aspects',        labelHi: 'दृष्टि',           primary: true, icon: Eye },
   // Charts
-  { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts' },
-  { value: 'ashtakvarga-phala', labelEn: 'Ashtakvarga Effects', labelHi: 'अष्टकवर्ग फल', primary: false, category: 'analysis' },
-  { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts' },
-  { value: 'd108',          labelEn: 'D108 Chart',     labelHi: 'D108 अष्टोत्तरांश',  primary: false, category: 'charts' },
-  { value: 'animation',     labelEn: 'Chart Animation', labelHi: 'चार्ट एनिमेशन',    primary: false, category: 'charts' },
-  { value: 'sarvatobhadra', labelEn: 'Sarvatobhadra',   labelHi: 'सर्वतोभद्र चक्र',   primary: false, category: 'charts' },
+  { value: 'ashtakvarga',   labelEn: 'Ashtakvarga',    labelHi: 'अष्टकवर्ग',        primary: false, category: 'charts',   descriptionEn: 'Planetary strength scores across 8 sensitive points per sign' },
+  { value: 'ashtakvarga-phala', labelEn: 'Ashtakvarga Effects', labelHi: 'अष्टकवर्ग फल', primary: false, category: 'analysis', descriptionEn: 'Interpretive results derived from Ashtakvarga scores' },
+  { value: 'sodashvarga',   labelEn: 'Sodashvarga',    labelHi: 'षोडशवर्ग',         primary: false, category: 'charts',   descriptionEn: '16 divisional charts for life-area specific analysis' },
+  { value: 'd108',          labelEn: 'D108 Chart',     labelHi: 'D108 अष्टोत्तरांश',  primary: false, category: 'charts',  descriptionEn: 'Rare D108 chart for deep spiritual & karmic insights' },
+  { value: 'animation',     labelEn: 'Chart Animation', labelHi: 'चार्ट एनिमेशन',   primary: false, category: 'charts',   descriptionEn: 'Animated planetary motion showing transit movement over time' },
+  { value: 'sarvatobhadra', labelEn: 'Sarvatobhadra',   labelHi: 'सर्वतोभद्र चक्र',  primary: false, category: 'charts',   descriptionEn: 'Auspicious chakra grid used for muhurta and transit analysis' },
   // Timing
-  { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing' },
-  { value: 'dasha-phala',   labelEn: 'Dasha Effects',  labelHi: 'दशा फल',           primary: false, category: 'timing' },
+  { value: 'yogini',        labelEn: 'Yogini Dasha',   labelHi: 'योगिनी दशा',       primary: false, category: 'timing',   descriptionEn: '8-goddess 36-year Yogini dasha timing cycle' },
+  { value: 'dasha-phala',   labelEn: 'Dasha Effects',  labelHi: 'दशा फल',           primary: false, category: 'timing',   descriptionEn: 'Interpretive predictions for currently active dasha periods' },
   // dasha-systems merged into "dasha" tab via DashaSelector (5 systems in one)
-  { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing' },
-  { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',            primary: false, category: 'timing' },
-  { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing' },
-  { value: 'kalachakra',   labelEn: 'Kalachakra Dasha', labelHi: 'कालचक्र दशा',      primary: false, category: 'timing' },
-  { value: 'gochara-vedha', labelEn: 'Gochara Vedha',  labelHi: 'गोचर वेध',         primary: false, category: 'timing' },
-  { value: 'transit-interp', labelEn: 'Transit Interpretations', labelHi: 'गोचर व्याख्या', primary: false, category: 'timing' },
-  { value: 'transit-lucky', labelEn: 'Lucky Indicators', labelHi: 'शुभ संकेतक',       primary: false, category: 'timing' },
+  { value: 'varshphal',     labelEn: 'Varshphal',      labelHi: 'वर्षफल',           primary: false, category: 'timing',   descriptionEn: 'Annual solar return chart analysis for the current year' },
+  { value: 'transits',      labelEn: 'Transits',       labelHi: 'गोचर',             primary: false, category: 'timing',   descriptionEn: 'Current planetary positions overlaid on natal chart' },
+  { value: 'sadesati',      labelEn: 'Sade Sati',      labelHi: 'साढ़े साती',        primary: false, category: 'timing',   descriptionEn: 'Saturn\'s 7.5-year cycle over natal Moon — phase & intensity' },
+  { value: 'kalachakra',    labelEn: 'Kalachakra Dasha', labelHi: 'कालचक्र दशा',    primary: false, category: 'timing',   descriptionEn: 'Kalachakra dasha timing system based on nakshatra groups' },
+  { value: 'gochara-vedha', labelEn: 'Gochara Vedha',  labelHi: 'गोचर वेध',         primary: false, category: 'timing',   descriptionEn: 'Obstruction points that neutralise a beneficial transit' },
+  { value: 'transit-interp', labelEn: 'Transit Interpretations', labelHi: 'गोचर व्याख्या', primary: false, category: 'timing', descriptionEn: 'Written interpretations for each active transit planet' },
+  { value: 'transit-lucky', labelEn: 'Lucky Indicators', labelHi: 'शुभ संकेतक',      primary: false, category: 'timing',   descriptionEn: 'Auspicious timing windows derived from transit patterns' },
   // Analysis
-  { value: 'shadbala',      labelEn: 'Shadbala',       labelHi: 'षड्बल',            primary: false, category: 'analysis' },
-  { value: 'kp',            labelEn: 'KP System',      labelHi: 'केपी सिस्टम',      primary: false, category: 'analysis' },
-  { value: 'kp-horary',     labelEn: 'KP Horary',     labelHi: 'केपी प्रश्न',       primary: false, category: 'analysis' },
-  { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis' },
-  { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis' },
-  { value: 'apatya',        labelEn: 'Progeny (Apatya)',labelHi: 'संतान',             primary: false, category: 'analysis' },
-  { value: 'stri-jataka',   labelEn: 'Stri Jataka',     labelHi: 'स्त्री जातक',       primary: false, category: 'analysis' },
-  { value: 'conjunctions',  labelEn: 'Conjunctions',    labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis' },
-  { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',     primary: false, category: 'analysis' },
-  { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis' },
-  { value: 'vritti',        labelEn: 'Career (Vritti)', labelHi: 'आजीविका',          primary: false, category: 'analysis' },
-  { value: 'janma-predictions', labelEn: 'Janma Predictions', labelHi: 'जन्म फल',       primary: false, category: 'analysis' },
-  { value: 'kundli-interpretations', labelEn: 'Interpretations', labelHi: 'कुंडली व्याख्या', primary: false, category: 'analysis' },
-  { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
-  { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
-  { value: 'navamsha-career', labelEn: 'Navamsha Career', labelHi: 'नवांश करियर',     primary: false, category: 'analysis' },
-  { value: 'graha-sambandha', labelEn: 'Graha Sambandha', labelHi: 'ग्रह सम्बन्ध',   primary: false, category: 'analysis' },
-  { value: 'panchadha-maitri', labelEn: 'Panchadha Maitri', labelHi: 'पंचधा मैत्री',  primary: false, category: 'analysis' },
-  { value: 'nadi-analysis', labelEn: 'Nadi Analysis',  labelHi: 'नाड़ी विश्लेषण',    primary: false, category: 'analysis' },
+  { value: 'shadbala',      labelEn: 'Shadbala',       labelHi: 'षड्बल',            primary: false, category: 'analysis', descriptionEn: 'Six-fold strength measurement — numerical power of each planet' },
+  { value: 'kp',            labelEn: 'KP System',      labelHi: 'केपी सिस्टम',      primary: false, category: 'analysis', descriptionEn: 'Krishnamurti Paddhati — sub-lord & stellar system analysis' },
+  { value: 'kp-horary',     labelEn: 'KP Horary',      labelHi: 'केपी प्रश्न',       primary: false, category: 'analysis', descriptionEn: 'Answer specific questions using KP horary method' },
+  { value: 'jaimini',       labelEn: 'Jaimini',        labelHi: 'जैमिनी',           primary: false, category: 'analysis', descriptionEn: 'Jaimini astrology — chara karaka, special dashas & rajayogas' },
+  { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis', descriptionEn: 'Yogas for renunciation, spirituality & monastic life' },
+  { value: 'apatya',        labelEn: 'Progeny (Apatya)',labelHi: 'संतान',            primary: false, category: 'analysis', descriptionEn: 'Children — potential, timing & indicators from 5th house' },
+  { value: 'stri-jataka',   labelEn: 'Stri Jataka',    labelHi: 'स्त्री जातक',       primary: false, category: 'analysis', descriptionEn: 'Traditional female horoscopy — marriage & feminine signifiers' },
+  { value: 'conjunctions',  labelEn: 'Conjunctions',   labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis', descriptionEn: 'Planetary conjunctions and their combined effects in chart' },
+  { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',    primary: false, category: 'analysis', descriptionEn: 'Health vulnerabilities and disease tendencies from chart' },
+  { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis', descriptionEn: 'Predicted results for each of the 12 houses' },
+  { value: 'vritti',        labelEn: 'Career (Vritti)', labelHi: 'आजीविका',          primary: false, category: 'analysis', descriptionEn: 'Career & livelihood — profession indicators and timing' },
+  { value: 'janma-predictions', labelEn: 'Janma Predictions', labelHi: 'जन्म फल',    primary: false, category: 'analysis', descriptionEn: 'Birth chart predictions based on lagna, moon & planetary positions' },
+  { value: 'kundli-interpretations', labelEn: 'Interpretations', labelHi: 'कुंडली व्याख्या', primary: false, category: 'analysis', descriptionEn: 'Comprehensive AI-assisted chart interpretations for all areas' },
+  { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis', descriptionEn: 'Yoga strength & aptitude analysis — skills and talents' },
+  { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis', descriptionEn: 'Full grid of all planetary aspects — both Vedic & Western' },
+  { value: 'navamsha-career', labelEn: 'Navamsha Career', labelHi: 'नवांश करियर',    primary: false, category: 'analysis', descriptionEn: 'Career insights derived specifically from the D9 Navamsha chart' },
+  { value: 'graha-sambandha', labelEn: 'Graha Sambandha', labelHi: 'ग्रह सम्बन्ध',  primary: false, category: 'analysis', descriptionEn: 'Planetary relationships — mutual aspects, exchange & conjunction' },
+  { value: 'panchadha-maitri', labelEn: 'Panchadha Maitri', labelHi: 'पंचधा मैत्री', primary: false, category: 'analysis', descriptionEn: 'Five-fold friendship table between planet pairs' },
+  { value: 'nadi-analysis', labelEn: 'Nadi Analysis',  labelHi: 'नाड़ी विश्लेषण',    primary: false, category: 'analysis', descriptionEn: 'Nadi nakshatra-based predictive techniques and readings' },
   // Advanced
-  { value: 'bhava-vichara', labelEn: 'Bhava Analysis', labelHi: 'भाव विचार',        primary: false, category: 'advanced' },
-  { value: 'longevity',     labelEn: 'Longevity Indicators', labelHi: 'आयु संकेतक',  primary: false, category: 'advanced' },
-  { value: 'mundane',       labelEn: 'Mundane',        labelHi: 'मुंडन ज्योतिष',    primary: false, category: 'advanced' },
-  { value: 'rectification', labelEn: 'Birth Rectification', labelHi: 'जन्म समय शोधन', primary: false, category: 'advanced' },
-  { value: 'upagrahas',     labelEn: 'Upagrahas',      labelHi: 'उपग्रह',           primary: false, category: 'advanced' },
-  { value: 'lordships',     labelEn: 'Lordships',      labelHi: 'लॉर्डशिप',         primary: false, category: 'advanced' },
-  { value: 'details',       labelEn: 'Birth Details',   labelHi: 'विवरण',            primary: false, category: 'advanced' },
-  { value: 'avakhada',      labelEn: 'Avakhada',       labelHi: 'अवखड़ा',           primary: false, category: 'advanced' },
-  { value: 'milan',         labelEn: 'Kundli Milan',   labelHi: 'कुंडली मिलान',     primary: false, category: 'advanced' },
-  { value: 'family-demise', labelEn: 'Family Longevity', labelHi: 'परिवार आयु विचार', primary: false, category: 'advanced' },
-  { value: 'astro-map',    labelEn: 'Astro Map',       labelHi: 'ज्योतिष मानचित्र', primary: false, category: 'advanced' },
+  { value: 'bhava-vichara', labelEn: 'Bhava Analysis', labelHi: 'भाव विचार',        primary: false, category: 'advanced', descriptionEn: 'Deep house-by-house analysis with lord strength & occupants' },
+  { value: 'longevity',     labelEn: 'Longevity Indicators', labelHi: 'आयु संकेतक', primary: false, category: 'advanced', descriptionEn: 'Ayurdaya lifespan calculation using multiple classical methods' },
+  { value: 'mundane',       labelEn: 'Mundane',        labelHi: 'मुंडन ज्योतिष',    primary: false, category: 'advanced', descriptionEn: 'World events & mundane astrology predictions' },
+  { value: 'rectification', labelEn: 'Birth Rectification', labelHi: 'जन्म समय शोधन', primary: false, category: 'advanced', descriptionEn: 'Correct uncertain birth time using life events & techniques' },
+  { value: 'upagrahas',     labelEn: 'Upagrahas',      labelHi: 'उपग्रह',           primary: false, category: 'advanced', descriptionEn: 'Sub-planets like Gulika, Mandi & Dhuma and their influences' },
+  { value: 'lordships',     labelEn: 'Lordships',      labelHi: 'लॉर्डशिप',         primary: false, category: 'advanced', descriptionEn: 'House lordship table — which planet rules which house' },
+  { value: 'details',       labelEn: 'Birth Details',  labelHi: 'विवरण',             primary: false, category: 'advanced', descriptionEn: 'Full birth chart data including panchanga and basic details' },
+  { value: 'avakhada',      labelEn: 'Avakhada',       labelHi: 'अवखड़ा',           primary: false, category: 'advanced', descriptionEn: 'Avakhada chakra — nakshatra, tithi, karana & panchanga data' },
+  { value: 'milan',         labelEn: 'Kundli Milan',   labelHi: 'कुंडली मिलान',     primary: false, category: 'advanced', descriptionEn: 'Kundli compatibility matching — 36 gun milan & doshas' },
+  { value: 'family-demise', labelEn: 'Family Longevity', labelHi: 'परिवार आयु विचार', primary: false, category: 'advanced', descriptionEn: 'Family longevity — parental & sibling longevity indicators' },
+  { value: 'astro-map',    labelEn: 'Astro Map',       labelHi: 'ज्योतिष मानचित्र', primary: false, category: 'advanced', descriptionEn: 'Astrocartography map — best locations for living and travel' },
 ];
 
 const CATEGORY_LABELS: Record<string, { en: string; hi: string }> = {
@@ -202,6 +203,8 @@ export default function KundliGenerator() {
   const [activeTab, setActiveTab] = useState('report');
   const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [showMobileMoreSheet, setShowMobileMoreSheet] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string>('charts');
+  const [hoveredTabValue, setHoveredTabValue] = useState<string | null>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
 
   // Sarvatobhadra Chakra state
@@ -416,7 +419,12 @@ export default function KundliGenerator() {
             {/* "More Analysis" dropdown button */}
             <div className="relative mt-1" ref={moreDropdownRef}>
               <button
-                onClick={() => setShowMoreTabs(prev => !prev)}
+                onClick={() => {
+                  setShowMoreTabs(prev => !prev);
+                  const activeGroup = groupedMoreTabs.find(g => g.tabs.some(t => t.value === activeTab));
+                  if (activeGroup) setHoveredCategory(activeGroup.category);
+                  else setHoveredCategory('charts');
+                }}
                 className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-md border transition-colors ${
                   isMoreTabActive
                     ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
@@ -427,29 +435,54 @@ export default function KundliGenerator() {
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} />
               </button>
               {showMoreTabs && (
-                <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-sacred-gold/30 rounded-xl shadow-xl p-4 min-w-[420px] grid grid-cols-2 gap-4">
-                  {groupedMoreTabs.map(group => (
-                    <div key={group.category}>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-sacred-gold-dark mb-2">
+                <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-sacred-gold/30 rounded-xl shadow-xl min-w-[480px] overflow-visible">
+                  {/* 4 equi-spaced category tab headers */}
+                  <div className="grid grid-cols-4 border-b border-sacred-gold/20 rounded-t-xl overflow-hidden">
+                    {groupedMoreTabs.map(group => (
+                      <button
+                        key={group.category}
+                        onMouseEnter={() => { setHoveredCategory(group.category); setHoveredTabValue(null); }}
+                        onClick={() => { setHoveredCategory(group.category); setHoveredTabValue(null); }}
+                        className={`px-2 py-3 text-[11px] font-semibold uppercase tracking-wide text-center transition-all border-b-2 ${
+                          hoveredCategory === group.category
+                            ? 'bg-sacred-gold/10 text-sacred-gold-dark border-sacred-gold-dark'
+                            : 'text-foreground/50 border-transparent hover:text-foreground/80 hover:bg-sacred-gold/5'
+                        }`}
+                      >
                         {hi ? group.label.hi : group.label.en}
-                      </p>
-                      <div className="space-y-0.5">
-                        {group.tabs.map(tab => (
-                          <button
-                            key={tab.value}
-                            onClick={() => handleTabChange(tab.value)}
-                            className={`w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors ${
-                              activeTab === tab.value
-                                ? 'bg-sacred-gold-dark text-white font-medium'
-                                : 'text-foreground hover:bg-sacred-gold/10'
-                            }`}
-                          >
-                            {hi ? tab.labelHi : tab.labelEn}
-                          </button>
-                        ))}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Item list for active category */}
+                  <div className="p-3 relative">
+                    {(groupedMoreTabs.find(g => g.category === hoveredCategory) ?? groupedMoreTabs[0])?.tabs.map(tab => (
+                      <div key={tab.value} className="relative">
+                        <button
+                          onClick={() => handleTabChange(tab.value)}
+                          onMouseEnter={() => setHoveredTabValue(tab.value)}
+                          onMouseLeave={() => setHoveredTabValue(null)}
+                          className={`w-full text-left px-3 py-2 rounded-md text-xs transition-colors flex items-center justify-between gap-2 ${
+                            activeTab === tab.value
+                              ? 'bg-sacred-gold-dark text-white font-medium'
+                              : 'text-foreground hover:bg-sacred-gold/10'
+                          }`}
+                        >
+                          <span>{hi ? tab.labelHi : tab.labelEn}</span>
+                          {tab.descriptionEn && (
+                            <span className={`text-[10px] opacity-50 ${activeTab === tab.value ? 'text-white' : 'text-foreground'}`}>›</span>
+                          )}
+                        </button>
+                        {/* Tooltip popover on hover */}
+                        {hoveredTabValue === tab.value && tab.descriptionEn && (
+                          <div className="absolute left-full top-0 ml-2 z-[60] bg-sacred-brown text-white rounded-lg shadow-xl p-3 w-52 pointer-events-none">
+                            <p className="text-[11px] font-semibold mb-1">{hi ? tab.labelHi : tab.labelEn}</p>
+                            <p className="text-[10px] leading-relaxed opacity-85">{tab.descriptionEn}</p>
+                            <div className="absolute right-full top-3 border-[5px] border-transparent border-r-sacred-brown" />
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
