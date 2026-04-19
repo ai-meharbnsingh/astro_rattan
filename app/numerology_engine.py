@@ -1980,6 +1980,8 @@ def analyze_loshu_planes(dob_digits: list) -> dict:
             "numbers": mental_nums,
             "name": PLANE_INTERPRETATIONS["mental"]["name"],
             "name_hi": PLANE_INTERPRETATIONS["mental"]["name_hi"],
+            "interpretation": PLANE_INTERPRETATIONS["mental"]["weak" if mental == 0 else "strong"],
+            "interpretation_hi": PLANE_INTERPRETATIONS["mental"]["weak_hi" if mental == 0 else "strong_hi"],
         },
         "emotional": {
             "score": emotional,
@@ -1987,6 +1989,8 @@ def analyze_loshu_planes(dob_digits: list) -> dict:
             "numbers": emotional_nums,
             "name": PLANE_INTERPRETATIONS["emotional"]["name"],
             "name_hi": PLANE_INTERPRETATIONS["emotional"]["name_hi"],
+            "interpretation": PLANE_INTERPRETATIONS["emotional"]["weak" if emotional == 0 else "strong"],
+            "interpretation_hi": PLANE_INTERPRETATIONS["emotional"]["weak_hi" if emotional == 0 else "strong_hi"],
         },
         "practical": {
             "score": practical,
@@ -1994,6 +1998,8 @@ def analyze_loshu_planes(dob_digits: list) -> dict:
             "numbers": practical_nums,
             "name": PLANE_INTERPRETATIONS["practical"]["name"],
             "name_hi": PLANE_INTERPRETATIONS["practical"]["name_hi"],
+            "interpretation": PLANE_INTERPRETATIONS["practical"]["weak" if practical == 0 else "strong"],
+            "interpretation_hi": PLANE_INTERPRETATIONS["practical"]["weak_hi" if practical == 0 else "strong_hi"],
         },
         "dominant_plane": dominant,
         "interpretation": interp["interpretation"],
@@ -2313,7 +2319,7 @@ def calculate_mobile_numerology(
             recommended_totals = RECOMMENDED_TOTALS.get(
                 life_path, RECOMMENDED_TOTALS[9]
             )
-            is_recommended = mobile_total in recommended_totals
+            is_recommended = (mobile_total in recommended_totals) and not has_malefic
         except (ValueError, IndexError):
             # Invalid date — skip DOB features silently
             pass

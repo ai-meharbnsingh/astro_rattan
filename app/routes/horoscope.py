@@ -135,6 +135,43 @@ def _sign_meta(sign: str) -> dict:
     }
 
 
+@router.get("/api/horoscope/natal-sign", status_code=status.HTTP_200_OK)
+def get_natal_sign(
+    birth_date: str = Query(..., description="Birth date YYYY-MM-DD"),
+    birth_time: str = Query(None, description="Birth time HH:MM:SS"),
+    birth_lat: float = Query(..., description="Birth latitude"),
+    birth_lon: float = Query(..., description="Birth longitude"),
+    birth_tz: float = Query(None, description="Timezone offset (e.g. 5.5 for IST)"),
+):
+    """Compute Moon sign (Rashi), nakshatra, and ascendant from birth data.
+    Used by the frontend to auto-select the correct Rashi on the horoscope page.
+    """
+    try:
+        from app.astro_engine import calculate_planet_positions
+        t = birth_time if birth_time else "12:00:00"
+        tz = birth_tz if birth_tz is not None else round(birth_lon / 15.0, 1)
+        result = calculate_planet_positions(birth_date, t, float(birth_lat), float(birth_lon), tz)
+        moon = result.get("planets", {}).get("Moon", {})
+        asc = result.get("ascendant", {})
+        moon_sign = moon.get("sign", "").lower()
+        ascendant = asc.get("sign", "").lower()
+        if moon_sign not in SIGNS:
+            raise HTTPException(status_code=400, detail="Could not determine Moon sign from birth data")
+        return {
+            "moon_sign": moon_sign,
+            "moon_sign_hindi": SIGN_HINDI.get(moon_sign, ""),
+            "nakshatra": moon.get("nakshatra", ""),
+            "nakshatra_pada": moon.get("nakshatra_pada"),
+            "ascendant": ascendant,
+            "ascendant_hindi": SIGN_HINDI.get(ascendant, ""),
+        }
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Failed to compute natal sign")
+        raise HTTPException(status_code=500, detail="Could not compute natal sign from birth data")
+
+
 @router.get("/api/horoscope/daily", status_code=status.HTTP_200_OK)
 def get_daily_horoscope(
     sign: str = Query(..., description="Zodiac sign (e.g. aries)"),

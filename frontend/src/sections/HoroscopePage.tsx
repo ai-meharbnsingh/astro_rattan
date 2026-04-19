@@ -87,12 +87,26 @@ export default function HoroscopePage() {
   const [transitLoading, setTransitLoading] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [detectedSign, setDetectedSign] = useState<{ moon_sign: string; moon_sign_hindi: string; nakshatra: string } | null>(null);
 
   // Persist birth params to localStorage
   const saveBirthParams = (params: BirthParams) => {
     setBirthParams(params);
     localStorage.setItem(BIRTH_PARAMS_KEY, JSON.stringify(params));
   };
+
+  // Auto-detect Moon sign (Rashi) when birth date + coords are available
+  useEffect(() => {
+    const { birth_date, birth_lat, birth_lon, birth_time } = birthParams;
+    if (!birth_date || !birth_lat || !birth_lon) { setDetectedSign(null); return; }
+    let cancelled = false;
+    const params = new URLSearchParams({ birth_date, birth_lat, birth_lon });
+    if (birth_time) params.append('birth_time', birth_time.length === 5 ? birth_time + ':00' : birth_time);
+    api.get(`/api/horoscope/natal-sign?${params.toString()}`)
+      .then((data: any) => { if (!cancelled && data?.moon_sign) setDetectedSign(data); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [birthParams.birth_date, birthParams.birth_lat, birthParams.birth_lon, birthParams.birth_time]);
 
   // Build birth query string (only when all required fields are filled)
   const birthQuery = (() => {
@@ -312,6 +326,23 @@ export default function HoroscopePage() {
             </div>
           )}
         </div>
+
+        {/* Auto-detected Rashi banner */}
+        {detectedSign && detectedSign.moon_sign !== selectedSign && (
+          <div className="rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 px-4 py-2.5 mb-3 flex items-center justify-between gap-3">
+            <p className="text-xs text-foreground">
+              {language === 'hi'
+                ? `जन्म डेटा से राशि: ${detectedSign.moon_sign_hindi} (${detectedSign.nakshatra})`
+                : `Detected Rashi: ${detectedSign.moon_sign.charAt(0).toUpperCase() + detectedSign.moon_sign.slice(1)} (${detectedSign.nakshatra})`}
+            </p>
+            <button
+              onClick={() => setSelectedSign(detectedSign.moon_sign)}
+              className="text-xs font-semibold text-sacred-gold-dark hover:underline whitespace-nowrap"
+            >
+              {language === 'hi' ? 'इसे चुनें' : 'Use this'}
+            </button>
+          </div>
+        )}
 
         {/* Sign Tabs — equally spaced grid of 12 */}
         <div className="rounded-xl border border-border bg-card p-2 mb-4">
