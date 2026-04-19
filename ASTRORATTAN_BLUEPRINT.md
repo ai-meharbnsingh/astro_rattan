@@ -60,9 +60,12 @@ Kundli is the core Vedic birth chart module. It generates a complete natal horos
 - Zodiac sign & sign-degree
 - Nakshatra (lunar mansion) & pada (quarter)
 - House placement (1–12)
-- Retrograde status
+- Retrograde status · `retro_dispositor` (sign lord is retrograde)
 - Dignity: exalted / own sign / moolatrikona / friend / neutral / enemy / debilitated
-- Combustion status
+- Combustion status (`is_combust`) · Vargottama (`is_vargottama`)
+- Sandhi flag (`is_sandhi`) — planet within 1° of sign boundary
+- Gandanta flag (`is_gandanta`) — planet in last 3°20' of water signs (Cancer/Scorpio/Pisces) or first 3°20' of fire signs (Aries/Leo/Sagittarius); classically weakened placement
+- Speed (daily degrees) for Cheshta Bala computation
 - Jaimini Chara Karakas (AK, AmK, BK, MK, PK, PiK, GK)
 
 **Ascendant Details:**
@@ -112,10 +115,17 @@ Kundli is the core Vedic birth chart module. It generates a complete natal horos
 - Sookshma Dasha (sub-AD) lord & date range
 - Prana Dasha (sub-sub-AD) lord & date range
 
-**Dasha Phala (Effects):** `DashaPhalaTab.tsx`
+**Dasha Phala (Effects):** `DashaPhalaTab.tsx` — `GET /api/kundli/{id}/dasha-phala`
 - Mahadasha effects based on lord's placement, dignity, conjunctions
 - Antardasha refined effects with yoga/dosha multipliers
 - Pratyantar Phala for finest-grain interpretation
+- `transit_correlation` — whether the Mahadasha lord is currently within 15° of its natal position (intensification window); uses native's actual birth coordinates
+- `dasha_quality` label (Auspicious / Challenging / Neutral) with quality factors
+
+**Dasha Timing Rule:** `GET /api/kundli/{id}/dasha-timing-rule`
+- Per-planet timing quality: `first_half` / `second_half` of dasha more favorable
+- Based on: house parity (odd/even), exaltation/debilitation, own-sign, strength score
+- Lazy-loaded accordion in DashaPhalaTab
 
 ---
 
@@ -157,7 +167,10 @@ Kundli is the core Vedic birth chart module. It generates a complete natal horos
 - **Surya Yogas** — Sun-based combinations
 - **Arishta Yogas** — Affliction combinations
 
-**Per Yoga Output:** Presence indicator · Nature (benefic/malefic/mixed) · Strength level · Description · Remedies
+**Per Yoga Output:** Presence indicator · Nature (benefic/malefic/mixed) · Strength level (`strong`/`moderate`/`weak`) · Description (EN/HI) · Sloka reference · `planets_involved[]` · `trigger_houses[]` · `fruition_dashas[]` (dashas when yoga fructifies) · `fruition_note_en/hi`
+
+**Yogas-Doshas endpoint:** `GET /api/kundli/{id}/yogas-doshas`  
+Sources merged: `dosha_engine.py` (legacy) + `yoga_rule_engine.py` (rule engine). Post-processing derives `trigger_houses` from `planets_involved` house placements and `strength` from planetary dignity.
 
 **Maha Yogas:** `GET /api/kundli/{id}/maha-yogas`  
 **Raja Yogas:** `GET /api/kundli/{id}/raja-yogas`
@@ -220,18 +233,26 @@ Each chart renders: North Indian Diamond SVG · Planetary positions table (plane
 **Frontend:** `ShadbalaTab.tsx`  
 **Backend:** `app/shadbala_engine.py`
 
-Six strength components per planet (Sun through Saturn):
+Eight strength components per planet (Sun through Saturn):
 
 | Bala | Component | Measures |
 |---|---|---|
-| Sthana Bala | Positional | Exaltation, saptavarga, kendra position |
-| Kala Bala | Temporal | Day/night, paksha, hora, ayana |
-| Chesta Bala | Motional | Retrograde speed |
-| Naisargika Bala | Natural | Innate planet strength |
-| Drig Bala | Directional | Aspect strength received |
-| Bhava Bala | House | House placement quality |
+| Sthana Bala | Positional | Uchcha, saptavargaja, ojhayugma, kendra, drekkana |
+| Dig Bala | Directional | Strongest house for each planet (Sun/Mars=10th, Moon/Venus=4th, etc.) |
+| Kala Bala | Temporal | Day/night, paksha, hora, ayana, vara, masa, abda, nathonnatha |
+| Cheshta Bala | Motional | Retrograde (60) / stationary (45) / direct (30) / fast (15) |
+| Naisargika Bala | Natural | Innate planet strength (fixed hierarchy) |
+| Drik Bala | Aspectual | Net aspect strength received from other planets |
+| Chandrastha Bala | Moon-distance | Strength from house distance to Moon (Phaladeepika Adh. 4) |
+| Chandravritta Bala | Moon-specific | Moon only: paksha phase bonus + sign dignity adjustment |
 
-Display: Bar chart per planet · Minimum required strength threshold (dashed line) · Star indicator if ratio > 1.2 · Expandable sub-component breakdown
+**Minimum required Shadbala (Virupas):** Sun 390 · Moon 360 · Mars 300 · Mercury 420 · Jupiter 390 · Venus 330 · Saturn 300
+
+**Ishta / Kashta Phala** (Phaladeepika Adh. 4, sloka 26):  
+Per planet: `ishta_phala` (benefic potential) · `kashta_phala` (affliction potential) · `net_phala` · verdict (beneficial / afflicted)  
+Summary section (`ishta_kashta_summary`) shows all 7 planets' verdicts as color-coded cards.
+
+Display: Bar chart per planet · Ishta/Kashta columns in table · Minimum required strength threshold (dashed line) · Star indicator if ratio > 1.2 · Expandable sub-component breakdown · Moon row shows Chandravritta detail (paksha + dignity components)
 
 ---
 
@@ -512,7 +533,8 @@ Per yogini: Ruling planet · Period start/end dates · Duration in years · Curr
 ### 1.25 Sarvatobhadra Chakra
 
 **Frontend:** `sarvatobhadra/SarvatobhadraChakra.tsx`  
-**Backend:** `app/sarvatobhadra_chakra_engine.py`
+**Backend:** `app/sarvatobhadra_chakra_engine.py`  
+**Endpoint:** `GET /api/kundli/{id}/sarvatobhadra`
 
 9×9 grid chakra showing: Nakshatras · Zodiac signs · Sanskrit vowels (phonetic) · Days (Vara)
 
