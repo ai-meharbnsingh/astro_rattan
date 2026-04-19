@@ -864,7 +864,7 @@ export default function ConsolidatedReport({
                   <div>
                     <Heading as={5} variant={5} className="text-primary mb-1">{t('section.planetarySignificators')}</Heading>
                     <Table className="w-full text-sm border-collapse">
-                      <TableHeader className="bg-muted">
+                      <TableHeader>
                         <TableRow>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.planet')}</TableHead>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.starLord')}</TableHead>
@@ -885,7 +885,7 @@ export default function ConsolidatedReport({
                   <div>
                     <Heading as={5} variant={5} className="text-primary mb-1">{t('section.houseCusps')}</Heading>
                     <Table className="w-full text-sm border-collapse">
-                      <TableHeader className="bg-muted">
+                      <TableHeader>
                         <TableRow>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.cusp')}</TableHead>
                           <TableHead className="text-left p-1 text-muted-foreground">{t('table.starLord')}</TableHead>
@@ -967,7 +967,7 @@ export default function ConsolidatedReport({
               ) : upagrahasData?.upagrahas ? (
                 <div className="overflow-x-auto">
                   <Table className="w-full text-sm border-collapse">
-                    <TableHeader className="bg-muted">
+                    <TableHeader>
                       <TableRow>
                         <TableHead className="text-left p-1.5 text-muted-foreground">{t('tab.upagrahas')}</TableHead>
                         <TableHead className="text-left p-1.5 text-muted-foreground">{t('table.longitude')}</TableHead>

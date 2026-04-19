@@ -46,13 +46,13 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   return (
     <div className="overflow-x-auto">
         <Table className="w-full text-xs">
-          <TableHeader className="bg-muted">
+          <TableHeader>
             <TableRow>
-              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.house')}</TableHead>
-              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.sign')}</TableHead>
-              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.lord')}</TableHead>
-              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.placedIn')}</TableHead>
-              <TableHead className="text-left p-1.5 font-medium text-primary">{t('auto.significance')}</TableHead>
+              <TableHead className="text-left">{t('auto.house')}</TableHead>
+              <TableHead className="text-left">{t('auto.sign')}</TableHead>
+              <TableHead className="text-left">{t('auto.lord')}</TableHead>
+              <TableHead className="text-left">{t('auto.placedIn')}</TableHead>
+              <TableHead className="text-left">{t('auto.significance')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,12 +69,12 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
               const lordPlacedIn = lordPlanet ? `${t('auto.house')} ${lordPlanet.house}` : '\u2014';
 
               return (
-                <TableRow key={houseNum} className={`border-t border-border ${houseNum % 2 === 0 ? 'bg-muted/5' : ''}`}>
-                  <TableCell className="p-1.5 font-medium text-foreground">{houseNum}</TableCell>
-                  <TableCell className="p-1.5 text-foreground">{translateSign(signName, language)}</TableCell>
-                  <TableCell className="p-1.5 font-medium text-primary">{translatePlanet(lord, language)}</TableCell>
-                  <TableCell className="p-1.5 text-foreground">{lordPlacedIn}</TableCell>
-                  <TableCell className="p-1.5 text-foreground">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</TableCell>
+                <TableRow key={houseNum}>
+                  <TableCell className="font-medium text-foreground">{houseNum}</TableCell>
+                  <TableCell className="text-foreground">{translateSign(signName, language)}</TableCell>
+                  <TableCell className="font-medium text-foreground">{translatePlanet(lord, language)}</TableCell>
+                  <TableCell className="text-foreground">{lordPlacedIn}</TableCell>
+                  <TableCell className="text-foreground">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</TableCell>
                 </TableRow>
               );
             })}

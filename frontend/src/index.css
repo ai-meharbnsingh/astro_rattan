@@ -213,16 +213,23 @@
     @apply w-full text-sm border-collapse;
   }
   .table-sacred thead tr {
-    @apply bg-sacred-gold/10;
+    background: rgba(255, 153, 51, 0.10) !important;
+    border-bottom: 1px solid rgba(196, 97, 31, 0.22);
   }
   .table-sacred thead th {
-    @apply px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sacred-gold-dark whitespace-nowrap;
+    @apply text-xs font-semibold uppercase tracking-wider whitespace-nowrap;
+    padding: 0.5rem 0.75rem !important; /* py-2 px-3 */
+    color: #C4611F !important; /* copper */
   }
   .table-sacred tbody tr {
     @apply border-b border-sacred-gold/10 hover:bg-sacred-gold/10 transition-colors;
   }
+  .table-sacred tbody tr:nth-child(even) {
+    background: rgba(255, 153, 51, 0.03);
+  }
   .table-sacred tbody td {
-    @apply px-3 py-2 text-foreground;
+    @apply text-foreground;
+    padding: 0.5rem 0.75rem !important; /* py-2 px-3 */
   }
 }
 

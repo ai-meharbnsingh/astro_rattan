@@ -1,7 +1,7 @@
 import { Loader2, CheckCircle, Shield, ChevronDown } from 'lucide-react';
 import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import InteractiveKundli, { ChartLegend, type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import { ChartLegend, type PlanetData } from '@/components/InteractiveKundli';
 import { DIVISIONAL_CHART_OPTIONS } from '@/components/kundli/kundli-utils';
 import { calculateJaiminiKarakas } from '@/components/kundli/jhora-utils';
 import LordshipsTab from '@/components/kundli/LordshipsTab';
@@ -83,6 +83,11 @@ export default function ReportTab({
     const idx = SIGNS_ORDER.indexOf(String(base || '').trim());
     if (idx < 0) return base || '';
     return SIGNS_ORDER[(idx + (shift % 12) + 12) % 12] || base;
+  };
+  const ascFromHouses = (houses: any): string => {
+    const list = Array.isArray(houses) ? houses : [];
+    const h1 = list.find((h: any) => Number(h?.number) === 1);
+    return String(h1?.sign || '').trim();
   };
   const toPlanetEntry = (p: any): PlanetEntry => ({
     planet: p.planet,
@@ -242,29 +247,34 @@ export default function ReportTab({
               {/* Row 1: Planet Details (2/3) and Divisional Chart (1/3) */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 print:grid-cols-3">
                 {/* 2. Planet Details Table */}
-                <div className="lg:col-span-2 bg-muted rounded-xl border border-border p-4 flex flex-col">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.detailedPlanetPositions')}</Heading>
+                <div className="lg:col-span-2 rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden flex flex-col">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+                    <span>{t('section.detailedPlanetPositions')}</span>
+                    <span className="text-xs font-normal opacity-80">
+                      {t('kundli.lagna')}: {translateSign(result.chart_data?.ascendant?.sign || '', language) || '\u2014'}
+                    </span>
+                  </div>
                   <div className="overflow-x-auto flex-1">
                     <Table className="w-full text-xs">
-                      <TableHeader className="bg-muted">
+                      <TableHeader>
                         <TableRow>
-                          <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
-                          <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
-                          <TableHead className="text-center p-1.5 text-primary font-medium">{t('table.house')}</TableHead>
-                          <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.nakshatra')}</TableHead>
-                          <TableHead className="text-center p-1.5 text-primary font-medium whitespace-nowrap">{t('table.degree')}</TableHead>
-                          <TableHead className="text-center p-1.5 text-primary font-medium">{t('table.status')}</TableHead>
+                          <TableHead className="text-left">{t('table.planet')}</TableHead>
+                          <TableHead className="text-left">{t('table.sign')}</TableHead>
+                          <TableHead className="text-center">{t('table.house')}</TableHead>
+                          <TableHead className="text-left">{t('table.nakshatra')}</TableHead>
+                          <TableHead className="text-center whitespace-nowrap">{t('table.degree')}</TableHead>
+                          <TableHead className="text-center">{t('table.status')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {planets.map((planet: any, index: number) => (
-                          <TableRow key={index} className="border-t border-border hover:bg-muted/5">
-                            <TableCell className="p-1.5 text-foreground font-medium">{translatePlanet(planet.planet, language)}</TableCell>
-                            <TableCell className="p-1.5 text-foreground">{translateSign(planet.sign, language)}</TableCell>
-                            <TableCell className="p-1.5 text-center text-foreground">{planet.house}</TableCell>
-                            <TableCell className="p-1.5 text-foreground">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</TableCell>
-                            <TableCell className="p-1.5 text-center text-foreground whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</TableCell>
-                            <TableCell className="p-1.5 text-center">
+                          <TableRow key={index}>
+                            <TableCell className="text-foreground font-medium">{translatePlanet(planet.planet, language)}</TableCell>
+                            <TableCell className="text-foreground">{translateSign(planet.sign, language)}</TableCell>
+                            <TableCell className="text-center text-foreground">{planet.house}</TableCell>
+                            <TableCell className="text-foreground">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</TableCell>
+                            <TableCell className="text-center text-foreground whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</TableCell>
+                            <TableCell className="text-center">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-foreground'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
@@ -276,187 +286,370 @@ export default function ReportTab({
                   </div>
                 </div>
 
-                {/* 3. Divisional Chart */}
-                <div className="lg:col-span-1 bg-muted rounded-xl border border-border p-4 flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <Heading as={4} variant={4}>{t('kundli.divisionalCharts')}</Heading>
-                    <select
-                      value={selectedDivision}
-                      onChange={(e) => changeDivision(e.target.value)}
-                      className="bg-card border border-border rounded-lg px-2 py-1 text-foreground text-xs focus:border-border focus:outline-none"
-                    >
-                      {DIVISIONAL_CHART_OPTIONS.map((c) => (
-                        <option key={c.code} value={c.code}>{c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {loadingDivisional ? (
-                    <div className="flex items-center justify-center py-8 flex-1"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                  ) : divisionalData?.planet_positions ? (
-                    <div className="flex justify-center flex-1 items-center">
-                      <InteractiveKundli
-                        chartData={{
-                          planets: divisionalData.planet_positions.map((p: any) => ({
-                            planet: p.planet,
-                            sign: p.sign,
-                            house: p.house,
-                            nakshatra: p.nakshatra || '',
-                            sign_degree: p.sign_degree || 0,
-                            status: '',
-                          })),
-                          houses: divisionalData.houses || Array.from({ length: 12 }, (_, i) => ({
-                            number: i + 1,
-                            sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-                          })),
-                        } as ChartData}
-                        onPlanetClick={handlePlanetClick}
-                        onHouseClick={handleHouseClick}
-                        compact
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-center text-foreground py-8 text-sm flex-1 flex items-center justify-center">{t('kundli.selectChart')}</p>
-                  )}
-                </div>
+	                {/* 3. Divisional Chart */}
+	                <div className="lg:col-span-1 bg-transparent rounded-xl border border-sacred-gold/20 overflow-hidden flex flex-col">
+	                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+	                    {t('kundli.divisionalCharts')}
+	                  </div>
+	                  <div className="p-3 flex flex-col gap-3 flex-1">
+	                    <div className="flex justify-end">
+	                      <div className="relative w-full max-w-[220px]">
+	                        <select
+	                          value={selectedDivision}
+	                          onChange={(e) => changeDivision(e.target.value)}
+	                          className="input-sacred text-xs py-1.5 pr-8 w-full"
+	                        >
+	                          {DIVISIONAL_CHART_OPTIONS.map((c) => (
+	                            <option key={c.code} value={c.code}>{c.name}</option>
+	                          ))}
+	                        </select>
+	                        <ChevronDown
+	                          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4"
+	                          style={{ color: '#C4611F', opacity: 0.75 }}
+	                        />
+	                      </div>
+	                    </div>
+	                    {loadingDivisional ? (
+	                      <div className="flex items-center justify-center py-8 flex-1"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+	                    ) : divisionalData?.planet_positions ? (
+	                      <div className="flex justify-center flex-1 items-center">
+	                        <div className="w-full max-w-[340px] aspect-square">
+	                          <KundliChartSVG
+	                            planets={(divisionalData.planet_positions || []).map(toPlanetEntry)}
+	                            ascendantSign={
+	                              ascFromHouses(divisionalData.houses)
+	                              || divisionalData.chart_data?.ascendant?.sign
+	                              || divisionalData.ascendant?.sign
+	                              || (divisionalData.planet_positions || []).find((p: any) => p.planet === 'Lagna' || p.planet === 'Ascendant')?.sign
+	                              || result.chart_data?.ascendant?.sign
+	                              || ''
+	                            }
+	                            language={language}
+	                            className="w-full h-full"
+	                            showHouseNumbers={false}
+	                            showRashiNumbers
+	                            rashiNumberPlacement="corner"
+	                            showAscendantMarker={false}
+	                            onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+	                          />
+	                        </div>
+	                      </div>
+	                    ) : (
+	                      <p className="text-center text-foreground py-8 text-sm flex-1 flex items-center justify-center">{t('kundli.selectChart')}</p>
+	                    )}
+	                  </div>
+	                </div>
               </div>
 
               {/* Grid layout for remaining items — 2 columns on desktop, 1 on mobile */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 print:grid-cols-2">
 
-                {/* 4. Lordships */}
-                <div className="bg-muted rounded-xl border border-border p-4">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.houseLordships')}</Heading>
-                  <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
-                </div>
+	                {/* 4. Lordships */}
+	                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+	                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+	                    {t('section.houseLordships')}
+	                  </div>
+	                  <div className="pb-3">
+	                    <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
+	                  </div>
+	                </div>
 
-                {/* 5. Avakhada Chakra */}
-                <div className="bg-muted rounded-xl border border-border p-4">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.avakhadaChakra')}</Heading>
-                  {loadingAvakhada ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                  ) : avakhadaData ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { label: t('avakhada.ascendant'), value: translateSign(avakhadaData.ascendant, language) },
-                        { label: t('avakhada.ascendantLord'), value: translatePlanet(avakhadaData.ascendant_lord, language) },
-                        { label: t('avakhada.rashi'), value: translateSign(avakhadaData.rashi, language) },
-                        { label: t('avakhada.rashiLord'), value: translatePlanet(avakhadaData.rashi_lord, language) },
-                        { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (P${avakhadaData.nakshatra_pada})` },
-                        { label: t('avakhada.yoga'), value: translateBackend(avakhadaData.yoga, language) },
-                        { label: t('avakhada.karana'), value: translateBackend(avakhadaData.karana, language) },
-                        { label: t('avakhada.yoni'), value: translateBackend(avakhadaData.yoni, language) },
-                        { label: t('avakhada.gana'), value: translateBackend(avakhadaData.gana, language) },
-                        { label: t('avakhada.nadi'), value: translateBackend(avakhadaData.nadi, language) },
-                        { label: t('avakhada.varna'), value: translateBackend(avakhadaData.varna, language) },
-                        { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
-                        { label: t('avakhada.sunSign'), value: translateSign(avakhadaData.sun_sign, language) },
-                      ].map((item) => (
-                        <div key={item.label} className="rounded-lg p-2 bg-card">
-                          <p className="text-sm text-foreground">{item.label}</p>
-                          <p className="text-sm font-semibold text-foreground">{item.value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
-                  )}
-                </div>
+	                {/* 5. Avakhada Chakra */}
+	                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+	                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+	                    {t('section.avakhadaChakra')}
+	                  </div>
+	                  {loadingAvakhada ? (
+	                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+	                  ) : avakhadaData ? (
+	                    <div className="pb-3 overflow-x-auto">
+	                      <Table className="w-full text-xs">
+	                        <TableHeader>
+	                          <TableRow>
+	                            <TableHead className="text-left">{t('table.parameter')}</TableHead>
+	                            <TableHead className="text-left">{t('table.value')}</TableHead>
+	                          </TableRow>
+	                        </TableHeader>
+	                        <TableBody>
+	                          {[
+	                            { label: t('avakhada.ascendant'), value: translateSign(avakhadaData.ascendant, language) },
+	                            { label: t('avakhada.ascendantLord'), value: translatePlanet(avakhadaData.ascendant_lord, language) },
+	                            { label: t('avakhada.rashi'), value: translateSign(avakhadaData.rashi, language) },
+	                            { label: t('avakhada.rashiLord'), value: translatePlanet(avakhadaData.rashi_lord, language) },
+	                            { label: t('avakhada.nakshatra'), value: `${translateNakshatra(avakhadaData.nakshatra, language)} (P${avakhadaData.nakshatra_pada})` },
+	                            { label: t('avakhada.yoga'), value: translateBackend(avakhadaData.yoga, language) },
+	                            { label: t('avakhada.karana'), value: translateBackend(avakhadaData.karana, language) },
+	                            { label: t('avakhada.yoni'), value: translateBackend(avakhadaData.yoni, language) },
+	                            { label: t('avakhada.gana'), value: translateBackend(avakhadaData.gana, language) },
+	                            { label: t('avakhada.nadi'), value: translateBackend(avakhadaData.nadi, language) },
+	                            { label: t('avakhada.varna'), value: translateBackend(avakhadaData.varna, language) },
+	                            { label: t('avakhada.naamakshar'), value: avakhadaData.naamakshar },
+	                            { label: t('avakhada.sunSign'), value: translateSign(avakhadaData.sun_sign, language) },
+	                          ].map((item) => (
+	                            <TableRow key={item.label}>
+	                              <TableCell className="font-medium text-foreground whitespace-nowrap">{item.label}</TableCell>
+	                              <TableCell className="text-foreground">{item.value || '\u2014'}</TableCell>
+	                            </TableRow>
+	                          ))}
+	                        </TableBody>
+	                      </Table>
+	                    </div>
+	                  ) : (
+	                    <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
+	                  )}
+	                </div>
 
-                {/* 6. Vimshottari Dasha — compact 120-yr list */}
-                {(() => {
-                  const ABBR: Record<string, string> = {
-                    Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me',
-                    Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
-                  };
-                  const fmtEnd = (iso: string | undefined) => {
-                    if (!iso) return '—';
-                    const [y, m, d] = iso.slice(0, 10).split('-');
-                    return `${d}/${m}/${y}`;
-                  };
-                  const periods: any[] =
-                    extendedDashaData?.mahadasha ||
-                    (dashaData?.mahadasha_periods || []).map((p: any) => ({
-                      planet: p.planet, end: p.end_date, is_current: p.planet === dashaData?.current_dasha,
-                      antardasha: [],
-                    }));
-                  const currentMD = (extendedDashaData || dashaData)?.current_dasha;
-                  return (
-                    <div className="bg-muted rounded-xl border border-border p-4">
-                      <Heading as={4} variant={4} className="mb-3 text-center">{t('section.vimshottariDasha')}</Heading>
-                      {(loadingDasha || loadingExtendedDasha) ? (
-                        <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                      ) : periods.length > 0 ? (
-                        <>
-                          <div className="space-y-0">
-                            {periods.map((md: any) => {
-                              const abbr = ABBR[md.planet] || md.planet.slice(0, 2);
-                              const isCurrent = md.is_current || md.planet === currentMD;
-                              const isOpen = expandedMahadasha === md.planet;
-                              return (
-                                <div key={md.planet}>
-                                  <button
-                                    onClick={() => setExpandedMahadasha(isOpen ? null : md.planet)}
-                                    className="w-full flex items-center justify-between px-2 py-1 text-sm rounded hover:bg-border/40 transition-colors"
-                                    style={{ background: isCurrent ? 'rgba(184,134,11,0.10)' : 'transparent' }}
-                                  >
-                                    <span className="font-semibold w-8 text-left" style={{ color: isCurrent ? 'var(--aged-gold)' : 'inherit' }}>{abbr}</span>
-                                    <span className="text-muted-foreground">{fmtEnd(md.end || md.end_date)}</span>
-                                    {(md.antardasha || []).length > 0 && (
-                                      <ChevronDown className={`w-3 h-3 ml-1 transition-transform text-muted-foreground ${isOpen ? 'rotate-180' : ''}`} />
-                                    )}
-                                  </button>
-                                  {isOpen && (md.antardasha || []).length > 0 && (
-                                    <div className="pl-4 border-l border-border ml-2 mb-1">
-                                      {md.antardasha.map((ad: any) => {
-                                        const adAbbr = ABBR[ad.planet] || ad.planet.slice(0, 2);
-                                        const adKey = `${md.planet}-${ad.planet}`;
-                                        const adOpen = expandedAntardasha === adKey;
-                                        return (
-                                          <div key={adKey}>
-                                            <button
-                                              onClick={() => setExpandedAntardasha(adOpen ? null : adKey)}
-                                              className="w-full flex items-center justify-between px-2 py-0.5 text-xs rounded hover:bg-border/30 transition-colors"
-                                              style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
-                                            >
-                                              <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'inherit' }}>{abbr}/{adAbbr}</span>
-                                              <span className="text-muted-foreground">{fmtEnd(ad.end)}</span>
-                                            </button>
-                                            {adOpen && (ad.pratyantar || []).length > 0 && (
-                                              <div className="pl-4 border-l border-border ml-2">
-                                                {ad.pratyantar.map((pt: any, i: number) => (
-                                                  <div key={i} className="flex items-center justify-between px-2 py-0.5 text-xs"
-                                                    style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
-                                                    <span>{abbr}/{adAbbr}/{ABBR[pt.planet] || pt.planet.slice(0,2)}</span>
-                                                    <span>{fmtEnd(pt.end)}</span>
-                                                  </div>
-                                                ))}
-                                              </div>
-                                            )}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-3">
-                            {language === 'hi'
-                              ? 'नोट :- उप-काल के लिए ऊपर पंक्ति पर क्लिक करें। ऊपर दिनांक समाप्ति तिथियाँ हैं।'
-                              : 'Note :- Click on row above for sub-period. Date mentioned above are ending dates.'}
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-center py-4 text-sm text-muted-foreground">{t('common.noData')}</p>
-                      )}
-                    </div>
-                  );
-                })()}
+	                {/* 6. Vimshottari Dasha — compact 120-yr list */}
+	                {(() => {
+	                  const BENEFIC = new Set(['Jupiter', 'Venus', 'Mercury', 'Moon']);
+	                  const MALEFIC = new Set(['Sun', 'Mars', 'Saturn', 'Rahu', 'Ketu']);
+	                  const getNature = (p: any): 'benefic' | 'malefic' | null => {
+	                    const raw = String(p?.nature || p?.type || '').toLowerCase().trim();
+	                    if (raw.includes('benefic')) return 'benefic';
+	                    if (raw.includes('malefic')) return 'malefic';
+	                    const planet = String(p?.planet || '').trim();
+	                    if (BENEFIC.has(planet)) return 'benefic';
+	                    if (MALEFIC.has(planet)) return 'malefic';
+	                    return null;
+	                  };
+	                  const toIso = (s: any): string => (typeof s === 'string' ? s.slice(0, 10) : '');
+	                  const dateToTime = (iso: string): number => {
+	                    const t = Date.parse(iso);
+	                    return Number.isFinite(t) ? t : NaN;
+	                  };
+	                  const yearsBetween = (startIso: string, endIso: string): number | null => {
+	                    const a = dateToTime(startIso);
+	                    const b = dateToTime(endIso);
+	                    if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	                    return Math.max(0, (b - a) / (1000 * 60 * 60 * 24 * 365.25));
+	                  };
+	                  const normalizeSub = (p: any, idx: number, arr: any[], fallbackStart: string) => {
+	                    const end = toIso(p?.end || p?.end_date);
+	                    const prevEnd = idx > 0 ? toIso(arr[idx - 1]?.end || arr[idx - 1]?.end_date) : '';
+	                    const start = toIso(p?.start || p?.start_date) || prevEnd || fallbackStart;
+	                    const y = p?.years != null ? Number(p.years) : (start && end ? yearsBetween(start, end) : null);
+	                    return {
+	                      planet: p?.planet,
+	                      start_date: start || '',
+	                      end_date: end || '',
+	                      years: y,
+	                      nature: getNature(p),
+	                      is_current: !!p?.is_current,
+	                      pratyantar: p?.pratyantar || p?.pratyantars || [],
+	                    };
+	                  };
+	                  const normalizeMd = (p: any, idx: number, arr: any[]) => {
+	                    const end = toIso(p?.end || p?.end_date);
+	                    const prevEnd = idx > 0 ? toIso(arr[idx - 1]?.end || arr[idx - 1]?.end_date) : '';
+	                    const start = toIso(p?.start || p?.start_date) || prevEnd || String(result.birth_date || '').slice(0, 10);
+	                    const y = p?.years != null ? Number(p.years) : (start && end ? yearsBetween(start, end) : null);
+	                    const rawAds = p?.antardasha || p?.antardashas || [];
+	                    const ads = Array.isArray(rawAds) ? rawAds.map((ad: any, ai: number, aarr: any[]) => normalizeSub(ad, ai, aarr, start)) : [];
+	                    return {
+	                      planet: p?.planet,
+	                      start_date: start || '',
+	                      end_date: end || '',
+	                      years: y,
+	                      nature: getNature(p),
+	                      is_current: !!p?.is_current || (p?.planet && p.planet === dashaData?.current_dasha),
+	                      antardasha: ads,
+	                    };
+	                  };
+	                  const rawPeriods: any[] = extendedDashaData?.mahadasha || dashaData?.mahadasha_periods || [];
+	                  const periods: any[] = rawPeriods.map((p: any, i: number, arr: any[]) => normalizeMd(p, i, arr));
+	                  const currentMD = (extendedDashaData || dashaData)?.current_dasha;
+	                  return (
+	                    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+	                      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold text-center">
+	                        {t('section.vimshottariDasha')}
+	                      </div>
+	                      <div className="pb-3">
+	                      {(loadingDasha || loadingExtendedDasha) ? (
+	                        <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+	                      ) : periods.length > 0 ? (
+	                        <>
+	                          <div className="overflow-x-auto">
+	                            <Table className="w-full text-xs">
+	                              <TableHeader>
+	                                <TableRow>
+	                                  <TableHead className="text-left whitespace-nowrap">{t('table.dashaLord')}</TableHead>
+	                                  <TableHead className="text-left whitespace-nowrap">{t('table.start')}</TableHead>
+	                                  <TableHead className="text-left whitespace-nowrap">{t('table.end')}</TableHead>
+	                                  <TableHead className="text-center whitespace-nowrap">{t('table.years')}</TableHead>
+	                                  <TableHead className="text-center whitespace-nowrap">{t('table.nature')}</TableHead>
+	                                </TableRow>
+	                              </TableHeader>
+	                              <TableBody>
+	                                {periods.map((md: any) => {
+	                                  const isCurrent = md.is_current || md.planet === currentMD;
+	                                  const isOpen = expandedMahadasha === md.planet;
+	                                  const nature = md.nature;
+	                                  const hasAds = Array.isArray(md.antardasha) && md.antardasha.length > 0;
+	                                  return (
+	                                    <>
+	                                      <TableRow
+	                                        key={md.planet}
+	                                        className={isCurrent ? 'bg-sacred-gold/10' : undefined}
+	                                      >
+	                                        <TableCell className="font-medium text-foreground">
+	                                          <button
+	                                            type="button"
+	                                            onClick={() => hasAds && setExpandedMahadasha(isOpen ? null : md.planet)}
+	                                            className={`inline-flex items-center gap-2 transition-colors ${
+	                                              hasAds ? 'hover:text-sacred-gold-dark' : 'cursor-default opacity-80'
+	                                            }`}
+	                                          >
+	                                            <ChevronDown className={`w-3 h-3 transition-transform ${hasAds ? '' : 'opacity-0'} ${isOpen ? 'rotate-180' : ''}`} />
+	                                            <span className="whitespace-nowrap">{translatePlanet(md.planet, language)}</span>
+	                                            {isCurrent && (
+	                                              <span className="ml-1 text-[9px] px-1.5 py-0.5 rounded bg-sacred-gold-dark text-white uppercase">
+	                                                {t('common.current')}
+	                                              </span>
+	                                            )}
+	                                          </button>
+	                                        </TableCell>
+	                                        <TableCell className="text-foreground whitespace-nowrap">{md.start_date || '—'}</TableCell>
+	                                        <TableCell className="text-foreground whitespace-nowrap">{md.end_date || '—'}</TableCell>
+	                                        <TableCell className="text-center text-foreground font-semibold whitespace-nowrap">
+	                                          {md.years == null ? '—' : (Number.isInteger(md.years) ? md.years : Number(md.years).toFixed(4))}
+	                                        </TableCell>
+	                                        <TableCell className="text-center whitespace-nowrap">
+	                                          {nature ? (
+	                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase border ${
+	                                              nature === 'benefic'
+	                                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+	                                                : 'bg-red-100 text-red-700 border-red-200'
+	                                            }`}>
+	                                              {nature === 'benefic' ? t('kundli.benefic') : t('kundli.malefic')}
+	                                            </span>
+	                                          ) : (
+	                                            '—'
+	                                          )}
+	                                        </TableCell>
+	                                      </TableRow>
+
+	                                      {hasAds && isOpen && (
+	                                        <TableRow key={`${md.planet}-ads`}>
+	                                          <TableCell colSpan={5} className="bg-sacred-gold/[0.03]">
+	                                            <div className="pl-4 border-l border-sacred-gold/20">
+	                                              <div className="text-[11px] font-semibold text-sacred-gold-dark mb-2">
+	                                                {t('kundli.antardasha')}
+	                                              </div>
+	                                              <div className="overflow-x-auto">
+	                                                <Table className="w-full text-xs">
+	                                                  <TableHeader>
+	                                                    <TableRow>
+	                                                      <TableHead className="text-left whitespace-nowrap">{t('table.dashaLord')}</TableHead>
+	                                                      <TableHead className="text-left whitespace-nowrap">{t('table.start')}</TableHead>
+	                                                      <TableHead className="text-left whitespace-nowrap">{t('table.end')}</TableHead>
+	                                                      <TableHead className="text-center whitespace-nowrap">{t('table.years')}</TableHead>
+	                                                      <TableHead className="text-center whitespace-nowrap">{t('table.nature')}</TableHead>
+	                                                    </TableRow>
+	                                                  </TableHeader>
+	                                                  <TableBody>
+	                                                    {(md.antardasha || []).map((ad: any) => {
+	                                                      const adKey = `${md.planet}-${ad.planet}`;
+	                                                      const adOpen = expandedAntardasha === adKey;
+	                                                      const adHasPts = Array.isArray(ad.pratyantar) && ad.pratyantar.length > 0;
+	                                                      const adNature = ad.nature;
+	                                                      return (
+	                                                        <>
+	                                                          <TableRow key={adKey}>
+	                                                            <TableCell className="font-medium text-foreground">
+	                                                              <button
+	                                                                type="button"
+	                                                                onClick={() => adHasPts && setExpandedAntardasha(adOpen ? null : adKey)}
+	                                                                className={`inline-flex items-center gap-2 transition-colors ${
+	                                                                  adHasPts ? 'hover:text-sacred-gold-dark' : 'cursor-default opacity-80'
+	                                                                }`}
+	                                                              >
+	                                                                <ChevronDown className={`w-3 h-3 transition-transform ${adHasPts ? '' : 'opacity-0'} ${adOpen ? 'rotate-180' : ''}`} />
+	                                                                <span className="whitespace-nowrap">{translatePlanet(ad.planet, language)}</span>
+	                                                              </button>
+	                                                            </TableCell>
+	                                                            <TableCell className="text-foreground whitespace-nowrap">{ad.start_date || '—'}</TableCell>
+	                                                            <TableCell className="text-foreground whitespace-nowrap">{ad.end_date || '—'}</TableCell>
+	                                                            <TableCell className="text-center text-foreground font-semibold whitespace-nowrap">
+	                                                              {ad.years == null ? '—' : (Number.isInteger(ad.years) ? ad.years : Number(ad.years).toFixed(4))}
+	                                                            </TableCell>
+	                                                            <TableCell className="text-center whitespace-nowrap">
+	                                                              {adNature ? (
+	                                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-black uppercase border ${
+	                                                                  adNature === 'benefic'
+	                                                                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+	                                                                    : 'bg-red-100 text-red-700 border-red-200'
+	                                                                }`}>
+	                                                                  {adNature === 'benefic' ? t('kundli.benefic') : t('kundli.malefic')}
+	                                                                </span>
+	                                                              ) : (
+	                                                                '—'
+	                                                              )}
+	                                                            </TableCell>
+	                                                          </TableRow>
+
+	                                                          {adHasPts && adOpen && (
+	                                                            <TableRow key={`${adKey}-pts`}>
+	                                                              <TableCell colSpan={5} className="bg-sacred-gold/[0.02]">
+	                                                                <div className="pl-4 border-l border-sacred-gold/15">
+	                                                                  <div className="text-[11px] font-semibold text-sacred-gold-dark mb-2">
+	                                                                    {t('kundli.pratyantar')}
+	                                                                  </div>
+	                                                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+	                                                                    {(ad.pratyantar || []).map((pt: any, pti: number) => {
+	                                                                      const ptEnd = toIso(pt?.end || pt?.end_date);
+	                                                                      const ptPrevEnd = pti > 0 ? toIso(ad.pratyantar[pti - 1]?.end || ad.pratyantar[pti - 1]?.end_date) : ad.start_date;
+	                                                                      const ptStart = toIso(pt?.start || pt?.start_date) || ptPrevEnd || '';
+	                                                                      return (
+	                                                                        <div key={`${adKey}-pt-${pti}`} className="flex items-center justify-between text-[11px]">
+	                                                                          <span className="text-foreground whitespace-nowrap">
+	                                                                            {translatePlanet(pt.planet, language)}
+	                                                                          </span>
+	                                                                          <span className="text-muted-foreground whitespace-nowrap">
+	                                                                            {ptStart || '—'} → {ptEnd || '—'}
+	                                                                          </span>
+	                                                                        </div>
+	                                                                      );
+	                                                                    })}
+	                                                                  </div>
+	                                                                </div>
+	                                                              </TableCell>
+	                                                            </TableRow>
+	                                                          )}
+	                                                        </>
+	                                                      );
+	                                                    })}
+	                                                  </TableBody>
+	                                                </Table>
+	                                              </div>
+	                                            </div>
+	                                          </TableCell>
+	                                        </TableRow>
+	                                      )}
+	                                    </>
+	                                  );
+	                                })}
+	                              </TableBody>
+	                            </Table>
+	                          </div>
+	                          <p className="text-xs text-muted-foreground mt-3">
+	                            {language === 'hi'
+	                              ? 'नोट :- उप-काल के लिए ऊपर पंक्ति पर क्लिक करें। ऊपर दिनांक समाप्ति तिथियाँ हैं।'
+	                              : 'Note :- Click on row above for sub-period. Date mentioned above are ending dates.'}
+	                          </p>
+	                        </>
+	                      ) : (
+	                        <p className="text-center py-4 text-sm text-muted-foreground">{t('common.noData')}</p>
+	                      )}
+	                      </div>
+	                    </div>
+	                  );
+	                })()}
 
                 {/* 6b. Jaimini Karakas — separate card */}
-                <div className="bg-muted rounded-xl border border-border p-4">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.jaiminiKarakas')}</Heading>
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+                    {t('section.jaiminiKarakas')}
+                  </div>
                   {(() => {
                     const karakas = calculateJaiminiKarakas(planets);
                     const karakaOrder = [
@@ -470,17 +663,21 @@ export default function ReportTab({
                     ];
                     return (
                       <Table className="w-full text-sm">
-                        <TableHeader><TableRow className="bg-muted">
-                          <TableHead className="text-left p-2 text-primary font-medium">{t('table.karaka')}</TableHead>
-                          <TableHead className="text-left p-2 text-primary font-medium">{t('table.planet')}</TableHead>
-                        </TableRow></TableHeader>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-left">{t('table.karaka')}</TableHead>
+                            <TableHead className="text-left">{t('table.planet')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
                         <TableBody>
                           {karakaOrder.map(({ key, name }) => {
                             const planet = Object.entries(karakas).find(([, v]) => v === key)?.[0] || '-';
                             return (
-                              <TableRow key={key} className="border-t border-border">
-                                <TableCell className="p-2 text-foreground"><span className="font-semibold">{key}</span> <span className="text-sm text-foreground">({name})</span></TableCell>
-                                <TableCell className="p-2 font-semibold text-primary">{translatePlanet(planet, language)}</TableCell>
+                              <TableRow key={key}>
+                                <TableCell className="text-foreground">
+                                  <span className="font-semibold">{key}</span> <span className="text-sm text-foreground">({name})</span>
+                                </TableCell>
+                                <TableCell className="font-semibold text-foreground">{translatePlanet(planet, language)}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -490,60 +687,64 @@ export default function ReportTab({
                   })()}
                 </div>
 
-                {/* 7. Yoga & Dosha */}
-                <div className="bg-muted rounded-xl border border-border p-4 lg:col-span-2">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.yogasAndDoshas')}</Heading>
-                  {loadingYogaDosha ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                  ) : yogaDoshaData ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                          <Heading as={5} variant={5}>{t('section.yogas')}</Heading>
-                        </div>
-                        <div className="space-y-1">
-                          {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-sm border border-green-300 bg-green-500">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-foreground">{translateName(yoga.name, language)}</span>
-                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-green-100 text-green-800">
-                                  {t('common.present')}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                          {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
-                            <p className="text-sm text-foreground py-2">{t('kundli.noYogasDetected')}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Shield className="w-4 h-4 text-red-500" />
-                          <Heading as={5} variant={5}>{t('section.doshas')}</Heading>
-                        </div>
-                        <div className="space-y-1">
-                          {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
-                            <div key={idx} className="rounded-lg p-2 text-sm border border-red-300 bg-red-500">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-foreground">{translateName(dosha.name, language)}</span>
-                                <span className="text-sm px-1.5 py-0.5 rounded-full bg-red-100 text-red-800">
-                                  {t('common.present')}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                          {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
-                            <p className="text-sm text-green-400 py-2">{t('kundli.noDoshasDetected')}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
-                  )}
-                </div>
+	                {/* 7. Yoga & Dosha */}
+	                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden lg:col-span-2">
+	                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+	                    {t('section.yogasAndDoshas')}
+	                  </div>
+	                  <div className="p-3">
+	                    {loadingYogaDosha ? (
+	                      <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+	                    ) : yogaDoshaData ? (
+	                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+	                        <div>
+	                          <div className="flex items-center gap-2 mb-2">
+	                            <CheckCircle className="w-4 h-4 text-green-500" />
+	                            <Heading as={5} variant={5}>{t('section.yogas')}</Heading>
+	                          </div>
+	                          <div className="space-y-1">
+	                            {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
+	                              <div key={idx} className="rounded-lg p-2 text-sm border border-green-300 bg-green-500">
+	                                <div className="flex items-center justify-between">
+	                                  <span className="font-medium text-foreground">{translateName(yoga.name, language)}</span>
+	                                  <span className="text-sm px-1.5 py-0.5 rounded-full bg-green-100 text-green-800">
+	                                    {t('common.present')}
+	                                  </span>
+	                                </div>
+	                              </div>
+	                            ))}
+	                            {(yogaDoshaData.yogas || []).filter((y: any) => y.present).length === 0 && (
+	                              <p className="text-sm text-foreground py-2">{t('kundli.noYogasDetected')}</p>
+	                            )}
+	                          </div>
+	                        </div>
+	                        <div>
+	                          <div className="flex items-center gap-2 mb-2">
+	                            <Shield className="w-4 h-4 text-red-500" />
+	                            <Heading as={5} variant={5}>{t('section.doshas')}</Heading>
+	                          </div>
+	                          <div className="space-y-1">
+	                            {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
+	                              <div key={idx} className="rounded-lg p-2 text-sm border border-red-300 bg-red-500">
+	                                <div className="flex items-center justify-between">
+	                                  <span className="font-medium text-foreground">{translateName(dosha.name, language)}</span>
+	                                  <span className="text-sm px-1.5 py-0.5 rounded-full bg-red-100 text-red-800">
+	                                    {t('common.present')}
+	                                  </span>
+	                                </div>
+	                              </div>
+	                            ))}
+	                            {(yogaDoshaData.doshas || []).filter((d: any) => d.present).length === 0 && (
+	                              <p className="text-sm text-green-400 py-2">{t('kundli.noDoshasDetected')}</p>
+	                            )}
+	                          </div>
+	                        </div>
+	                      </div>
+	                    ) : (
+	                      <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
+	                    )}
+	                  </div>
+	                </div>
 
                 {/* 7b. Mangal / Kaal Sarp / Sade Sati Dosha */}
                 <div className="bg-muted rounded-xl border border-border p-4 lg:col-span-2">
