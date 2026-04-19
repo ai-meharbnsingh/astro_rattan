@@ -305,6 +305,14 @@ def get_enriched_remedies(kundli_id: str, user: dict = Depends(get_current_user)
             "time_rule": info.get("time_rule"),
             "reversal_risk": info.get("reversal_risk"),
             "andhe_grah_warning": info.get("andhe_grah_warning"),
+            # P2.11 — direction/colour/material matrix
+            "remedy_matrix": info.get("remedy_matrix"),
+            # P1.11 — tier classification (trial / remedy / good_conduct)
+            "classification": r.get("classification", ""),
+            "classification_en": r.get("classification_en", ""),
+            "classification_hi": r.get("classification_hi", ""),
+            "classification_desc_en": r.get("classification_desc_en", ""),
+            "classification_desc_hi": r.get("classification_desc_hi", ""),
         })
     # Sort: weak/high urgency first, then by house number
     urgency_order = {"high": 0, "medium": 1, "low": 2}
@@ -3479,8 +3487,9 @@ def get_lalkitab_pdf_report(
                     "reason_hi": r.get("reason_hi", ""),
                     "how_en": r.get("how_en", ""),
                     "how_hi": r.get("how_hi", ""),
-                    "savdhaniyan_en": r.get("savdhaniyan_en") or r.get("caution_en") or "",
-                    "savdhaniyan_hi": r.get("savdhaniyan_hi") or r.get("caution_hi") or "",
+                    "savdhaniyan": info.get("savdhaniyan"),
+                    "andhe_grah_warning": info.get("andhe_grah_warning"),
+                    "remedy_matrix": info.get("remedy_matrix"),
                     "classification": r.get("classification") or r.get("category") or "",
                 })
             urgency_order = {"high": 0, "medium": 1, "low": 2}

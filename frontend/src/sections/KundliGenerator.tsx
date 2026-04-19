@@ -64,6 +64,7 @@ import NadiAnalysisTab from '@/components/kundli/NadiAnalysisTab';
 import TransitLuckyTab from '@/components/kundli/TransitLuckyTab';
 import TransitInterpretationsTab from '@/components/kundli/TransitInterpretationsTab';
 import AstroMapTab from '@/components/kundli/AstroMapTab';
+import KundliInterpretationsTab from '@/components/kundli/KundliInterpretationsTab';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -117,6 +118,7 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis' },
   { value: 'vritti',        labelEn: 'Career (Vritti)', labelHi: 'आजीविका',          primary: false, category: 'analysis' },
   { value: 'janma-predictions', labelEn: 'Janma Predictions', labelHi: 'जन्म फल',       primary: false, category: 'analysis' },
+  { value: 'kundli-interpretations', labelEn: 'Interpretations', labelHi: 'कुंडली व्याख्या', primary: false, category: 'analysis' },
   { value: 'iogita',        labelEn: 'Iogita',         labelHi: 'आयोगिता',          primary: false, category: 'analysis' },
   { value: 'aspects-matrix',labelEn: 'Aspects Matrix',  labelHi: 'दृष्टि मैट्रिक्स', primary: false, category: 'analysis' },
   { value: 'navamsha-career', labelEn: 'Navamsha Career', labelHi: 'नवांश करियर',     primary: false, category: 'analysis' },
@@ -707,6 +709,10 @@ export default function KundliGenerator() {
 
           <TabsContent value="janma-predictions" className="min-h-[300px]">
             <JanmaPredictionsTab kundliId={result?.id || ''} language={language} t={t} />
+          </TabsContent>
+
+          <TabsContent value="kundli-interpretations" className="min-h-[300px]">
+            <KundliInterpretationsTab kundliId={result?.id || ''} language={language} />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
