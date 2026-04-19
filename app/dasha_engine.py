@@ -12,9 +12,12 @@ Also provides classical effect synthesis (Phaladeepika Adhyaya 20 & 21):
   - get_current_dasha_phala()
 """
 import json
+import logging
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -94,7 +97,16 @@ _QUALITY_TAG_TO_STRENGTH = {
 
 def _get_dasha_sequence(starting_lord: str) -> list:
     """Return the 9-planet dasha sequence starting from a given lord."""
-    start_idx = DASHA_ORDER.index(starting_lord)
+    try:
+        start_idx = DASHA_ORDER.index(starting_lord)
+    except ValueError:
+        # Defensive fallback: callers sometimes pass non-Vimshottari tokens.
+        # Returning the canonical order avoids hard-crashing the whole request.
+        logger.warning(
+            "Unknown Vimshottari starting_lord=%r; falling back to DASHA_ORDER",
+            starting_lord,
+        )
+        return list(DASHA_ORDER)
     return DASHA_ORDER[start_idx:] + DASHA_ORDER[:start_idx]
 
 
@@ -303,7 +315,11 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float
             break
 
     # If now is still beyond all periods, use the last period as fallback
-    if current_dasha == "Unknown" and now > _parse_date(mahadasha_periods[-1]["end_date"]):
+    if (
+        current_dasha == "Unknown"
+        and mahadasha_periods
+        and now > _parse_date(mahadasha_periods[-1]["end_date"])
+    ):
         current_dasha = mahadasha_periods[-1]["planet"]
         current_dasha_start = _parse_date(mahadasha_periods[-1]["start_date"])
         current_dasha_years = mahadasha_periods[-1]["years"]
@@ -600,7 +616,10 @@ def _dasha_quality_tag(
     pdata = planets.get(planet) or {}
     longitude = float(pdata.get("longitude", 0.0) or 0.0)
     d1_sign = str(pdata.get("sign", "") or "")
-    house = int(pdata.get("house", 0) or 0)
+    try:
+        house = int(pdata.get("house", 0) or 0)
+    except (TypeError, ValueError):
+        house = 0
 
     reasons: List[str] = []
     auspicious_count = 0
@@ -1671,7 +1690,7 @@ def get_current_dasha_phala(
                 ),
             }
     except Exception:
-        pass  # Transit correlation is best-effort
+        logger.exception("Transit correlation is best-effort but failed for md_planet=%s", md_planet)
 
     return {
         "as_of": now.strftime("%Y-%m-%d"),

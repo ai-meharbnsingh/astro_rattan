@@ -18,6 +18,7 @@ Key concepts:
 from __future__ import annotations
 
 import math
+import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -27,6 +28,8 @@ from app.astro_engine import (
     get_nakshatra_from_longitude,
     get_sign_from_longitude,
 )
+
+logger = logging.getLogger(__name__)
 
 # ============================================================
 # VIMSHOTTARI DASHA SEQUENCE & YEARS
@@ -816,7 +819,7 @@ def _get_transit_positions(query_datetime: str) -> Dict[str, float]:
         if planets_dict:
             return planets_dict
     except Exception:
-        pass
+        logger.exception("KP ruling planet positions via ephemeris failed; falling back to mean-motion estimate")
 
     # Fallback: rough mean-motion positions from J2000 epoch
     try:

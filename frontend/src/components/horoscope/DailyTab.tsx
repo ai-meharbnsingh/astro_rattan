@@ -27,6 +27,7 @@ interface DailyData extends SignMeta {
   lucky?: { number: number; color: { en: string; hi: string }; time: { en: string; hi: string }; compatible_sign: { en: string; hi: string }; gemstone: { en: string; hi: string }; mantra: string };
   dos?: Array<{ en: string; hi: string }>;
   donts?: Array<{ en: string; hi: string }>;
+  active_dasha?: { mahadasha: string; antardasha?: string | null } | null;
 }
 
 interface Props {
@@ -114,6 +115,26 @@ export default function DailyTab({ data, loading, language, t }: Props) {
             <ScoreBar label={t('horoscope.score.health')} score={data.scores.health} color="green" />
           </CardContent>
         </Card>
+      )}
+
+      {/* Active Dasha Period */}
+      {data.active_dasha && (
+        <div className="rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 px-4 py-3 flex items-center gap-3">
+          <Sparkles className="w-4 h-4 text-sacred-gold flex-shrink-0" />
+          <div>
+            <p className="text-xs text-muted-foreground mb-0.5">
+              {language === 'hi' ? 'सक्रिय ग्रह काल' : 'Active Planetary Period'}
+            </p>
+            <p className="text-sm font-semibold text-foreground">
+              {data.active_dasha.mahadasha} {language === 'hi' ? 'महादशा' : 'Mahadasha'}
+              {data.active_dasha.antardasha && (
+                <span className="font-normal text-muted-foreground">
+                  {' / '}{data.active_dasha.antardasha} {language === 'hi' ? 'अंतर्दशा' : 'Antardasha'}
+                </span>
+              )}
+            </p>
+          </div>
+        </div>
       )}
 
       {/* Mood */}

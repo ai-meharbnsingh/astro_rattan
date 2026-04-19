@@ -7,6 +7,9 @@ and Panch Mahapurusha Yogas.
 """
 
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Zodiac signs in order (0-indexed for arithmetic)
 ZODIAC_SIGNS = [
@@ -2011,7 +2014,7 @@ def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
         from app.raja_yoga_engine import detect_adh7_raja_yogas
         yogas.extend(detect_adh7_raja_yogas(planets, asc_sign))
     except Exception:
-        pass
+        logger.exception("Adh. 7 Raja Yoga detection failed; continuing without these yogas")
 
     # Special Yogas
     yogas.append(check_saraswati_yoga(planets))

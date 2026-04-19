@@ -24,6 +24,47 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["horoscope"])
 
 
+def _resolve_birth_nakshatra(
+    birth_date: Optional[str],
+    birth_time: Optional[str],
+    birth_lat: Optional[float],
+    birth_lon: Optional[float],
+    birth_tz: Optional[float],
+) -> Optional[str]:
+    """Return natal Moon nakshatra for Dasha calculation. Returns None on missing input or error."""
+    if not (birth_date and birth_lat is not None and birth_lon is not None):
+        return None
+    try:
+        from app.astro_engine import calculate_planet_positions
+        t = birth_time if birth_time else "12:00:00"
+        tz = birth_tz if birth_tz is not None else round(birth_lon / 15.0, 1)
+        result = calculate_planet_positions(birth_date, t, float(birth_lat), float(birth_lon), tz)
+        return result.get("planets", {}).get("Moon", {}).get("nakshatra") or None
+    except Exception:
+        logger.exception("Failed to resolve birth nakshatra")
+        return None
+
+
+def _resolve_active_dasha(
+    birth_nakshatra: Optional[str],
+    birth_date: Optional[str],
+) -> Optional[dict]:
+    """Return active Mahadasha + Antardasha for today. Returns None on missing input or error."""
+    if not birth_nakshatra or not birth_date:
+        return None
+    try:
+        from app.dasha_engine import calculate_dasha
+        result = calculate_dasha(birth_nakshatra, birth_date)
+        mahadasha = result.get("current_dasha")
+        antardasha = result.get("current_antardasha")
+        if mahadasha and mahadasha != "Unknown":
+            return {"mahadasha": mahadasha, "antardasha": antardasha if antardasha != "Unknown" else None}
+        return None
+    except Exception:
+        logger.exception("Failed to resolve active dasha")
+        return None
+
+
 def _resolve_native_lagna(
     birth_date: Optional[str],
     birth_time: Optional[str],
@@ -123,11 +164,14 @@ def get_daily_horoscope(
         target_date = date.today().isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date, native_lagna=native_lagna)
+        result = generate_transit_horoscope(sign=sign, period="daily", target_date=target_date, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             return {
                 **_sign_meta(sign),
@@ -135,6 +179,7 @@ def get_daily_horoscope(
                 "date": target_date,
                 "lagna": native_lagna or sign,
                 "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "active_dasha": active_dasha,
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -197,10 +242,13 @@ def get_tomorrow_horoscope(
 
     tomorrow = (date.today() + timedelta(days=1)).isoformat()
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="daily", target_date=tomorrow, native_lagna=native_lagna)
+        result = generate_transit_horoscope(sign=sign, period="daily", target_date=tomorrow, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             return {
                 **_sign_meta(sign),
@@ -208,6 +256,7 @@ def get_tomorrow_horoscope(
                 "date": tomorrow,
                 "lagna": native_lagna or sign,
                 "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "active_dasha": active_dasha,
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -256,11 +305,14 @@ def get_weekly_horoscope(
     week_end = (monday + timedelta(days=6)).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date, native_lagna=native_lagna)
+        result = generate_transit_horoscope(sign=sign, period="weekly", target_date=week_date, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             return {
                 **_sign_meta(sign),
@@ -269,6 +321,7 @@ def get_weekly_horoscope(
                 "week_end": week_end,
                 "lagna": native_lagna or sign,
                 "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "active_dasha": active_dasha,
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -332,11 +385,14 @@ def get_monthly_horoscope(
     month_start = today.replace(day=1).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start, native_lagna=native_lagna)
+        result = generate_transit_horoscope(sign=sign, period="monthly", target_date=month_start, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             response = {
                 **_sign_meta(sign),
@@ -344,6 +400,7 @@ def get_monthly_horoscope(
                 "month_start": month_start,
                 "lagna": native_lagna or sign,
                 "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "active_dasha": active_dasha,
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -423,11 +480,14 @@ def get_yearly_horoscope(
     year_start = date.today().replace(month=1, day=1).isoformat()
 
     native_lagna = _resolve_native_lagna(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    birth_nak = _resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)
+    active_dasha = _resolve_active_dasha(birth_nak, birth_date)
+    dasha_lord = active_dasha["mahadasha"] if active_dasha else None
 
     # Try transit engine for rich response
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start, native_lagna=native_lagna)
+        result = generate_transit_horoscope(sign=sign, period="yearly", target_date=year_start, native_lagna=native_lagna, dasha_lord=dasha_lord)
         if result and result.get("sections"):
             response = {
                 **_sign_meta(sign),
@@ -435,6 +495,7 @@ def get_yearly_horoscope(
                 "year_start": year_start,
                 "lagna": native_lagna or sign,
                 "lagna_type": "janma_lagna" if native_lagna else "chandra_lagna",
+                "active_dasha": active_dasha,
                 "sections": result.get("sections", {}),
                 "scores": result.get("scores", {}),
                 "mood": result.get("mood", {}),
@@ -457,26 +518,13 @@ def get_yearly_horoscope(
                 response["best_months"] = {}
                 response["annual_theme"] = {}
 
-            # Vimshottari Dasha — only when birth data provided
-            if birth_date:
-                try:
-                    from app.astro_engine import calculate_planet_positions
-                    from app.dasha_engine import calculate_dasha
-                    tz = birth_tz if birth_tz is not None else (round(birth_lon / 15.0, 1) if birth_lon else 5.5)
-                    bt = birth_time or "12:00:00"
-                    natal = calculate_planet_positions(birth_date, bt, birth_lat if birth_lat is not None else 28.6, birth_lon if birth_lon is not None else 77.2, tz)
-                    moon_info = natal.get("planets", {}).get("Moon", {})
-                    moon_nak = moon_info.get("nakshatra", "Ashwini")
-                    moon_lon = moon_info.get("longitude", None)
-                    dasha = calculate_dasha(moon_nak, birth_date, moon_lon)
-                    response["dasha"] = {
-                        "current_mahadasha": dasha.get("current_dasha", "Unknown"),
-                        "current_antardasha": dasha.get("current_antardasha", "Unknown"),
-                        "moon_nakshatra": moon_nak,
-                    }
-                except Exception:
-                    logger.exception("Dasha calculation failed for birth_date=%s", birth_date)
-                    response["dasha"] = None
+            # Vimshottari Dasha — only when birth data provided (moon_nakshatra for yearly detail)
+            if birth_nak:
+                response["dasha"] = {
+                    "current_mahadasha": dasha_lord or "Unknown",
+                    "current_antardasha": active_dasha.get("antardasha") if active_dasha else "Unknown",
+                    "moon_nakshatra": birth_nak,
+                }
 
             return response
     except Exception:
