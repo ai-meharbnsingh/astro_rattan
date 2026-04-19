@@ -191,7 +191,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {yogas.map((yoga: any, idx: number) => {
+                        {yogas.map((yoga: YogaObject, idx: number) => {
                           const name = hi ? (yoga.name_hi || yoga.name) : (yoga.name_en || yoga.name);
                           const desc = hi
                             ? (yoga.description_hi || yoga.description)
@@ -201,6 +201,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                             : yoga.fruition_note_en;
                           const nature = yoga.nature || 'mixed';
                           const nStyle = NATURE_STYLE[nature] || NATURE_STYLE.mixed;
+                          const hasStrength = !!yoga.strength;
+                          const sStyle = hasStrength ? (STRENGTH_STYLE[yoga.strength!] || '') : '';
+                          const hasTriggerHouses = Array.isArray(yoga.trigger_houses) && yoga.trigger_houses.length > 0;
 
                           return (
                             <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
@@ -211,6 +214,22 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                                     {yoga.planets_involved.map((p: string) => (
                                       <span key={p} className="px-1 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-medium text-[10px]">
                                         {translatePlanet(p, language)}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                                {hasStrength && (
+                                  <div className="mt-1">
+                                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${sStyle}`}>
+                                      {getStrengthLabel(yoga.strength!, hi)}
+                                    </span>
+                                  </div>
+                                )}
+                                {hasTriggerHouses && (
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {yoga.trigger_houses!.map((h: number) => (
+                                      <span key={h} className="px-1 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium text-[10px] border border-indigo-100">
+                                        H{h}
                                       </span>
                                     ))}
                                   </div>
