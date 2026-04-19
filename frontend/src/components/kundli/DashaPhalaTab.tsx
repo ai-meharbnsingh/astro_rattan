@@ -441,6 +441,180 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
           </div>
         </div>
       )}
+
+      {/* Dasha Timing Rule */}
+      <DashaTimingSection kundliId={kundliId} language={language} l={l} hi={hi} />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Dasha Timing Rule sub-component (Phaladeepika Adh. 19-21)         */
+/* ------------------------------------------------------------------ */
+
+interface TimingEntry {
+  planet: string;
+  house: number;
+  house_area_en: string;
+  house_area_hi: string;
+  house_type: string;
+  strength: string;
+  is_exalted: boolean;
+  is_debilitated: boolean;
+  is_own_sign: boolean;
+  timing_phase: 'first_half' | 'second_half';
+  timing_phase_label_en: string;
+  timing_phase_label_hi: string;
+  timing_en: string;
+  timing_hi: string;
+  dasha_years: number;
+  sloka_ref: string;
+}
+
+interface TimingData {
+  planets: Record<string, TimingEntry>;
+  first_half_planets: string[];
+  second_half_planets: string[];
+  summary_en: string;
+  summary_hi: string;
+  sloka_ref: string;
+}
+
+function DashaTimingSection({
+  kundliId, language, l, hi,
+}: {
+  kundliId: string;
+  language: string;
+  l: (en: string, hi: string) => string;
+  hi: boolean;
+}) {
+  const [data, setData] = React.useState<TimingData | null>(null);
+  const [expanded, setExpanded] = React.useState(false);
+  const [loaded, setLoaded] = React.useState(false);
+
+  const load = () => {
+    if (loaded || !kundliId) return;
+    setLoaded(true);
+    api.get<TimingData>(`/api/kundli/${kundliId}/dasha-timing-rule`)
+      .then(setData)
+      .catch(() => {});
+  };
+
+  const toggle = () => {
+    if (!expanded) load();
+    setExpanded(e => !e);
+  };
+
+  const PLANET_ORDER = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+
+  return (
+    <div className="rounded-xl border border-border bg-muted overflow-hidden">
+      <button
+        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/10 transition-colors"
+        onClick={toggle}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-foreground uppercase tracking-wide">
+            {l('Dasha Timing Rule', 'दशा फल-काल नियम')}
+          </span>
+          <span className="text-[10px] italic text-foreground/50">{l('Phaladeepika Adh. 19-21', 'फलदीपिका अ. 19-21')}</span>
+        </div>
+        {expanded ? <ChevronDown className="w-4 h-4 text-primary" /> : <ChevronRight className="w-4 h-4 text-primary" />}
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 space-y-4">
+          {!data && (
+            <div className="flex items-center gap-2 py-4 text-sm text-foreground/60">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              {l('Loading…', 'लोड हो रहा है…')}
+            </div>
+          )}
+
+          {data && (
+            <>
+              {/* Summary chips */}
+              <div className="space-y-2 pt-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">
+                    {l('First Half', 'प्रथम अर्ध')}:
+                  </span>
+                  {data.first_half_planets.map(p => (
+                    <span key={p} className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      {translatePlanet(p, language)}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">
+                    {l('Second Half', 'द्वितीय अर्ध')}:
+                  </span>
+                  {data.second_half_planets.map(p => (
+                    <span key={p} className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                      {translatePlanet(p, language)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Per-planet table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-muted/50">
+                      <th className="text-left p-2 text-primary font-medium">{l('Planet', 'ग्रह')}</th>
+                      <th className="text-center p-2 text-primary font-medium">{l('House', 'भाव')}</th>
+                      <th className="text-center p-2 text-primary font-medium">{l('Strength', 'बल')}</th>
+                      <th className="text-center p-2 text-primary font-medium">{l('Years', 'वर्ष')}</th>
+                      <th className="text-left p-2 text-primary font-medium">{l('Results Peak', 'फल-काल')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {PLANET_ORDER.map(planet => {
+                      const e = data.planets[planet];
+                      if (!e) return null;
+                      const isFirst = e.timing_phase === 'first_half';
+                      return (
+                        <tr key={planet} className="hover:bg-muted/5 transition-colors">
+                          <td className="p-2 font-semibold text-foreground">{translatePlanet(planet, language)}</td>
+                          <td className="p-2 text-center text-foreground">
+                            H{e.house}
+                            <span className="ml-1 text-[9px] text-foreground/50">({hi ? e.house_area_hi : e.house_area_en})</span>
+                          </td>
+                          <td className="p-2 text-center">
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                              e.strength === 'strong' ? 'bg-emerald-100 text-emerald-800' :
+                              e.strength === 'weak' ? 'bg-rose-100 text-rose-800' :
+                              'bg-slate-100 text-slate-600'
+                            }`}>
+                              {e.is_exalted ? l('Exalted', 'उच्च') : e.is_debilitated ? l('Debil.', 'नीच') : e.is_own_sign ? l('Own', 'स्व') : l('Neutral', 'सम')}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center text-foreground font-medium">{e.dasha_years}y</td>
+                          <td className="p-2">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                              isFirst
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                : 'bg-rose-50 text-rose-800 border-rose-300'
+                            }`}>
+                              {isFirst ? l('1st Half', 'प्रथम') : l('2nd Half', 'द्वितीय')}
+                            </span>
+                            <span className="ml-2 text-[10px] text-foreground/60 italic">
+                              {hi ? e.house_area_hi : e.house_area_en}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="text-[10px] italic text-foreground/40 text-right">{data.sloka_ref}</p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
