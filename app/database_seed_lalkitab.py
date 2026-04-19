@@ -493,11 +493,12 @@ def seed_lalkitab_tables(db) -> None:
     _seed_nishaniyan(db)
     _seed_debts(db)
     _seed_lk_interpretations(db)
+    _seed_farmaan(db)
     try:
         db.commit()
     except Exception:
         pass  # autocommit contexts don't need explicit commit
-    logger.info("[seed_lalkitab] All three LK tables seeded successfully.")
+    logger.info("[seed_lalkitab] All four LK tables seeded successfully.")
 
 
 def _seed_nishaniyan(db) -> None:
