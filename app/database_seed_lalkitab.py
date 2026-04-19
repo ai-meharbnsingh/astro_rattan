@@ -1189,30 +1189,156 @@ LK_FARMAAN = [
 ]
 
 
+# Classical Urdu-Latin transliterations for all 108 farmaan.
+# Keyed by farmaan_number (1-108). Used to populate `urdu_latin` column.
+_FARMAAN_URDU_LATIN: dict = {
+    # SUN (सूर्य) 1-12
+    1:  "Pahle ghar surya baitha ho, jism mein roshan noor aata; Tanha surya taqatwar hai, sehat aur martaba paata.",
+    2:  "Do ghar surya agar baitha, do shaadi ya do naam hota; Baap ka sona mat pehna, gayon ko gur khilana hota.",
+    3:  "Teesre ghar mein surya aaya, dil mein himmat jaagti hai; Bhai se tuhfa mat lena, dosti isse bachti hai.",
+    4:  "Chauthey ghar mein surya baitha, ghar ko shaan milti aati; Baap door ho ya masroof, amma ki shakti chhati.",
+    5:  "Paanchve ghar mein surya hai, tez zehan hasil hota; Pet ki takleef rehti, gur bandar ko dena hota.",
+    6:  "Chhathe ghar surya ka ghar, dushman haarte zaroor; Nanihal mein janam hota, upaay jal surya ka noon.",
+    7:  "Saatve ghar mein surya aaya, gur aur mithaai aati; Prem vivah ki aahat hai, ahankaar se bachna chahti.",
+    8:  "Aathve ghar mein surya baitha, biwi raaz khol deti hai; Muqadme mein haar miley, taamba saaf rakhna hai.",
+    9:  "Nauven ghar surya ka watan, pital ke bartan khali hai; Ghar badalna mushkil hai, baap ki dua kafi hai.",
+    10: "Dasve ghar surya chalta hai, khoote sikke nazar aate; Kaam mahanga padta hai, sarkar se insaaf pate.",
+    11: "Gyaarahve ghar surya ho to, sasur ziyada jeete nahin; Daan se badnaami aati, bhai-bahan se labh kahin.",
+    12: "Baarve ghar surya baitha, tauhfe mein gadget aate; Khoon uchhal sakta hai, surya namaskar karo saathe.",
+    # MOON (चंद्र) 13-24
+    13: "Pahle ghar mein chanda baitha, jukam jaldi laga leta; Ghar mein dawa rehti sadaa, chaandi saath apna saathi.",
+    14: "Dooje ghar chanda baitha, daulat ammi se milti aati; Baat mein narm lehja hai, somar doodh daan ki reet.",
+    15: "Teesre ghar mein chanda ho, safar dil ki pyaas se hota; Bhai-bahanon ka gehraapa, chaandi ka gola rakhna achcha.",
+    16: "Chauthe ghar mein chanda aaya, yeh uska pakka ghar hota; Ammi sabse bada naseeb, ghar mein sukoon ka jhorna.",
+    17: "Paanchve ghar mein chanda ho, dil se samajhdar aulaad milti; Ishq mein gehra ehsaas hai, shivling par doodh chadhao.",
+    18: "Chhathe ghar mein chanda baitha, dil ki chot ashkaar hoti; Dushman kamzori dhoondhe, maai ki khidmat karo.",
+    19: "Saatve ghar mein chanda aaya, shaadi ka nasha gehraata hai; Sathi dil se pyaar karta, poornima doodh chadhao.",
+    20: "Aathve ghar mein chanda ho, chhupe dard ubhar aate hain; Ghaib ki taqat aati hai, shiv ki ibadat mein sukoon.",
+    21: "Nauven ghar mein chanda baitha, teerth ka shoq dil mein hai; Ammi ka dharm naseeb hai, chaandi ka sikka ghar mein.",
+    22: "Dasve ghar mein chanda aaya, dil se seva mein kamaal; Sehat taleem mehmaan-nawazi, aurtton ka karein ikraam.",
+    23: "Gyaarahve ghar mein chanda ho, ammi ki dua fal aati; Badi bahan naseeb laati, somar doodh daan karo.",
+    24: "Baarve ghar mein chanda baitha, dil tanhai mein rehta hai; Purani yadein sapnon mein, kaafoor ghar mein rakhna.",
+    # MARS (मंगल) 25-36
+    25: "Pahle ghar mein mangal aaya, sar ya mathe par nishaani; Ghar mein fauji ya sipahi, ped lagaana baat manmaani.",
+    26: "Dooje ghar mangal baitha, masaledaar khaane ka chao; Baat sachchi par teekhi hai, paisa udhaar na doh.",
+    27: "Teesre ghar mangal aaya, yeh uska pakka ghar hai; Himmat uski buland hai, moonga pehno safar mein.",
+    28: "Chauthe ghar mein mangal ho, ammi se takraar hoti; Ghar mein aag ka khatra, dakshin mein kuch mat banao.",
+    29: "Paanchve ghar mein mangal, pehla bacha beta hoga; Satte se nuksan aata, mangal ko gur bandar doh.",
+    30: "Chhathe ghar mangal baitha, dushman haarte khud-ba-khud; Khoon ki bimari dekho, mangal ko laal masoor doh.",
+    31: "Saatve ghar mein mangal aaya, manglik yog banta hai; Sathi mazboot hota hai, mangal ko roz sumro.",
+    32: "Aathve ghar mangal ho, yeh bhi uska pakka ghar; Achanak badlaav aata, laal kapda takiye mein.",
+    33: "Nauven ghar mein mangal baitha, baap se ulfat kam rehti; Dharm par shak hota hai, baap ki izzat karo behtari.",
+    34: "Dasve ghar mangal aaya, fauj ya sarkar mein bhar jaao; Laal cheez mangal doh, naukri mein dam aata jaao.",
+    35: "Gyaarahve ghar mangal ho, bada bhai rok lagaata hai; Dost dhoka de sakte, dost se udhaar mat lo.",
+    36: "Baarve ghar mangal baitha, chhupe dushman bahut hain; Kharcha bekaaboo rehta, kamre mein hathiyaar na rakho.",
+    # JUPITER (बृहस्पति) 37-48
+    37: "Pahle ghar guru baitha ho, insaan rajwi hota hai; Ilm aur haqeeqat milti, guruon ki izzat karo.",
+    38: "Dooje ghar guru baitha, yeh uska pakka ghar hai; Daulat apne aap aati, mandir mein peeli mithaai.",
+    39: "Teesre ghar mein guru aaya, naseeb bhai-bahanon se; Baat ka jadoo kaafi hai, chandr upaay sab se behtar.",
+    40: "Chauthe ghar guru baitha, ghar gaadi ammi naseeb; Agar guru peeda mein ho, kela lagaao Vishnu se.",
+    41: "Paanchve ghar mein guru ho, aulaad nek hoti hai; Taleem naseeb ki chaabi, Sanskrit ke granth parho.",
+    42: "Chhathe ghar guru aaya, bahut mehnat zaroori hai; Naseeb sirf seva se, gaai ko ghasss doh guru ko.",
+    43: "Saatve ghar guru baitha, shaadi mein naseeb milta; Dharm mein aage badhte, guruwaar peele phool chadhao.",
+    44: "Aathve ghar guru aaya, virasat bekar ho jaati; Apna kamao khud hi, ilm se asli nateeja aata.",
+    45: "Nauven ghar guru baitha, yeh bhi uska pakka ghar; Chamakdaar naseeb milta, guru stotra roz parho.",
+    46: "Dasve ghar guru baitha, sarkar mein oocha naam; Baap ka kaam chalao, mandir mein peeli mithaai.",
+    47: "Gyaarahve ghar guru aaya, bhai-bahan se tarkki; Bade aur door tak naam, vidwan ko bhoj doh.",
+    48: "Baarve ghar guru baitha, yeh bhi uska pakka ghar; Pardesh mein bhagya chamke, mandir pardesh mein jao.",
+    # SATURN (शनि) 49-60
+    49: "Pahle ghar mein shani baitha, sharaab ghar mein hoti hai; Aankh kamzor rehti hai, kauon ko khana doh yahi.",
+    50: "Dooje ghar shani aaya, padhaai adhuri rehti; Biwi chalak hoti hai, kale til shani ko doh.",
+    51: "Teesre ghar mein shani ho, bhai se takraar milti; Mehnat se kaam banta, shani ko loha chadhao.",
+    52: "Chauthe ghar shani baitha, ammi ko takleef milti; Ghar mein der hoti hai, ammi ki khidmat karo.",
+    53: "Paanchve ghar mein shani ho, aulaad mein der milti; Mehnat se kamyabi aati, parho aur mazboot raho.",
+    54: "Chhathe ghar shani baitha, dushman haarte der se; Bimari ooti rehti, kaale kutte ko khana doh.",
+    55: "Saatve ghar shani aaya, yeh uska pakka ghar hai; Naseeb shaadi mein hai, shani ko sarson ka tel.",
+    56: "Aathve ghar mein shani ho, umr lambi rehti hai; Ghar mein qarz mat lo, neele phool shani ko doh.",
+    57: "Nauven ghar shani baitha, baap se door rehte hain; Dharma ka kaam milta, shani ko sarson ka tel.",
+    58: "Dasve ghar shani aaya, yeh bhi uska pakka ghar; Kaalon se kamyabi hai, shani ko loha chadhao.",
+    59: "Gyaarahve ghar shani ho, paisa aata dheere hai; Darinda bhai milta hai, kauon ko khana shani ko.",
+    60: "Baarve ghar mein shani baitha, ghar se dur rehte hain; Mohabbat bante bikte, aankhon ka dhyan rakhna.",
+    # VENUS (शुक्र) 61-72
+    61: "Pahle ghar shukra baitha, surat aur sehat chamakti; Aurat ki tarah dilkash hai, chaandi kapda pehno.",
+    62: "Dooje ghar shukra aaya, ghar mein bahan ki aahat; Awaaz meethi hoti hai, chini daan karo shukra ko.",
+    63: "Teesre ghar mein shukra ho, bhai-bahan se mehrbani; Ghar mein rang aata hai, shukra ko safed phool doh.",
+    64: "Chauthe ghar shukra baitha, ghar sugandh se bhara hai; Ammi pyaari rehti hai, ghar mein nayi kapda rakho.",
+    65: "Paanchve ghar mein shukra ho, prem mein anand milta; Aulaad ki khushali hai, shukra ko safed mithaai doh.",
+    66: "Chhathe ghar shukra aaya, kaam karo khud-ba-khud; Aurat ki sehat dekhna, shukra ko safed chadar doh.",
+    67: "Saatve ghar shukra baitha, yeh uska pakka ghar hai; Husn aur muhabbat milti, heera pehno safed hai.",
+    68: "Aathve ghar shukra ho, biwi khazaana laati hai; Ghaib ka raazdaan hai, chhupe gems ghar mein rakho.",
+    69: "Nauven ghar mein shukra aaya, pyaar ki khushali hai; Ummeed rehti hoti, safed phool chadha do.",
+    70: "Dasve ghar shukra baitha, kala aur kariyar milta; Lateef kaam kamyab hain, shukra ko safed daan karo.",
+    71: "Gyaarahve ghar shukra ho, dost aur mohabbat milte; Khushali aur hushiyari, shukra ko chini ki mithaai doh.",
+    72: "Baarve ghar shukra baitha, pardesh mein aram milta; Sidhi khushali ka rasta, mandir mein safed phool doh.",
+    # MERCURY (बुध) 73-84
+    73: "Pahle ghar budh baitha ho, aql aur baat milti hai; Vo ishara karta hai, chaandi angothi pehno yahi.",
+    74: "Dooje ghar budh aaya, baat mein hikmat milti; Tijarat mein kamyabi, hare rang ki cheez rakho.",
+    75: "Teesre ghar budh baitha, yeh uska pakka ghar hai; Likh-parh ke aage badhe, mumaali kaam karo.",
+    76: "Chauthe ghar mein budh ho, ghar mein kitaab hoti hai; Ammi ki nasihat mano, hara rang ghar mein rakho.",
+    77: "Paanchve ghar budh aaya, dil mein khelne ka shoq; Bacche tez aql ke hote, budh ko safed mithaai doh.",
+    78: "Chhathe ghar budh baitha, yeh bhi uska pakka ghar; Bimari zubaan se bachao, hara kapda safai rakho.",
+    79: "Saatve ghar budh ho, shaadi mein aql zaroori; Saathi samajhdaar milta, budh ko hara rang daan.",
+    80: "Aathve ghar budh aaya, raaz rakhne ki aadat; Gaib se baat karta hai, laal chadar uski raksha.",
+    81: "Nauven ghar mein budh ho, dharma mein gyaan milta; Videsh mein safar aata, budh ko hare tulsi doh.",
+    82: "Dasve ghar budh baitha, kariyar mein baat chalti; Patrakaari ya vaani hai, budh ko hare phal doh.",
+    83: "Gyaarahve ghar budh aaya, dost nek milte hain; Khushali aur tazgi milti, budh ko hare phal doh.",
+    84: "Baarve ghar budh baitha, gair mulk ki fikr rehti; Aadhyatmik safar aata, budh ko tulsi daan karo.",
+    # RAHU (राहु) 85-96
+    85: "Pahle ghar rahu baitha, dhoka dene wala hai; Tasveer banata hai khud ki, dua karo saanp ki maafi.",
+    86: "Dooje ghar rahu aaya, ghar mein ajnabi boli; Paise ka ilm mushkil, ghar mein koyla mat rakho.",
+    87: "Teesre ghar rahu baitha, himmat bhi rahu ki; Safar mein khatarnaak haadsay, rahu ko naariyal daan.",
+    88: "Chauthe ghar mein rahu ho, ghar mein jadoo sa rehta; Ammi ki sehat zaroori, rahu ko safed milk daan.",
+    89: "Paanchve ghar rahu aaya, aulaad mein khatara; Jua aur satta mushkil, rahu ko naariyal daan.",
+    90: "Chhathe ghar rahu baitha, dushman bahut hote hain; Jehat mein mushkil aati, rahu ko sarson daan karo.",
+    91: "Saatve ghar rahu aaya, shadeed manglik jaisa; Shaadi mein der aati, rahu ko safed kapda doh.",
+    92: "Aathve ghar mein rahu ho, maut ka dar rehta hai; Chhupe dard uthte hain, ghar se koyla bahar karo.",
+    93: "Nauven ghar rahu baitha, dharm ki rahon par shak; Baap se bhed rehta, rahu ko safed til daan.",
+    94: "Dasve ghar mein rahu ho, dhoka milta kariyar mein; Khoob mehnat karo lekin, rahu ko naariyal chadhao.",
+    95: "Gyaarahve ghar rahu aaya, yeh uska ghar hai; Naseeb aur laabh milta, rahu ko naariyal daan.",
+    96: "Baarve ghar rahu baitha, pardesh mein rehta achcha; Chhupe kharch hote hain, rahu ko safed daan karo.",
+    # KETU (केतु) 97-108
+    97:  "Pahle ghar ketu baitha, sannyas ya mukti chahiye; Safar mein khataraa rehta, ketu ko bilva patra doh.",
+    98:  "Dooje ghar ketu aaya, baap se dur rehta hai; Paise ki khushali kam, ketu ko safed kapda doh.",
+    99:  "Teesre ghar ketu ho, yeh uska pakka ghar hai; Bhai-bahanon se door, ketu ko naariyal daan.",
+    100: "Chauthe ghar ketu baitha, ghar mein soonapan hota; Ammi ki takleef hoti, ketu ko Ganesh pooja.",
+    101: "Paanchve ghar ketu ho, aulaad mein mushkil aati; Buddhi dharma ki taraf, ketu ko till daan karo.",
+    102: "Chhathe ghar ketu baitha, yeh bhi uska pakka ghar; Dushman khatam hote hain, ketu ko safed daan karo.",
+    103: "Saatve ghar ketu aaya, shaadi mein takleef hoti; Sathi andar ki duniya ka, ketu ko safed kapda doh.",
+    104: "Aathve ghar ketu ho, jeene ki khushi aati; Ghaib ilm ka raazdaan, ketu ko kaala til daan.",
+    105: "Nauven ghar ketu baitha, dharma mein door rehta; Baap se fasla rehta, ketu ko Ganesh pooja karo.",
+    106: "Dasve ghar ketu aaya, kariyar mein mushkil hoti; Waqt ke saath badlao, ketu ko safed til daan.",
+    107: "Gyaarahve ghar ketu ho, dost kho jaate hain; Laabh andar se aata, ketu ko safed naariyal doh.",
+    108: "Baarve ghar ketu baitha, yeh uska pakka ghar hai; Mukti ka seedha raasta, dhyaan karo roz aao.",
+}
+
+
 def _seed_farmaan(db) -> None:
     """Seed lk_farmaan table with 108 planet+house canonical entries."""
     import uuid as _uuid
 
-    sql = """
+    insert_sql = """
         INSERT INTO lk_farmaan (
             id, farmaan_number, english, hindi,
             traditional_commentary_en, traditional_commentary_hi,
-            confidence_level, planet_tags, house_tags, rights_status
+            urdu_latin, confidence_level, planet_tags, house_tags, rights_status
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (farmaan_number) DO NOTHING
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (farmaan_number) DO UPDATE SET
+            urdu_latin = EXCLUDED.urdu_latin
     """
     count = 0
     for row in LK_FARMAAN:
         (fnum, english, hindi, commentary_en, commentary_hi, planet_tags, house_tags, confidence) = row
+        urdu_latin = _FARMAAN_URDU_LATIN.get(fnum, "")
         try:
-            db.execute(sql, (
+            db.execute(insert_sql, (
                 _uuid.uuid4().hex,
                 fnum,
                 english,
                 hindi,
                 commentary_en,
                 commentary_hi,
+                urdu_latin,
                 confidence,
                 planet_tags,
                 house_tags,
@@ -1226,4 +1352,4 @@ def _seed_farmaan(db) -> None:
             except Exception:
                 pass
 
-    logger.info("[seed_lalkitab] lk_farmaan seeded (%d rows).", count)
+    logger.info("[seed_lalkitab] lk_farmaan seeded/updated (%d rows).", count)
