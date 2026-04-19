@@ -952,10 +952,25 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
             f"भाव-स्थिति और गोचर पर निर्भर।"
         )
 
+    # Dasha Strength Score (0–100): combines dignity, house, and quality signals
+    _score = 50
+    _f_set = set(assessment["factors"])
+    if "exalted" in _f_set:         _score += 20
+    if is_vargottama_dm:             _score += 15
+    if "own_sign" in _f_set:        _score += 12
+    if "trikona" in _f_set:         _score += 8
+    if "kendra" in _f_set:          _score += 6
+    if "debilitated" in _f_set:     _score -= 22
+    if "combust" in _f_set:         _score -= 15
+    if "dusthana" in _f_set:        _score -= 10
+    if is_papakartari_dm:           _score -= 8
+    dasha_strength_score = max(0, min(100, _score))
+
     return {
         "planet": planet,
         "strength": strength,
-        "factors": quality_tag.get("reasons") or assessment["factors"],
+        "factors": assessment["factors"],
+        "factors_detail": quality_tag.get("reasons") or [],
         "effect_en": effect_en,
         "effect_hi": effect_hi,
         "general_en": entry.get("general_en", ""),
@@ -974,6 +989,7 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
         "dignity_modifier": dignity_modifier,
         "dignity_note_en": dignity_note_en,
         "dignity_note_hi": dignity_note_hi,
+        "dasha_strength_score": dasha_strength_score,
     }
 
 
@@ -1608,10 +1624,55 @@ def get_current_dasha_phala(
             break
         ad_start = ad_end
 
+    # Transit-Dasha correlation: flag when Mahadasha lord currently transits
+    # within 15° of its natal position (intensification period).
+    transit_correlation = None
+    try:
+        from app.astro_engine import calculate_planet_positions
+        today_str = now.strftime("%Y-%m-%d")
+        transit_result = calculate_planet_positions(today_str, "12:00:00", 28.6, 77.2, 5.5)
+        transit_planets = transit_result.get("planets", {})
+        natal_planets = (chart_data or {}).get("planets", {}) or {}
+
+        transit_lon = float((transit_planets.get(md_planet) or {}).get("longitude", -1) or -1)
+        natal_lon = float((natal_planets.get(md_planet) or {}).get("longitude", -1) or -1)
+
+        if transit_lon >= 0 and natal_lon >= 0:
+            diff = abs(transit_lon - natal_lon) % 360
+            if diff > 180:
+                diff = 360 - diff
+            transit_sign = (transit_planets.get(md_planet) or {}).get("sign", "")
+            natal_sign = (natal_planets.get(md_planet) or {}).get("sign", "")
+            intensified = diff <= 15.0
+            transit_correlation = {
+                "md_planet": md_planet,
+                "natal_longitude": round(natal_lon, 2),
+                "transit_longitude": round(transit_lon, 2),
+                "orb_degrees": round(diff, 2),
+                "natal_sign": natal_sign,
+                "transit_sign": transit_sign,
+                "intensified": intensified,
+                "note_en": (
+                    f"{md_planet} is currently transiting within {diff:.1f}° of its natal position "
+                    f"— this is an intensification window; dasha results amplify now."
+                    if intensified else
+                    f"{md_planet} transit ({transit_sign}) is {diff:.1f}° from natal ({natal_sign})."
+                ),
+                "note_hi": (
+                    f"{md_planet} अभी अपनी जन्म-राशि के {diff:.1f}° के भीतर गोचर कर रहा है "
+                    f"— यह तीव्रता की खिड़की है; दशा फल अभी प्रबल होते हैं।"
+                    if intensified else
+                    f"{md_planet} गोचर ({transit_sign}) जन्म-स्थिति ({natal_sign}) से {diff:.1f}° दूर है।"
+                ),
+            }
+    except Exception:
+        pass  # Transit correlation is best-effort
+
     return {
         "as_of": now.strftime("%Y-%m-%d"),
         "mahadasha": mahadasha_record,
         "antardasha": antardasha_record,
+        "transit_correlation": transit_correlation,
     }
 
 

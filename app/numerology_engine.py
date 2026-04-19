@@ -2707,6 +2707,89 @@ def _reduce_to_single(n: int) -> int:
     return n
 
 
+# Personal Year predictions keyed by number (1-9)
+_PERSONAL_YEAR_PREDICTIONS: dict = {
+    1: {
+        "theme": "New Beginnings", "theme_hi": "नई शुरुआत",
+        "description": "A year of planting seeds. Start new projects, establish independence, and take bold action. What you initiate now sets the tone for the next 9-year cycle.",
+        "description_hi": "बीज बोने का वर्ष। नई परियोजनाएं शुरू करें, स्वतंत्रता स्थापित करें और साहसी कदम उठाएं। आप जो अभी शुरू करते हैं वह अगले 9 वर्षों के चक्र का आधार बनता है।",
+        "focus": "Initiation, independence, leadership, self-development",
+        "focus_hi": "शुरुआत, स्वतंत्रता, नेतृत्व, आत्म-विकास",
+    },
+    2: {
+        "theme": "Cooperation & Patience", "theme_hi": "सहयोग और धैर्य",
+        "description": "A year of relationships and diplomacy. Focus on partnerships, building trust, and developing patience. Progress is subtle but foundations are strengthening.",
+        "description_hi": "रिश्तों और कूटनीति का वर्ष। साझेदारी पर ध्यान दें, विश्वास बनाएं और धैर्य विकसित करें। प्रगति सूक्ष्म है लेकिन नींव मजबूत हो रही है।",
+        "focus": "Partnerships, diplomacy, emotional healing, listening",
+        "focus_hi": "साझेदारी, कूटनीति, भावनात्मक उपचार, सुनना",
+    },
+    3: {
+        "theme": "Expression & Growth", "theme_hi": "अभिव्यक्ति और विकास",
+        "description": "A vibrant year of creativity and social expansion. Express yourself boldly — through art, writing, or communication. Joy and abundance follow authentic self-expression.",
+        "description_hi": "रचनात्मकता और सामाजिक विस्तार का जीवंत वर्ष। साहसपूर्वक खुद को व्यक्त करें — कला, लेखन या संवाद के माध्यम से।",
+        "focus": "Creativity, joy, socializing, self-expression, communication",
+        "focus_hi": "रचनात्मकता, आनंद, सामाजिकता, आत्म-अभिव्यक्ति",
+    },
+    4: {
+        "theme": "Work & Foundation", "theme_hi": "कार्य और नींव",
+        "description": "A year of building and consolidating. Hard work, discipline, and practical systems are required. Avoid shortcuts — what you build now lasts decades.",
+        "description_hi": "निर्माण और समेकन का वर्ष। कठिन परिश्रम, अनुशासन और व्यावहारिक प्रणालियां आवश्यक हैं। शॉर्टकट से बचें।",
+        "focus": "Discipline, organization, health, career foundations, financial planning",
+        "focus_hi": "अनुशासन, संगठन, स्वास्थ्य, करियर की नींव, वित्तीय योजना",
+    },
+    5: {
+        "theme": "Freedom & Change", "theme_hi": "स्वतंत्रता और परिवर्तन",
+        "description": "A dynamic year of change and new experiences. Travel, opportunities, and unexpected shifts keep life exciting. Stay adaptable and embrace transformation.",
+        "description_hi": "परिवर्तन और नए अनुभवों का गतिशील वर्ष। यात्रा, अवसर और अप्रत्याशित बदलाव जीवन को रोमांचक बनाते हैं।",
+        "focus": "Travel, change, freedom, versatility, adventure",
+        "focus_hi": "यात्रा, परिवर्तन, स्वतंत्रता, बहुमुखी प्रतिभा, साहस",
+    },
+    6: {
+        "theme": "Home & Responsibility", "theme_hi": "घर और जिम्मेदारी",
+        "description": "A year of love, family, and service. Focus on home, relationships, and community. Healing occurs in close relationships when you lead with compassion.",
+        "description_hi": "प्रेम, परिवार और सेवा का वर्ष। घर, रिश्तों और समुदाय पर ध्यान दें। करुणा के साथ नेतृत्व करने पर घनिष्ठ संबंधों में उपचार होता है।",
+        "focus": "Family, home, service, healing, beauty, responsibility",
+        "focus_hi": "परिवार, घर, सेवा, उपचार, सौंदर्य, जिम्मेदारी",
+    },
+    7: {
+        "theme": "Reflection & Wisdom", "theme_hi": "चिंतन और ज्ञान",
+        "description": "A year of inner work and spiritual deepening. Study, meditate, and go within. Answers come from silence, not external activity. Trust the process.",
+        "description_hi": "आंतरिक कार्य और आध्यात्मिक गहराई का वर्ष। अध्ययन करें, ध्यान करें और भीतर जाएं। उत्तर मौन से आते हैं, बाहरी गतिविधि से नहीं।",
+        "focus": "Spirituality, research, introspection, analysis, solitude",
+        "focus_hi": "आध्यात्मिकता, शोध, आत्म-चिंतन, विश्लेषण, एकांत",
+    },
+    8: {
+        "theme": "Power & Achievement", "theme_hi": "शक्ति और उपलब्धि",
+        "description": "A year of material achievement and karmic harvest. Business, finance, and authority matters come to a head. Reap what you have sown in previous years.",
+        "description_hi": "भौतिक उपलब्धि और कर्म फल का वर्ष। व्यवसाय, वित्त और अधिकार के मामले प्रमुख हो जाते हैं।",
+        "focus": "Business, finances, career advancement, authority, manifestation",
+        "focus_hi": "व्यापार, वित्त, करियर उन्नति, अधिकार, अभिव्यक्ति",
+    },
+    9: {
+        "theme": "Completion & Release", "theme_hi": "समापन और मुक्ति",
+        "description": "A year of endings and release. Let go of what no longer serves you — relationships, habits, beliefs. Compassionate service to others accelerates your own healing.",
+        "description_hi": "अंत और मुक्ति का वर्ष। जो आपकी सेवा नहीं करता उसे जाने दें — रिश्ते, आदतें, विश्वास। दूसरों की करुणामय सेवा आपके अपने उपचार को तेज करती है।",
+        "focus": "Completion, forgiveness, service, letting go, compassion",
+        "focus_hi": "समापन, क्षमा, सेवा, त्याग, करुणा",
+    },
+}
+
+
+def _personal_year_number(birth_date: str, target_year: int = None) -> int:
+    """
+    Personal Year Number = reduce(birth_month + birth_day + target_year_digits).
+    Changes on January 1 of each year.
+    """
+    from datetime import date as _date
+    if target_year is None:
+        target_year = _date.today().year
+    parts = birth_date.split("-")
+    month_sum = _reduce_to_single(int(parts[1]))
+    day_sum = _reduce_to_single(int(parts[2]))
+    year_sum = _reduce_to_single(sum(int(d) for d in str(target_year)))
+    return _reduce_to_single(month_sum + day_sum + year_sum)
+
+
 def _life_path(birth_date: str) -> int:
     """
     Calculate life path number from birth date string (YYYY-MM-DD).
@@ -3797,6 +3880,16 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
     birthday_reduced = _birthday_number(birth_date)  # reduced to single/master
     maturity = _maturity_number(life_path, destiny)
 
+    from datetime import date as _today_date
+    current_year = _today_date.today().year
+    personal_year = _personal_year_number(birth_date, current_year)
+    next_year_personal = _personal_year_number(birth_date, current_year + 1)
+
+    def _py_pred(n: int) -> dict:
+        # Master numbers 11→2, 22→4, 33→6 for prediction lookup
+        base = {11: 2, 22: 4, 33: 6}.get(n, n)
+        return _PERSONAL_YEAR_PREDICTIONS.get(base, _PERSONAL_YEAR_PREDICTIONS[9])
+
     return {
         "life_path": life_path,
         "destiny": destiny,
@@ -3824,4 +3917,9 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "missing_numbers": analyze_missing_numbers(dob_digits),
         "missing_numbers_source": "birth_date",
         "repeated_numbers": analyze_repeated_numbers(dob_digits),
+        # Personal Year Number — changes each Jan 1
+        "personal_year": personal_year,
+        "personal_year_prediction": _py_pred(personal_year),
+        "next_personal_year": next_year_personal,
+        "next_personal_year_prediction": _py_pred(next_year_personal),
     }
