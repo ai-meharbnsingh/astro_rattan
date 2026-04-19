@@ -198,7 +198,7 @@ export default function DivisionalTab({
             )}
 
             {/* Right: Planet Table - full height, no scroll */}
-            <div className="rounded-xl border border-border h-fit">
+            <div className="rounded-xl border border-sacred-gold/20 h-fit">
               <Table className="w-full">
                 <TableHeader className="bg-muted">
                   <TableRow>
@@ -246,7 +246,7 @@ export default function DivisionalTab({
 
           {/* Varga Strength (Phaladeepika Adh. 3 — Vargadhyaya) */}
           {divisionalData.varga_strength?.planets && (
-            <div className="bg-muted rounded-xl p-5 border border-border shadow-sm animate-in fade-in slide-in-from-bottom-4">
+            <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent shadow-sm animate-in fade-in slide-in-from-bottom-4">
               <div className="mb-3 border-b border-border/30 pb-3">
                 <Heading as={4} variant={4} className="text-primary">
                   {t('auto.vargaStrength')}
@@ -261,7 +261,7 @@ export default function DivisionalTab({
                 )}
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <Table className="w-full text-sm border-collapse">
                   <TableHeader>
                     <TableRow className="bg-muted/10">
@@ -377,7 +377,7 @@ export default function DivisionalTab({
 
               {/* Karmic Summary */}
               {divisionalData.d60_analysis.karmic_summary && (
-                <div className="bg-white rounded-lg p-4 border border-border/20">
+                <div className="bg-transparent rounded-lg p-4 border border-sacred-gold/20">
                   <Heading as={5} variant={5} className="mb-3">
                     {t('auto.karmicSummary')}
                   </Heading>
@@ -425,7 +425,7 @@ export default function DivisionalTab({
               )}
 
               {/* Planetary Analysis Table */}
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <Heading as={5} variant={5} className="mb-3">
                   {t('auto.planetWiseKarmicAnal')}
                 </Heading>

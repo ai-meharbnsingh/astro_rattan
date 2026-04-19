@@ -166,9 +166,9 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
         </div>
       )}
 
-      <div className="bg-muted rounded-xl p-5 border border-border">
+      <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent">
         <Heading as={4} variant={4} className="mb-4">{t('section.detailedBreakdown')}</Heading>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <Table className="w-full text-sm border-collapse">
             <TableHeader>
               <TableRow className="bg-muted">

@@ -885,7 +885,7 @@ export default function AdminDashboard() {
             {!analyticsData || analyticsData.top_pages.length === 0 ? (
               <div className="py-8 text-center text-sm text-muted-foreground">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/10 text-left text-xs text-muted-foreground uppercase tracking-wider">
@@ -1059,7 +1059,7 @@ export default function AdminDashboard() {
                 <p className="text-xs text-muted-foreground mt-1">{l('Submissions will appear here', 'सबमिशन यहां दिखेंगे')}</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
                 <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">

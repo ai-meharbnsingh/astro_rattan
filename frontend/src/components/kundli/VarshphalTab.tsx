@@ -40,7 +40,7 @@ export default function VarshphalTab({
       ) : varshphalData ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Solar Return Info */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">{t('section.solarReturn')}</Heading>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white rounded-lg p-3">
@@ -63,7 +63,7 @@ export default function VarshphalTab({
           </div>
 
           {/* Muntha */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">{t('section.muntha')}</Heading>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-white rounded-lg p-3">
@@ -88,7 +88,7 @@ export default function VarshphalTab({
           </div>
 
           {/* Varshphal Chart */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">{t('section.varshphalChart')} ({varshphalYear})</Heading>
             {varshphalData.chart_data?.planets ? (
               <div className="flex justify-center">
@@ -110,7 +110,7 @@ export default function VarshphalTab({
           </div>
 
           {/* Mudda Dasha */}
-          <div className="bg-muted rounded-xl border border-border p-4">
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
             <Heading as={4} variant={4} className="mb-3">
               {t('section.muddaDasha')}
               {(varshphalData.current_mudda || varshphalData.current_mudda_dasha) && (

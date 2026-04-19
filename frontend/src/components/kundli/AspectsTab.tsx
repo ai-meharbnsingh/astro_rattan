@@ -29,7 +29,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Aspects on Planets */}
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">{t('section.aspectsOnPlanets')}</Heading>
           <div className="overflow-x-auto">
             <Table className="w-full text-xs">
@@ -89,7 +89,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
         </div>
 
         {/* Aspects on Bhavas */}
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">{t('section.aspectsOnBhavas')}</Heading>
           <div className="overflow-x-auto">
             <Table className="w-full text-xs">

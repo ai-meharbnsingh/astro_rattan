@@ -86,7 +86,7 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
           {isHi ? 'कोई गोचर वेध डेटा उपलब्ध नहीं है' : 'No Gochara Vedha data available for this chart'}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-white/50">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <table className="table-sacred w-full text-sm">
             <thead>
               <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5">

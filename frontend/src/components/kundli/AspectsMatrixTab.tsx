@@ -65,7 +65,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
   return (
     <div className="space-y-6">
       {/* Matrix Grid */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <Heading as={4} variant={4} className="mb-3">
           {t('auto.aspectsOnPlanets')}
 	        </Heading>
@@ -170,7 +170,7 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
 
       {/* Active Aspects List */}
       {data.aspects_list && data.aspects_list.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">
             {t('auto.activeAspects')}
           </Heading>
@@ -215,7 +215,7 @@ function CuspAspectGrid({ title, cuspData, planetOrder, language, t }: CuspAspec
   const abbr = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
 	  return (
-	    <div className="bg-muted rounded-xl border border-border p-4">
+	    <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
 	      <Heading as={4} variant={4} className="mb-3">{title}</Heading>
 	      <div className="overflow-x-auto">
 	        <Table className="w-full text-data border-collapse min-w-[700px]">

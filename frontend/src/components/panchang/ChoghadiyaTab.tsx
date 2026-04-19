@@ -167,7 +167,7 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
       })()}
 
       {/* Day + Night side by side (stack on mobile) */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
         <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border">
           {dayChoghadiya.length > 0 && (
             <div className="flex-1 p-2">

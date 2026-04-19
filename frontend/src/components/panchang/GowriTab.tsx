@@ -209,7 +209,7 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
       )}
 
       {/* Day + Night side by side (stack on mobile) */}
-      <div className="rounded-lg border overflow-hidden">
+      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
         <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border">
           {dayGowri.length > 0 && (
             <div className="p-2">

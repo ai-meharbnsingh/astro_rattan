@@ -324,7 +324,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
 
       {/* --- Chart Details --- */}
       {chartResult && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">
             {l('Horary Chart Details', 'प्रश्न कुंडली विवरण')}
             <span className="ml-2 text-sm text-primary font-normal">#{chartResult.horary_number}</span>
@@ -333,25 +333,25 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
           {/* Quick info cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             {chartResult.sign && (
-              <div className="bg-white rounded-lg p-3 text-center border border-border/20">
+              <div className="bg-transparent rounded-lg p-3 text-center border border-sacred-gold/20">
                 <p className="text-[10px] uppercase text-foreground/50 font-bold">{l('Sign', 'राशि')}</p>
                 <p className="text-sm font-bold text-primary">{translateSign(chartResult.sign, language)}</p>
               </div>
             )}
             {chartResult.star_lord && (
-              <div className="bg-white rounded-lg p-3 text-center border border-border/20">
+              <div className="bg-transparent rounded-lg p-3 text-center border border-sacred-gold/20">
                 <p className="text-[10px] uppercase text-foreground/50 font-bold">{l('Star Lord', 'नक्षत्र स्वामी')}</p>
                 <p className="text-sm font-bold text-primary">{translatePlanet(chartResult.star_lord, language)}</p>
               </div>
             )}
             {chartResult.sub_lord && (
-              <div className="bg-white rounded-lg p-3 text-center border border-border/20">
+              <div className="bg-transparent rounded-lg p-3 text-center border border-sacred-gold/20">
                 <p className="text-[10px] uppercase text-foreground/50 font-bold">{l('Sub Lord', 'उप स्वामी')}</p>
                 <p className="text-sm font-bold text-primary">{translatePlanet(chartResult.sub_lord, language)}</p>
               </div>
             )}
             {chartResult.degree_range && (
-              <div className="bg-white rounded-lg p-3 text-center border border-border/20">
+              <div className="bg-transparent rounded-lg p-3 text-center border border-sacred-gold/20">
                 <p className="text-[10px] uppercase text-foreground/50 font-bold">{l('Degree Range', 'अंश सीमा')}</p>
                 <p className="text-sm font-bold text-foreground">{safeStr(chartResult.degree_range)}</p>
               </div>
@@ -439,7 +439,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
 
       {/* --- Significator Analysis --- */}
       {prediction?.significator_analysis && prediction.significator_analysis.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">
             {l('Significator Analysis', 'कारक विश्लेषण')}
           </Heading>
@@ -478,7 +478,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
 
       {/* --- Detailed Analysis Text --- */}
       {prediction?.analysis && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">
             {l('Detailed Analysis', 'विस्तृत विश्लेषण')}
           </Heading>

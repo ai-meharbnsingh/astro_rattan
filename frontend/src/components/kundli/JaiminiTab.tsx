@@ -31,7 +31,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
   return (
     <div className="space-y-6">
       {/* Chara Karakas */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
           <Crown className="w-5 h-5 text-primary" />
           {t('auto.charaKarakas7Variabl')}
@@ -120,7 +120,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             const lagna = data.special_lagnas[key];
             if (!lagna) return null;
             return (
-              <div key={key} className="bg-muted rounded-xl border border-border p-4 shadow-sm hover:shadow-md transition-all">
+              <div key={key} className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-center gap-2 mb-2">
                   {icon}
                   <Heading as={5} variant={5}>
@@ -147,7 +147,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Karakamsha Detail (PDF 1.1.2) */}
       {data.special_lagnas?.karakamsha?.planet_houses && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Crown className="w-5 h-5 text-primary" />
             {t('auto.karakamshaAnalysisSo')}
@@ -168,7 +168,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Indu Lagna */}
       {data.indu_lagna && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Wallet className="w-5 h-5 text-primary" />
             {t('auto.induLagnaWealthIndic')}
@@ -198,7 +198,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Chara Dasha (PDF 1.1.2) */}
       {data.chara_dasha?.periods && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
             {t('auto.charaDashaSignBasedT')}
@@ -276,7 +276,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Jaimini Drishti */}
       {data.jaimini_drishti?.sign_aspects && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Eye className="w-5 h-5 text-primary" />
             {t('auto.jaiminiDrishtiSignBa')}
@@ -299,7 +299,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Jaimini Yogas */}
       {data.jaimini_yogas && data.jaimini_yogas.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Star className="w-5 h-5 text-primary" />
             {t('auto.jaiminiYogas')}
@@ -328,7 +328,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Longevity */}
       {data.longevity && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
             {t('auto.longevityCalculation')}
@@ -364,7 +364,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Argala */}
       {data.argala?.house_argalas && data.argala.house_argalas.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
             <Eye className="w-5 h-5 text-primary" />
             {t('auto.argalaPlanetaryInter')}
@@ -423,7 +423,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
       {/* Nadi Insights (PDF 1.2.2) */}
       {data.nadi_insights && data.nadi_insights.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <div className="flex items-center gap-2 mb-4 border-b border-border/30 pb-3">
             <Sparkles className="w-5 h-5 text-primary" />
             <Heading as={4} variant={4}>{t('auto.nadiAstrologyInsight')}</Heading>

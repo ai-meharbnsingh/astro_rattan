@@ -543,7 +543,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       )}
 
       {/* ══════════════════ 1. Country Selector + Summary Dashboard ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Globe2 className="w-5 h-5 text-primary" />}
           title={T.mundaneAstrology(lang)}
@@ -606,7 +606,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 2. Country Birth Chart ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Landmark className="w-5 h-5 text-primary" />}
           title={T.countryBirthChart(lang)}
@@ -679,7 +679,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 3. Current Transits Impact ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<TrendingUp className="w-5 h-5 text-primary" />}
           title={T.currentTransits(lang)}
@@ -749,7 +749,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 4. House Analysis (12 houses) ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Building2 className="w-5 h-5 text-primary" />}
           title={T.houseAnalysis(lang)}
@@ -831,7 +831,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 5. Conflict & Risk Indicators ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<AlertTriangle className="w-5 h-5 text-primary" />}
           title={T.conflictIndicators(lang)}
@@ -876,7 +876,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 6. Economic Analysis ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<TrendingUp className="w-5 h-5 text-primary" />}
           title={T.economicAnalysis(lang)}
@@ -920,7 +920,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 7. Political Analysis ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Landmark className="w-5 h-5 text-primary" />}
           title={T.politicalAnalysis(lang)}
@@ -964,7 +964,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 8. Eclipse Tracker ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Moon className="w-5 h-5 text-primary" />}
           title={T.eclipseTracker(lang)}
@@ -1032,7 +1032,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       </div>
 
       {/* ══════════════════ 9. Ingress / Sankranti Dates ══════════════════ */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <SectionHeader
           icon={<Sun className="w-5 h-5 text-primary" />}
           title={T.ingressDates(lang)}

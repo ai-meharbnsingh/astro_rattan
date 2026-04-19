@@ -44,7 +44,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   const HOUSE_SIGNIFICANCE = language === 'hi' ? HOUSE_SIGNIFICANCE_HI : HOUSE_SIGNIFICANCE_EN;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <Table className="w-full text-xs">
           <TableHeader>
             <TableRow>

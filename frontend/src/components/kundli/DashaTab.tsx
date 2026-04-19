@@ -25,9 +25,9 @@ function SookshmaSection({ kundliId, language, t }: { kundliId: string; language
   if (!currentSookshma && !currentPrana) return null;
 
   return (
-    <div className="bg-muted rounded-xl border border-border p-4">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
       <Heading as={4} variant={4} className="mb-3">{hi ? 'सूक्ष्म-प्राण दशा' : 'Sookshma-Prana Dasha'}</Heading>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <Table className="w-full text-xs">
           <TableHeader className="bg-muted">
             <TableRow>
@@ -99,12 +99,12 @@ export default function DashaTab({
     return (
       <div className="space-y-6">
         {/* Current Dasha Summary Table */}
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <div className="flex items-center justify-between mb-3">
             <Heading as={4} variant={4} className="uppercase tracking-wide">{t('section.currentDashaStatus')}</Heading>
             <span className="px-2 py-0.5 bg-muted text-white text-[10px] font-bold rounded animate-pulse">● {l('LIVE', 'लाइव')}</span>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
             <Table className="w-full text-xs">
               <TableHeader className="bg-muted">
                 <TableRow>
@@ -129,9 +129,9 @@ export default function DashaTab({
         </div>
 
         {/* Full Dasha Timeline Table */}
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <Heading as={4} variant={4} className="mb-3">{hi ? 'विस्तृत दशा तालिका' : 'Detailed Dasha Timeline'}</Heading>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
             <Table className="w-full text-xs">
               <TableHeader className="bg-muted">
                 <TableRow>
@@ -274,7 +274,7 @@ export default function DashaTab({
   if (dashaData) {
     return (
       <div className="space-y-4">
-        <div className="bg-muted rounded-xl border border-border p-4">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-foreground uppercase font-bold tracking-wider">{t('section.currentMahadasha')}</p>
           </div>
@@ -288,8 +288,8 @@ export default function DashaTab({
           )}
         </div>
 
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <div className="overflow-x-auto">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
             <Table className="w-full text-xs">
               <TableHeader className="bg-muted">
                 <TableRow>

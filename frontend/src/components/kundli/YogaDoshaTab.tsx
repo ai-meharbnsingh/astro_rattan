@@ -144,7 +144,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
   return (
     <div className="space-y-6">
       {/* Yogas — grouped by category */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-sacred-gold-dark" />
@@ -270,7 +270,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Doshas Table */}
-        <div className="bg-muted rounded-xl border border-border p-4 flex flex-col">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <Shield className="w-4 h-4 text-red-700" />
             <Heading as={4} variant={4}>{t('section.doshas')}</Heading>
@@ -326,7 +326,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
         </div>
 
         {/* Specific Dosha Analysis */}
-        <div className="bg-muted rounded-xl border border-border p-4 flex flex-col">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="w-4 h-4 text-orange-600" />
             <Heading as={4} variant={4}>{t('section.doshaAnalysis')}</Heading>
@@ -388,7 +388,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
 
       {/* Gemstones */}
-      <div className="bg-muted rounded-xl border border-border p-4 flex flex-col">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
         <div className="flex items-center gap-2 mb-3">
           <Gem className="w-4 h-4 text-primary" />
           <Heading as={4} variant={4}>{t('section.remediesGemstone')}</Heading>
@@ -434,7 +434,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
 
       {/* Nabhasa / Maha Yogas Section */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-600" />
@@ -535,7 +535,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
 
       {/* Raja Yogas — Phaladeepika Adhyaya 7 */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
             <Crown className="w-4 h-4 text-violet-600" />

@@ -88,7 +88,7 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
       ))}
 
       {/* Main table */}
-      <div className="bg-muted rounded-xl border border-border p-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
         <Heading as={4} variant={4} className="mb-3">{t('section.upagrahasTitle')}</Heading>
         <div className="overflow-x-auto">
           <Table className="w-full text-sm min-w-[600px]">
