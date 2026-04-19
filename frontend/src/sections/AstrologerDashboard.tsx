@@ -498,7 +498,7 @@ function OverviewPanel({ overview, isHi, onOpenClient, upcomingList, clientList 
                 const h = Math.max(4, (c.count / chartMax) * 100);
                 return (
                   <div key={c.chart_type} className="flex-1 flex flex-col items-center gap-2 group">
-                    <div className="relative w-full max-w-[80px] flex-1 flex items-end">
+                    <div className="relative w-full max-w-[80px] h-32 flex items-end">
                       <div
                         className="w-full rounded-t-md bg-gradient-to-t from-sacred-gold to-amber-400 hover:from-sacred-gold-dark hover:to-sacred-gold transition-colors"
                         style={{ height: `${h}%` }}
