@@ -92,6 +92,8 @@ export default function ReportTab({
     is_retrograde: !!p.is_retrograde,
     is_combust: !!p.is_combust,
     is_vargottama: !!p.is_vargottama,
+    is_exalted: !!p.is_exalted,
+    is_debilitated: !!p.is_debilitated,
   } as any);
 
   return (
@@ -108,7 +110,7 @@ export default function ReportTab({
               <p className="text-xs text-muted-foreground text-center -mb-2">{t('kundli.clickHouseToRotate')}</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3">
                 {/* 1. Lagna Chart (D1) — click house to rotate lagan */}
-                <div className="bg-muted rounded-xl border border-border p-3">
+                <div className="bg-transparent border-0 p-0">
                   <Heading as={4} variant={4} className="mb-2 text-center">
                     {t('section.lagna')}
                   </Heading>
@@ -121,17 +123,19 @@ export default function ReportTab({
                       const asc = shiftedSign(baseAsc, shift);
                       return (
                         <div className="w-full max-w-[340px] aspect-square">
-                          <KundliChartSVG
-                            planets={planets.map(toPlanetEntry)}
-                            ascendantSign={asc}
-                            language={language}
-                            showHouseNumbers={false}
+  	                          <KundliChartSVG
+  	                            planets={planets.map(toPlanetEntry)}
+  	                            ascendantSign={asc}
+  	                            language={language}
+  	                            showHouseNumbers={false}
                             showRashiNumbers
+                            rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
-                              const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
-                              setReportLagnaShift(orig - 1 === 0 ? 0 : orig - 1);
+                              // Rotate view so the clicked house becomes Lagna (house 1).
+                              // shift is the current sign-rotation offset applied to the base ascendant.
+                              setReportLagnaShift((prev) => (prev + (house - 1)) % 12);
                             }}
                           />
                         </div>
@@ -144,7 +148,7 @@ export default function ReportTab({
                 </div>
 
                 {/* 2. Moon Chart — click house to rotate lagan */}
-                <div className="bg-muted rounded-xl border border-border p-3">
+                <div className="bg-transparent border-0 p-0">
                   <Heading as={4} variant={4} className="mb-2 text-center">
                     {t('section.moon')}
                   </Heading>
@@ -160,18 +164,19 @@ export default function ReportTab({
                       const asc = shiftedSign(baseAsc, totalShift);
                       return (
                         <div className="w-full max-w-[340px] aspect-square">
-                          <KundliChartSVG
-                            planets={planets.map(toPlanetEntry)}
-                            ascendantSign={asc}
-                            language={language}
-                            showHouseNumbers={false}
+  	                          <KundliChartSVG
+  	                            planets={planets.map(toPlanetEntry)}
+  	                            ascendantSign={asc}
+  	                            language={language}
+  	                            showHouseNumbers={false}
                             showRashiNumbers
+                            rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
-                              const orig = totalShift ? ((house - 1 + totalShift) % 12) + 1 : house;
-                              const newShift = ((orig - 1) - baseShift + 12) % 12;
-                              setReportMoonShift(newShift);
+                              // Same rule: clicked house becomes Lagna, but Moon chart has a fixed baseShift.
+                              // reportMoonShift is the additional rotation on top of baseShift.
+                              setReportMoonShift((prev) => (prev + (house - 1)) % 12);
                             }}
                           />
                         </div>
@@ -184,7 +189,7 @@ export default function ReportTab({
                 </div>
 
                 {/* 3. Gochar (Transit) Chart — click house to rotate lagan */}
-                <div className="bg-muted rounded-xl border border-border p-3">
+                <div className="bg-transparent border-0 p-0">
                   <Heading as={4} variant={4} className="mb-2 text-center">
                     {t('section.gochar')} {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
                   </Heading>
@@ -205,17 +210,18 @@ export default function ReportTab({
                       const asc = shiftedSign(baseAsc, shift);
                       return (
                         <div className="w-full max-w-[340px] aspect-square">
-                          <KundliChartSVG
-                            planets={transitPlanets.map(toPlanetEntry)}
-                            ascendantSign={asc}
-                            language={language}
-                            showHouseNumbers={false}
+  	                          <KundliChartSVG
+  	                            planets={transitPlanets.map(toPlanetEntry)}
+  	                            ascendantSign={asc}
+  	                            language={language}
+  	                            showHouseNumbers={false}
                             showRashiNumbers
+                            rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
                             onHouseClick={(house) => {
-                              const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
-                              setReportGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                              // Rotate view so the clicked house becomes Lagna (house 1).
+                              setReportGocharShift((prev) => (prev + (house - 1)) % 12);
                             }}
                           />
                         </div>

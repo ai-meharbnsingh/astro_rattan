@@ -2,7 +2,7 @@
  * KundliChartSVG — Live North Indian Kundli Chart
  *
  * ALL positions as percentages. Font matches transit wheel (13px/800).
- * Symbols: * Retro, ^ Combust, + Vargottama
+ * Symbols: * Retro, ^ Combust, v Vargottama, + Exalted, - Debilitated
  * Colors: green=exalted, red=debilitated, GOLD_MED=benefic, DARK=malefic
  */
 import { useState, useEffect } from 'react';
@@ -28,6 +28,7 @@ export interface KundliChartSVGProps {
   language?: string;
   showHouseNumbers?: boolean;
   showRashiNumbers?: boolean;
+  rashiNumberPlacement?: 'corner' | 'center';
   showAscendantMarker?: boolean;
   onHouseClick?: (house: number, sign: string, planets: PlanetEntry[]) => void;
   onPlanetClick?: (planet: PlanetEntry) => void;
@@ -74,7 +75,9 @@ function statusSuffix(p: PlanetEntry): string {
   let s = '';
   if (p.is_retrograde) s += '*';
   if (p.is_combust) s += '^';
-  if (p.is_vargottama) s += '+';
+  if (p.is_vargottama) s += 'v';
+  if (p.is_exalted) s += '+';
+  if (p.is_debilitated) s += '-';
   return s;
 }
 
@@ -166,6 +169,7 @@ export default function KundliChartSVG({
   language = 'en',
   showHouseNumbers = true,
   showRashiNumbers = true,
+  rashiNumberPlacement = 'corner',
   showAscendantMarker = true,
   onHouseClick,
   onPlanetClick,
@@ -335,9 +339,9 @@ export default function KundliChartSVG({
       {showRashiNumbers && Array.from({ length: 12 }, (_, i) => {
         const signIdx = lagnaSignIdx >= 0 ? (lagnaSignIdx + i) % 12 : i;
         const rashiNum = signIdx + 1;
-        const c = HOUSE_CENTERS[i];
+        const c = rashiNumberPlacement === 'center' ? HOUSE_CENTERS[i] : NUMBER_LABEL_POS[i];
         const count = (planetsByHousePos[i] || []).length;
-        const y = c.y - (count > 0 ? 18 : 0);
+        const y = rashiNumberPlacement === 'center' ? (c.y - (count > 0 ? 18 : 0)) : c.y;
         return (
           <text
             key={`rashi-${i}`}
@@ -345,14 +349,14 @@ export default function KundliChartSVG({
             y={y}
             textAnchor="middle"
             dominantBaseline="central"
-            fontSize="16"
+            fontSize={rashiNumberPlacement === 'center' ? '16' : '12'}
             fontWeight="800"
-            fill={GOLD}
+            fill={rashiNumberPlacement === 'center' ? GOLD : GOLD_MED}
             opacity="0.55"
             fontFamily="'Inter',sans-serif"
-            stroke="rgba(253, 251, 247, 0.9)"
-            strokeWidth="4"
-            paintOrder="stroke"
+            stroke={rashiNumberPlacement === 'center' ? "rgba(253, 251, 247, 0.9)" : undefined}
+            strokeWidth={rashiNumberPlacement === 'center' ? '4' : undefined}
+            paintOrder={rashiNumberPlacement === 'center' ? 'stroke' : undefined}
             pointerEvents="none"
           >
             {rashiNum}
@@ -388,9 +392,17 @@ export default function KundliChartSVG({
               </text>
               {/* Status suffix — smaller, right after name */}
               {suffix && (
-                <text x={c.x + 16} y={startY + pi * lineH - 2}
+                <text x={c.x + 17} y={startY + pi * lineH - 1}
                   textAnchor="start" dominantBaseline="central"
-                  fontSize="8" fontWeight="700" fontFamily="'Inter',sans-serif" fill={color} opacity="0.8">
+                  fontSize="11"
+                  fontWeight="900"
+                  fontFamily="'Inter',sans-serif"
+                  fill={color}
+                  opacity="0.95"
+                  stroke="rgba(253, 251, 247, 0.95)"
+                  strokeWidth="2"
+                  paintOrder="stroke"
+                >
                   {suffix}
                 </text>
               )}
