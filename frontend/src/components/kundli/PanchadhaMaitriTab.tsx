@@ -156,7 +156,7 @@ export default function PanchadhaMaitriTab({ kundliId, language }: Props) {
         <>
           {/* Desktop table */}
           <div className="hidden md:block rounded-xl border border-sacred-gold/20 overflow-hidden">
-            <table className="w-full text-sm">
+            <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="bg-sacred-gold/10 text-sacred-brown">
                   <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wide">

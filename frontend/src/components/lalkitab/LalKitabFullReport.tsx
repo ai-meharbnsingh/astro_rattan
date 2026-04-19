@@ -266,7 +266,7 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
               <h2 className="text-2xl font-bold text-sacred-gold mb-4 border-b-2 border-sacred-gold/30 pb-2">
                 2. {isHi ? 'ग्रह-वार विश्लेषण' : 'Per-Planet Analysis'}
               </h2>
-              <table className="w-full text-sm border-collapse">
+              <table className="table-sacred w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-sacred-gold/10 text-sacred-gold-dark">
                     <th className="text-left px-3 py-2 border border-sacred-gold/20">{isHi ? 'ग्रह' : 'Planet'}</th>
@@ -364,7 +364,7 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
                 5. {isHi ? 'भविष्यवाणी स्टूडियो' : 'Prediction Studio'}
               </h2>
               {report.prediction_studio?.areas ? (
-                <table className="w-full text-sm border-collapse">
+                <table className="table-sacred w-full text-sm border-collapse">
                   <thead>
                     <tr className="bg-sacred-gold/10 text-sacred-gold-dark">
                       <th className="text-left px-3 py-2 border border-sacred-gold/20">{isHi ? 'क्षेत्र' : 'Area'}</th>
@@ -483,7 +483,7 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
                       <h3 className="text-lg font-semibold text-sacred-gold-dark mt-4 mb-2">
                         {isHi ? 'मुद्दा दशा' : 'Mudda Dasha'}
                       </h3>
-                      <table className="w-full text-sm border-collapse">
+                      <table className="table-sacred w-full text-sm border-collapse">
                         <thead>
                           <tr className="bg-sacred-gold/10 text-sacred-gold-dark">
                             <th className="text-left px-3 py-2 border border-sacred-gold/20">{isHi ? 'ग्रह' : 'Planet'}</th>

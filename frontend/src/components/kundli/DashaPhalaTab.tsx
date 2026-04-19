@@ -559,7 +559,7 @@ function DashaTimingSection({
 
               {/* Per-planet table */}
               <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse">
+                <table className="table-sacred w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-muted/50">
                       <th className="text-left p-2 text-primary font-medium">{l('Planet', 'ग्रह')}</th>

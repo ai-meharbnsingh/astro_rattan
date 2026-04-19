@@ -308,7 +308,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
           {t('auto.bestWorstTransitRasi')}
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
+          <table className="table-sacred w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-sacred-gold/30 bg-sacred-gold/5">
                 <th className="text-left p-2 font-semibold">{t('auto.planet')}</th>

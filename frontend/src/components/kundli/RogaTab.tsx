@@ -245,7 +245,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
             {isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}
           </h3>
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-            <table className="w-full text-sm">
+            <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="bg-muted/30">
                   <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'ग्रह' : 'Planet'}</th>

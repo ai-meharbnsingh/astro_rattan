@@ -198,6 +198,25 @@
 .text-sacred-gold { color: var(--aged-gold); }
 .text-sacred-saffron { color: var(--aged-gold); }
 
+@layer components {
+  /* Unified table style used across the app (matches Home "Planetary Positions" table) */
+  .table-sacred {
+    @apply w-full text-sm border-collapse;
+  }
+  .table-sacred thead tr {
+    @apply bg-sacred-gold/10;
+  }
+  .table-sacred thead th {
+    @apply px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sacred-gold-dark whitespace-nowrap;
+  }
+  .table-sacred tbody tr {
+    @apply border-b border-sacred-gold/10 hover:bg-sacred-gold/10 transition-colors;
+  }
+  .table-sacred tbody td {
+    @apply px-3 py-2 text-foreground;
+  }
+}
+
 /* Backgrounds */
 .bg-sacred-gold { background-color: var(--aged-gold); }
 .bg-sacred-saffron { background-color: var(--aged-gold); }

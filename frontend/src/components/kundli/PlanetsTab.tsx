@@ -194,7 +194,7 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
             {hi ? 'ग्रह गुण — धातु, अन्न, वृक्ष' : 'Planet Properties — Metal, Grain, Tree'}
           </span>
         </div>
-        <table className="w-full text-xs">
+        <table className="table-sacred w-full text-xs">
           <thead className="bg-muted/50">
             <tr>
               <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>
@@ -269,7 +269,7 @@ function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; lang
           {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
         </span>
       </div>
-      <table className="w-full text-xs">
+      <table className="table-sacred w-full text-xs">
         <thead className="bg-muted/50">
           <tr>
             <th className="text-left p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</th>

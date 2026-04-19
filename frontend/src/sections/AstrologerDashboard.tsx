@@ -575,7 +575,7 @@ function OverviewPanel({ overview, isHi, onOpenClient, upcomingList, clientList 
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="table-sacred w-full">
               <thead className="bg-sacred-gold/5 border-b border-sacred-gold/20">
                 <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
                   <th className="px-4 py-2 font-semibold">{isHi ? 'नाम' : 'Name'}</th>
@@ -663,7 +663,7 @@ function ClientsPanel({ clients, search, onSearchChange, isHi, onOpenClient }: {
         </div>
       ) : (
         <div className="rounded-xl border border-sacred-gold/20 bg-card overflow-hidden">
-          <table className="w-full">
+          <table className="table-sacred w-full">
             <thead className="bg-sacred-gold/10 border-b border-sacred-gold/20">
               <tr className="text-left text-[11px] uppercase tracking-wider text-sacred-gold-dark">
                 <th className="px-4 py-2 font-semibold">{isHi ? 'नाम' : 'Name'}</th>

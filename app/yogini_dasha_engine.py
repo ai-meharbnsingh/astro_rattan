@@ -53,7 +53,7 @@ def get_starting_yogini(nakshatra_name: str) -> str:
 
 def calculate_yogini_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float) -> dict:
     """
-    Calculate Yogini Dasha periods. Returns periods for up to 108 years (3 cycles).
+    Calculate Yogini Dasha periods. Returns 8 periods covering one 36-year cycle.
     """
     start_yogini = get_starting_yogini(birth_nakshatra)
     start_idx = YOGINI_ORDER.index(start_yogini)
@@ -77,31 +77,29 @@ def calculate_yogini_dasha(birth_nakshatra: str, birth_date: str, moon_longitude
     
     current_start = birth_dt
     
-    # Generate 3 cycles (~108 years)
-    for cycle in range(3):
-        for i in range(8):
-            curr_idx = (start_idx + i) % 8
-            planet = YOGINI_ORDER[curr_idx]
-            full_years = YOGINI_YEARS[planet]
-            
-            if cycle == 0 and i == 0:
-                effective_years = full_years * balance
-            else:
-                effective_years = full_years
-                
-            end_dt = current_start + timedelta(days=effective_years * 365.25)
-            
-            is_current = current_start <= now <= end_dt
-            
-            periods.append({
-                "planet": planet,
-                "start": current_start.strftime("%Y-%m-%d"),
-                "end": end_dt.strftime("%Y-%m-%d"),
-                "years": round(effective_years, 2),
-                "is_current": is_current
-            })
-            
-            current_start = end_dt
+    # Generate one 36-year cycle (8 periods)
+    for i in range(8):
+        curr_idx = (start_idx + i) % 8
+        planet = YOGINI_ORDER[curr_idx]
+        full_years = YOGINI_YEARS[planet]
+
+        if i == 0:
+            effective_years = full_years * balance
+        else:
+            effective_years = full_years
+
+        end_dt = current_start + timedelta(days=effective_years * 365.25)
+        is_current = current_start <= now <= end_dt
+
+        periods.append({
+            "planet": planet,
+            "start": current_start.strftime("%Y-%m-%d"),
+            "end": end_dt.strftime("%Y-%m-%d"),
+            "years": round(effective_years, 2),
+            "is_current": is_current
+        })
+
+        current_start = end_dt
             
     current_dasha = "Unknown"
     for p in periods:
