@@ -246,14 +246,39 @@ def get_panchang(
     # Calculate fresh
     panchang = calculate_panchang(target_date, latitude, longitude)
 
-    # Detect festivals
+    # Detect festivals — check sunrise tithi AND next tithi if it transitions during the day
+    # e.g. Dwitiya→Tritiya at 10:49 AM means Akshaya Tritiya must appear on this day
+    _tithi_data = panchang["tithi"]
+    _maas = panchang.get("hindu_calendar", {}).get("maas", "")
+    _nak_name = panchang["nakshatra"]["name"]
     festivals = detect_festivals(
-        tithi_name=panchang["tithi"]["name"],
-        paksha=panchang["tithi"]["paksha"],
-        nakshatra_name=panchang["nakshatra"]["name"],
-        maas=panchang.get("hindu_calendar", {}).get("maas", ""),
+        tithi_name=_tithi_data["name"],
+        paksha=_tithi_data["paksha"],
+        nakshatra_name=_nak_name,
+        maas=_maas,
         gregorian_date=target_date,
     )
+    _next_tithi = _tithi_data.get("next")
+    _tithi_end = _tithi_data.get("end_time", "")
+    _sunset = panchang.get("sunset", "23:59")
+    try:
+        _te_h, _te_m = map(int, _tithi_end.split(":")[:2])
+        _ss_h, _ss_m = map(int, _sunset.split(":")[:2])
+        _tithi_mid_day = (_te_h * 60 + _te_m) < (_ss_h * 60 + _ss_m)
+    except (ValueError, AttributeError):
+        _tithi_mid_day = False
+    if _next_tithi and _tithi_mid_day:
+        _next_fests = detect_festivals(
+            tithi_name=_next_tithi,
+            paksha=_tithi_data["paksha"],
+            nakshatra_name=_nak_name,
+            maas=_maas,
+            gregorian_date=None,
+        )
+        _seen = {f["name"] for f in festivals}
+        for f in _next_fests:
+            if f["name"] not in _seen:
+                festivals.append(f)
     panchang["festivals"] = festivals
 
     # Inject Hindi names before caching

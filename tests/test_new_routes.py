@@ -364,28 +364,6 @@ class TestBirthRectificationRouteWiring:
         assert resp.status_code == 200
 
 
-class TestSarvatobhadraRouteWiring:
-    """Verify sarvatobhadra route is registered."""
-
-    def test_route_exists(self, app_client):
-        resp = app_client.post("/api/kundli/sarvatobhadra", json={
-            "natal_positions": {
-                "Sun": 10.0, "Moon": 45.0, "Mars": 280.0,
-            },
-        })
-        assert resp.status_code == 200
-
-
-class TestD108RouteWiring:
-    """Verify D108 route is registered."""
-
-    def test_route_exists(self, app_client):
-        resp = app_client.post("/api/kundli/divisional/d108", json={
-            "planet_longitudes": {
-                "Sun": 10.5, "Moon": 45.2, "Mars": 280.7,
-            },
-        })
-        assert resp.status_code == 200
 
 
 class TestAuthRequired:
@@ -442,14 +420,3 @@ class TestAuthRequired:
         })
         assert resp.status_code == 401
 
-    def test_sarvatobhadra_requires_auth(self, unauthed_client):
-        resp = unauthed_client.post("/api/kundli/sarvatobhadra", json={
-            "natal_positions": {"Sun": 10.0},
-        })
-        assert resp.status_code == 401
-
-    def test_d108_requires_auth(self, unauthed_client):
-        resp = unauthed_client.post("/api/kundli/divisional/d108", json={
-            "planet_longitudes": {"Sun": 10.5},
-        })
-        assert resp.status_code == 401

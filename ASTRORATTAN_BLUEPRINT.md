@@ -1631,7 +1631,7 @@ All four features deliver content in **English and Hindi** via:
 ## 7. HOROSCOPE (Sun-Sign Predictions)
 
 **File:** `frontend/src/sections/HoroscopePage.tsx` (main page, tab orchestration, sign selector, date picker, live clock)  
-**Backend routes:** `app/routes/horoscope.py` (6 endpoints)  
+**Backend routes:** `app/routes/horoscope.py` (7 endpoints)  
 **Backend engines:** `app/transit_engine.py`, `app/transit_lucky.py`, `app/transit_interpretations.py`, `app/horoscope_generator.py`
 
 ### 7.1 Tabs & Time Horizons
@@ -1639,6 +1639,7 @@ All four features deliver content in **English and Hindi** via:
 | Tab | Component | API | Extra Sections |
 |-----|-----------|-----|---------------|
 | **Daily** | `DailyTab.tsx` | `GET /api/horoscope/daily?sign&date&lang` | — |
+| **Tomorrow** | `DailyTab.tsx` (reused) | `GET /api/horoscope/tomorrow?sign&lang` | — |
 | **Weekly** | `WeeklyTab.tsx` | `GET /api/horoscope/weekly?sign&lang` | Week date range |
 | **Monthly** | `MonthlyTab.tsx` | `GET /api/horoscope/monthly?sign&lang` | Phase Breakdown (3 cards) + Key Dates (sign changes) |
 | **Yearly** | `YearlyTab.tsx` | `GET /api/horoscope/yearly?sign&lang` | Annual Theme banner + Quarter Breakdown (4 cards) + Best Months grid |
@@ -1651,6 +1652,7 @@ All four features deliver content in **English and Hindi** via:
 |---------|--------|
 | **Sign Metadata Card** | Sign name (EN + HI), emoji, date range, ruling planet, element |
 | **Score Card** | 5 horizontal bars (1-10): Overall, Love, Career, Finance, Health |
+| **Active Dasha Period** | Shown when birth data provided — displays active Mahadasha / Antardasha (bilingual: "Sun Mahadasha / Moon Antardasha") |
 | **Mood Indicator** | Bilingual (Challenging / Balanced / Optimistic) |
 | **Lucky Metadata** | Lucky Number, Color, Time, Compatible Sign, Gemstone (metal/finger/day), Mantra |
 | **5 Prediction Sections** | General Outlook, Love, Career, Finance, Health — grid layout, bilingual text |
@@ -1705,13 +1707,24 @@ Primary horoscope generator using real Swiss Ephemeris data.
 | `get_full_transits(date)` | Planetary positions at Delhi 12:00 IST via ephemeris |
 | `calculate_transit_houses(sign, planet_data)` | Maps 9 planets to houses 1-12 from native sign |
 | `get_planet_dignity(planet, info)` | Classifies: exalted / debilitated / own_sign / retrograde / combust / neutral |
-| `assemble_section(sign, area, houses, data, period, lang)` | Combines fragments from TRANSIT_FRAGMENTS matrix into bilingual text |
+| `assemble_section(sign, area, houses, data, period, lang, fragment_offset, dasha_lord)` | Combines fragments from TRANSIT_FRAGMENTS matrix; `dasha_lord` doubles that planet's weight |
 | `compute_scores(sign, houses, data)` | Generates 1-10 scores for overall + 4 areas (weighted house + dignity + planet nature) |
-| `generate_transit_horoscope(sign, period, date)` | **Master function** — orchestrates full horoscope dict |
+| `generate_transit_horoscope(sign, period, date, native_lagna, dasha_lord)` | **Master function** — orchestrates full horoscope dict; dasha-aware when `dasha_lord` set |
 | `generate_monthly_extras(sign, date)` | 3-phase breakdown + key planet sign-change dates |
 | `generate_yearly_extras(sign, year)` | Quarters + best months + annual theme via quarterly sampling |
 
 **Key constants:** `EXALTED_SIGNS`, `DEBILITATED_SIGNS`, `OWN_SIGNS`, `PERIOD_WEIGHTS` (Moon 5× for daily), `FRAGMENT_COUNTS` (Daily=3, Weekly=3, Monthly=4, Yearly=5)
+
+**Route helpers (`app/routes/horoscope.py`):**
+- `_resolve_birth_nakshatra(birth_date, birth_time, birth_lat, birth_lon, birth_tz)` — computes natal Moon nakshatra from ephemeris (required for Dasha calculation)
+- `_resolve_active_dasha(birth_nakshatra, birth_date)` — returns `{mahadasha, antardasha}` for today; returns `None` if birth data incomplete
+
+**Dasha-aware personalization:** When birth data is provided, all 5 route handlers (daily/tomorrow/weekly/monthly/yearly) compute the active Mahadasha lord and pass it as `dasha_lord` to `generate_transit_horoscope()`. This doubles the active lord's fragment weight in `assemble_section()`, so two users with the same Moon sign but different birth years receive different readings (different dasha periods).
+
+**Variant generation scripts:**
+- `scripts/generate_transit_variants.py` — generates 4 variant fragments per slot (9 planets × 12 houses = 108 slots; 4 variants × 5 areas × 2 langs = 4320 fragments total) via qwen3.5:27b on Ollama; outputs `app/transit_variants.py`; single-worker, fully resumable via `.claude/debug/transit_variants_progress.json`
+- `scripts/watch_variants.py` — terminal monitor for generation progress; per-planet grid (■=done ·=pending), overall progress bar with ETA, recent activity log; refreshes every 10s
+- `app/transit_variants.py` — generated output; `_lookup_fragment()` in transit_engine uses this first (random variant selection) with fallback to `TRANSIT_FRAGMENTS`
 
 **Scoring algorithm:**
 1. Per planet: `house_score` (benefic 1/5/9/10/11 = +2/+3/+3/+2/+3; malefic 6/8/12 = -1/-2/-2) + `planet_nature` (Jupiter=+1.5 … Saturn=-1.0, Rahu/Ketu=-0.7) + `dignity_bonus` (exalted=+2, own=+1, debil=-2, combust=-1)
@@ -1744,7 +1757,8 @@ Primary horoscope generator using real Swiss Ephemeris data.
 
 | Endpoint | Method | Key Params | Returns |
 |----------|--------|-----------|---------|
-| `/api/horoscope/daily` | GET | `sign*`, `date`, `lang` | sections, scores, mood, lucky, dos/donts |
+| `/api/horoscope/daily` | GET | `sign*`, `date`, `lang` | sections, scores, mood, lucky, dos/donts, active_dasha |
+| `/api/horoscope/tomorrow` | GET | `sign*`, `lang` | same shape as daily, date = today+1 |
 | `/api/horoscope/weekly` | GET | `sign*`, `lang` | + week_start, week_end |
 | `/api/horoscope/monthly` | GET | `sign*`, `lang` | + phases[], key_dates[] |
 | `/api/horoscope/yearly` | GET | `sign*`, `lang` | + quarters[], best_months{}, annual_theme{} |
@@ -1753,13 +1767,20 @@ Primary horoscope generator using real Swiss Ephemeris data.
 
 ### 7.9 Data Flow
 ```
-HoroscopePage → /api/horoscope/{period}?sign=...
-  → transit_engine.generate_transit_horoscope()
-      → get_full_transits() [Swiss Ephemeris @ Delhi]
-      → calculate_transit_houses()
-      → assemble_section() × 5 [TRANSIT_FRAGMENTS]
-      → compute_scores()
-      → get_all_lucky_metadata() [transit_lucky.py]
+HoroscopePage → /api/horoscope/{period}?sign=...&birth_date=...&birth_lat=...
+  → horoscope.py route handler
+      → _resolve_birth_nakshatra()  [if birth data present]
+      → _resolve_active_dasha()     [if nakshatra resolved]
+      → transit_engine.generate_transit_horoscope(sign, period, date,
+                                                   native_lagna, dasha_lord)
+          → get_full_transits() [Swiss Ephemeris @ Delhi]
+          → calculate_transit_houses()
+          → assemble_section() × 5
+              → _lookup_fragment()  [tries TRANSIT_VARIANTS first, falls back to TRANSIT_FRAGMENTS]
+              → dasha_lord weight × 2 if active dasha set
+          → compute_scores()
+          → get_all_lucky_metadata() [transit_lucky.py]
+  → response includes: active_dasha {mahadasha, antardasha}
   → fallback: horoscopes DB table
   → fallback: horoscope_generator.generate_ai_horoscope() [templates]
 ```
