@@ -518,7 +518,7 @@ def _seed_nishaniyan(db) -> None:
         sql = """
             INSERT INTO nishaniyan_master (planet, house, nishani_text, nishani_text_en, category, severity)
             VALUES (%s, %s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
+            ON CONFLICT (planet, house) DO NOTHING
         """
         for row in LK_NISHANIYAN:
             planet, house, nishani_hi, nishani_en, category, severity = row
@@ -534,7 +534,7 @@ def _seed_nishaniyan(db) -> None:
         sql = """
             INSERT INTO nishaniyan_master (planet, house, nishani_text, category, severity)
             VALUES (%s, %s, %s, %s, %s)
-            ON CONFLICT DO NOTHING
+            ON CONFLICT (planet, house) DO NOTHING
         """
         for row in LK_NISHANIYAN:
             planet, house, nishani_hi, _nishani_en, category, severity = row
@@ -555,7 +555,7 @@ def _seed_debts(db) -> None:
     sql = """
         INSERT INTO lal_kitab_debts (debt_type, planet, description, indication, remedy)
         VALUES (%s, %s, %s, %s, %s)
-        ON CONFLICT DO NOTHING
+        ON CONFLICT (debt_type, planet) DO NOTHING
     """
     for debt in LK_DEBTS:
         # Combine Hindi + English for the single DB text columns
@@ -1313,43 +1313,16 @@ _FARMAAN_URDU_LATIN: dict = {
 
 
 def _seed_farmaan(db) -> None:
-    """Seed lk_farmaan table with 108 planet+house canonical entries."""
-    import uuid as _uuid
-
-    insert_sql = """
-        INSERT INTO lk_farmaan (
-            id, farmaan_number, english, hindi,
-            traditional_commentary_en, traditional_commentary_hi,
-            urdu_latin, confidence_level, planet_tags, house_tags, rights_status
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (farmaan_number) DO UPDATE SET
-            urdu_latin = EXCLUDED.urdu_latin
-    """
+    """Patch urdu_latin into existing lk_farmaan rows using _FARMAAN_URDU_LATIN."""
+    update_sql = "UPDATE lk_farmaan SET urdu_latin = %s WHERE farmaan_number = %s AND (urdu_latin IS NULL OR urdu_latin = '')"
     count = 0
-    for row in LK_FARMAAN:
-        (fnum, english, hindi, commentary_en, commentary_hi, planet_tags, house_tags, confidence) = row
-        urdu_latin = _FARMAAN_URDU_LATIN.get(fnum, "")
+    for fnum, urdu_latin in _FARMAAN_URDU_LATIN.items():
+        if not urdu_latin:
+            continue
         try:
-            db.execute(insert_sql, (
-                _uuid.uuid4().hex,
-                fnum,
-                english,
-                hindi,
-                commentary_en,
-                commentary_hi,
-                urdu_latin,
-                confidence,
-                planet_tags,
-                house_tags,
-                "public_domain",
-            ))
-            count += 1
+            cur = db.execute(update_sql, (urdu_latin, fnum))
+            if getattr(cur, "rowcount", 0):
+                count += 1
         except Exception as e:
             logger.debug("[seed_farmaan] skip farmaan %s: %s", fnum, e)
-            try:
-                db.rollback()
-            except Exception:
-                pass
-
-    logger.info("[seed_lalkitab] lk_farmaan seeded/updated (%d rows).", count)
+    logger.info("[seed_lalkitab] lk_farmaan urdu_latin patched (%d rows updated).", count)

@@ -60,7 +60,7 @@ def farmaan_search(
         params.extend([needle, needle, needle])
     if planet:
         sql += " AND %s = ANY(planet_tags)"
-        params.append(planet)
+        params.append(planet.strip().title())
     if house is not None:
         sql += " AND %s = ANY(house_tags)"
         params.append(house)
