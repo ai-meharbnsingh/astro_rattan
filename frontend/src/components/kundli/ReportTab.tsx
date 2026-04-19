@@ -343,110 +343,97 @@ export default function ReportTab({
                   )}
                 </div>
 
-                {/* 6. Vimshottari Dasha — with expandable AD/PD */}
-                <div className="bg-muted rounded-xl border border-border p-4">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.vimshottariDasha')}</Heading>
-                  {(loadingDasha || loadingExtendedDasha) ? (
-                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
-                  ) : (extendedDashaData || dashaData) ? (
-                    <div className="space-y-2">
-                      {/* Current dasha info */}
-                      <div className="rounded-lg p-3 bg-gold-10">
-                        <p className="text-sm text-muted-foreground">{t('section.currentMahadasha')}</p>
-                        <p className="text-sm font-bold text-primary">
-                          {translatePlanet((extendedDashaData || dashaData).current_dasha, language)}
-                        </p>
-                        {(extendedDashaData || dashaData).current_antardasha && (extendedDashaData || dashaData).current_antardasha !== 'Unknown' && (
-                          <p className="text-sm text-primary">
-                            {t('report.adLabel')} {translatePlanet((extendedDashaData || dashaData).current_antardasha, language)}
-                            {extendedDashaData?.current_pratyantar && extendedDashaData.current_pratyantar !== 'Unknown' && ` / ${t('report.pdLabel')} ${translatePlanet(extendedDashaData.current_pratyantar, language)}`}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Expandable Mahadasha list */}
-                      {extendedDashaData?.mahadasha ? (
-                        <div className="space-y-1">
-                          {extendedDashaData.mahadasha.map((md: any) => (
-                            <div key={md.planet} className="border border-border rounded-lg overflow-hidden">
-                              <button
-                                onClick={() => setExpandedMahadasha(expandedMahadasha === md.planet ? null : md.planet)}
-                                className="w-full flex items-center justify-between p-2 text-sm transition-colors"
-                                style={{ background: md.is_current ? 'rgba(184,134,11,0.12)' : 'transparent' }}
-                              >
-                                <span className="flex items-center gap-1.5">
-                                  <ChevronDown className={`w-3 h-3 transition-transform text-primary ${expandedMahadasha === md.planet ? 'rotate-180' : ''}`} />
-                                  <span className="font-semibold" style={{ color: md.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>
-                                    {translatePlanet(md.planet, language)} {md.is_current ? '←' : ''}
-                                  </span>
-                                </span>
-                                <span className="text-muted-foreground">{md.start?.slice(0,10)} — {md.end?.slice(0,10)} ({md.years} {t('table.years')})</span>
-                              </button>
-
-                              {expandedMahadasha === md.planet && (md.antardasha || []).length > 0 && (
-                                <div className="border-t border-border">
-                                  {md.antardasha.map((ad: any) => (
-                                    <div key={`${md.planet}-${ad.planet}`}>
-                                      <button
-                                        onClick={() => setExpandedAntardasha(expandedAntardasha === `${md.planet}-${ad.planet}` ? null : `${md.planet}-${ad.planet}`)}
-                                        className="w-full flex items-center justify-between px-4 py-1.5 text-sm"
-                                        style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
-                                      >
-                                        <span className="flex items-center gap-1">
-                                          {ad.pratyantar?.length > 0 && <ChevronDown className={`w-2.5 h-2.5 transition-transform text-muted-foreground ${expandedAntardasha === `${md.planet}-${ad.planet}` ? 'rotate-180' : ''}`} />}
-                                          <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'var(--ink)' }}>{translatePlanet(ad.planet, language)} {t('report.adLabel')} {ad.is_current ? '*' : ''}</span>
-                                        </span>
-                                        <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.875rem)' }}>{ad.start?.slice(0,10)} — {ad.end?.slice(0,10)}</span>
-                                      </button>
-
-                                      {expandedAntardasha === `${md.planet}-${ad.planet}` && (ad.pratyantar || []).length > 0 && (
-                                        <div className="border-t border-border">
-                                          {ad.pratyantar.map((pt: any, idx: number) => (
-                                            <div key={idx} className="flex items-center justify-between px-8 py-1 text-sm"
-                                              style={{ background: pt.is_current ? 'rgba(184,134,11,0.04)' : 'transparent' }}>
-                                              <span style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
-                                                {translatePlanet(pt.planet, language)} {t('report.pdLabel')} {pt.is_current ? '*' : ''}
-                                              </span>
-                                              <span style={{ color: 'var(--ink-light)', fontSize: 'var(--text-label, 0.875rem)' }}>{pt.start?.slice(0,10)} — {pt.end?.slice(0,10)}</span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      )}
+                {/* 6. Vimshottari Dasha — compact 120-yr list */}
+                {(() => {
+                  const ABBR: Record<string, string> = {
+                    Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me',
+                    Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke',
+                  };
+                  const fmtEnd = (iso: string | undefined) => {
+                    if (!iso) return '—';
+                    const [y, m, d] = iso.slice(0, 10).split('-');
+                    return `${d}/${m}/${y}`;
+                  };
+                  const periods: any[] =
+                    extendedDashaData?.mahadasha ||
+                    (dashaData?.mahadasha_periods || []).map((p: any) => ({
+                      planet: p.planet, end: p.end_date, is_current: p.planet === dashaData?.current_dasha,
+                      antardasha: [],
+                    }));
+                  const currentMD = (extendedDashaData || dashaData)?.current_dasha;
+                  return (
+                    <div className="bg-muted rounded-xl border border-border p-4">
+                      <Heading as={4} variant={4} className="mb-3 text-center">{t('section.vimshottariDasha')}</Heading>
+                      {(loadingDasha || loadingExtendedDasha) ? (
+                        <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
+                      ) : periods.length > 0 ? (
+                        <>
+                          <div className="space-y-0">
+                            {periods.map((md: any) => {
+                              const abbr = ABBR[md.planet] || md.planet.slice(0, 2);
+                              const isCurrent = md.is_current || md.planet === currentMD;
+                              const isOpen = expandedMahadasha === md.planet;
+                              return (
+                                <div key={md.planet}>
+                                  <button
+                                    onClick={() => setExpandedMahadasha(isOpen ? null : md.planet)}
+                                    className="w-full flex items-center justify-between px-2 py-1 text-sm rounded hover:bg-border/40 transition-colors"
+                                    style={{ background: isCurrent ? 'rgba(184,134,11,0.10)' : 'transparent' }}
+                                  >
+                                    <span className="font-semibold w-8 text-left" style={{ color: isCurrent ? 'var(--aged-gold)' : 'inherit' }}>{abbr}</span>
+                                    <span className="text-muted-foreground">{fmtEnd(md.end || md.end_date)}</span>
+                                    {(md.antardasha || []).length > 0 && (
+                                      <ChevronDown className={`w-3 h-3 ml-1 transition-transform text-muted-foreground ${isOpen ? 'rotate-180' : ''}`} />
+                                    )}
+                                  </button>
+                                  {isOpen && (md.antardasha || []).length > 0 && (
+                                    <div className="pl-4 border-l border-border ml-2 mb-1">
+                                      {md.antardasha.map((ad: any) => {
+                                        const adAbbr = ABBR[ad.planet] || ad.planet.slice(0, 2);
+                                        const adKey = `${md.planet}-${ad.planet}`;
+                                        const adOpen = expandedAntardasha === adKey;
+                                        return (
+                                          <div key={adKey}>
+                                            <button
+                                              onClick={() => setExpandedAntardasha(adOpen ? null : adKey)}
+                                              className="w-full flex items-center justify-between px-2 py-0.5 text-xs rounded hover:bg-border/30 transition-colors"
+                                              style={{ background: ad.is_current ? 'rgba(184,134,11,0.06)' : 'transparent' }}
+                                            >
+                                              <span style={{ color: ad.is_current ? 'var(--aged-gold)' : 'inherit' }}>{abbr}/{adAbbr}</span>
+                                              <span className="text-muted-foreground">{fmtEnd(ad.end)}</span>
+                                            </button>
+                                            {adOpen && (ad.pratyantar || []).length > 0 && (
+                                              <div className="pl-4 border-l border-border ml-2">
+                                                {ad.pratyantar.map((pt: any, i: number) => (
+                                                  <div key={i} className="flex items-center justify-between px-2 py-0.5 text-xs"
+                                                    style={{ color: pt.is_current ? 'var(--aged-gold)' : 'var(--ink-light)' }}>
+                                                    <span>{abbr}/{adAbbr}/{ABBR[pt.planet] || pt.planet.slice(0,2)}</span>
+                                                    <span>{fmtEnd(pt.end)}</span>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
                                     </div>
-                                  ))}
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                              );
+                            })}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-3">
+                            {language === 'hi'
+                              ? 'नोट :- उप-काल के लिए ऊपर पंक्ति पर क्लिक करें। ऊपर दिनांक समाप्ति तिथियाँ हैं।'
+                              : 'Note :- Click on row above for sub-period. Date mentioned above are ending dates.'}
+                          </p>
+                        </>
                       ) : (
-                        /* Fallback: simple table when extendedDashaData unavailable */
-                        <div className="overflow-x-auto">
-                          <Table className="w-full text-sm">
-                            <TableHeader><TableRow className="bg-gold-10">
-                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.planet')}</TableHead>
-                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.start')}</TableHead>
-                              <TableHead className="text-left p-2 font-medium text-primary">{t('table.end')}</TableHead>
-                              <TableHead className="text-center p-2 font-medium text-primary">{t('table.years')}</TableHead>
-                            </TableRow></TableHeader>
-                            <TableBody>
-                              {(dashaData.mahadasha_periods || []).map((p: any) => (
-                                <TableRow key={p.planet} className="border-t border-border" style={{ background: p.planet === dashaData.current_dasha ? 'rgba(184,134,11,0.1)' : 'transparent' }}>
-                                  <TableCell className="p-2 text-foreground">{translatePlanet(p.planet, language)}{p.planet === dashaData.current_dasha ? ' ←' : ''}</TableCell>
-                                  <TableCell className="p-2 text-muted-foreground">{p.start_date}</TableCell>
-                                  <TableCell className="p-2 text-muted-foreground">{p.end_date}</TableCell>
-                                  <TableCell className="p-2 text-center text-muted-foreground">{p.years}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
+                        <p className="text-center py-4 text-sm text-muted-foreground">{t('common.noData')}</p>
                       )}
                     </div>
-                  ) : (
-                    <p className="text-center py-4 text-sm text-muted-foreground">{t('common.loading')}</p>
-                  )}
-                </div>
+                  );
+                })()}
 
                 {/* 6b. Jaimini Karakas — separate card */}
                 <div className="bg-muted rounded-xl border border-border p-4">

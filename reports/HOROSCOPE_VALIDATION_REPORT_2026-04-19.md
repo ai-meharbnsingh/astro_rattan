@@ -119,21 +119,21 @@ Overlap thresholds: ≥90% = almost identical (⚠️), 60-90% = low variation (
 
 ## 4. Weekly Horoscope Audit
 
-**Week:** 2026-04-13 → 2026-04-19 | **Scores:** {'overall': 10, 'love': 7, 'career': 8, 'finance': 7, 'health': 8}
+**Week:** 2026-04-16 → 2026-04-19 | **Scores:** {'overall': 9, 'love': 7, 'career': 7, 'finance': 7, 'health': 7}
 
-| Section | Chars | Overlap vs Daily | Assessment                |
-| ------- | ----- | ---------------- | ------------------------- |
-| general | 664   | 32%              | ✅ GOOD — distinct content |
-| love    | 669   | 34%              | ✅ GOOD — distinct content |
-| career  | 730   | 38%              | 🔶 MODERATE                |
-| finance | 720   | 35%              | ✅ GOOD — distinct content |
-| health  | 719   | 33%              | ✅ GOOD — distinct content |
+| Section | Chars | Overlap vs Daily | Assessment              |
+| ------- | ----- | ---------------- | ----------------------- |
+| general | 690   | 59%              | 🔶 MODERATE              |
+| love    | 680   | 68%              | ⚠️ HIGH — low variation |
+| career  | 747   | 61%              | ⚠️ HIGH — low variation |
+| finance | 694   | 62%              | ⚠️ HIGH — low variation |
+| health  | 697   | 59%              | 🔶 MODERATE              |
 
 > ~30% overlap with daily is expected when the dominant planet is the same.
 
 ## 5. Monthly Horoscope Audit
 
-**Scores:** {'overall': 10, 'love': 7, 'career': 8, 'finance': 7, 'health': 8} | **Active Dasha:** {'mahadasha': 'Venus', 'antardasha': 'Saturn'}
+**Scores:** {'overall': 9, 'love': 7, 'career': 7, 'finance': 7, 'health': 7} | **Active Dasha:** {'mahadasha': 'Venus', 'antardasha': 'Saturn'}
 
 **Phases (3):**
 | Range       | Score | Summary (first 100 chars)                                                                             |
@@ -208,18 +208,16 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 ### Per-Section Transit Claim Verification
 
-| Source Section  | Planet  | Claimed H | Actual Sign | Actual H | Verdict    |
-| --------------- | ------- | --------- | ----------- | -------- | ---------- |
-| general         | Venus   | 12        | Aries       | 12       | ✅ MATCHING |
-| general         | Moon    | 12        | Aries       | 12       | ✅ MATCHING |
-| general         | Sun     | 12        | Aries       | 12       | ✅ MATCHING |
-| career          | Saturn  | 11        | Pisces      | 11       | ✅ MATCHING |
-| finance         | Jupiter | 2         | Gemini      | 2        | ✅ MATCHING |
-| weekly_general  | Moon    | 10        | Aries       | 12       | ❌ MISMATCH |
-| weekly_general  | Mars    | 11        | Pisces      | 11       | ✅ MATCHING |
-| monthly_general | Mars    | 10        | Pisces      | 11       | ❌ MISMATCH |
+| Source Section | Planet  | Claimed H | Actual Sign | Actual H | Verdict    |
+| -------------- | ------- | --------- | ----------- | -------- | ---------- |
+| general        | Venus   | 12        | Aries       | 12       | ✅ MATCHING |
+| general        | Moon    | 12        | Aries       | 12       | ✅ MATCHING |
+| general        | Sun     | 12        | Aries       | 12       | ✅ MATCHING |
+| career         | Saturn  | 11        | Pisces      | 11       | ✅ MATCHING |
+| finance        | Jupiter | 2         | Gemini      | 2        | ✅ MATCHING |
+| weekly_general | Moon    | 11        | Aries       | 12       | ❌ MISMATCH |
 
-**20/22 claims verified MATCHING (91%)**
+**21/22 claims verified MATCHING (95%)**
 
 
 ## 8. Personalization Check
@@ -302,9 +300,9 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 | Section | Daily↔Weekly | Daily↔Monthly | Verdict |
 | ------- | ------------ | ------------- | ------- |
-| general | 32%          | 21%           | ✅ OK    |
-| love    | 34%          | 34%           | ✅ OK    |
-| career  | 38%          | 34%           | ✅ OK    |
+| general | 59%          | 46%           | ✅ OK    |
+| love    | 68%          | 54%           | ✅ OK    |
+| career  | 61%          | 51%           | ✅ OK    |
 
 > ~30% overlap daily↔weekly is normal (same dominant planet).
 > Higher overlap between daily and monthly would indicate period-weight logic not working.
@@ -365,5 +363,5 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 ---
 
-*Generated: 2026-04-19 14:10:22 | `scripts/horoscope_report.py`*  
+*Generated: 2026-04-19 17:07:27 | `scripts/horoscope_report.py`*  
 *Subject: Meharban Singh (1985-08-23, Delhi, India) | Moon: Scorpio/Anuradha pada 4 | Lagna: Taurus*
