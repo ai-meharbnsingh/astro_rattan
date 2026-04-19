@@ -201,27 +201,13 @@ export default function KundliGenerator() {
   const [searchParams] = useSearchParams();
   const urlMode = searchParams.get('mode') ?? '';
   const [activeTab, setActiveTab] = useState('report');
-  const [showMoreTabs, setShowMoreTabs] = useState(false);
-  const [showMobileMoreSheet, setShowMobileMoreSheet] = useState(false);
-  const [hoveredCategory, setHoveredCategory] = useState<string>('charts');
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [hoveredTabValue, setHoveredTabValue] = useState<string | null>(null);
-  const moreDropdownRef = useRef<HTMLDivElement>(null);
 
   // Sarvatobhadra Chakra state
   const [sbcGrid, setSbcGrid] = useState<any[][] | null>(null);
   const [sbcVedhas, setSbcVedhas] = useState<any[]>([]);
   const [loadingSbc, setLoadingSbc] = useState(false);
-
-  // Close desktop dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (moreDropdownRef.current && !moreDropdownRef.current.contains(e.target as Node)) {
-        setShowMoreTabs(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   // Auto-activate rectification tab when result arrives in rectification mode
   useEffect(() => {
@@ -270,8 +256,7 @@ export default function KundliGenerator() {
 
   const handleTabChange = (tabValue: string) => {
     setActiveTab(tabValue);
-    setShowMoreTabs(false);
-    setShowMobileMoreSheet(false);
+    setExpandedCategory(null);
     const activator = tabActivateMap[tabValue];
     if (activator) activator();
   };
@@ -286,9 +271,6 @@ export default function KundliGenerator() {
     label: CATEGORY_LABELS[cat],
     tabs: moreTabs.filter(t => t.category === cat),
   })).filter(g => g.tabs.length > 0);
-
-  // Check if current active tab is a "more" tab
-  const isMoreTabActive = moreTabs.some(t => t.value === activeTab);
 
   // --- LOADING ---
   if (step === 'loading') {
@@ -416,131 +398,59 @@ export default function KundliGenerator() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            {/* "More Analysis" dropdown button */}
-            <div className="relative mt-1" ref={moreDropdownRef}>
-              <button
-                onClick={() => {
-                  setShowMoreTabs(prev => !prev);
-                  const activeGroup = groupedMoreTabs.find(g => g.tabs.some(t => t.value === activeTab));
-                  if (activeGroup) setHoveredCategory(activeGroup.category);
-                  else setHoveredCategory('charts');
-                }}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-md border transition-colors ${
-                  isMoreTabActive
-                    ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                    : 'bg-muted border-sacred-gold/40 text-foreground hover:bg-sacred-gold/10'
-                }`}
-              >
-                {t('auto.moreAnalysis')}
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showMoreTabs ? 'rotate-180' : ''}`} />
-              </button>
-              {showMoreTabs && (
-                <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-sacred-gold/30 rounded-xl shadow-xl min-w-[480px] overflow-visible">
-                  {/* 4 equi-spaced category tab headers */}
-                  <div className="grid grid-cols-4 border-b border-sacred-gold/20 rounded-t-xl overflow-hidden">
-                    {groupedMoreTabs.map(group => (
-                      <button
-                        key={group.category}
-                        onMouseEnter={() => { setHoveredCategory(group.category); setHoveredTabValue(null); }}
-                        onClick={() => { setHoveredCategory(group.category); setHoveredTabValue(null); }}
-                        className={`px-2 py-3 text-[11px] font-semibold uppercase tracking-wide text-center transition-all border-b-2 ${
-                          hoveredCategory === group.category
-                            ? 'bg-sacred-gold/10 text-sacred-gold-dark border-sacred-gold-dark'
-                            : 'text-foreground/50 border-transparent hover:text-foreground/80 hover:bg-sacred-gold/5'
-                        }`}
-                      >
-                        {hi ? group.label.hi : group.label.en}
-                      </button>
-                    ))}
-                  </div>
-                  {/* Item list for active category */}
-                  <div className="p-3 relative">
-                    {(groupedMoreTabs.find(g => g.category === hoveredCategory) ?? groupedMoreTabs[0])?.tabs.map(tab => (
-                      <div key={tab.value} className="relative">
-                        <button
-                          onClick={() => handleTabChange(tab.value)}
-                          onMouseEnter={() => setHoveredTabValue(tab.value)}
-                          onMouseLeave={() => setHoveredTabValue(null)}
-                          className={`w-full text-left px-3 py-2 rounded-md text-xs transition-colors flex items-center justify-between gap-2 ${
-                            activeTab === tab.value
-                              ? 'bg-sacred-gold-dark text-white font-medium'
-                              : 'text-foreground hover:bg-sacred-gold/10'
-                          }`}
-                        >
-                          <span>{hi ? tab.labelHi : tab.labelEn}</span>
-                          {tab.descriptionEn && (
-                            <span className={`text-[10px] opacity-50 ${activeTab === tab.value ? 'text-white' : 'text-foreground'}`}>›</span>
-                          )}
-                        </button>
-                        {/* Tooltip popover on hover */}
-                        {hoveredTabValue === tab.value && tab.descriptionEn && (
-                          <div className="absolute left-full top-0 ml-2 z-[60] bg-sacred-brown text-white rounded-lg shadow-xl p-3 w-52 pointer-events-none">
-                            <p className="text-[11px] font-semibold mb-1">{hi ? tab.labelHi : tab.labelEn}</p>
-                            <p className="text-[10px] leading-relaxed opacity-85">{tab.descriptionEn}</p>
-                            <div className="absolute right-full top-3 border-[5px] border-transparent border-r-sacred-brown" />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* "More" button for mobile */}
-          <div className="mb-8 md:hidden">
-            <button
-              onClick={() => setShowMobileMoreSheet(true)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${
-                isMoreTabActive
-                  ? 'bg-sacred-gold/20 border-sacred-gold text-sacred-gold-dark'
-                  : 'bg-muted border-sacred-gold/40 text-foreground'
-              }`}
-            >
-              {t('auto.moreAnalysis')}
-              <ChevronDown className="w-3 h-3" />
-            </button>
-          </div>
-
-          {/* Mobile "More" bottom sheet overlay */}
-          {showMobileMoreSheet && (
-            <div className="fixed inset-0 z-50 md:hidden">
-              <div className="absolute inset-0 bg-black/50" onClick={() => setShowMobileMoreSheet(false)} />
-              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] overflow-y-auto p-5 pb-8 animate-in slide-in-from-bottom">
-                <div className="flex items-center justify-between mb-4">
-                  <Heading as={3} variant={5} className="text-sacred-brown">
-                    {t('auto.moreAnalysis')}
-                  </Heading>
-                  <button onClick={() => setShowMobileMoreSheet(false)} className="p-1 rounded-full hover:bg-sacred-gold/10">
-                    <X className="w-5 h-5 text-foreground" />
+            {/* 4 category tabs — always visible, same row style as primary tabs */}
+            <div className="mt-1 grid grid-cols-4 bg-sacred-gold/5 border border-sacred-gold/20 rounded-lg p-1.5 gap-1">
+              {groupedMoreTabs.map(group => {
+                const isCatActive = group.tabs.some(t => t.value === activeTab);
+                const isExpanded = expandedCategory === group.category;
+                return (
+                  <button
+                    key={group.category}
+                    onClick={() => setExpandedCategory(isExpanded ? null : group.category)}
+                    className={`min-h-[42px] px-1 py-2 rounded-md text-[11px] md:text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+                      isCatActive
+                        ? 'bg-sacred-gold-dark text-white shadow-md'
+                        : isExpanded
+                        ? 'bg-sacred-gold/20 text-sacred-gold-dark border border-sacred-gold/50'
+                        : 'text-sacred-gold-dark/70 hover:bg-sacred-gold/10 hover:text-sacred-gold-dark'
+                    }`}
+                  >
+                    <span>{hi ? group.label.hi : group.label.en}</span>
+                    <ChevronDown className={`w-3 h-3 flex-shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                   </button>
-                </div>
-                {groupedMoreTabs.map(group => (
-                  <div key={group.category} className="mb-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-sacred-gold-dark mb-2">
-                      {hi ? group.label.hi : group.label.en}
-                    </p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {group.tabs.map(tab => (
-                        <button
-                          key={tab.value}
-                          onClick={() => handleTabChange(tab.value)}
-                          className={`text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                            activeTab === tab.value
-                              ? 'bg-sacred-gold-dark text-white font-medium'
-                              : 'text-foreground bg-muted hover:bg-sacred-gold/10'
-                          }`}
-                        >
-                          {hi ? tab.labelHi : tab.labelEn}
-                        </button>
-                      ))}
-                    </div>
+                );
+              })}
+            </div>
+
+            {/* Expanded item strip for selected category */}
+            {expandedCategory && (
+              <div className="mt-1 p-2 bg-sacred-gold/5 border border-sacred-gold/20 rounded-lg flex flex-wrap gap-1">
+                {groupedMoreTabs.find(g => g.category === expandedCategory)?.tabs.map(tab => (
+                  <div key={tab.value} className="relative">
+                    <button
+                      onClick={() => handleTabChange(tab.value)}
+                      onMouseEnter={() => setHoveredTabValue(tab.value)}
+                      onMouseLeave={() => setHoveredTabValue(null)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        activeTab === tab.value
+                          ? 'bg-sacred-gold-dark text-white shadow-sm'
+                          : 'bg-white border border-sacred-gold/25 text-foreground hover:bg-sacred-gold/10 hover:border-sacred-gold/50'
+                      }`}
+                    >
+                      {hi ? tab.labelHi : tab.labelEn}
+                    </button>
+                    {/* Tooltip on hover */}
+                    {hoveredTabValue === tab.value && tab.descriptionEn && (
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-sacred-brown text-white rounded-lg shadow-xl px-3 py-2 w-48 pointer-events-none text-center">
+                        <p className="text-[10px] leading-relaxed opacity-90">{tab.descriptionEn}</p>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-sacred-brown" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {tabError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 flex items-center justify-between">
