@@ -8,6 +8,7 @@ import LordshipsTab from '@/components/kundli/LordshipsTab';
 import { translatePlanet, translateSign, translateLabel, translateName, translateNakshatra, translateBackend, translateSignAbbr, translatePlanetAbbr } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 
 interface ReportTabProps {
   result: any;
@@ -77,6 +78,22 @@ export default function ReportTab({
   changeDivision,
   handlePlanetClick, handleHouseClick,
 }: ReportTabProps) {
+  const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  const shiftedSign = (base: string, shift: number) => {
+    const idx = SIGNS_ORDER.indexOf(String(base || '').trim());
+    if (idx < 0) return base || '';
+    return SIGNS_ORDER[(idx + (shift % 12) + 12) % 12] || base;
+  };
+  const toPlanetEntry = (p: any): PlanetEntry => ({
+    planet: p.planet,
+    sign: p.sign || p.current_sign || '',
+    sign_degree: Number(p.sign_degree ?? p.degree ?? 0) || 0,
+    status: typeof p.status === 'string' ? p.status : '',
+    is_retrograde: !!p.is_retrograde,
+    is_combust: !!p.is_combust,
+    is_vargottama: !!p.is_vargottama,
+  } as any);
+
   return (
             <div className="space-y-6">
 
@@ -98,27 +115,25 @@ export default function ReportTab({
                   <div className="flex justify-center">
                     {(() => {
                       const shift = reportLagnaShift;
-                      const basePlanets = planets;
-                      const baseHouses = result.chart_data?.houses;
-                      const shiftedPlanets = shift
-                        ? basePlanets.map((p: PlanetData) => ({
-                            ...p,
-                            house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
-                          }))
-                        : basePlanets;
-                      const shiftedHouses = shift && baseHouses
-                        ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
-                        : baseHouses;
+                      const baseAsc = result.chart_data?.ascendant?.sign
+                        || planets.find((p: any) => p.planet === 'Lagna' || p.planet === 'Ascendant')?.sign
+                        || '';
+                      const asc = shiftedSign(baseAsc, shift);
                       return (
-                        <InteractiveKundli
-                          chartData={{ planets: shiftedPlanets, houses: shiftedHouses, ascendant: result.chart_data?.ascendant } as ChartData}
-                          onPlanetClick={handlePlanetClick}
-                          onHouseClick={(house) => {
-                            const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
-                            setReportLagnaShift(orig - 1 === 0 ? 0 : orig - 1);
-                          }}
-                          compact
-                        />
+                        <div className="w-full max-w-[340px] aspect-square">
+                          <KundliChartSVG
+                            planets={planets.map(toPlanetEntry)}
+                            ascendantSign={asc}
+                            language={language}
+                            showRashiNumbers={false}
+                            showAscendantMarker={false}
+                            onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+                            onHouseClick={(house) => {
+                              const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                              setReportLagnaShift(orig - 1 === 0 ? 0 : orig - 1);
+                            }}
+                          />
+                        </div>
                       );
                     })()}
                   </div>
@@ -138,27 +153,26 @@ export default function ReportTab({
                       const moonHouse = moonPlanet?.house || 1;
                       const baseShift = moonHouse - 1;
                       const totalShift = baseShift + reportMoonShift;
-                      const moonPlanets = planets.map((p: PlanetData) => ({
-                        ...p,
-                        house: ((((p.house || 1) - 1 - totalShift + 24) % 12) + 1),
-                      }));
-                      const moonHouses = result.chart_data?.houses
-                        ? result.chart_data.houses.map((h: { number: number; sign: string }) => ({
-                            number: ((h.number - 1 - totalShift + 24) % 12) + 1,
-                            sign: h.sign,
-                          }))
-                        : undefined;
+                      const baseAsc = result.chart_data?.ascendant?.sign
+                        || planets.find((p: any) => p.planet === 'Lagna' || p.planet === 'Ascendant')?.sign
+                        || '';
+                      const asc = shiftedSign(baseAsc, totalShift);
                       return (
-                        <InteractiveKundli
-                          chartData={{ planets: moonPlanets, houses: moonHouses } as ChartData}
-                          onPlanetClick={handlePlanetClick}
-                          onHouseClick={(house) => {
-                            const orig = totalShift ? ((house - 1 + totalShift) % 12) + 1 : house;
-                            const newShift = ((orig - 1) - baseShift + 12) % 12;
-                            setReportMoonShift(newShift);
-                          }}
-                          compact
-                        />
+                        <div className="w-full max-w-[340px] aspect-square">
+                          <KundliChartSVG
+                            planets={planets.map(toPlanetEntry)}
+                            ascendantSign={asc}
+                            language={language}
+                            showRashiNumbers={false}
+                            showAscendantMarker={false}
+                            onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+                            onHouseClick={(house) => {
+                              const orig = totalShift ? ((house - 1 + totalShift) % 12) + 1 : house;
+                              const newShift = ((orig - 1) - baseShift + 12) % 12;
+                              setReportMoonShift(newShift);
+                            }}
+                          />
+                        </div>
                       );
                     })()}
                   </div>
@@ -180,32 +194,28 @@ export default function ReportTab({
                       const transitPlanets = transitData.transits.map((tr: any) => ({
                         planet: tr.planet,
                         sign: tr.current_sign || tr.sign || '',
-                        house: tr.house || 1,
                         nakshatra: tr.nakshatra || '',
                         sign_degree: tr.sign_degree || tr.degree || 0,
                         status: tr.is_retrograde ? 'Retrograde' : '',
                         is_retrograde: tr.is_retrograde,
                       }));
-                      const baseHouses = transitData.chart_data?.houses || result.chart_data?.houses;
-                      const shiftedPlanets = shift
-                        ? transitPlanets.map((p: any) => ({
-                            ...p,
-                            house: ((((p.house || 1) - 1 - shift + 12) % 12) + 1),
-                          }))
-                        : transitPlanets;
-                      const shiftedHouses = shift && baseHouses
-                        ? baseHouses.map((h: any) => ({ number: ((h.number - 1 - shift + 12) % 12) + 1, sign: h.sign }))
-                        : baseHouses;
+                      const baseAsc = transitData.chart_data?.ascendant?.sign || result.chart_data?.ascendant?.sign || '';
+                      const asc = shiftedSign(baseAsc, shift);
                       return (
-                        <InteractiveKundli
-                          chartData={{ planets: shiftedPlanets, houses: shiftedHouses } as ChartData}
-                          onPlanetClick={handlePlanetClick}
-                          onHouseClick={(house) => {
-                            const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
-                            setReportGocharShift(orig - 1 === 0 ? 0 : orig - 1);
-                          }}
-                          compact
-                        />
+                        <div className="w-full max-w-[340px] aspect-square">
+                          <KundliChartSVG
+                            planets={transitPlanets.map(toPlanetEntry)}
+                            ascendantSign={asc}
+                            language={language}
+                            showRashiNumbers={false}
+                            showAscendantMarker={false}
+                            onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+                            onHouseClick={(house) => {
+                              const orig = shift ? ((house - 1 + shift) % 12) + 1 : house;
+                              setReportGocharShift(orig - 1 === 0 ? 0 : orig - 1);
+                            }}
+                          />
+                        </div>
                       );
                     })() : (
                       <p className="text-center text-foreground py-12 text-sm">{t('common.loading')}</p>

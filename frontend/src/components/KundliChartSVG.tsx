@@ -7,7 +7,7 @@
  */
 import { useState, useEffect } from 'react';
 
-interface PlanetEntry {
+export interface PlanetEntry {
   planet: string;
   sign: string;
   // Optional: if not provided, we derive house from sign + ascendantSign.
@@ -28,6 +28,9 @@ export interface KundliChartSVGProps {
   language?: string;
   showHouseNumbers?: boolean;
   showRashiNumbers?: boolean;
+  showAscendantMarker?: boolean;
+  onHouseClick?: (house: number, sign: string, planets: PlanetEntry[]) => void;
+  onPlanetClick?: (planet: PlanetEntry) => void;
 }
 
 const PLANET_ABBR: Record<string, string> = {
@@ -73,6 +76,19 @@ function statusSuffix(p: PlanetEntry): string {
   if (p.is_combust) s += '^';
   if (p.is_vargottama) s += '+';
   return s;
+}
+
+function normalizeStatusFlags(p: PlanetEntry): PlanetEntry {
+  const status = ((p as any).status || '') as string;
+  const s = typeof status === 'string' ? status.toLowerCase() : '';
+  return {
+    ...p,
+    is_retrograde: p.is_retrograde ?? s.includes('retro'),
+    is_combust: p.is_combust ?? s.includes('combust'),
+    is_vargottama: p.is_vargottama ?? s.includes('vargottama'),
+    is_exalted: p.is_exalted ?? s.includes('exalted'),
+    is_debilitated: p.is_debilitated ?? s.includes('debilitated'),
+  };
 }
 
 const BOX = 400;
@@ -129,7 +145,11 @@ const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','S
 
 function normalizeSignName(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  const s = String(raw).trim().toLowerCase();
+  const candidate =
+    typeof raw === 'string'
+      ? raw
+      : (raw as any)?.en || (raw as any)?.En || (raw as any)?.english || '';
+  const s = String(candidate).trim().toLowerCase();
   if (!s) return null;
   // Common casing/spacing issues handled here; keep it conservative.
   for (const canon of SIGNS_ORDER) {
@@ -146,6 +166,9 @@ export default function KundliChartSVG({
   language = 'en',
   showHouseNumbers = true,
   showRashiNumbers = true,
+  showAscendantMarker = true,
+  onHouseClick,
+  onPlanetClick,
 }: KundliChartSVGProps) {
   const isHi = language === 'hi';
   const [tick, setTick] = useState(0);
@@ -166,17 +189,54 @@ export default function KundliChartSVG({
   // chart: house positions are fixed; signs rotate based on ascendantSign.
   const planetsByHousePos: Record<number, PlanetEntry[]> = {};
   for (const pl of planets) {
+    const pln = normalizeStatusFlags(pl);
     let houseNum = Number(pl.house || 0);
     if (!(houseNum >= 1 && houseNum <= 12)) {
-      const plSignCanon = normalizeSignName(pl.sign);
+      const plSignCanon = normalizeSignName(pln.sign);
       const signIdx = plSignCanon ? SIGNS_ORDER.indexOf(plSignCanon) : -1;
       if (signIdx < 0 || lagnaSignIdx < 0) continue;
       houseNum = ((signIdx - lagnaSignIdx + 12) % 12) + 1;
     }
     const posIdx = houseNum - 1;
     if (!planetsByHousePos[posIdx]) planetsByHousePos[posIdx] = [];
-    planetsByHousePos[posIdx].push(pl);
+    planetsByHousePos[posIdx].push({ ...pln, house: houseNum });
   }
+
+  const signForHouse = (house: number): string => {
+    if (lagnaSignIdx < 0) return '';
+    const idx = (lagnaSignIdx + (house - 1)) % 12;
+    return SIGNS_ORDER[idx] || '';
+  };
+
+  // House polygons for North Indian chart in this coordinate system
+  const TL = { x: S, y: S };
+  const TR = { x: E, y: S };
+  const BL = { x: S, y: E };
+  const BR = { x: E, y: E };
+  const MT = { x: M, y: S };
+  const MR = { x: E, y: M };
+  const MB = { x: M, y: E };
+  const ML = { x: S, y: M };
+  const CC = { x: M, y: M };
+  const P1 = { x: (S + M) / 2, y: (S + M) / 2 }; // 110,110
+  const P2 = { x: (M + E) / 2, y: (S + M) / 2 }; // 290,110
+  const P3 = { x: (M + E) / 2, y: (M + E) / 2 }; // 290,290
+  const P4 = { x: (S + M) / 2, y: (M + E) / 2 }; // 110,290
+
+  const housePolys: { house: number; points: string }[] = [
+    { house: 1, points: `${P1.x},${P1.y} ${MT.x},${MT.y} ${P2.x},${P2.y} ${CC.x},${CC.y}` },
+    { house: 2, points: `${MT.x},${MT.y} ${TR.x},${TR.y} ${P2.x},${P2.y}` },
+    { house: 3, points: `${P2.x},${P2.y} ${TR.x},${TR.y} ${MR.x},${MR.y}` },
+    { house: 4, points: `${CC.x},${CC.y} ${P2.x},${P2.y} ${MR.x},${MR.y} ${P3.x},${P3.y}` },
+    { house: 5, points: `${MR.x},${MR.y} ${BR.x},${BR.y} ${P3.x},${P3.y}` },
+    { house: 6, points: `${P3.x},${P3.y} ${BR.x},${BR.y} ${MB.x},${MB.y}` },
+    { house: 7, points: `${CC.x},${CC.y} ${P4.x},${P4.y} ${MB.x},${MB.y} ${P3.x},${P3.y}` },
+    { house: 8, points: `${P4.x},${P4.y} ${MB.x},${MB.y} ${BL.x},${BL.y}` },
+    { house: 9, points: `${ML.x},${ML.y} ${BL.x},${BL.y} ${P4.x},${P4.y}` },
+    { house: 10, points: `${CC.x},${CC.y} ${P1.x},${P1.y} ${ML.x},${ML.y} ${P4.x},${P4.y}` },
+    { house: 11, points: `${TL.x},${TL.y} ${ML.x},${ML.y} ${P1.x},${P1.y}` },
+    { house: 12, points: `${TL.x},${TL.y} ${MT.x},${MT.y} ${P1.x},${P1.y}` },
+  ];
 
   return (
     <svg viewBox={`0 0 ${BOX} ${BOX}`} xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +255,7 @@ export default function KundliChartSVG({
       <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
       {/* Ascendant marker (degree-in-sign) */}
-      {lagnaSignIdx >= 0 && (
+      {showAscendantMarker && lagnaSignIdx >= 0 && (
         <text
           x={marker.x}
           y={marker.y}
@@ -210,6 +270,19 @@ export default function KundliChartSVG({
           ▲
         </text>
       )}
+
+      {/* House click overlays (only when handler present) */}
+      {onHouseClick && housePolys.map(({ house, points }) => (
+        <polygon
+          key={`house-hit-${house}`}
+          points={points}
+          fill="transparent"
+          stroke="none"
+          pointerEvents="all"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onHouseClick(house, signForHouse(house), planetsByHousePos[house - 1] || [])}
+        />
+      ))}
 
       {/* Zodiac sign images — orange, low opacity, at fixed sign positions */}
       {[
@@ -297,7 +370,11 @@ export default function KundliChartSVG({
           const color = planetColor(pl);
 
           return (
-            <g key={`p-${posIdx}-${pi}`}>
+            <g
+              key={`p-${posIdx}-${pi}`}
+              style={onPlanetClick ? { cursor: 'pointer' } : undefined}
+              onClick={onPlanetClick ? () => onPlanetClick(pl) : undefined}
+            >
               {/* Planet name */}
               <text x={c.x} y={startY + pi * lineH}
                 textAnchor="middle" dominantBaseline="central"
