@@ -3137,6 +3137,24 @@ def get_graha_sambandha(
     planets = chart.get("planets", {})
     asc_sign = chart.get("ascendant", {}).get("sign", "")
     result = analyze_graha_sambandha(planets, asc_sign)
+    # Map engine fields → frontend fields
+    # Engine: {connections: [{sambandha_type, effect_en, effect_hi, ...}], count, summary_en, ...}
+    # Frontend: {relationships: [{relationship_type_en, relationship_type_hi, effect_en, effect_hi, strength}]}
+    relationships = []
+    for c in result.get("connections", []):
+        relationships.append({
+            "planet_a":              c.get("planet_a", ""),
+            "planet_b":              c.get("planet_b", ""),
+            "relationship_type_en":  c.get("sambandha_type", c.get("relationship_type_en", "")),
+            "relationship_type_hi":  c.get("sambandha_type_hi", c.get("relationship_type_hi", "")),
+            "effect_en":             c.get("effect_en", ""),
+            "effect_hi":             c.get("effect_hi", ""),
+            "strength":              c.get("strength", "moderate"),
+            "house_a":               c.get("house_a"),
+            "house_b":               c.get("house_b"),
+            "sloka_ref":             c.get("sloka_ref", result.get("sloka_ref", "")),
+        })
+    result["relationships"] = relationships
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result
