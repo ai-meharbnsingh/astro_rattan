@@ -536,6 +536,23 @@ def get_nishaniyan(
 # Which houses indicate affliction/weakness → activates related rin
 _AFFLICTION_HOUSES = {6, 8, 12}
 
+# LK 1952 Pakka Ghar — planet's permanent house (strongest placement)
+_PAKKA_GHAR: dict[str, set] = {
+    "sun": {1},
+    "moon": {4},
+    "mars": {3, 8},
+    "mercury": {3, 6},
+    "jupiter": {2, 9, 12},
+    "venus": {7},
+    "saturn": {7, 10},
+    "rahu": {6, 11, 12},
+    "ketu": {3, 6, 12},
+}
+
+
+def _is_pakka_ghar(planet: str, house: int) -> bool:
+    return house in _PAKKA_GHAR.get(planet.lower(), set())
+
 # Planet → rin debt_type mapping (primary planet for each debt)
 _PLANET_TO_RIN = {
     "sun": "पितृ ऋण",
@@ -566,40 +583,59 @@ def get_rin(
 
     chart_data = json.loads(row["chart_data"])
 
-    # Find which planets are in affliction houses
-    afflicted_planets: set[str] = set()
+    # Build planet list for the canonical debt engine
+    planet_list = []
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        # Unified derivation: prefer explicit house, fall back to sign
         house = _derive_lk_house(info)
-        # NOTE: Simplified affliction model — checks only houses 6/8/12 (Dusthana).
-        # Does not include lordship afflictions or Pakka Ghar deviations. Full
-        # affliction model lives in lalkitab_advanced.analyze_full_affliction().
-        if house in _AFFLICTION_HOUSES:
-            afflicted_planets.add(planet_name.lower())
+        planet_list.append({"planet": planet_name, "house": house})
 
-    # Fetch all 8 debts from DB
+    # Full karmic debt engine (LK 1952 canonical triggers — not just 6/8/12)
+    from app.lalkitab_advanced import calculate_karmic_debts
+    active_karmic_debts = calculate_karmic_debts(planet_list)
+
+    # Fetch canonical 8-debt catalogue from DB for UI display
     debt_rows = db.execute(
         "SELECT * FROM lal_kitab_debts ORDER BY debt_type"
     ).fetchall()
 
-    debts = []
+    # Map active debts to DB catalogue by matching name keywords
+    active_names_en = {d.get("name", {}).get("en", "").lower() for d in active_karmic_debts}
+
+    def _debt_is_active(debt_type: str) -> bool:
+        dt = (debt_type or "").lower()
+        return any(kw in dt for kw in active_names_en) or any(kw in dt for kw in [
+            kw for name in active_names_en for kw in name.split()
+        ])
+
+    catalogue = []
     for r in debt_rows:
-        # Mark active if the associated planet is afflicted
-        associated_planet = r["planet"]  # lowercase e.g. "sun"
-        active = associated_planet in afflicted_planets
-        debts.append({
+        catalogue.append({
             "id": r["id"],
             "debt_type": r["debt_type"],
             "planet": r["planet"],
             "description": r["description"],
             "indication": r["indication"],
             "remedy": r["remedy"],
-            "active": active,
+            "active": _debt_is_active(r["debt_type"]),
         })
 
-    return {"debts": debts, "afflicted_planets": sorted(afflicted_planets)}
+    # Planets that triggered active debts
+    triggered_planets = sorted({
+        p["planet"].lower()
+        for p in planet_list
+        if _is_pakka_ghar(p["planet"], p["house"]) is False and p["house"] in _AFFLICTION_HOUSES
+        or any(p["planet"].lower() in (d.get("reason", {}).get("en", "") or "").lower()
+               for d in active_karmic_debts)
+    })
+
+    return {
+        "debts": catalogue,
+        "active_karmic_debts": active_karmic_debts,
+        "active_count": len(active_karmic_debts),
+        "triggered_planets": triggered_planets,
+    }
 
 
 # ─────────────────────────────────────────────────────────────
@@ -700,10 +736,40 @@ def _get_planet_positions(kundli_id: str, user_id: str, db: Any) -> dict:
     for planet_name, info in chart_data.get("planets", {}).items():
         if planet_name not in _KNOWN_PLANETS:
             continue
-        # Unified derivation: prefer explicit house, fall back to sign
         house = _derive_lk_house(info)
         positions[planet_name.lower()] = house
     return positions
+
+
+def _get_chart_with_meta(kundli_id: str, user_id: str, db: Any):
+    """Return ({planet_lower: lk_house}, birth_date_str, planet_list_for_engine) or (None, None, None)."""
+    row = db.execute(
+        "SELECT chart_data, birth_date FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user_id),
+    ).fetchone()
+    if not row:
+        return None, None, None
+    chart_data = json.loads(row["chart_data"])
+    positions = {}
+    planet_list = []  # [{planet: "Sun", house: 5}, ...] for lalkitab_advanced engines
+    for planet_name, info in chart_data.get("planets", {}).items():
+        if planet_name not in _KNOWN_PLANETS:
+            continue
+        house = _derive_lk_house(info)
+        positions[planet_name.lower()] = house
+        planet_list.append({"planet": planet_name, "house": house})
+    return positions, str(row.get("birth_date") or ""), planet_list
+
+
+def _get_current_saala_grah(birth_date: str) -> Optional[dict]:
+    """Return current Saala Grah dict or None if birth_date unavailable."""
+    if not birth_date:
+        return None
+    try:
+        dasha = _get_dasha_timeline(birth_date, _date_today.today().isoformat())
+        return dasha.get("current_saala_grah")
+    except Exception:
+        return None
 
 
 @router.get("/api/lalkitab/predictions/marriage/{kundli_id}")
@@ -713,9 +779,10 @@ def predict_marriage(
     db: Any = Depends(get_db),
 ):
     """Marriage predictions: Manglik check, 7th house lord, Venus placement."""
-    positions = _get_planet_positions(kundli_id, user["sub"], db)
+    positions, birth_date, _pl = _get_chart_with_meta(kundli_id, user["sub"], db)
     if positions is None:
         raise HTTPException(status_code=404, detail="Kundli not found")
+    saala_grah = _get_current_saala_grah(birth_date)
 
     mars_house = positions.get("mars", 0)
     is_manglik = mars_house in _MANGLIK_HOUSES
@@ -755,17 +822,30 @@ def predict_marriage(
             "मंगल यंत्र स्थापित करें",
         ]
 
+    venus_pakka = _is_pakka_ghar("venus", venus_house)
+    mars_pakka = _is_pakka_ghar("mars", mars_house)
+    # Venus in H7 (Pakka Ghar) greatly strengthens marriage prospects
+    marriage_boost = venus_pakka
+
     return {
         "is_manglik": is_manglik,
         "manglik_severity": manglik_severity,
         "mars_house": mars_house,
+        "mars_pakka_ghar": mars_pakka,
         "venus_house": venus_house,
+        "venus_pakka_ghar": venus_pakka,
+        "marriage_boost": marriage_boost,
         "spouse_description": spouse_desc,
         "seventh_house_planets": seventh_planets,
         "manglik_remedies": manglik_remedies,
         "compatibility_note": {
             "hi": "मांगलिक दोष होने पर मांगलिक से विवाह शुभ होता है" if is_manglik else "मंगल दोष नहीं — सामान्य विवाह योग",
             "en": "Manglik should marry a Manglik for harmony" if is_manglik else "No Manglik dosha — normal marriage prospects",
+        },
+        "current_saala_grah": saala_grah,
+        "dasha_note": {
+            "hi": f"वर्तमान साल ग्रह {saala_grah['planet_hi']} — विवाह निर्णय इस वर्ष {'अनुकूल' if saala_grah['planet'] in ('venus', 'jupiter', 'moon') else 'सोच-समझकर लें'}" if saala_grah else None,
+            "en": f"Current year ruler: {saala_grah['planet'].capitalize()} — marriage decisions this year {'are favoured' if saala_grah['planet'] in ('venus', 'jupiter', 'moon') else 'need careful consideration'}" if saala_grah else None,
         },
     }
 
@@ -777,9 +857,10 @@ def predict_career(
     db: Any = Depends(get_db),
 ):
     """Career predictions: 10th house planet, Saturn, Sun placements."""
-    positions = _get_planet_positions(kundli_id, user["sub"], db)
+    positions, birth_date, _pl = _get_chart_with_meta(kundli_id, user["sub"], db)
     if positions is None:
         raise HTTPException(status_code=404, detail="Kundli not found")
+    saala_grah = _get_current_saala_grah(birth_date)
 
     tenth_planets = [p for p, h in positions.items() if h == 10]
     primary = tenth_planets[0] if tenth_planets else None
@@ -825,20 +906,32 @@ def predict_career(
         "ketu": [30, 40, 50],
     }
 
+    primary_pakka = _is_pakka_ghar(primary, positions.get(primary, 0)) if primary else False
+    sun_pakka = _is_pakka_ghar("sun", sun_house)
+    saturn_pakka = _is_pakka_ghar("saturn", saturn_house)
+
     return {
         "tenth_house_planets": tenth_planets,
         "primary_planet": primary,
+        "primary_pakka_ghar": primary_pakka,
         "career_options": career_info["careers"],
         "career_options_en": career_info["en_careers"],
         "nature": career_info["nature"],
         "suitability": suitability,
         "favourable_ages": favourable_ages.get(primary, [28, 36, 44]),
         "sun_house": sun_house,
+        "sun_pakka_ghar": sun_pakka,
         "saturn_house": saturn_house,
+        "saturn_pakka_ghar": saturn_pakka,
         "mercury_house": mercury_house,
         "advice": {
             "hi": f"{'व्यापार में अधिक लाभ' if suitability == 'business' else 'नौकरी में स्थिरता'} — दसवें भाव में {'कोई ग्रह नहीं' if not primary else primary.capitalize()} है",
             "en": f"{'Business favoured for higher gains' if suitability == 'business' else 'Job brings stability'} — {primary.capitalize() if primary else 'No planet'} in 10th house",
+        },
+        "current_saala_grah": saala_grah,
+        "dasha_note": {
+            "hi": f"वर्तमान साल ग्रह {saala_grah['planet_hi']} — {'करियर में उन्नति की संभावना' if saala_grah['planet'] in ('sun', 'jupiter', 'mercury') else 'मेहनत से परिणाम'}" if saala_grah else None,
+            "en": f"Current year ruler: {saala_grah['planet'].capitalize()} — {'career advancement likely' if saala_grah['planet'] in ('sun', 'jupiter', 'mercury') else 'results through consistent effort'}" if saala_grah else None,
         },
     }
 
@@ -850,9 +943,10 @@ def predict_health(
     db: Any = Depends(get_db),
 ):
     """Health predictions: planets in 6/8/12 houses, Sun/Moon/Mars/Saturn placements."""
-    positions = _get_planet_positions(kundli_id, user["sub"], db)
+    positions, birth_date, _pl = _get_chart_with_meta(kundli_id, user["sub"], db)
     if positions is None:
         raise HTTPException(status_code=404, detail="Kundli not found")
+    saala_grah = _get_current_saala_grah(birth_date)
 
     # Planets in health-sensitive houses
     health_house_planets = {
@@ -895,16 +989,28 @@ def predict_health(
 
     overall = "caution" if len(vulnerable_areas) >= 3 else "moderate" if vulnerable_areas else "good"
 
+    # Pakka Ghar planets in affliction houses are not truly afflicted — they're in strength
+    mitigated = [
+        p for p in (vulnerable_areas or [])
+        if _is_pakka_ghar(p["planet"], p["house"])
+    ]
+
     return {
         "overall_health": overall,
         "vulnerable_areas": vulnerable_areas,
+        "mitigated_by_pakka_ghar": mitigated,
         "precautions": precautions,
-        "chronic_risk_planets": chronic_risk,
+        "chronic_risk_planets": [p for p in chronic_risk if not _is_pakka_ghar(p, positions.get(p, 0))],
         "health_house_planets": {str(k): v for k, v in health_house_planets.items()},
         "sun_house": sun_house,
         "moon_house": moon_house,
         "mars_house": mars_house,
         "saturn_house": saturn_house,
+        "current_saala_grah": saala_grah,
+        "dasha_note": {
+            "hi": f"वर्तमान साल ग्रह {saala_grah['planet_hi']} — {'स्वास्थ्य सावधानी आवश्यक' if saala_grah['planet'] in ('saturn', 'rahu', 'ketu', 'mars') else 'स्वास्थ्य सामान्य रहेगा'}" if saala_grah else None,
+            "en": f"Current year ruler: {saala_grah['planet'].capitalize()} — {'health caution advised this year' if saala_grah['planet'] in ('saturn', 'rahu', 'ketu', 'mars') else 'health generally stable'}" if saala_grah else None,
+        },
     }
 
 
@@ -915,9 +1021,10 @@ def predict_wealth(
     db: Any = Depends(get_db),
 ):
     """Wealth predictions: Jupiter/Venus placement, 2nd/11th house analysis."""
-    positions = _get_planet_positions(kundli_id, user["sub"], db)
+    positions, birth_date, _pl = _get_chart_with_meta(kundli_id, user["sub"], db)
     if positions is None:
         raise HTTPException(status_code=404, detail="Kundli not found")
+    saala_grah = _get_current_saala_grah(birth_date)
 
     jupiter_house = positions.get("jupiter", 0)
     venus_house = positions.get("venus", 0)
@@ -963,12 +1070,22 @@ def predict_wealth(
         {"hi": "सावधानी से निवेश करें", "en": "Invest cautiously"},
     )
 
+    # Pakka Ghar boost: Jupiter in H2/H9/H12 or Venus in H7 = real wealth strength
+    jup_pakka = _is_pakka_ghar("jupiter", jupiter_house)
+    ven_pakka = _is_pakka_ghar("venus", venus_house)
+    if jup_pakka:
+        wealth_score = min(100, wealth_score + 8)
+    if ven_pakka:
+        wealth_score = min(100, wealth_score + 5)
+
     return {
         "wealth_score": wealth_score,
         "wealth_potential_hi": jup_wealth["potential"],
         "wealth_potential_en": jup_wealth["en"],
         "jupiter_house": jupiter_house,
+        "jupiter_pakka_ghar": jup_pakka,
         "venus_house": venus_house,
+        "venus_pakka_ghar": ven_pakka,
         "second_house_planets": second_planets,
         "eleventh_house_planets": eleventh_planets,
         "income_sources": income_sources,
@@ -976,6 +1093,11 @@ def predict_wealth(
         "savings_tip": {
             "hi": "गुरु ११वें भाव में हो तो बचत अवश्य करें" if jupiter_house == 11 else "नियमित बचत और दान दोनों आवश्यक हैं",
             "en": "Jupiter in 11th — always save regularly" if jupiter_house == 11 else "Regular savings and charity both essential",
+        },
+        "current_saala_grah": saala_grah,
+        "dasha_note": {
+            "hi": f"वर्तमान साल ग्रह {saala_grah['planet_hi']} — {'धन लाभ की संभावना' if saala_grah['planet'] in ('jupiter', 'venus', 'mercury', 'moon') else 'खर्च पर नियंत्रण रखें'}" if saala_grah else None,
+            "en": f"Current year ruler: {saala_grah['planet'].capitalize()} — {'financial gains likely' if saala_grah['planet'] in ('jupiter', 'venus', 'mercury', 'moon') else 'control expenditure this year'}" if saala_grah else None,
         },
     }
 
@@ -1625,11 +1747,10 @@ def delete_saved_prediction(
 @router.post("/api/prashna/quick")
 async def prashna_quick(body: PrashnaQuickRequest):
     """Public Prashna Kundli — no login required.
-    KP horary number is auto-derived from current timestamp.
+    KP horary number is derived from the sidereal ascendant at query moment (KP tradition).
     Accepts question_type + optional city/coordinates.
     """
     now = _datetime.now()
-    number = (int(now.timestamp()) % 249) + 1
     query_dt = now.strftime("%Y-%m-%d %H:%M:%S")
 
     lat, lon = body.latitude, body.longitude
@@ -1654,6 +1775,26 @@ async def prashna_quick(body: PrashnaQuickRequest):
         "tz_offset": 5.5,
     }
 
+    # Derive prashna number from sidereal ASC at query moment (KP tradition).
+    # Each of the 249 KP sub-divisions spans 360/249 = 1°26'40". The querent's
+    # number is determined by which sub-division the ASC falls in at query time.
+    number_source = "timestamp_fallback"
+    number = (int(now.timestamp()) % 249) + 1  # fallback
+    try:
+        import swisseph as _swe
+        import datetime as _dt_mod
+        tz_h = query_place.get("tz_offset", 5.5)
+        utc = now - _dt_mod.timedelta(hours=tz_h)
+        jd = _swe.julday(utc.year, utc.month, utc.day,
+                         utc.hour + utc.minute / 60.0 + utc.second / 3600.0)
+        _swe.set_sid_mode(_swe.SIDM_LAHIRI)
+        _, ascmc = _swe.houses(jd, query_place["latitude"], query_place["longitude"], b"P")
+        asc_sid = (ascmc[0] - _swe.get_ayanamsa(jd)) % 360.0
+        number = max(1, min(249, int(asc_sid * 249 / 360) + 1))
+        number_source = "ascendant"
+    except Exception:
+        pass
+
     try:
         chart = get_horary_prediction(
             number=number,
@@ -1670,6 +1811,7 @@ async def prashna_quick(body: PrashnaQuickRequest):
     pred = chart.get("prediction", {}) or {}
     return {
         "number": number,
+        "number_source": number_source,
         "question_type": body.question_type,
         "verdict": pred.get("verdict", "neutral"),
         "verdict_detail": pred.get("verdict_detail", ""),
