@@ -521,6 +521,7 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
     """Fallback calculation using pure-math approximations (no swisseph)."""
     jd = _datetime_to_jd(dt_utc)
     ayanamsa = _approx_ayanamsa(jd)
+    planet_speeds: Dict[str, float] = {}
 
     # Ascendant
     asc_trop = _approx_ascendant(jd, lat, lon)
