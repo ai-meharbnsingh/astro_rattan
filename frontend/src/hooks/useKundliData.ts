@@ -215,7 +215,7 @@ export function useKundliData() {
     if (!result?.id || dashaData) return;
     setLoadingDasha(true);
     try {
-      const data = await api.post(`/api/kundli/${result.id}/dasha`, {});
+      const data = await api.get(`/api/kundli/${result.id}/dasha`);
       setDashaData(data);
     } catch (e: any) { setTabError(e?.message || "Failed to load data"); }
     setLoadingDasha(false);

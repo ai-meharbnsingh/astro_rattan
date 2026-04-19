@@ -287,20 +287,6 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float
         })
         current_start = end_dt
 
-    # Extend with additional cycles until we cover at least 240 years from birth
-    min_coverage = birth_dt + timedelta(days=240 * 365.25)
-    while current_start < min_coverage:
-        for planet in sequence:
-            full_years = DASHA_YEARS[planet]
-            end_dt = current_start + timedelta(days=full_years * 365.25)
-            mahadasha_periods.append({
-                "planet": planet,
-                "start_date": current_start.strftime("%Y-%m-%d"),
-                "end_date": end_dt.strftime("%Y-%m-%d"),
-                "years": full_years,
-            })
-            current_start = end_dt
-
     # Determine current mahadasha
     current_dasha = "Unknown"
     current_dasha_start = None
@@ -433,13 +419,6 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitu
         # No intermediate rounding — only round for display, not date math
         effective_years = full_years * balance if i == 0 else full_years
         current_start = _append_mahadasha(planet, effective_years, current_start)
-
-    # Extend with additional cycles until we cover at least 240 years from birth
-    min_coverage = birth_dt + timedelta(days=240 * 365.25)
-    while current_start < min_coverage:
-        for planet in sequence:
-            full_years = DASHA_YEARS[planet]
-            current_start = _append_mahadasha(planet, full_years, current_start)
 
     return {
         "mahadasha": mahadasha_list,
