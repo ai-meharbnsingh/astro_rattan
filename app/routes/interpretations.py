@@ -30,16 +30,14 @@ router = APIRouter(prefix="/api/interpretations", tags=["interpretations"])
 # ── Helper to fetch kundli chart data ──────────────────────────
 def _fetch_chart(db, kundli_id: str, user_id: str) -> dict:
     import json
-    cur = db.cursor()
-    cur.execute(
+    row = db.execute(
         "SELECT chart_data, person_name, birth_date FROM kundlis WHERE id = %s AND user_id = %s",
         (kundli_id, user_id),
-    )
-    row = cur.fetchone()
+    ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail="Kundli not found")
-    chart = json.loads(row[0]) if isinstance(row[0], str) else row[0]
-    return {"chart": chart, "person_name": row[1], "birth_date": str(row[2])}
+    chart = json.loads(row["chart_data"]) if isinstance(row["chart_data"], str) else row["chart_data"]
+    return {"chart": chart, "person_name": row["person_name"], "birth_date": str(row["birth_date"])}
 
 
 @router.get("/lagna/{sign}", status_code=status.HTTP_200_OK)
