@@ -40,16 +40,80 @@ interface Props {
   t: (key: string) => string;
 }
 
-const STATUS_STYLE: Record<string, { card: string; badge: string; Icon: typeof TrendingUp; key: string }> = {
-  strong:  { card: 'border-emerald-300 bg-emerald-50', badge: 'bg-emerald-600 text-white', Icon: TrendingUp,   key: 'auto.bhavaStrong' },
-  weak:    { card: 'border-red-300 bg-red-50',          badge: 'bg-red-600 text-white',     Icon: TrendingDown, key: 'auto.bhavaWeak' },
-  neutral: { card: 'border-sacred-gold/30 bg-sacred-gold/5', badge: 'bg-sacred-gold-dark text-white', Icon: Minus, key: 'auto.bhavaNeutral' },
+const STATUS_STYLE: Record<string, { badge: string; Icon: typeof TrendingUp; key: string }> = {
+  strong:  { badge: 'bg-emerald-100 text-emerald-800', Icon: TrendingUp,   key: 'auto.bhavaStrong' },
+  weak:    { badge: 'bg-red-100 text-red-800',          Icon: TrendingDown, key: 'auto.bhavaWeak' },
+  neutral: { badge: 'bg-amber-100 text-amber-800',      Icon: Minus,        key: 'auto.bhavaNeutral' },
 };
 
 const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चन्द्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'बृहस्पति', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
+
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top';
+const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
+
+function PlacementTable({ rows, isHi, t }: { rows: PlanetPlacement[]; isHi: boolean; t: (k: string) => string }) {
+  if (rows.length === 0) {
+    return (
+      <div className="px-4 py-3 text-xs text-muted-foreground">
+        {isHi ? 'इस खंड में कोई ग्रह नहीं' : 'No planets in this range'}
+      </div>
+    );
+  }
+  return (
+    <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+      <colgroup>
+        <col style={{ width: '13%' }} />
+        <col style={{ width: '5%' }} />
+        <col style={{ width: '12%' }} />
+        <col style={{ width: '55%' }} />
+        <col style={{ width: '15%' }} />
+      </colgroup>
+      <thead>
+        <tr>
+          <th className={thCls}>{isHi ? 'ग्रह' : 'Planet'}</th>
+          <th className={thCls}>{isHi ? 'भाव' : 'H'}</th>
+          <th className={thCls}>{isHi ? 'राशि' : 'Sign'}</th>
+          <th className={thCls}>{isHi ? 'फल' : 'Effect'}</th>
+          <th className={thCls}>{isHi ? 'श्लोक' : 'Sloka'}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((pp, i) => {
+          const effect = isHi ? pp.effect_hi : pp.effect_en;
+          const modifier = isHi ? pp.sign_lord_modifier_hi : pp.sign_lord_modifier_en;
+          const planetName = isHi ? (PLANET_HI[pp.planet] || pp.planet) : pp.planet;
+          return (
+            <tr key={`${pp.planet}-${i}`}>
+              <td className={`${tdCls} font-semibold`}>{planetName}</td>
+              <td className={tdCls}>{pp.house}</td>
+              <td className={tdWrapCls}>{pp.sign}</td>
+              <td className={tdWrapCls}>
+                <p>{effect}</p>
+                {modifier && (
+                  <p className="mt-1 text-[10px] text-blue-700 italic">
+                    {isHi ? 'राशि-स्वामी: ' : 'Sign Lord: '}{modifier}
+                  </p>
+                )}
+              </td>
+              <td className={tdWrapCls}>
+                <div className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
+                  <BookOpen className="w-2.5 h-2.5 shrink-0 mt-0.5" />
+                  <span>{pp.sloka_ref}</span>
+                </div>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
 
 export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<ApiResponse | null>(null);
@@ -78,23 +142,23 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
-      </div>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
     );
   }
 
   if (!data) return null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+
       {/* Header */}
       <div>
         <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
@@ -104,108 +168,80 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
         <p className="text-sm text-muted-foreground">{t('auto.bhavaPhalaDesc')}</p>
       </div>
 
-      {/* Section 1: Planet in House */}
-      <section>
-        <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <Star className="w-5 h-5" />
-          {t('auto.planetInHouse')}
-        </h3>
-        {data.planet_placements.length === 0 ? (
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {t('auto.noPlanetPlacements')}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {data.planet_placements.map((pp, i) => {
-              const effect = isHi ? pp.effect_hi : pp.effect_en;
-              const planetName = isHi ? (PLANET_HI[pp.planet] || pp.planet) : pp.planet;
+      {/* Planet in House */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Star className="w-4 h-4" />
+          <span>{t('auto.planetInHouse')}</span>
+          <span className="ml-auto text-[12px] font-normal opacity-80">{data.planet_placements.length}</span>
+        </div>
+        <PlacementTable rows={data.planet_placements} isHi={isHi} t={t} />
+      </div>
+
+      {/* House-wise Status */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Home className="w-4 h-4" />
+          <span>{t('auto.houseStatus')}</span>
+        </div>
+        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <colgroup>
+            <col style={{ width: '5%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '50%' }} />
+            <col style={{ width: '15%' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th className={thCls}>{isHi ? 'भाव' : 'H'}</th>
+              <th className={thCls}>{isHi ? 'नाम' : 'Name'}</th>
+              <th className={thCls}>{isHi ? 'स्थिति' : 'Status'}</th>
+              <th className={thCls}>{isHi ? 'फलादेश' : 'Result'}</th>
+              <th className={thCls}>{isHi ? 'श्लोक' : 'Sloka'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.bhava_generals.map((b) => {
+              const style = STATUS_STYLE[b.status] || STATUS_STYLE.neutral;
+              const StatusIcon = style.Icon;
+              const name = isHi ? b.name_hi : b.name_en;
+              const general = isHi ? b.general_hi : b.general_en;
+              const localizedBhava = t(`auto.bhava${b.house}`);
+              const moolt = isHi ? b.mooltrikona_note_hi : b.mooltrikona_note_en;
               return (
-                <div
-                  key={`${pp.planet}-${i}`}
-                  className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div>
-                      <h4 className="text-lg font-bold text-foreground">{planetName}</h4>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <span>{t('auto.house')} {pp.house}</span>
-                        <span>•</span>
-                        <span>{pp.sign}</span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-sacred-gold-dark text-white">
-                      {t('auto.bhavaShort')} {pp.house}
+                <tr key={b.house}>
+                  <td className={`${tdCls} font-semibold text-center`}>{b.house}</td>
+                  <td className={tdCls}>{localizedBhava || name}</td>
+                  <td className={tdCls}>
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded ${style.badge}`}>
+                      <StatusIcon className="w-2.5 h-2.5" />
+                      {t(style.key)}
                     </span>
-                  </div>
-                  <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
-                  {(isHi ? pp.sign_lord_modifier_hi : pp.sign_lord_modifier_en) && (
-                    <div className="mb-3 p-2 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800 leading-relaxed">
-                      <span className="font-semibold">{isHi ? 'राशि-स्वामी प्रभाव: ' : 'Sign Lord Effect: '}</span>
-                      {isHi ? pp.sign_lord_modifier_hi : pp.sign_lord_modifier_en}
+                  </td>
+                  <td className={tdWrapCls}>
+                    <p>{general}</p>
+                    {moolt && (
+                      <p className="mt-1 text-[10px] text-amber-700 italic">
+                        {isHi ? 'मूलत्रिकोण: ' : 'Mooltrikona: '}{moolt}
+                      </p>
+                    )}
+                  </td>
+                  <td className={tdWrapCls}>
+                    <div className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
+                      <BookOpen className="w-2.5 h-2.5 shrink-0 mt-0.5" />
+                      <span>{b.sloka_ref}</span>
                     </div>
-                  )}
-                  <div className="flex items-center gap-1.5 pt-2 border-t border-sacred-gold/20 text-[11px] text-muted-foreground">
-                    <BookOpen className="w-3 h-3" />
-                    <span className="italic">{pp.sloka_ref}</span>
-                  </div>
-                </div>
+                  </td>
+                </tr>
               );
             })}
-          </div>
-        )}
-      </section>
+          </tbody>
+        </table>
+      </div>
 
-      {/* Section 2: House-wise Status */}
-      <section>
-        <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <Home className="w-5 h-5" />
-          {t('auto.houseStatus')}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.bhava_generals.map((b) => {
-            const style = STATUS_STYLE[b.status] || STATUS_STYLE.neutral;
-            const StatusIcon = style.Icon;
-            const name = isHi ? b.name_hi : b.name_en;
-            const general = isHi ? b.general_hi : b.general_en;
-            const localizedBhava = t(`auto.bhava${b.house}`);
-            return (
-              <div
-                key={b.house}
-                className={`rounded-xl border-2 p-4 ${style.card}`}
-              >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground">
-                      {t('auto.bhava')} {b.house}
-                    </div>
-                    <h4 className="text-base font-bold text-foreground leading-tight">
-                      {localizedBhava || name}
-                    </h4>
-                  </div>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 ${style.badge}`}>
-                    <StatusIcon className="w-3 h-3" />
-                    {t(style.key)}
-                  </span>
-                </div>
-                <p className="text-xs text-foreground/80 leading-relaxed mb-2">{general}</p>
-                {(isHi ? b.mooltrikona_note_hi : b.mooltrikona_note_en) && (
-                  <div className="mb-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-[10px] text-amber-800 leading-relaxed">
-                    <span className="font-semibold">{isHi ? 'मूलत्रिकोण: ' : 'Mooltrikona: '}</span>
-                    {isHi ? b.mooltrikona_note_hi : b.mooltrikona_note_en}
-                  </div>
-                )}
-                <div className="flex items-center gap-1.5 pt-2 border-t border-current/10 text-[10px] text-muted-foreground">
-                  <BookOpen className="w-3 h-3" />
-                  <span className="italic">{b.sloka_ref}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Footer sloka ref */}
-      <div className="text-center text-xs text-muted-foreground italic pt-4 border-t border-sacred-gold/20">
+      {/* Footer */}
+      <div className="text-center text-xs text-muted-foreground italic pt-2 border-t border-border">
         {data.sloka_ref}
       </div>
     </div>

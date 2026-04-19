@@ -303,10 +303,12 @@ def _check_nauka(planets: dict) -> dict | None:
     if occ and occ.issubset({1, 2, 3, 4, 5, 6, 7}):
         count_in_range = sum(1 for v in occ if 1 <= v <= 7)
         if count_in_range >= 6:
-            return _yoga("Nauka", "Akriti",
+            result = _yoga("Nauka", "Akriti",
                 "Majority of planets in houses 1–7 (boat shape) — native earns through sea trade, foreign commerce, or travel across waters. Benefits from hospitality, transport, or navigation industries.",
                 "अधिकांश ग्रह भाव 1–7 में (नाव आकार) — जातक समुद्री व्यापार, विदेशी वाणिज्य या जल-यात्रा से कमाई। आतिथ्य, परिवहन या नौचालन उद्योग से लाभ।",
                 CHART_PLANETS)
+            result["count"] = count_in_range
+            return result
     return None
 
 
@@ -316,10 +318,12 @@ def _check_koota(planets: dict) -> dict | None:
     if occ and occ.issubset({2, 3, 4, 5, 6, 7, 8}):
         count_in_range = sum(1 for v in occ if 2 <= v <= 8)
         if count_in_range >= 6:
-            return _yoga("Koota", "Akriti",
+            result = _yoga("Koota", "Akriti",
                 "Majority of planets in houses 2–8 (fortress/peak shape) — native is skilled in strategy, defense, and management. May rise to positions of protective authority.",
                 "अधिकांश ग्रह भाव 2–8 में (कूट/किला आकार) — जातक रणनीति, रक्षा एवं प्रबंधन में कुशल। रक्षात्मक सत्ता के पदों पर उठ सकता है।",
                 CHART_PLANETS)
+            result["count"] = count_in_range
+            return result
     return None
 
 
@@ -329,10 +333,12 @@ def _check_chatra(planets: dict) -> dict | None:
     if occ and occ.issubset({4, 5, 6, 7, 8, 9, 10}):
         count_in_range = sum(1 for v in occ if 4 <= v <= 10)
         if count_in_range >= 6:
-            return _yoga("Chatra", "Akriti",
+            result = _yoga("Chatra", "Akriti",
                 "Majority of planets in houses 4–10 (umbrella/parasol shape) — native provides shelter and protection to others. Leadership, patronage, and a life of comfort and honor.",
                 "अधिकांश ग्रह भाव 4–10 में (छत्र आकार) — जातक दूसरों को आश्रय एवं सुरक्षा देता है। नेतृत्व, संरक्षण एवं आराम एवं सम्मान का जीवन।",
                 CHART_PLANETS)
+            result["count"] = count_in_range
+            return result
     return None
 
 
@@ -342,10 +348,12 @@ def _check_chapa(planets: dict) -> dict | None:
     if occ and occ.issubset({7, 8, 9, 10, 11, 12, 1}):
         count_in_range = sum(1 for v in occ if v in {7, 8, 9, 10, 11, 12, 1})
         if count_in_range >= 6:
-            return _yoga("Chapa", "Akriti",
+            result = _yoga("Chapa", "Akriti",
                 "Majority of planets in houses 7–1 (bow shape) — native is skilled in commerce, diplomacy, and subtle strategy. Successful in partnerships and indirect influence.",
                 "अधिकांश ग्रह भाव 7–1 में (चाप/धनुष आकार) — जातक वाणिज्य, कूटनीति एवं सूक्ष्म रणनीति में कुशल। साझेदारी एवं अप्रत्यक्ष प्रभाव में सफल।",
                 CHART_PLANETS)
+            result["count"] = count_in_range
+            return result
     return None
 
 
@@ -356,10 +364,12 @@ def _check_ardha_chandra(planets: dict) -> dict | None:
         for start in range(1, 13):
             span = {((start - 1 + i) % 12) + 1 for i in range(7)}
             if occ.issubset(span):
-                return _yoga("Ardha_Chandra", "Akriti",
+                result = _yoga("Ardha_Chandra", "Akriti",
                     "Planets span exactly seven consecutive houses (half-moon shape) — native is skilled in warfare, weaponry, or competitive arts. Bold, decisive, and often finds fame through dramatic achievement.",
                     "ग्रह सात लगातार भावों में फैले हैं (अर्धचंद्र आकार) — जातक युद्ध, शस्त्र-विद्या या प्रतिस्पर्धी कलाओं में कुशल। साहसी, निर्णायक, नाटकीय उपलब्धि से यश।",
                     CHART_PLANETS)
+                result["count"] = len(occ)
+                return result
     return None
 
 

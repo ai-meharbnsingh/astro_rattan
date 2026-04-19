@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Loader2, BookOpen, ChevronDown, ChevronUp, Heart, Briefcase, Coins, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
 
@@ -21,6 +21,8 @@ interface PlanetInterpretation {
 }
 
 interface TransitInterpretationsData {
+  kundli_id?: string;
+  person_name?: string;
   interpretations: PlanetInterpretation[];
 }
 
@@ -29,109 +31,90 @@ interface Props {
   language?: string;
 }
 
-const CATEGORY_LABELS: Record<string, { en: string; hi: string; emoji: string; color: string }> = {
-  love: { en: 'Love & Relationships', hi: 'प्रेम व संबंध', emoji: '❤️', color: 'text-pink-600' },
-  career: { en: 'Career & Work', hi: 'करियर व कार्य', emoji: '💼', color: 'text-blue-600' },
-  finance: { en: 'Finance & Wealth', hi: 'धन व वित्त', emoji: '💰', color: 'text-amber-600' },
-  health: { en: 'Health & Vitality', hi: 'स्वास्थ्य व जीवनशक्ति', emoji: '🌿', color: 'text-emerald-600' },
-};
-
 const PLANET_ICONS: Record<string, string> = {
   Sun: '☉', Moon: '☽', Mars: '♂', Mercury: '☿',
   Jupiter: '♃', Venus: '♀', Saturn: '♄', Rahu: '☊', Ketu: '☋',
 };
 
-function PlanetCard({
-  item,
-  isHi,
-}: {
-  item: PlanetInterpretation;
-  isHi: boolean;
-}) {
-  const [expanded, setExpanded] = useState(false);
+const CATEGORIES = [
+  { key: 'love',    icon: Heart,     en: 'Love & Relationships', hi: 'प्रेम व संबंध',      cls: 'text-pink-600' },
+  { key: 'career',  icon: Briefcase, en: 'Career & Work',        hi: 'करियर व कार्य',      cls: 'text-blue-600' },
+  { key: 'finance', icon: Coins,     en: 'Finance & Wealth',     hi: 'धन व वित्त',         cls: 'text-amber-600' },
+  { key: 'health',  icon: Activity,  en: 'Health & Vitality',    hi: 'स्वास्थ्य व जीवनशक्ति', cls: 'text-emerald-600' },
+] as const;
+
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls       = 'p-1.5 text-xs text-muted-foreground border-t border-border align-top w-[28%]';
+const tdValCls    = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
+
+function PlanetSection({ item, isHi, defaultOpen }: { item: PlanetInterpretation; isHi: boolean; defaultOpen: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const interp = item.interpretation ?? {};
   const general = interp.general;
-  const categories = (['love', 'career', 'finance', 'health'] as const).filter(
-    k => interp[k]?.en || interp[k]?.hi
-  );
 
   return (
-    <div className="rounded-xl border border-sacred-gold/20 bg-white/50 overflow-hidden">
-      {/* Planet header */}
-      <div className="p-4 bg-gradient-to-r from-[#FFF9F5] to-white border-b border-sacred-gold/10">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sacred-gold/15 flex items-center justify-center text-xl font-bold text-sacred-gold-dark">
-              {PLANET_ICONS[item.planet] ?? item.planet?.charAt(0)}
-            </div>
-            <div>
-              <p className="font-bold text-foreground text-base">{item.planet ?? '—'}</p>
-              {item.house > 0 && (
-                <p className="text-xs text-muted-foreground">
-                  {isHi ? `भाव ${item.house}` : `House ${item.house}`}
-                </p>
-              )}
-            </div>
-          </div>
-          {categories.length > 0 && (
-            <button
-              onClick={() => setExpanded(prev => !prev)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-xs font-medium hover:bg-sacred-gold/20 transition-colors"
-              aria-expanded={expanded}
-            >
-              {expanded
-                ? (isHi ? 'कम करें' : 'Less')
-                : (isHi ? 'विस्तार' : 'More')}
-              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </button>
-          )}
-        </div>
-      </div>
+    <div className={ohContainer}>
+      <button
+        className="w-full bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2 hover:bg-sacred-gold-dark/90 transition-colors"
+        onClick={() => setOpen(o => !o)}
+      >
+        <span className="text-base w-5 text-center">{PLANET_ICONS[item.planet] ?? item.planet?.charAt(0)}</span>
+        <span className="flex-1 text-left">{item.planet}</span>
+        {item.house > 0 && (
+          <span className="text-[11px] font-normal bg-white/20 px-2 py-0.5 rounded mr-1">
+            {isHi ? `भाव ${item.house}` : `House ${item.house}`}
+          </span>
+        )}
+        {open ? <ChevronUp className="w-4 h-4 opacity-70" /> : <ChevronDown className="w-4 h-4 opacity-70" />}
+      </button>
 
-      {/* General interpretation — always visible */}
-      {general && (
-        <div className="p-4">
-          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-            {isHi ? 'सामान्य फल' : 'General Interpretation'}
-          </p>
-          <p className="text-sm text-foreground/90 leading-relaxed">
-            {isHi ? (general.hi || general.en) : general.en}
-          </p>
-          {!isHi && general.hi && (
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{general.hi}</p>
+      {open && (
+        <div>
+          {/* General — always shown when open */}
+          {general && (
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                {isHi ? 'सामान्य फल' : 'General'}
+              </p>
+              <p className="text-sm text-foreground leading-relaxed">
+                {isHi ? (general.hi || general.en) : general.en}
+              </p>
+            </div>
           )}
-          {isHi && general.en && (
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{general.en}</p>
-          )}
-        </div>
-      )}
 
-      {/* Expandable sub-sections */}
-      {expanded && categories.length > 0 && (
-        <div className="border-t border-sacred-gold/10 divide-y divide-sacred-gold/10">
-          {categories.map(key => {
-            const cat = CATEGORY_LABELS[key];
-            const catData = interp[key];
-            return (
-              <div key={key} className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-base">{cat.emoji}</span>
-                  <span className={`text-xs font-semibold ${cat.color}`}>
-                    {isHi ? cat.hi : cat.en}
-                  </span>
-                </div>
-                <p className="text-sm text-foreground/80 leading-relaxed">
-                  {isHi ? (catData?.hi || catData?.en) : catData?.en}
-                </p>
-                {!isHi && catData?.hi && (
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{catData.hi}</p>
-                )}
-                {isHi && catData?.en && (
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{catData.en}</p>
-                )}
-              </div>
-            );
-          })}
+          {/* 4 categories as table */}
+          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <colgroup>
+              <col style={{ width: '28%' }} />
+              <col style={{ width: '72%' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className={thCls}>{isHi ? 'क्षेत्र' : 'Area'}</th>
+                <th className={thCls}>{isHi ? 'फल' : 'Interpretation'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CATEGORIES.map(({ key, icon: Icon, en, hi, cls }) => {
+                const catData = interp[key];
+                if (!catData?.en && !catData?.hi) return null;
+                return (
+                  <tr key={key}>
+                    <td className={tdCls}>
+                      <div className={`flex items-center gap-1.5 font-semibold ${cls}`}>
+                        <Icon className="w-3 h-3 shrink-0" />
+                        {isHi ? hi : en}
+                      </div>
+                    </td>
+                    <td className={tdValCls}>
+                      {isHi ? (catData.hi || catData.en) : catData.en}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
@@ -150,7 +133,7 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
     setLoading(true);
     setError(null);
     api.get<TransitInterpretationsData>(`/api/kundli/${kundliId}/transit-interpretations`)
-      .then(res => { if (!cancelled) setData(res); })
+      .then(res => { if (!cancelled) setData(res as TransitInterpretationsData); })
       .catch((err: any) => { if (!cancelled) setError(err?.message || 'Failed to load Transit Interpretations'); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
@@ -159,16 +142,14 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
-      </div>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
     );
   }
 
@@ -177,7 +158,8 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
   const interpretations = data.interpretations ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+
       {/* Header */}
       <div>
         <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
@@ -189,34 +171,22 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
             ? 'प्रत्येक गोचर ग्रह का प्रेम, करियर, धन व स्वास्थ्य पर प्रभाव'
             : 'Effect of each transiting planet on love, career, finance & health'}
         </p>
+        {data.person_name && (
+          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
+        )}
       </div>
 
       {interpretations.length === 0 ? (
-        <div className="p-8 rounded-xl border border-sacred-gold/20 bg-white/50 text-center">
-          <BookOpen className="w-10 h-10 text-sacred-gold/40 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {isHi ? 'कोई गोचर व्याख्या उपलब्ध नहीं' : 'No transit interpretations available'}
-          </p>
+        <div className="p-8 rounded-xl border border-sacred-gold/20 text-center text-sm text-muted-foreground">
+          {isHi ? 'कोई गोचर व्याख्या उपलब्ध नहीं' : 'No transit interpretations available'}
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {interpretations.map((item, i) => (
-            <PlanetCard key={i} item={item} isHi={isHi} />
+            <PlanetSection key={i} item={item} isHi={isHi} defaultOpen={i === 0} />
           ))}
         </div>
       )}
-
-      {/* Legend */}
-      <div className="p-4 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20 text-xs text-muted-foreground">
-        <div className="flex flex-wrap gap-4">
-          {Object.entries(CATEGORY_LABELS).map(([, cat]) => (
-            <span key={cat.en} className="flex items-center gap-1">
-              <span>{cat.emoji}</span>
-              <span className="text-foreground/70">{isHi ? cat.hi : cat.en}</span>
-            </span>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

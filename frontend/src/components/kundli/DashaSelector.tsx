@@ -4,7 +4,6 @@ import { api } from '@/lib/api';
 import { translatePlanet, translateName, translateSign } from '@/lib/backend-translations';
 import { PLANET_NATURE } from '@/components/kundli/kundli-utils';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
 import { Button } from '@/components/ui/button';
 
 /* ------------------------------------------------------------------ */
@@ -378,15 +377,14 @@ export default function DashaSelector({
 
       {/* Current period summary */}
       {currentData && (
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <div className="flex items-center justify-between mb-3">
-            <Heading as={4} variant={4} className="uppercase tracking-wide">
-              {l('Current Running Period', 'वर्तमान चल रही दशा')}
-            </Heading>
-            <span className="px-2 py-0.5 bg-muted text-white text-[10px] font-bold rounded animate-pulse">
-              {l('LIVE', 'लाइव')}
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+            <span>{l('Current Running Period', 'वर्तमान चल रही दशा')}</span>
+            <span className="px-2 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded animate-pulse">
+              ● {l('LIVE', 'लाइव')}
             </span>
           </div>
+          <div className="p-4">
           {(() => {
             const currentMD = periods.find((p) => p.is_current);
             const currentADList = currentMD?.antardasha?.find((a) => a.is_current);
@@ -426,18 +424,19 @@ export default function DashaSelector({
               </div>
             );
           })()}
+          </div>
         </div>
       )}
 
       {/* Full timeline with expandable tree */}
       {periods.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <Heading as={4} variant={4} className="mb-3">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {l('Dasha Timeline', 'दशा समयरेखा')}
-          </Heading>
+          </div>
           <div className="overflow-x-auto">
             <Table className="w-full text-xs">
-              <TableHeader className="bg-muted">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="w-8"></TableHead>
                   <TableHead className="text-left p-1.5 text-primary font-medium">
@@ -498,8 +497,8 @@ export default function DashaSelector({
 
                       {/* Yogini has no sub-periods in our current API — allow expand to show context */}
                       {selectedSystem === 'yogini' && isMdExpanded && (md.antardasha || []).length === 0 && (
-                        <TableRow className="bg-white/40">
-                          <TableCell colSpan={6} className="p-3 pl-10 text-[11px] text-foreground/70">
+                        <TableRow>
+                          <TableCell colSpan={6} className="p-3 pl-10 text-xs text-foreground/70">
                             {l('No sub-periods available for Yogini in this table yet.', 'योगिनी दशा के उप-अवधि इस तालिका में अभी उपलब्ध नहीं हैं।')}
                           </TableCell>
                         </TableRow>
@@ -517,7 +516,7 @@ export default function DashaSelector({
                         return (
                           <React.Fragment key={`${selectedSystem}-${adKey}`}>
                             <TableRow
-                              className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? `${periodBg(adNaturePlanet || ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/10'}`}
+                              className={`cursor-pointer transition-colors ${ad.is_current ? `${periodBg(adNaturePlanet || ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/5'}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (hasADChildren) setExpandedAD(isAdExpanded ? null : adKey);
@@ -553,17 +552,17 @@ export default function DashaSelector({
                               return (
                                 <TableRow
                                   key={ptKey}
-                                  className={`bg-white/60 transition-colors ${pt.is_current ? periodBg(pt.planet, true) : 'hover:bg-muted/5'}`}
+                                  className={`transition-colors ${pt.is_current ? periodBg(pt.planet, true) : 'hover:bg-muted/5'}`}
                                 >
                                   <TableCell className="p-1"></TableCell>
-                                  <TableCell className="p-1.5 pl-12 text-[11px]">
+                                  <TableCell className="p-1.5 pl-12 text-xs">
                                     <span className={`${pt.is_current ? 'text-primary font-bold' : periodColor(pt.planet)} opacity-80`}>
                                       {ptLabel}
                                     </span>
                                     {pt.is_current && <span className="ml-1 text-primary font-bold">{'\u25CF'}</span>}
                                   </TableCell>
-                                  <TableCell className="p-1.5 text-[11px] text-foreground opacity-60">{pt.start}</TableCell>
-                                  <TableCell className="p-1.5 text-[11px] text-foreground opacity-60">{pt.end}</TableCell>
+                                  <TableCell className="p-1.5 text-xs text-foreground opacity-60">{pt.start}</TableCell>
+                                  <TableCell className="p-1.5 text-xs text-foreground opacity-60">{pt.end}</TableCell>
                                   <TableCell className="p-1"></TableCell>
                                   <TableCell className="p-1"></TableCell>
                                 </TableRow>

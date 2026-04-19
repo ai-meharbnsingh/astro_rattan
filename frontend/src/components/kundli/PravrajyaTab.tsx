@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Loader2, Flame, CheckCircle2, BookOpen } from 'lucide-react';
+import { Loader2, Flame, CheckCircle2, BookOpen, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Heading } from '@/components/ui/heading';
 
 interface PravrajyaYoga {
   key: string;
@@ -72,29 +71,32 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <Flame className="w-6 h-6" />
-          {t('auto.pravrajyaYogas')}
-        </Heading>
-        <p className="text-sm text-muted-foreground">{t('auto.pravrajyaDesc')}</p>
+      {/* Header container */}
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Flame className="w-4 h-4" />
+          <span>{t('auto.pravrajyaYogas')}</span>
+          {data.has_ascetic_tendency && (
+            <span className="ml-auto text-[12px] font-normal bg-white/20 px-2 py-0.5 rounded">
+              {data.count} {data.count === 1 ? 'yoga' : 'yogas'} {isHi ? 'पाए गए' : 'detected'}
+            </span>
+          )}
+        </div>
+        <div className="px-4 py-3">
+          {data.has_ascetic_tendency ? (
+            <div className="flex items-start gap-3 text-sm text-foreground">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <span>{t('auto.asceticTendency')}</span>
+            </div>
+          ) : (
+            <div className="flex items-start gap-3 text-sm text-muted-foreground">
+              <XCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{t('auto.noPravrajyaFound')}</span>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground mt-1">{t('auto.pravrajyaDesc')}</p>
+        </div>
       </div>
-
-      {/* Status banner */}
-      {data.has_ascetic_tendency ? (
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold">{t('auto.asceticTendency')}</p>
-            <p className="text-sm mt-0.5">{data.count} {data.count === 1 ? 'yoga' : 'yogas'} {isHi ? 'पाए गए' : 'detected'}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 text-sm">
-          {t('auto.noPravrajyaFound')}
-        </div>
-      )}
 
       {/* Yoga cards */}
       {data.yogas_found.length > 0 && (
@@ -110,59 +112,57 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
             return (
               <div
                 key={yoga.key}
-                className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm"
+                className="rounded-xl border border-border bg-transparent overflow-hidden"
               >
-                {/* Name + strength badge */}
-                <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[13px] font-semibold flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-lg font-bold text-sacred-gold-dark">{name}</h3>
+                    <span>{name}</span>
                     {!isHi && yoga.name_hi && (
-                      <p className="text-xs text-muted-foreground">{yoga.name_hi}</p>
+                      <span className="ml-2 text-[11px] font-normal opacity-80">{yoga.name_hi}</span>
                     )}
                   </div>
-                  <div className="shrink-0 px-2 py-1 rounded-md bg-sacred-gold/15 text-xs font-semibold text-sacred-gold-dark">
-                    {yoga.strength}/10
-                  </div>
+                  <span className="shrink-0 text-[12px] bg-white/20 px-2 py-0.5 rounded">{yoga.strength}/10</span>
                 </div>
-
-                {/* Strength bar */}
-                <div className="mb-3">
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
-                    <span>{t('auto.yogaStrength')}</span>
-                    <span>{yoga.strength}/10</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-                    <div
-                      className={`h-full ${strengthColor} transition-all`}
-                      style={{ width: `${strengthPct}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Effect */}
-                <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
-
-                {/* Supporting factors */}
-                {yoga.supporting_factors.length > 0 && (
+                <div className="p-4">
+                  {/* Strength bar */}
                   <div className="mb-3">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                      {t('auto.supportingFactors')}
-                    </p>
-                    <ul className="space-y-1">
-                      {yoga.supporting_factors.map((f, i) => (
-                        <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
-                          <span className="text-sacred-gold mt-0.5">•</span>
-                          <span>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+                      <span>{t('auto.yogaStrength')}</span>
+                      <span>{yoga.strength}/10</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-border overflow-hidden">
+                      <div
+                        className={`h-full ${strengthColor} transition-all`}
+                        style={{ width: `${strengthPct}%` }}
+                      />
+                    </div>
                   </div>
-                )}
 
-                {/* Sloka ref */}
-                <div className="flex items-center gap-1.5 pt-2 border-t border-sacred-gold/15 text-[11px] text-muted-foreground">
-                  <BookOpen className="w-3 h-3" />
-                  <span className="italic">{yoga.sloka_ref}</span>
+                  {/* Effect */}
+                  <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
+
+                  {/* Supporting factors */}
+                  {yoga.supporting_factors.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                        {t('auto.supportingFactors')}
+                      </p>
+                      <ul className="space-y-1">
+                        {yoga.supporting_factors.map((f, i) => (
+                          <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
+                            <span className="text-sacred-gold-dark mt-0.5">•</span>
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Sloka ref */}
+                  <div className="flex items-center gap-1.5 pt-2 border-t border-border text-[11px] text-muted-foreground">
+                    <BookOpen className="w-3 h-3" />
+                    <span className="italic">{yoga.sloka_ref}</span>
+                  </div>
                 </div>
               </div>
             );

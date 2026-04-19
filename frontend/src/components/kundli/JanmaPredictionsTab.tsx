@@ -54,6 +54,20 @@ interface Props {
   t: (key: string) => string;
 }
 
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+
+function PillGroup({ items, cls }: { items: string[]; cls: string }) {
+  if (!items?.length) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {items.map((item, i) => (
+        <span key={i} className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>{item}</span>
+      ))}
+    </div>
+  );
+}
+
 export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<JanmaData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,16 +95,15 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
-      </div>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
     );
   }
 
@@ -99,21 +112,22 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
   const lp = data.lagna_profile;
   const mn = data.moon_nakshatra;
 
-  const lagnaName = isHi ? (lp.lagna_sign_hi || lp.lagna_sign) : lp.lagna_sign;
-  const bodyType = isHi ? lp.body_type_hi : lp.body_type_en;
-  const temperament = isHi ? lp.temperament_hi : lp.temperament_en;
-  const fortune = isHi ? lp.fortune_hi : lp.fortune_en;
-  const luckyDirs = isHi ? lp.lucky_directions_hi : lp.lucky_directions_en;
+  const lagnaName  = isHi ? (lp.lagna_sign_hi || lp.lagna_sign) : lp.lagna_sign;
+  const bodyType   = isHi ? lp.body_type_hi   : lp.body_type_en;
+  const temperament= isHi ? lp.temperament_hi : lp.temperament_en;
+  const fortune    = isHi ? lp.fortune_hi     : lp.fortune_en;
+  const luckyDirs  = isHi ? lp.lucky_directions_hi : lp.lucky_directions_en;
 
-  const deity = isHi ? mn.deity_hi : mn.deity_en;
-  const symbol = isHi ? mn.symbol_hi : mn.symbol_en;
-  const character = isHi ? mn.character_hi : mn.character_en;
-  const strengths = isHi ? mn.strengths_hi : mn.strengths_en;
-  const vulns = isHi ? mn.vulnerabilities_hi : mn.vulnerabilities_en;
-  const careers = isHi ? mn.career_affinity_hi : mn.career_affinity_en;
+  const deity    = isHi ? mn.deity_hi    : mn.deity_en;
+  const symbol   = isHi ? mn.symbol_hi   : mn.symbol_en;
+  const character= isHi ? mn.character_hi: mn.character_en;
+  const strengths= isHi ? mn.strengths_hi: mn.strengths_en;
+  const vulns    = isHi ? mn.vulnerabilities_hi : mn.vulnerabilities_en;
+  const careers  = isHi ? mn.career_affinity_hi : mn.career_affinity_en;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+
       {/* Header */}
       <div>
         <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
@@ -123,206 +137,168 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
         <p className="text-sm text-muted-foreground">{t('auto.janmaPredictionsDesc')}</p>
       </div>
 
-      {/* ── Section 1: Lagna Profile ── */}
-      <section>
-        <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <User className="w-5 h-5" />
-          {t('auto.lagnaProfile')}
+      {/* Lagna Profile */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <User className="w-4 h-4" />
+          <span>{t('auto.lagnaProfile')}</span>
           {lagnaName && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              — {lagnaName}
-            </span>
+            <span className="ml-auto text-[12px] font-normal bg-white/20 px-2 py-0.5 rounded">{lagnaName}</span>
           )}
-        </h3>
+        </div>
 
         {!lp.lagna_sign ? (
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {t('auto.lagnaNotAvailable')}
-          </div>
+          <div className="px-4 py-3 text-sm text-muted-foreground">{t('auto.lagnaNotAvailable')}</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5">
-              <div className="flex items-center gap-2 text-sacred-gold-dark mb-2 text-sm font-semibold">
-                <User className="w-4 h-4" />
+          <div className="divide-y divide-border">
+            {/* Body Type */}
+            <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground pt-0.5">
+                <User className="w-3.5 h-3.5 shrink-0" />
                 {t('auto.bodyType')}
               </div>
               <p className="text-sm text-foreground leading-relaxed">{bodyType}</p>
             </div>
 
-            <div className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5">
-              <div className="flex items-center gap-2 text-sacred-gold-dark mb-2 text-sm font-semibold">
-                <Flame className="w-4 h-4" />
+            {/* Temperament */}
+            <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground pt-0.5">
+                <Flame className="w-3.5 h-3.5 shrink-0" />
                 {t('auto.temperament')}
               </div>
               <p className="text-sm text-foreground leading-relaxed">{temperament}</p>
             </div>
 
-            <div className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5 md:col-span-2">
-              <div className="flex items-center gap-2 text-sacred-gold-dark mb-2 text-sm font-semibold">
-                <Sparkles className="w-4 h-4" />
+            {/* Fortune */}
+            <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground pt-0.5">
+                <Sparkles className="w-3.5 h-3.5 shrink-0" />
                 {t('auto.fortuneProfile')}
               </div>
               <p className="text-sm text-foreground leading-relaxed">{fortune}</p>
             </div>
 
-            {luckyDirs && luckyDirs.length > 0 && (
-              <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-5 md:col-span-2">
-                <div className="flex items-center gap-2 text-emerald-800 mb-2 text-sm font-semibold">
-                  <Compass className="w-4 h-4" />
+            {/* Lucky Directions */}
+            {luckyDirs?.length > 0 && (
+              <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground pt-0.5">
+                  <Compass className="w-3.5 h-3.5 shrink-0" />
                   {t('auto.luckyDirections')}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {luckyDirs.map((d, i) => (
-                    <span
-                      key={`${d}-${i}`}
-                      className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-200 text-emerald-900 border border-emerald-300"
-                    >
-                      {d}
-                    </span>
-                  ))}
-                </div>
+                <PillGroup items={luckyDirs} cls="bg-emerald-100 text-emerald-800 border border-emerald-200" />
               </div>
             )}
           </div>
         )}
 
         {lp.sloka_ref && (
-          <div className="flex items-center gap-1.5 mt-3 text-[11px] text-muted-foreground italic">
+          <div className="px-4 py-2 border-t border-border flex items-center gap-1.5 text-[11px] text-muted-foreground italic">
             <BookOpen className="w-3 h-3" />
             <span>{lp.sloka_ref}</span>
           </div>
         )}
-      </section>
+      </div>
 
-      {/* ── Section 2: Moon Nakshatra ── */}
-      <section>
-        <h3 className="text-lg font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <Moon className="w-5 h-5" />
-          {t('auto.moonNakshatra')}
+      {/* Moon Nakshatra */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Moon className="w-4 h-4" />
+          <span>{t('auto.moonNakshatra')}</span>
           {mn.nakshatra && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              — {mn.nakshatra} · {t('auto.pada')} {mn.pada}
+            <span className="ml-auto text-[12px] font-normal bg-white/20 px-2 py-0.5 rounded">
+              {mn.nakshatra} · {t('auto.pada')} {mn.pada}
             </span>
           )}
-        </h3>
+        </div>
 
         {!mn.nakshatra ? (
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 text-sm">
-            {t('auto.moonNakshatraNotAvailable')}
-          </div>
+          <div className="px-4 py-3 text-sm text-muted-foreground">{t('auto.moonNakshatraNotAvailable')}</div>
         ) : (
-          <div className="space-y-4">
-            {/* Deity + Symbol row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="rounded-xl border-2 border-indigo-200 bg-indigo-50 p-4">
-                <div className="text-[11px] uppercase tracking-wider text-indigo-700 font-semibold mb-1">
-                  {t('auto.deity')}
-                </div>
-                <div className="text-base font-bold text-indigo-900">{deity}</div>
+          <div className="divide-y divide-border">
+
+            {/* Deity + Symbol inline */}
+            <div className="px-4 py-3 grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">{t('auto.deity')}</p>
+                <p className="text-sm font-semibold text-foreground">{deity}</p>
               </div>
-              <div className="rounded-xl border-2 border-purple-200 bg-purple-50 p-4">
-                <div className="text-[11px] uppercase tracking-wider text-purple-700 font-semibold mb-1">
-                  {t('auto.symbol')}
-                </div>
-                <div className="text-base font-bold text-purple-900">{symbol}</div>
+              <div>
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">{t('auto.symbol')}</p>
+                <p className="text-sm font-semibold text-foreground">{symbol}</p>
               </div>
             </div>
 
             {/* Character */}
-            <div className="rounded-xl border-2 border-sacred-gold/30 bg-sacred-gold/5 p-5">
-              <div className="flex items-center gap-2 text-sacred-gold-dark mb-2 text-sm font-semibold">
-                <Moon className="w-4 h-4" />
+            <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground pt-0.5">
+                <Moon className="w-3.5 h-3.5 shrink-0" />
                 {t('auto.characterProfile')}
               </div>
               <p className="text-sm text-foreground leading-relaxed">{character}</p>
             </div>
 
-            {/* Strengths — green */}
-            {strengths && strengths.length > 0 && (
-              <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4">
-                <div className="flex items-center gap-2 text-emerald-800 mb-2 text-sm font-semibold">
-                  <CheckCircle2 className="w-4 h-4" />
+            {/* Strengths */}
+            {strengths?.length > 0 && (
+              <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 pt-0.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                   {t('auto.strengthsList')}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {strengths.map((s, i) => (
-                    <span
-                      key={`str-${i}`}
-                      className="text-xs font-medium px-3 py-1 rounded-full bg-emerald-200 text-emerald-900 border border-emerald-300"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
+                <PillGroup items={strengths} cls="bg-emerald-100 text-emerald-800 border border-emerald-200" />
               </div>
             )}
 
-            {/* Vulnerabilities — amber */}
-            {vulns && vulns.length > 0 && (
-              <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-4">
-                <div className="flex items-center gap-2 text-amber-800 mb-2 text-sm font-semibold">
-                  <AlertTriangle className="w-4 h-4" />
+            {/* Vulnerabilities */}
+            {vulns?.length > 0 && (
+              <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 pt-0.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                   {t('auto.vulnerabilitiesList')}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {vulns.map((v, i) => (
-                    <span
-                      key={`vul-${i}`}
-                      className="text-xs font-medium px-3 py-1 rounded-full bg-amber-200 text-amber-900 border border-amber-300"
-                    >
-                      {v}
-                    </span>
-                  ))}
-                </div>
+                <PillGroup items={vulns} cls="bg-amber-100 text-amber-800 border border-amber-200" />
               </div>
             )}
 
-            {/* Career affinity — blue */}
-            {careers && careers.length > 0 && (
-              <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
-                <div className="flex items-center gap-2 text-blue-800 mb-2 text-sm font-semibold">
-                  <Briefcase className="w-4 h-4" />
+            {/* Career Affinity */}
+            {careers?.length > 0 && (
+              <div className="px-4 py-3 grid grid-cols-[140px_1fr] gap-3 items-start">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 pt-0.5">
+                  <Briefcase className="w-3.5 h-3.5 shrink-0" />
                   {t('auto.careerAffinity')}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {careers.map((c, i) => (
-                    <span
-                      key={`car-${i}`}
-                      className="text-xs font-medium px-3 py-1 rounded-full bg-blue-200 text-blue-900 border border-blue-300"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
+                <PillGroup items={careers} cls="bg-blue-100 text-blue-800 border border-blue-200" />
               </div>
             )}
           </div>
         )}
 
         {mn.sloka_ref && (
-          <div className="flex items-center gap-1.5 mt-3 text-[11px] text-muted-foreground italic">
+          <div className="px-4 py-2 border-t border-border flex items-center gap-1.5 text-[11px] text-muted-foreground italic">
             <BookOpen className="w-3 h-3" />
             <span>{mn.sloka_ref}</span>
           </div>
         )}
-      </section>
+      </div>
 
-      {/* Combined narrative */}
+      {/* Combined Narrative */}
       {(data.combined_narrative_en || data.combined_narrative_hi) && (
-        <section className="rounded-xl border-2 border-sacred-gold/40 bg-gradient-to-br from-sacred-gold/10 to-amber-50 p-5">
-          <h3 className="text-base font-semibold text-sacred-gold-dark mb-2 flex items-center gap-2">
+        <div className={ohContainer}>
+          <div className={ohHeader}>
             <Sparkles className="w-4 h-4" />
-            {t('auto.combinedJanmaNarrative')}
-          </h3>
-          <p className="text-sm text-foreground leading-relaxed">
-            {isHi ? data.combined_narrative_hi : data.combined_narrative_en}
-          </p>
-        </section>
+            <span>{t('auto.combinedJanmaNarrative')}</span>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-sm text-foreground leading-relaxed">
+              {isHi ? data.combined_narrative_hi : data.combined_narrative_en}
+            </p>
+          </div>
+        </div>
       )}
 
-      {/* Footer sloka ref */}
-      <div className="text-center text-xs text-muted-foreground italic pt-4 border-t border-sacred-gold/20">
-        {data.sloka_ref}
+      {/* Footer */}
+      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground italic pt-2 border-t border-border">
+        <BookOpen className="w-3 h-3" />
+        <span>{data.sloka_ref}</span>
       </div>
     </div>
   );

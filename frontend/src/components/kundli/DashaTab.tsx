@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Loader2, ChevronDown } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet } from '@/lib/backend-translations';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
 function SookshmaSection({ kundliId, language, t }: { kundliId: string; language: string; t: (k: string) => string }) {
   const [data, setData] = useState<any>(null);
@@ -25,11 +24,11 @@ function SookshmaSection({ kundliId, language, t }: { kundliId: string; language
   if (!currentSookshma && !currentPrana) return null;
 
   return (
-    <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-      <Heading as={4} variant={4} className="mb-3">{hi ? 'सूक्ष्म-प्राण दशा' : 'Sookshma-Prana Dasha'}</Heading>
-      <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-        <Table className="w-full text-xs">
-          <TableHeader className="bg-muted">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{hi ? 'सूक्ष्म-प्राण दशा' : 'Sookshma-Prana Dasha'}</div>
+      <div className="overflow-x-auto">
+        <Table className="w-full text-xs table-fixed">
+          <TableHeader>
             <TableRow>
               <TableHead className="p-1.5 text-primary font-medium">{hi ? 'स्तर' : 'Level'}</TableHead>
               <TableHead className="p-1.5 text-primary font-medium">{hi ? 'स्वामी' : 'Lord'}</TableHead>
@@ -99,23 +98,23 @@ export default function DashaTab({
     return (
       <div className="space-y-6">
         {/* Current Dasha Summary Table */}
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-          <div className="flex items-center justify-between mb-3">
-            <Heading as={4} variant={4} className="uppercase tracking-wide">{t('section.currentDashaStatus')}</Heading>
-            <span className="px-2 py-0.5 bg-muted text-white text-[10px] font-bold rounded animate-pulse">● {l('LIVE', 'लाइव')}</span>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+            <span>{t('section.currentDashaStatus')}</span>
+            <span className="px-2 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded animate-pulse">● {l('LIVE', 'लाइव')}</span>
           </div>
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-            <Table className="w-full text-xs">
-              <TableHeader className="bg-muted">
+          <div>
+            <Table className="w-full text-xs table-fixed">
+              <TableHeader>
                 <TableRow>
-                  <TableHead className="text-left p-1.5 text-primary font-medium uppercase">{t('kundli.mahadasha')}</TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium uppercase">{t('kundli.antardasha')}</TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium uppercase">{t('kundli.pratyantar')}</TableHead>
-                  <TableHead className="text-center p-1.5 text-primary font-medium uppercase">{hi ? 'अवधि' : 'Period'}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('kundli.mahadasha')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('kundli.antardasha')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('kundli.pratyantar')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{hi ? 'अवधि' : 'Period'}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="border-t border-border bg-muted/5 font-semibold">
+                <TableRow className="border-t border-border hover:bg-muted/5 font-semibold">
                   <TableCell className="p-2 text-foreground text-sm">{translatePlanet(extendedDashaData.current_dasha, language)}</TableCell>
                   <TableCell className="p-2 text-foreground text-sm">{translatePlanet(extendedDashaData.current_antardasha, language)}</TableCell>
                   <TableCell className="p-2 text-foreground text-sm">{translatePlanet(extendedDashaData.current_pratyantar, language)}</TableCell>
@@ -129,17 +128,17 @@ export default function DashaTab({
         </div>
 
         {/* Full Dasha Timeline Table */}
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-          <Heading as={4} variant={4} className="mb-3">{hi ? 'विस्तृत दशा तालिका' : 'Detailed Dasha Timeline'}</Heading>
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-            <Table className="w-full text-xs">
-              <TableHeader className="bg-muted">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{hi ? 'विस्तृत दशा तालिका' : 'Detailed Dasha Timeline'}</div>
+          <div>
+            <Table className="w-full text-xs table-fixed">
+              <TableHeader>
                 <TableRow>
-                  <TableHead className="w-8"></TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'दशा स्वामी' : 'Dasha Lord'}</TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.start')}</TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.end')}</TableHead>
-                  <TableHead className="text-center p-1.5 text-primary font-medium">{t('table.years')}</TableHead>
+                  <TableHead className="w-8 p-1.5"></TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[28%]">{hi ? 'दशा स्वामी' : 'Dasha Lord'}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[22%]">{t('table.start')}</TableHead>
+                  <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[22%]">{t('table.end')}</TableHead>
+                  <TableHead className="text-center p-1.5 text-primary font-semibold uppercase tracking-wide w-[15%]">{t('table.years')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border/30">
@@ -173,7 +172,7 @@ export default function DashaTab({
                         return (
                           <React.Fragment key={adKey}>
                             <TableRow
-                              className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-muted/10'}`}
+                              className={`cursor-pointer transition-colors ${ad.is_current ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-muted/5'}`}
                               onClick={(e) => { e.stopPropagation(); setExpandedAntardasha(isAdExpanded ? null : adKey); }}
                             >
                               <TableCell className="p-1.5 text-center pl-4">
@@ -237,7 +236,7 @@ export default function DashaTab({
                             {isAdExpanded && (ad.pratyantar || []).map((pt: any, idx: number) => (
                               <TableRow
                                 key={idx}
-                                className={`bg-white/60 transition-colors ${pt.is_current ? 'bg-primary/5' : 'hover:bg-muted/5'}`}
+                                className={`transition-colors ${pt.is_current ? 'bg-primary/5' : 'hover:bg-muted/5'}`}
                               >
                                 <TableCell className="p-1"></TableCell>
                                 <TableCell className="p-1.5 pl-12 text-[11px]">
@@ -288,10 +287,11 @@ export default function DashaTab({
           )}
         </div>
 
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-            <Table className="w-full text-xs">
-              <TableHeader className="bg-muted">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{hi ? 'दशा तालिका' : 'Dasha Timeline'}</div>
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
                   <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.start')}</TableHead>

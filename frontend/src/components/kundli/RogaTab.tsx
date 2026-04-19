@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Activity, AlertTriangle, Clock, MapPin, HeartPulse, Info, BookOpen, ShieldAlert, Home } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Heading } from '@/components/ui/heading';
 
 interface GeneralTendency {
   planet: string;
@@ -82,19 +81,62 @@ interface Props {
   t: (key: string) => string;
 }
 
-const SEVERITY_COLOR: Record<string, string> = {
-  low: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  moderate: 'bg-amber-100 text-amber-800 border-amber-300',
-  severe: 'bg-red-100 text-red-800 border-red-300',
-  chronic: 'bg-red-200 text-red-900 border-red-400',
+const SEV: Record<string, string> = {
+  low:      'bg-emerald-100 text-emerald-800',
+  moderate: 'bg-amber-100 text-amber-800',
+  severe:   'bg-red-100 text-red-800',
+  chronic:  'bg-red-200 text-red-900',
+  high:     'bg-red-100 text-red-800',
+};
+const SEV_KEY: Record<string, string> = {
+  low:      'auto.severityLow',
+  moderate: 'auto.severityModerate',
+  severe:   'auto.severitySevere',
+  chronic:  'auto.severityChronic',
+  high:     'auto.severitySevere',
 };
 
-const SEVERITY_KEY: Record<string, string> = {
-  low: 'auto.severityLow',
-  moderate: 'auto.severityModerate',
-  severe: 'auto.severitySevere',
-  chronic: 'auto.severityChronic',
+const AFFLICTION_LABEL: Record<string, { en: string; hi: string }> = {
+  debilitated:         { en: 'Debilitated',    hi: 'नीच राशि में' },
+  combust:             { en: 'Combust',         hi: 'अस्त' },
+  aspected_by_malefic: { en: 'Malefic Aspect', hi: 'पाप ग्रह की दृष्टि' },
 };
+
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const thCenterCls = 'p-1.5 text-center text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top';
+const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
+
+function extractDateRange(text: string): { raw: string; label: string } | null {
+  // "2025–2027" / "2025-2027" / "2025 to 2027"
+  const range = text.match(/\b(20\d\d)\s*[-–—to]+\s*(20\d\d)\b/);
+  if (range) return { raw: range[0], label: `${range[1]}–${range[2]}` };
+  // "during 2026" / "in 2025"
+  const single = text.match(/\b(20\d\d)\b/);
+  if (single) return { raw: single[0], label: single[1] };
+  // dasha period like "Sun–Moon dasha" or "Saturn dasha"
+  const dasha = text.match(/\b(\w+[\s–\-]+(?:\w+\s+)?dasha)\b/i);
+  if (dasha) return { raw: dasha[0], label: dasha[1] };
+  return null;
+}
+
+function Points({ text }: { text: string }) {
+  if (!text) return null;
+  const pts = text.split(/[.;]\s+/).map(s => s.replace(/[.;]$/, '').trim()).filter(Boolean);
+  if (pts.length <= 1) return <span>{text}</span>;
+  return (
+    <ul className="space-y-0.5">
+      {pts.map((p, i) => (
+        <li key={i} className="flex items-start gap-1">
+          <span className="text-sacred-gold-dark mt-0.5 shrink-0">•</span>
+          <span>{p}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function RogaTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<RogaData | null>(null);
@@ -123,16 +165,15 @@ export default function RogaTab({ kundliId, language, t }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
-      </div>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
     );
   }
 
@@ -140,238 +181,259 @@ export default function RogaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <HeartPulse className="w-6 h-6" />
-          {t('auto.rogaAnalysis')}
-        </Heading>
-        <p className="text-sm text-muted-foreground">{t('auto.rogaDesc')}</p>
-      </div>
 
-      {/* Disclaimer */}
-      <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-start gap-2">
-        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-        <p>{t('auto.disclaimerHealth')}</p>
+      {/* Header */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <HeartPulse className="w-4 h-4" />
+          <span>{t('auto.rogaAnalysis')}</span>
+        </div>
+        <div className="px-4 py-2 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 border-t border-blue-100">
+          <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+          <p>{t('auto.disclaimerHealth')}</p>
+        </div>
       </div>
 
       {/* Special Yogas */}
-      <section>
-        <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5" />
-          {t('auto.specialDiseaseYogas')}
-        </h3>
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <AlertTriangle className="w-4 h-4" />
+          <span>{t('auto.specialDiseaseYogas')}</span>
+          <span className="ml-auto text-[12px] font-normal opacity-80">{data.special_yogas_detected.length}</span>
+        </div>
         {data.special_yogas_detected.length === 0 ? (
-          <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">
-            {t('auto.noRogaYogas')}
-          </div>
+          <div className="px-4 py-3 text-sm text-emerald-700">{t('auto.noRogaYogas')}</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {data.special_yogas_detected.map((y, i) => (
-              <div
-                key={`${y.key}-${i}`}
-                className={`rounded-xl border-2 p-4 ${SEVERITY_COLOR[y.severity] || SEVERITY_COLOR.moderate}`}
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h4 className="font-bold">{isHi ? y.name_hi : y.name_en}</h4>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-white/60">
-                    {t(SEVERITY_KEY[y.severity] || 'auto.severityModerate')}
-                  </span>
-                </div>
-                <p className="text-xs leading-relaxed mb-2 opacity-90">
-                  <span className="font-semibold">{t('auto.trigger')}:</span>{' '}
-                  {isHi ? y.trigger_hi : y.trigger_en}
-                </p>
-                <p className="text-xs leading-relaxed mb-2">
-                  <span className="font-semibold">{t('auto.remedy')}:</span>{' '}
-                  {isHi ? y.remedy_hi : y.remedy_en}
-                </p>
-                <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-current/15 text-[10px] opacity-70">
-                  <BookOpen className="w-3 h-3" />
-                  <span className="italic">{y.sloka_ref}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* General tendencies */}
-      <section>
-        <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <Activity className="w-5 h-5" />
-          {t('auto.diseaseTendencies')}
-        </h3>
-        {data.general_tendencies.length === 0 ? (
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 text-sm">
-            {t('auto.noMajorTendencies')}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {data.general_tendencies.map((g, i) => (
-              <div
-                key={`${g.planet}-${i}`}
-                className={`rounded-xl border-2 p-4 ${SEVERITY_COLOR[g.severity] || SEVERITY_COLOR.moderate}`}
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div>
-                    <p className="font-bold">
-                      {g.planet} — {t('auto.house')} {g.house}
-                    </p>
-                    <p className="text-[11px] opacity-80">
-                      {isHi ? g.body_part_hi : g.body_part_en}
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-white/60">
-                    {t(SEVERITY_KEY[g.severity] || 'auto.severityModerate')}
-                  </span>
-                </div>
-                <ul className="list-disc pl-4 text-xs space-y-0.5">
-                  {(isHi ? g.diseases_hi : g.diseases_en).map((d, di) => (
-                    <li key={di}>{d}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* 9-Planet Disease Matrix */}
-      {data.afflicted_planet_diseases && data.afflicted_planet_diseases.length > 0 && (
-        <section>
-          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5" />
-            {isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}
-          </h3>
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-            <table className="table-sacred w-full text-sm">
-              <thead>
-                <tr className="bg-muted/30">
-                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'ग्रह' : 'Planet'}</th>
-                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'पीड़ा का प्रकार' : 'Affliction'}</th>
-                  <th className="text-left p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'संभावित रोग' : 'Potential Diseases'}</th>
-                  <th className="text-center p-3 text-sacred-gold-dark font-bold border-b border-sacred-gold/15">{isHi ? 'गंभीरता' : 'Severity'}</th>
+          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <colgroup>
+              <col style={{ width: '20%' }} />
+              <col style={{ width: '30%' }} />
+              <col style={{ width: '30%' }} />
+              <col style={{ width: '20%' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className={thCls}>{isHi ? 'योग' : 'Yoga'}</th>
+                <th className={thCls}>{isHi ? 'कारण' : 'Trigger'}</th>
+                <th className={thCls}>{isHi ? 'उपाय' : 'Remedy'}</th>
+                <th className={thCenterCls}>{isHi ? 'प्रभाव' : 'Impact'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.special_yogas_detected.map((y, i) => (
+                <tr key={`${y.key}-${i}`}>
+                  <td className={tdWrapCls}>
+                    <p className="font-semibold text-foreground">{isHi ? y.name_hi : y.name_en}</p>
+                    {y.sloka_ref && (
+                      <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground italic">
+                        <BookOpen className="w-2.5 h-2.5 shrink-0" />
+                        <span>{y.sloka_ref}</span>
+                      </div>
+                    )}
+                  </td>
+                  <td className={tdWrapCls}><Points text={isHi ? y.trigger_hi : y.trigger_en} /></td>
+                  <td className={tdWrapCls}><Points text={isHi ? y.remedy_hi : y.remedy_en} /></td>
+                  <td className={`${tdCls} text-center`}>
+                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${SEV[y.severity] || SEV.moderate}`}>
+                      {t(SEV_KEY[y.severity] || 'auto.severityModerate')}
+                    </span>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {data.afflicted_planet_diseases.map((apd, i) => {
-                  const afflictionLabel: Record<string, { en: string; hi: string }> = {
-                    debilitated:         { en: 'Debilitated',       hi: 'नीच राशि में' },
-                    combust:             { en: 'Combust',            hi: 'अस्त' },
-                    aspected_by_malefic: { en: 'Malefic Aspect',    hi: 'पाप ग्रह की दृष्टि' },
-                  };
-                  const aLabel = afflictionLabel[apd.affliction_type] || { en: apd.affliction_type, hi: apd.affliction_type };
-                  const diseases = isHi ? apd.diseases_hi : apd.diseases_en;
-                  return (
-                    <tr key={i} className="border-t border-sacred-gold/10 hover:bg-muted/20">
-                      <td className="p-3 font-bold text-foreground">{apd.planet}</td>
-                      <td className="p-3">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-orange-100 text-orange-800 border border-orange-300">
-                          {isHi ? aLabel.hi : aLabel.en}
-                        </span>
-                      </td>
-                      <td className="p-3 text-foreground text-xs leading-relaxed">
-                        {diseases.slice(0, 3).join(', ')}
-                        {diseases.length > 3 && <span className="text-muted-foreground"> +{diseases.length - 3} more</span>}
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase border ${SEVERITY_COLOR[apd.severity] || SEVERITY_COLOR.moderate}`}>
-                          {t(SEVERITY_KEY[apd.severity] || 'auto.severityModerate')}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* General Tendencies */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Activity className="w-4 h-4" />
+          <span>{t('auto.diseaseTendencies')}</span>
+          <span className="ml-auto text-[12px] font-normal opacity-80">{data.general_tendencies.length}</span>
+        </div>
+        {data.general_tendencies.length === 0 ? (
+          <div className="px-4 py-3 text-sm text-muted-foreground">{t('auto.noMajorTendencies')}</div>
+        ) : (
+          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <colgroup>
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '8%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '42%' }} />
+              <col style={{ width: '16%' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className={thCls}>{isHi ? 'ग्रह' : 'Planet'}</th>
+                <th className={thCls}>{isHi ? 'भाव' : 'H'}</th>
+                <th className={thCls}>{isHi ? 'अंग' : 'Body Part'}</th>
+                <th className={thCls}>{isHi ? 'रोग' : 'Diseases'}</th>
+                <th className={thCenterCls}>{isHi ? 'गंभीरता' : 'Severity'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.general_tendencies.map((g, i) => (
+                <tr key={`${g.planet}-${i}`}>
+                  <td className={`${tdCls} font-semibold`}>{g.planet}</td>
+                  <td className={tdCls}>{g.house}</td>
+                  <td className={tdWrapCls}>{isHi ? g.body_part_hi : g.body_part_en}</td>
+                  <td className={tdWrapCls}>{(isHi ? g.diseases_hi : g.diseases_en).join(', ')}</td>
+                  <td className={`${tdCls} text-center`}>
+                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${SEV[g.severity] || SEV.moderate}`}>
+                      {t(SEV_KEY[g.severity] || 'auto.severityModerate')}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Planet Affliction Disease Matrix */}
+      {data.afflicted_planet_diseases && data.afflicted_planet_diseases.length > 0 && (
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <ShieldAlert className="w-4 h-4" />
+            <span>{isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}</span>
           </div>
-        </section>
+          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <colgroup>
+              <col style={{ width: '14%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '48%' }} />
+              <col style={{ width: '16%' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className={thCls}>{isHi ? 'ग्रह' : 'Planet'}</th>
+                <th className={thCls}>{isHi ? 'पीड़ा' : 'Affliction'}</th>
+                <th className={thCls}>{isHi ? 'संभावित रोग' : 'Diseases'}</th>
+                <th className={thCenterCls}>{isHi ? 'गंभीरता' : 'Severity'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.afflicted_planet_diseases.map((apd, i) => {
+                const aLabel = AFFLICTION_LABEL[apd.affliction_type] || { en: apd.affliction_type, hi: apd.affliction_type };
+                const diseases = isHi ? apd.diseases_hi : apd.diseases_en;
+                return (
+                  <tr key={i}>
+                    <td className={`${tdCls} font-semibold`}>{apd.planet}</td>
+                    <td className={tdCls}>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-orange-100 text-orange-800">
+                        {isHi ? aLabel.hi : aLabel.en}
+                      </span>
+                    </td>
+                    <td className={tdWrapCls}>
+                      {diseases.slice(0, 3).join(', ')}
+                      {diseases.length > 3 && <span className="text-muted-foreground"> +{diseases.length - 3}</span>}
+                    </td>
+                    <td className={`${tdCls} text-center`}>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${SEV[apd.severity] || SEV.moderate}`}>
+                        {t(SEV_KEY[apd.severity] || 'auto.severityModerate')}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* 6th House Disease Profile */}
       {data.sixth_house_disease_profile && (
-        <section>
-          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-            <Home className="w-5 h-5" />
-            {isHi ? 'षष्ठ भाव रोग प्रवृत्ति' : '6th House Disease Profile'}
-          </h3>
-          <div className="p-4 rounded-xl border border-sacred-gold/25 bg-sacred-gold/5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="font-bold text-sacred-gold-dark text-lg">
-                {isHi ? 'षष्ठ भाव राशि' : '6th House Sign'}:
-              </span>
-              <span className="px-3 py-1 rounded-full bg-sacred-gold/20 border border-sacred-gold/40 font-bold text-sacred-gold-dark">
-                {data.sixth_house_disease_profile.sign}
-              </span>
-            </div>
-            <p className="text-sm text-foreground mb-3 leading-relaxed">
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <Home className="w-4 h-4" />
+            <span>{isHi ? 'षष्ठ भाव रोग प्रवृत्ति' : '6th House Disease Profile'}</span>
+            <span className="ml-auto text-[12px] font-normal bg-white/20 px-2 py-0.5 rounded">
+              {data.sixth_house_disease_profile.sign}
+            </span>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-sm text-foreground leading-relaxed mb-3">
               {isHi ? data.sixth_house_disease_profile.note_hi : data.sixth_house_disease_profile.note_en}
             </p>
-            <div>
-              <p className="text-xs font-semibold text-foreground/70 mb-1 uppercase tracking-wide">
-                {isHi ? 'प्रवृत्त क्षेत्र' : 'Prone Areas'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {(isHi ? data.sixth_house_disease_profile.prone_areas_hi : data.sixth_house_disease_profile.prone_areas_en).map((area, i) => (
-                  <span key={i} className="px-2 py-0.5 rounded-full text-xs bg-red-50 text-red-800 border border-red-200">
-                    {area}
-                  </span>
-                ))}
-              </div>
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+              {isHi ? 'प्रवृत्त क्षेत्र' : 'Prone Areas'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {(isHi ? data.sixth_house_disease_profile.prone_areas_hi : data.sixth_house_disease_profile.prone_areas_en).map((area, i) => (
+                <span key={i} className="px-2 py-0.5 rounded text-xs bg-red-50 text-red-800 border border-red-200">
+                  {area}
+                </span>
+              ))}
             </div>
           </div>
-        </section>
+        </div>
       )}
 
-      {/* Body parts */}
+      {/* Body Parts Affected */}
       {data.body_parts_affected.length > 0 && (
-        <section>
-          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-            <MapPin className="w-5 h-5" />
-            {t('auto.bodyPartsAffected')}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-            {data.body_parts_affected.map((b, i) => (
-              <div
-                key={i}
-                className="p-3 rounded-lg border border-sacred-gold/25 bg-sacred-gold/5 text-sm"
-              >
-                <p className="font-semibold text-foreground">
-                  {isHi ? 'भाव' : 'House'} {b.house}: {isHi ? b.part_hi : b.part_en}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  {isHi ? 'कारण' : 'Due to'}: {isHi ? b.due_to_hi : b.due_to_en}
-                </p>
-              </div>
-            ))}
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <MapPin className="w-4 h-4" />
+            <span>{t('auto.bodyPartsAffected')}</span>
           </div>
-        </section>
+          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <colgroup>
+              <col style={{ width: '10%' }} />
+              <col style={{ width: '35%' }} />
+              <col style={{ width: '55%' }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th className={thCls}>{isHi ? 'भाव' : 'H'}</th>
+                <th className={thCls}>{isHi ? 'अंग' : 'Body Part'}</th>
+                <th className={thCls}>{isHi ? 'कारण' : 'Due To'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.body_parts_affected.map((b, i) => (
+                <tr key={i}>
+                  <td className={`${tdCls} font-semibold`}>{b.house}</td>
+                  <td className={tdCls}>{isHi ? b.part_hi : b.part_en}</td>
+                  <td className={tdWrapCls}>{isHi ? b.due_to_hi : b.due_to_en}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* Timing */}
+      {/* Timing Indicators */}
       {data.timing_indicators.length > 0 && (
-        <section>
-          <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            {t('auto.timingIndicators')}
-          </h3>
-          <ul className="space-y-1.5">
-            {data.timing_indicators.map((ti, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-sm p-3 rounded-lg border border-sacred-gold/20 bg-white"
-              >
-                <Clock className="w-3.5 h-3.5 text-sacred-gold-dark shrink-0 mt-0.5" />
-                <span>{isHi ? ti.hi : ti.en}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <Clock className="w-4 h-4" />
+            <span>{t('auto.timingIndicators')}</span>
+          </div>
+          <div className="divide-y divide-border">
+            {data.timing_indicators.map((ti, i) => {
+              const text = isHi ? ti.hi : ti.en;
+              const range = extractDateRange(text);
+              const rest = range ? text.replace(range.raw, '').replace(/^\s*[:\-–—]\s*/, '').trim() : text;
+              return (
+                <div key={i} className="flex items-start gap-3 px-4 py-2.5">
+                  {range ? (
+                    <span className="shrink-0 text-[11px] font-bold px-2 py-0.5 rounded bg-sacred-gold-dark text-white whitespace-nowrap">
+                      {range.label}
+                    </span>
+                  ) : (
+                    <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  )}
+                  <span className="text-xs text-foreground leading-relaxed">{rest || text}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
-      {/* Sloka ref footer */}
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-2 border-t border-sacred-gold/15">
+      {/* Sloka footer */}
+      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-2 border-t border-border">
         <BookOpen className="w-3 h-3" />
         <span className="italic">{data.sloka_ref}</span>
       </div>

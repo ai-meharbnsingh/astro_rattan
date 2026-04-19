@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Loader2, TrendingUp, Compass, Sparkles, Gauge, BookOpen, Info } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Heading } from '@/components/ui/heading';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
 // ───────────────────────────────────────────────────────────────
 // Types
@@ -153,10 +153,10 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <p className="text-[18px] font-bold text-sacred-gold-dark mb-1 flex items-center gap-2">
           <Sparkles className="w-6 h-6" />
           {t('auto.ashtakvargaPhala')}
-        </Heading>
+        </p>
         <p className="text-sm text-muted-foreground">{t('auto.ashtakvargaPhalaDesc')}</p>
       </div>
 
@@ -303,43 +303,39 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
 
       {/* Transit Recommendations (strongest / weakest per planet) */}
       <section>
-        <h3 className="text-lg font-bold text-sacred-gold-dark mb-3 flex items-center gap-2">
-          <Info className="w-5 h-5" />
-          {t('auto.bestWorstTransitRasi')}
-        </h3>
-        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-          <table className="table-sacred w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-sacred-gold/30 bg-sacred-gold/5">
-                <th className="text-left p-2 font-semibold">{t('auto.planet')}</th>
-                <th className="text-left p-2 font-semibold text-emerald-700">
-                  {t('auto.strongestTransit')}
-                </th>
-                <th className="text-left p-2 font-semibold text-red-700">
-                  {t('auto.weakestTransit')}
-                </th>
-                <th className="text-left p-2 font-semibold">{t('auto.guidance')}</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <Info className="w-4 h-4" />
+            {t('auto.bestWorstTransitRasi')}
+          </div>
+          <Table className="w-full text-xs table-fixed">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{t('auto.planet')}</TableHead>
+                <TableHead className="text-left p-2 font-semibold uppercase tracking-wide w-[20%] text-emerald-700">{t('auto.strongestTransit')}</TableHead>
+                <TableHead className="text-left p-2 font-semibold uppercase tracking-wide w-[20%] text-red-700">{t('auto.weakestTransit')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[45%]">{t('auto.guidance')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.transit_recommendations.map((r) => (
-                <tr key={r.planet} className="border-b border-sacred-gold/15">
-                  <td className="p-2 font-semibold">{translatePlanet(r.planet, language)}</td>
-                  <td className="p-2 text-emerald-700">
+                <TableRow key={r.planet} className="border-t border-border hover:bg-muted/5 align-top">
+                  <TableCell className="p-2 font-semibold text-foreground">{translatePlanet(r.planet, language)}</TableCell>
+                  <TableCell className="p-2 text-emerald-700">
                     {translateSign(r.strongest_rasi, language)}{' '}
-                    <span className="text-xs tabular-nums">({r.strongest_bindus})</span>
-                  </td>
-                  <td className="p-2 text-red-700">
+                    <span className="text-[10px] tabular-nums">({r.strongest_bindus})</span>
+                  </TableCell>
+                  <TableCell className="p-2 text-red-700">
                     {translateSign(r.weakest_rasi, language)}{' '}
-                    <span className="text-xs tabular-nums">({r.weakest_bindus})</span>
-                  </td>
-                  <td className="p-2 text-xs leading-snug opacity-90">
+                    <span className="text-[10px] tabular-nums">({r.weakest_bindus})</span>
+                  </TableCell>
+                  <TableCell className="p-2 whitespace-normal break-words max-w-0 text-foreground/90">
                     {isHi ? r.guidance_hi : r.guidance_en}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         <p className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
           <BookOpen className="w-3 h-3" />Phaladeepika Adh. 24

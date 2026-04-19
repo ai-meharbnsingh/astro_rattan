@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Heart, AlertTriangle, BookOpen, Info, CheckCircle2 } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Heading } from '@/components/ui/heading';
 
 interface StriYoga {
   key: string;
@@ -53,11 +52,18 @@ interface Props {
 }
 
 const severityStyles: Record<string, { badge: string; label_en: string; label_hi: string }> = {
-  auspicious:  { badge: 'bg-emerald-100 text-emerald-800 border-emerald-200', label_en: 'Auspicious',  label_hi: 'शुभ' },
-  moderate:    { badge: 'bg-amber-100 text-amber-800 border-amber-200',      label_en: 'Moderate',    label_hi: 'मध्यम' },
-  challenging: { badge: 'bg-orange-100 text-orange-800 border-orange-200',   label_en: 'Challenging', label_hi: 'कठिन' },
-  high:        { badge: 'bg-red-100 text-red-800 border-red-300',            label_en: 'High Risk',   label_hi: 'गंभीर' },
+  auspicious:  { badge: 'bg-emerald-100 text-emerald-800', label_en: 'Auspicious',  label_hi: 'शुभ' },
+  moderate:    { badge: 'bg-amber-100 text-amber-800',     label_en: 'Moderate',    label_hi: 'मध्यम' },
+  challenging: { badge: 'bg-orange-100 text-orange-800',   label_en: 'Challenging', label_hi: 'कठिन' },
+  high:        { badge: 'bg-red-100 text-red-800',         label_en: 'High Risk',   label_hi: 'गंभीर' },
 };
+
+const thCls = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls = 'p-1.5 text-xs text-foreground border-t border-border align-top';
+const tdMuted = 'p-1.5 text-xs text-muted-foreground border-t border-border align-top';
+
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
 
 export default function StriJatakaTab({ kundliId, language, t }: Props) {
   const [data, setData] = useState<StriJatakaData | null>(null);
@@ -86,37 +92,37 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
-      </div>
+      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
     );
   }
 
   if (!data) return null;
 
-  // Not applicable (male/other)
   if (!data.applicable) {
     return (
       <div className="space-y-6">
-        <div>
-          <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-            <Heart className="w-6 h-6" />
-            {t('auto.striJataka')}
-          </Heading>
-          <p className="text-sm text-muted-foreground">{t('auto.striJatakaDesc')}</p>
-        </div>
-        <div className="p-5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold">{t('auto.striJatakaNotApplicable')}</p>
-            {data.reason && <p className="text-sm mt-1">{data.reason}</p>}
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <Heart className="w-4 h-4" />
+            <span>{t('auto.striJataka')}</span>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-xs text-muted-foreground mb-3">{t('auto.striJatakaDesc')}</p>
+            <div className="flex items-start gap-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
+              <div>
+                <p className="font-semibold">{t('auto.striJatakaNotApplicable')}</p>
+                {data.reason && <p className="text-sm mt-1">{data.reason}</p>}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,161 +130,139 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
   }
 
   const prospect = data.marital_prospect;
-  const prospectStyle =
-    prospect === 'favorable'
-      ? { bg: 'bg-emerald-50 border-emerald-300', text: 'text-emerald-900', label: t('auto.prospectFavorable') }
-      : prospect === 'challenging'
-      ? { bg: 'bg-red-50 border-red-300', text: 'text-red-900', label: t('auto.prospectChallenging') }
-      : { bg: 'bg-amber-50 border-amber-300', text: 'text-amber-900', label: t('auto.prospectMixed') };
+  const prospectBadge =
+    prospect === 'favorable' ? 'bg-emerald-100 text-emerald-800' :
+    prospect === 'challenging' ? 'bg-red-100 text-red-800' :
+    'bg-amber-100 text-amber-800';
+  const prospectLabel =
+    prospect === 'favorable' ? t('auto.prospectFavorable') :
+    prospect === 'challenging' ? t('auto.prospectChallenging') :
+    t('auto.prospectMixed');
 
   const sa = data.seventh_house_analysis || {};
   const recs = isHi ? data.recommendations_hi : data.recommendations_en;
 
+  const rows7th: { label: string; value: string }[] = [
+    { label: t('auto.seventhLord'), value: [sa.seventh_lord, sa.seventh_lord_sign ? `(${sa.seventh_lord_sign})` : ''].filter(Boolean).join(' ') || '—' },
+    { label: t('auto.placement'), value: sa.seventh_lord_placement ? `${t('auto.house')} ${sa.seventh_lord_placement}` : '—' },
+    { label: t('auto.strength'), value: sa.seventh_lord_strength || '—' },
+    ...(sa.seventh_lord_nakshatra ? [{ label: isHi ? 'नक्षत्र' : 'Nakshatra', value: sa.seventh_lord_nakshatra }] : []),
+    { label: t('auto.maleficsIn7th'), value: sa.malefics_in_7th?.length ? sa.malefics_in_7th.join(', ') : '—' },
+    { label: t('auto.beneficsIn7th'), value: sa.benefics_in_7th?.length ? sa.benefics_in_7th.join(', ') : '—' },
+    { label: t('auto.jupiterAspects7th'), value: sa.jupiter_aspects_7th ? t('common.yes') : t('common.no') },
+  ];
+
   return (
     <div className="space-y-6">
+
       {/* Header */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <Heart className="w-6 h-6" />
-          {t('auto.striJataka')}
-        </Heading>
-        <p className="text-sm text-muted-foreground">{t('auto.striJatakaDesc')}</p>
-      </div>
-
-      {/* Marital prospect banner */}
-      <div className={`p-4 rounded-xl border ${prospectStyle.bg} ${prospectStyle.text} flex items-start gap-3`}>
-        <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-xs uppercase tracking-wide opacity-70">{t('auto.maritalProspect')}</p>
-          <p className="text-lg font-bold">{prospectStyle.label}</p>
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Heart className="w-4 h-4" />
+          <span>{t('auto.striJataka')}</span>
+          <span className={`ml-auto text-[12px] font-semibold px-2 py-0.5 rounded capitalize ${prospectBadge}`}>
+            <CheckCircle2 className="w-3 h-3 inline mr-1" />
+            {prospectLabel}
+          </span>
+        </div>
+        <div className="px-4 py-2">
+          <p className="text-xs text-muted-foreground">{t('auto.striJatakaDesc')}</p>
         </div>
       </div>
 
-      {/* 7th house analysis */}
-      <div className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm">
-        <h3 className="text-base font-semibold text-sacred-gold-dark mb-3 flex items-center gap-2">
+      {/* 7th House Analysis */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
           <Info className="w-4 h-4" />
-          {t('auto.seventhHouseAnalysis')}
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{t('auto.seventhLord')}</p>
-            <p className="font-medium">
-              {sa.seventh_lord || '—'}{sa.seventh_lord_sign ? ` (${sa.seventh_lord_sign})` : ''}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {t('auto.placement')}
-            </p>
-            <p className="font-medium">
-              {sa.seventh_lord_placement ? `${t('auto.house')} ${sa.seventh_lord_placement}` : '—'}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {t('auto.strength')}
-            </p>
-            <p className="font-medium capitalize">{sa.seventh_lord_strength || '—'}</p>
-          </div>
-          {sa.seventh_lord_nakshatra && (
-            <div>
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                {isHi ? 'नक्षत्र' : 'Nakshatra'}
-              </p>
-              <p className="font-medium">{sa.seventh_lord_nakshatra}</p>
-            </div>
-          )}
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {t('auto.maleficsIn7th')}
-            </p>
-            <p className="font-medium">{sa.malefics_in_7th?.length ? sa.malefics_in_7th.join(', ') : '—'}</p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {t('auto.beneficsIn7th')}
-            </p>
-            <p className="font-medium">{sa.benefics_in_7th?.length ? sa.benefics_in_7th.join(', ') : '—'}</p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-              {t('auto.jupiterAspects7th')}
-            </p>
-            <p className="font-medium">
-              {sa.jupiter_aspects_7th ? t('common.yes') : t('common.no')}
-            </p>
-          </div>
+          <span>{t('auto.seventhHouseAnalysis')}</span>
         </div>
-        <p className="text-sm text-foreground/80 mt-4 leading-relaxed">
-          {isHi ? sa.interpretation_hi : sa.interpretation_en}
-        </p>
+        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <colgroup>
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '60%' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th className={thCls}>{isHi ? 'विषय' : 'Factor'}</th>
+              <th className={thCls}>{isHi ? 'विवरण' : 'Detail'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows7th.map((r, i) => (
+              <tr key={i}>
+                <td className={tdMuted}>{r.label}</td>
+                <td className={`${tdCls} font-medium capitalize`}>{r.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {(sa.interpretation_en || sa.interpretation_hi) && (
+          <div className="px-3 py-2 border-t border-border">
+            <p className="text-xs text-foreground/80 leading-relaxed">
+              {isHi ? sa.interpretation_hi : sa.interpretation_en}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Female Mangal Dosha (Phaladeepika Adh. 11) */}
+      {/* Female Mangal Dosha */}
       {data.female_mangal_note_en && (
-        <div className={`p-4 rounded-xl border flex items-start gap-3 ${
-          data.mars_house === 8 ? 'bg-red-50 border-red-300 text-red-900' :
-          data.mars_house === 7 ? 'bg-orange-50 border-orange-300 text-orange-900' :
-          'bg-amber-50 border-amber-300 text-amber-900'
-        }`}>
-          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-1">
-              {isHi ? 'मांगलिक दोष — स्त्री-जातक विशेष (अध्याय 11)' : 'Mangal Dosha — Female Chart (Adh. 11)'}
-            </p>
-            <p className="text-sm leading-relaxed">
+        <div className={ohContainer}>
+          <div className={`${ohHeader} ${
+            data.mars_house === 8 ? 'bg-red-700' :
+            data.mars_house === 7 ? 'bg-orange-700' :
+            'bg-amber-700'
+          }`}>
+            <AlertTriangle className="w-4 h-4" />
+            <span>{isHi ? 'मांगलिक दोष — स्त्री-जातक (अध्याय 11)' : 'Mangal Dosha — Female Chart (Adh. 11)'}</span>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-sm leading-relaxed text-foreground">
               {isHi ? data.female_mangal_note_hi : data.female_mangal_note_en}
             </p>
           </div>
         </div>
       )}
 
-      {/* Detected yogas */}
-      {data.yogas_detected.length > 0 ? (
-        <div>
-          <h3 className="text-base font-semibold text-sacred-gold-dark mb-3">
-            {t('auto.detectedYogas')} ({data.yogas_detected.length})
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Detected Yogas */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Heart className="w-4 h-4" />
+          <span>{t('auto.detectedYogas')}</span>
+          <span className="ml-auto text-[12px] font-normal opacity-80">{data.yogas_detected.length}</span>
+        </div>
+        {data.yogas_detected.length === 0 ? (
+          <div className="px-4 py-3 text-sm text-muted-foreground">{t('auto.noStriJatakaYogas')}</div>
+        ) : (
+          <div className="p-3 grid grid-cols-1 md:grid-cols-2 gap-3">
             {data.yogas_detected.map((y) => {
               const name = isHi ? y.name_hi : y.name_en;
               const effect = isHi ? y.effect_hi : y.effect_en;
               const sev = severityStyles[y.severity] || severityStyles.moderate;
               const sevLabel = isHi ? sev.label_hi : sev.label_en;
               return (
-                <div
-                  key={y.key}
-                  className="p-5 rounded-xl border border-sacred-gold/30 bg-gradient-to-br from-[#FFF9F5] to-white shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-2">
+                <div key={y.key} className="rounded-lg border border-border p-3">
+                  <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <h4 className="text-lg font-bold text-sacred-gold-dark">{name}</h4>
-                      {!isHi && y.name_hi && (
-                        <p className="text-xs text-muted-foreground">{y.name_hi}</p>
-                      )}
+                      <p className="text-sm font-semibold text-foreground">{name}</p>
+                      {!isHi && y.name_hi && <p className="text-[10px] text-muted-foreground">{y.name_hi}</p>}
                     </div>
-                    <span className={`shrink-0 px-2 py-1 rounded-md text-[11px] font-semibold border ${sev.badge}`}>
+                    <span className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${sev.badge}`}>
                       {sevLabel}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground leading-relaxed mb-3">{effect}</p>
+                  <p className="text-xs text-foreground/80 leading-relaxed mb-2">{effect}</p>
                   {y.supporting_factors && y.supporting_factors.length > 0 && (
-                    <div className="mb-3">
-                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                        {t('auto.supportingFactors')}
-                      </p>
-                      <ul className="space-y-1">
-                        {y.supporting_factors.map((f, i) => (
-                          <li key={i} className="text-xs text-foreground/80 flex items-start gap-1.5">
-                            <span className="text-sacred-gold mt-0.5">•</span>
-                            <span>{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <ul className="space-y-0.5 mb-2">
+                      {y.supporting_factors.map((f, i) => (
+                        <li key={i} className="text-xs text-foreground/70 flex items-start gap-1.5">
+                          <span className="text-sacred-gold-dark mt-0.5">•</span>
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
                   )}
-                  <div className="flex items-center gap-1.5 pt-2 border-t border-sacred-gold/15 text-[11px] text-muted-foreground">
+                  <div className="flex items-center gap-1.5 pt-2 border-t border-border text-[11px] text-muted-foreground">
                     <BookOpen className="w-3 h-3" />
                     <span className="italic">{y.sloka_ref}</span>
                   </div>
@@ -286,32 +270,31 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
               );
             })}
           </div>
-        </div>
-      ) : (
-        <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 text-sm">
-          {t('auto.noStriJatakaYogas')}
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Recommendations */}
       {recs.length > 0 && (
-        <div className="p-5 rounded-xl border border-sacred-gold/30 bg-white shadow-sm">
-          <h3 className="text-base font-semibold text-sacred-gold-dark mb-3">
-            {t('auto.recommendations')}
-          </h3>
-          <ul className="space-y-2">
-            {recs.map((r, i) => (
-              <li key={i} className="text-sm text-foreground/90 flex items-start gap-2">
-                <span className="text-sacred-gold mt-0.5">•</span>
-                <span>{r}</span>
-              </li>
-            ))}
-          </ul>
+        <div className={ohContainer}>
+          <div className={ohHeader}>
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{t('auto.recommendations')}</span>
+          </div>
+          <div className="px-4 py-3">
+            <ul className="space-y-1.5">
+              {recs.map((r, i) => (
+                <li key={i} className="text-sm text-foreground/90 flex items-start gap-2">
+                  <span className="text-sacred-gold-dark mt-0.5">•</span>
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 
       {/* Sloka footer */}
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground italic border-t border-sacred-gold/15 pt-3">
+      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground italic border-t border-border pt-3">
         <BookOpen className="w-3 h-3" />
         <span>{data.sloka_ref}</span>
       </div>

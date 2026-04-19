@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
-import InteractiveKundli, { type ChartData } from '@/components/InteractiveKundli';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -88,9 +87,7 @@ function MokshaGauge({ score, level, description, language }: {
   return (
     <div className="bg-white rounded-lg p-4 border border-border/20">
       <div className="flex items-center justify-between mb-2">
-        <Heading as={5} variant={5}>
-          {hi ? 'मोक्ष संभावना' : 'Moksha Potential'}
-        </Heading>
+        <p className="font-semibold text-sm text-foreground">{hi ? 'मोक्ष संभावना' : 'Moksha Potential'}</p>
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
           pct >= 70 ? 'bg-green-100 text-green-700 border border-green-200' :
           pct >= 40 ? 'bg-amber-100 text-amber-700 border border-amber-200' :
@@ -139,7 +136,61 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
       setError(null);
       try {
         const res = await api.get(`/api/kundli/${kundliId}/d108-analysis`);
-        if (!cancelled) setData(res);
+
+        // Normalize API response → component shape
+        const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+        // d108_positions dict → planet_positions array
+        const d108Pos = res.d108_positions || {};
+        const planetPositions: PlanetPosition[] = Object.entries(d108Pos).map(([planet, info]: [string, any]) => ({
+          planet,
+          sign: info.sign,
+          sign_degree: info.degree || 0,
+          house: Math.max(1, SIGNS.indexOf(info.sign) + 1),
+          nakshatra: '',
+        }));
+
+        // spiritual_indicators: {planet, condition, sign, meaning} → {name, description, strength}
+        const spiritualIndicators: SpiritualIndicator[] = (res.spiritual_indicators || []).map((si: any) => ({
+          name: `${si.planet} — ${si.condition === 'exalted' ? 'Exalted' : 'Own Sign'} in ${si.sign}`,
+          name_hi: `${si.planet} — ${si.condition === 'exalted' ? 'उच्च राशि' : 'स्वराशि'} (${si.sign})`,
+          description: si.meaning || '',
+          description_hi: si.meaning || '',
+          strength: (si.condition === 'exalted' ? 'strong' : 'moderate') as 'strong' | 'moderate' | 'weak',
+        }));
+        // append moksha factors as strong indicators
+        ((res.moksha_potential?.factors || []) as string[]).forEach((f: string) => {
+          spiritualIndicators.push({ name: f, name_hi: f, description: '', description_hi: '', strength: 'strong' });
+        });
+
+        // moksha_potential: {score, max, factors} → {score, level, description}
+        const rawScore = res.moksha_potential?.score ?? 0;
+        const mokshaLevel = rawScore >= 70 ? 'high' : rawScore >= 40 ? 'moderate' : 'low';
+        const mokshaPotential = res.moksha_potential ? {
+          score: rawScore,
+          level: mokshaLevel,
+          description: res.interpretation,
+          description_hi: res.interpretation,
+        } : undefined;
+
+        // past_life_karma: {axis?, planet?, meaning} → {title, description, planet?}
+        const pastLifeKarma: PastLifeKarma[] = (res.past_life_karma || []).map((k: any) => ({
+          title: k.axis || k.planet || 'Karmic Pattern',
+          title_hi: k.axis || k.planet || 'कर्म पैटर्न',
+          description: k.meaning || '',
+          description_hi: k.meaning || '',
+          planet: k.planet,
+        }));
+
+        const normalized: D108Data = {
+          planet_positions: planetPositions,
+          spiritual_indicators: spiritualIndicators,
+          moksha_potential: mokshaPotential,
+          past_life_karma: pastLifeKarma,
+          interpretation: res.interpretation,
+        };
+
+        if (!cancelled) setData(normalized);
       } catch (err: any) {
         if (!cancelled) setError(err?.message || 'Failed to load D108 analysis');
       } finally {
@@ -183,23 +234,16 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
   }
 
   /* ---------------------------------------------------------------- */
-  /*  Build chart data for InteractiveKundli                           */
+  /*  Build chart data for KundliChartSVG (report-page style)         */
   /* ---------------------------------------------------------------- */
 
-  const chartData: ChartData = {
-    planets: (data.planet_positions || []).map((p) => ({
-      planet: p.planet,
-      sign: p.sign,
-      house: p.house,
-      nakshatra: p.nakshatra || '',
-      sign_degree: p.sign_degree || 0,
-      status: '',
-    })),
-    houses: data.houses || Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'][i],
-    })),
-  };
+  const chartPlanets: PlanetEntry[] = (data.planet_positions || []).map((p) => ({
+    planet: p.planet,
+    sign: p.sign,
+    sign_degree: p.sign_degree || 0,
+  }));
+  // Use Sun's D108 sign as the ascendant proxy (standard for D108 interpretation)
+  const d108AscSign = data.planet_positions?.find((p) => p.planet === 'Sun')?.sign || 'Aries';
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
@@ -208,16 +252,14 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
   return (
     <div className="space-y-6">
       {/* Title bar */}
-      <div className="bg-gradient-to-r from-muted to-muted rounded-xl p-4 border border-border">
-        <div className="flex items-center gap-2">
-          <Heading as={4} variant={4}>
-            {l('D108 Ashtottaramsha Chart', 'D108 अष्टोत्तरांश चार्ट')}
-          </Heading>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-muted/10 text-primary border border-border/20 font-bold uppercase tracking-tighter">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-3">
+          <span>{l('D108 Ashtottaramsha Chart', 'D108 अष्टोत्तरांश चार्ट')}</span>
+          <span className="text-[10px] px-2 py-0.5 bg-white/20 rounded uppercase font-bold tracking-tight">
             {l('SPIRITUAL', 'आध्यात्मिक')}
           </span>
         </div>
-        <p className="text-sm text-foreground/70 mt-1">
+        <p className="text-sm text-foreground/70 px-4 py-2">
           {l(
             'The D108 chart reveals spiritual evolution, moksha potential, and past-life karmic connections.',
             'D108 चार्ट आध्यात्मिक विकास, मोक्ष की संभावना, और पूर्व जन्म के कर्म संबंधों को प्रकट करता है।'
@@ -225,33 +267,47 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
         </p>
       </div>
 
-      {/* Chart + Table side by side */}
+      {/* Chart + Table side by side — report-page style */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Chart */}
-        <div className="flex justify-center">
-          <div className="w-full max-w-[420px]">
-            <InteractiveKundli chartData={chartData} compact />
+        {/* Chart — same as ReportTab: KundliChartSVG in max-w-[340px] aspect-square */}
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold text-center">
+            D108 {l('Chart', 'चार्ट')}
+          </div>
+          <div className="flex justify-center p-4">
+            <div className="w-full max-w-[340px] aspect-square">
+              <KundliChartSVG
+                planets={chartPlanets}
+                ascendantSign={d108AscSign}
+                language={language}
+                showHouseNumbers={false}
+                showRashiNumbers
+                rashiNumberPlacement="corner"
+                showAscendantMarker={false}
+              />
+            </div>
           </div>
         </div>
 
         {/* Planet Positions Table */}
-        <div className="rounded-xl border border-border h-fit">
-          <Table className="w-full">
-            <TableHeader className="bg-muted">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {t('table.planet')} — {t('table.sign')} / {t('table.degree')}
+          </div>
+          <Table className="w-full text-xs table-fixed">
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.planet')}</TableHead>
-                <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.sign')}</TableHead>
-                <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.degree')}</TableHead>
-                <TableHead className="text-center p-3 text-primary font-medium text-sm">{l('House', 'भाव')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[35%]">{t('table.planet')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[35%]">{t('table.sign')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[30%]">{t('table.degree')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {(data.planet_positions || []).map((p) => (
                 <TableRow key={p.planet} className="border-t border-border hover:bg-muted/5">
-                  <TableCell className="p-3 text-foreground font-medium text-sm">{translatePlanet(p.planet, language)}</TableCell>
-                  <TableCell className="p-3 text-foreground text-sm">{translateSign(p.sign, language)}</TableCell>
-                  <TableCell className="p-3 text-foreground text-sm">{p.sign_degree?.toFixed(1) || '--'}&deg;</TableCell>
-                  <TableCell className="p-3 text-center text-primary font-bold text-sm">{p.house}</TableCell>
+                  <TableCell className="p-2 text-foreground font-medium">{translatePlanet(p.planet, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">{translateSign(p.sign, language)}</TableCell>
+                  <TableCell className="p-2 text-foreground">{p.sign_degree?.toFixed(1) || '--'}&deg;</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -261,99 +317,106 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
 
       {/* Moksha Potential Gauge */}
       {data.moksha_potential && (
-        <MokshaGauge
-          score={data.moksha_potential.score}
-          level={data.moksha_potential.level}
-          description={hi ? data.moksha_potential.description_hi : data.moksha_potential.description}
-          language={language}
-        />
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {l('Moksha Potential', 'मोक्ष संभावना')}
+          </div>
+          <div className="p-4">
+            <MokshaGauge
+              score={data.moksha_potential.score}
+              level={data.moksha_potential.level}
+              description={hi ? data.moksha_potential.description_hi : data.moksha_potential.description}
+              language={language}
+            />
+          </div>
+        </div>
       )}
 
       {/* Spiritual Indicators */}
       {data.spiritual_indicators && data.spiritual_indicators.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <Heading as={4} variant={4} className="mb-3">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {l('Spiritual Indicators', 'आध्यात्मिक संकेतक')}
-          </Heading>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {data.spiritual_indicators.map((ind, idx) => (
-              <div
-                key={idx}
-                className={`bg-white rounded-lg p-3 border ${
-                  ind.strength === 'strong' ? 'border-green-200' :
-                  ind.strength === 'moderate' ? 'border-amber-200' :
-                  ind.strength === 'weak' ? 'border-red-200' :
-                  'border-border/20'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <Heading as={6} variant={6}>
-                    {hi ? ind.name_hi : ind.name}
-                  </Heading>
-                  {ind.strength && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase ${
-                      ind.strength === 'strong' ? 'bg-green-100 text-green-700' :
-                      ind.strength === 'moderate' ? 'bg-amber-100 text-amber-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {hi
-                        ? (ind.strength === 'strong' ? 'बलवान' : ind.strength === 'moderate' ? 'मध्यम' : 'दुर्बल')
-                        : ind.strength}
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-foreground/70 leading-relaxed">
-                  {hi ? ind.description_hi : ind.description}
-                </p>
-              </div>
-            ))}
           </div>
-        </div>
-      )}
-
-      {/* Past Life Karma Cards */}
-      {data.past_life_karma && data.past_life_karma.length > 0 && (
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <Heading as={4} variant={4} className="mb-3">
-            {l('Past Life Karma', 'पूर्व जन्म के कर्म')}
-          </Heading>
-          <div className="space-y-3">
-            {data.past_life_karma.map((karma, idx) => (
-              <div key={idx} className="bg-white p-4 rounded-lg border border-border/20">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary font-bold text-sm">
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1">
-                    <Heading as={6} variant={6} className="text-primary mb-1">
-                      {hi ? karma.title_hi : karma.title}
-                    </Heading>
-                    {karma.planet && (
-                      <p className="text-xs text-foreground/50 mb-1">
-                        {translatePlanet(karma.planet, language)}
-                        {karma.house && ` - ${l('House', 'भाव')} ${karma.house}`}
-                      </p>
+          <Table className="w-full text-xs table-fixed">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[40%]">{l('Indicator', 'संकेतक')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[45%]">{l('Description', 'विवरण')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{l('Strength', 'बल')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.spiritual_indicators.map((ind, idx) => (
+                <TableRow key={idx} className="border-t border-border hover:bg-muted/5 align-top">
+                  <TableCell className="p-2 font-semibold text-foreground">{hi ? ind.name_hi : ind.name}</TableCell>
+                  <TableCell className="p-2 whitespace-normal break-words max-w-0 text-foreground/70">
+                    {hi ? ind.description_hi : ind.description}
+                  </TableCell>
+                  <TableCell className="p-2 text-center">
+                    {ind.strength && (
+                      <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                        ind.strength === 'strong' ? 'bg-green-100 text-green-700' :
+                        ind.strength === 'moderate' ? 'bg-amber-100 text-amber-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {hi ? (ind.strength === 'strong' ? 'बलवान' : ind.strength === 'moderate' ? 'मध्यम' : 'दुर्बल') : ind.strength}
+                      </span>
                     )}
-                    <p className="text-xs text-foreground/70 leading-relaxed">
-                      {hi ? karma.description_hi : karma.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
-      {/* Interpretation text */}
-      {data.interpretation && (
-        <div className="bg-muted rounded-xl border border-border p-4">
-          <Heading as={4} variant={4} className="mb-3">
-            {l('Interpretation', 'व्याख्या')}
-          </Heading>
-          <div className="text-sm text-foreground leading-relaxed whitespace-pre-line">
-            {hi ? data.interpretation_hi : data.interpretation}
+      {/* Past Life Karma */}
+      {data.past_life_karma && data.past_life_karma.length > 0 && (
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {l('Past Life Karma', 'पूर्व जन्म के कर्म')}
           </div>
+          <Table className="w-full text-xs table-fixed">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[8%]">#</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{l('Topic', 'विषय')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[70%]">{l('Description', 'विवरण')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.past_life_karma.map((karma, idx) => (
+                <TableRow key={idx} className="border-t border-border hover:bg-muted/5 align-top">
+                  <TableCell className="p-2 text-center font-bold text-primary">{idx + 1}</TableCell>
+                  <TableCell className="p-2 font-semibold text-foreground">
+                    {hi ? karma.title_hi : karma.title}
+                    {karma.planet && (
+                      <span className="block text-[10px] text-foreground/50 font-normal mt-0.5">
+                        {translatePlanet(karma.planet, language)}
+                        {karma.house && ` · ${l('H', 'भाव')}${karma.house}`}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="p-2 whitespace-normal break-words max-w-0 text-foreground/70">
+                    {hi ? karma.description_hi : karma.description}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Interpretation */}
+      {data.interpretation && (
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {l('Interpretation', 'व्याख्या')}
+          </div>
+          <p className="text-xs text-foreground leading-relaxed whitespace-pre-line p-4">
+            {hi ? data.interpretation_hi : data.interpretation}
+          </p>
         </div>
       )}
 

@@ -106,9 +106,11 @@ export default function ReportTab({
 
 
               {/* Report title */}
-              <div className="bg-gradient-to-r from-muted to-muted rounded-xl p-5 border border-border text-center">
-                <Heading as={3} variant={3}>{t('section.consolidatedReport')}</Heading>
-                <p className="text-sm text-foreground mt-1">{result.person_name} | {formatDate(result.birth_date)} | {result.birth_time} | {result.birth_place}</p>
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-4 py-3 text-[15px] font-semibold text-center">
+                  {t('section.consolidatedReport')}
+                </div>
+                <p className="text-sm text-foreground text-center py-2 px-4">{result.person_name} | {formatDate(result.birth_date)} | {result.birth_time} | {result.birth_place}</p>
               </div>
 
               {/* Charts row — Lagna, Moon, Gochar side by side */}
@@ -254,27 +256,27 @@ export default function ReportTab({
                       {t('kundli.lagna')}: {translateSign(result.chart_data?.ascendant?.sign || '', language) || '\u2014'}
                     </span>
                   </div>
-                  <div className="overflow-x-auto flex-1">
-                    <Table className="w-full text-xs">
+                  <div className="flex-1">
+                    <Table className="w-full text-xs table-fixed">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-left">{t('table.planet')}</TableHead>
-                          <TableHead className="text-left">{t('table.sign')}</TableHead>
-                          <TableHead className="text-center">{t('table.house')}</TableHead>
-                          <TableHead className="text-left">{t('table.nakshatra')}</TableHead>
-                          <TableHead className="text-center whitespace-nowrap">{t('table.degree')}</TableHead>
-                          <TableHead className="text-center">{t('table.status')}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('table.planet')}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[16%]">{t('table.sign')}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[8%]">{t('table.house')}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{t('table.nakshatra')}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{t('table.degree')}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[26%]">{t('table.status')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {planets.map((planet: any, index: number) => (
-                          <TableRow key={index}>
-                            <TableCell className="text-foreground font-medium">{translatePlanet(planet.planet, language)}</TableCell>
-                            <TableCell className="text-foreground">{translateSign(planet.sign, language)}</TableCell>
-                            <TableCell className="text-center text-foreground">{planet.house}</TableCell>
-                            <TableCell className="text-foreground">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</TableCell>
-                            <TableCell className="text-center text-foreground whitespace-nowrap">{(Number(planet.sign_degree) || 0).toFixed(1)}°</TableCell>
-                            <TableCell className="text-center">
+                          <TableRow key={index} className="border-t border-border hover:bg-muted/5">
+                            <TableCell className="p-2 text-foreground font-medium">{translatePlanet(planet.planet, language)}</TableCell>
+                            <TableCell className="p-2 text-foreground">{translateSign(planet.sign, language)}</TableCell>
+                            <TableCell className="p-2 text-center text-foreground">{planet.house}</TableCell>
+                            <TableCell className="p-2 text-foreground">{translateNakshatra(planet.nakshatra, language) || '\u2014'}</TableCell>
+                            <TableCell className="p-2 text-center text-foreground">{(Number(planet.sign_degree) || 0).toFixed(1)}°</TableCell>
+                            <TableCell className="p-2 text-center">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${planet.status === 'Exalted' || planet.status === 'Own Sign' ? 'bg-green-100 text-green-800' : 'text-foreground'}`}>
                                 {translateLabel(planet.status, language) || '\u2014'}
                               </span>
@@ -363,7 +365,7 @@ export default function ReportTab({
 	                    <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
 	                  ) : avakhadaData ? (
 	                    <div className="pb-3 overflow-x-auto">
-	                      <Table className="w-full text-xs">
+	                      <Table className="w-full text-xs table-fixed">
 	                        <TableHeader>
 	                          <TableRow>
 	                            <TableHead className="text-left">{t('table.parameter')}</TableHead>
@@ -469,7 +471,7 @@ export default function ReportTab({
 	                      ) : periods.length > 0 ? (
 	                        <>
 	                          <div className="overflow-x-auto">
-	                            <Table className="w-full text-xs">
+	                            <Table className="w-full text-xs table-fixed">
 	                              <TableHeader>
 	                                <TableRow>
 	                                  <TableHead className="text-left whitespace-nowrap">{t('table.dashaLord')}</TableHead>
@@ -536,7 +538,7 @@ export default function ReportTab({
 	                                                {t('kundli.antardasha')}
 	                                              </div>
 	                                              <div className="overflow-x-auto">
-	                                                <Table className="w-full text-xs">
+	                                                <Table className="w-full text-xs table-fixed">
 	                                                  <TableHeader>
 	                                                    <TableRow>
 	                                                      <TableHead className="text-left whitespace-nowrap">{t('table.dashaLord')}</TableHead>
@@ -662,7 +664,7 @@ export default function ReportTab({
                       { key: 'DK', name: t('auto.darakaraka') },
                     ];
                     return (
-                      <Table className="w-full text-sm">
+                      <Table className="w-full text-xs table-fixed">
                         <TableHeader>
                           <TableRow>
                             <TableHead className="text-left">{t('table.karaka')}</TableHead>
@@ -700,7 +702,7 @@ export default function ReportTab({
 	                        <div>
 	                          <div className="flex items-center gap-2 mb-2">
 	                            <CheckCircle className="w-4 h-4 text-green-500" />
-	                            <Heading as={5} variant={5}>{t('section.yogas')}</Heading>
+	                            <p className="font-semibold text-sm text-foreground">{t('section.yogas')}</p>
 	                          </div>
 	                          <div className="space-y-1">
 	                            {(yogaDoshaData.yogas || []).filter((y: any) => y.present).slice(0, 8).map((yoga: any, idx: number) => (
@@ -721,7 +723,7 @@ export default function ReportTab({
 	                        <div>
 	                          <div className="flex items-center gap-2 mb-2">
 	                            <Shield className="w-4 h-4 text-red-500" />
-	                            <Heading as={5} variant={5}>{t('section.doshas')}</Heading>
+	                            <p className="font-semibold text-sm text-foreground">{t('section.doshas')}</p>
 	                          </div>
 	                          <div className="space-y-1">
 	                            {(yogaDoshaData.doshas || []).filter((d: any) => d.present).slice(0, 8).map((dosha: any, idx: number) => (
@@ -757,7 +759,7 @@ export default function ReportTab({
                       {/* Mangal Dosha */}
                       <div className={`rounded-lg p-3 border ${doshaData.mangal_dosha?.has_dosha ? 'border-red-300 bg-red-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <Heading as={5} variant={5}>{translateName('Mangal Dosha', language)}</Heading>
+                          <p className="font-semibold text-sm text-foreground">{translateName('Mangal Dosha', language)}</p>
                           <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.mangal_dosha?.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.mangal_dosha?.has_dosha ? translateLabel(doshaData.mangal_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
@@ -767,7 +769,7 @@ export default function ReportTab({
                       {/* Kaal Sarp Dosha */}
                       <div className={`rounded-lg p-3 border ${doshaData.kaal_sarp_dosha?.has_dosha ? 'border-red-300 bg-red-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <Heading as={5} variant={5}>{translateName('Kaal Sarp Dosha', language)}</Heading>
+                          <p className="font-semibold text-sm text-foreground">{translateName('Kaal Sarp Dosha', language)}</p>
                           <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.kaal_sarp_dosha?.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.kaal_sarp_dosha?.has_dosha ? translateLabel(doshaData.kaal_sarp_dosha.severity, language) || t('common.present') : t('common.absent')}
                           </span>
@@ -777,7 +779,7 @@ export default function ReportTab({
                       {/* Sade Sati */}
                       <div className={`rounded-lg p-3 border ${doshaData.sade_sati?.has_sade_sati ? 'border-orange-500 bg-orange-500' : 'border-green-300 bg-green-500'}`}>
                         <div className="flex items-center justify-between mb-1">
-                          <Heading as={5} variant={5}>{translateName('Sade Sati', language)}</Heading>
+                          <p className="font-semibold text-sm text-foreground">{translateName('Sade Sati', language)}</p>
                           <span className={`text-sm px-2 py-0.5 rounded-full font-medium ${doshaData.sade_sati?.has_sade_sati ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaData.sade_sati?.has_sade_sati ? `${t('common.active')} - ${translateLabel(doshaData.sade_sati.phase, language)}` : t('common.inactive')}
                           </span>

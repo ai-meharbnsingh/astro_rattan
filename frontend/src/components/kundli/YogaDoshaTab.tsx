@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, BookOpen, Star, Clock, Sparkles, Crown } from 'lucide-react';
+import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, Star, Sparkles, Crown } from 'lucide-react';
 import { translateName, translateLabel, translateRemedy, translateBackend, translatePlanet } from '@/lib/backend-translations';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { api } from '@/lib/api';
 
 interface YogaDoshaTabProps {
@@ -144,16 +143,17 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
   return (
     <div className="space-y-6">
       {/* Yogas — grouped by category */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-sacred-gold-dark" />
-            <Heading as={4} variant={4}>{t('section.yogas')}</Heading>
+            <Star className="w-4 h-4" />
+            <span>{t('section.yogas')}</span>
           </div>
-          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-sacred-gold/15 text-sacred-gold-dark">
+          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white">
             {presentYogas.length} {hi ? 'योग' : 'yogas'}
           </span>
         </div>
+        <div className="p-4">
 
         {presentYogas.length === 0 ? (
           <p className="text-center text-foreground text-sm py-4">{t('yoga.noneDetected')}</p>
@@ -181,13 +181,16 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                     <div className="flex-1 border-t border-border/40" />
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <Table className="w-full text-xs">
-                      <TableHeader className="bg-muted/50">
+                  <div>
+                    <Table className="w-full text-xs table-fixed">
+                      <TableHeader>
                         <TableRow>
-                          <TableHead className="text-left p-1.5 text-primary font-medium w-40">{hi ? 'योग' : 'Yoga'}</TableHead>
-                          <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'विवरण' : 'Description'}</TableHead>
-                          <TableHead className="text-center p-1.5 text-primary font-medium w-24">{hi ? 'स्वभाव' : 'Nature'}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'योग' : 'Yoga'}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{hi ? 'ग्रह' : 'Planets'}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'बल' : 'Strength'}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'भाव' : 'Houses'}</TableHead>
+                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[35%]">{hi ? 'विवरण' : 'Description'}</TableHead>
+                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'स्वभाव' : 'Nature'}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -203,55 +206,46 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                           const nStyle = NATURE_STYLE[nature] || NATURE_STYLE.mixed;
                           const hasStrength = !!yoga.strength;
                           const sStyle = hasStrength ? (STRENGTH_STYLE[yoga.strength!] || '') : '';
-                          const hasTriggerHouses = Array.isArray(yoga.trigger_houses) && yoga.trigger_houses.length > 0;
 
                           return (
-                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
-                              <TableCell className="p-1.5 align-top">
-                                <p className="font-semibold text-foreground leading-tight">{name}</p>
-                                {yoga.planets_involved && yoga.planets_involved.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-1">
-                                    {yoga.planets_involved.map((p: string) => (
-                                      <span key={p} className="px-1 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-medium text-[10px]">
-                                        {translatePlanet(p, language)}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                                {hasStrength && (
-                                  <div className="mt-1">
-                                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${sStyle}`}>
-                                      {getStrengthLabel(yoga.strength!, hi)}
+                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                              <TableCell className="p-2 font-semibold text-foreground leading-snug">{name}</TableCell>
+                              <TableCell className="p-2">
+                                <div className="flex flex-wrap gap-1">
+                                  {(yoga.planets_involved || []).map((p: string) => (
+                                    <span key={p} className="px-1.5 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-medium text-[10px] whitespace-nowrap">
+                                      {translatePlanet(p, language)}
                                     </span>
-                                  </div>
-                                )}
-                                {hasTriggerHouses && (
-                                  <div className="flex flex-wrap gap-1 mt-1">
-                                    {yoga.trigger_houses!.map((h: number) => (
-                                      <span key={h} className="px-1 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium text-[10px] border border-indigo-100">
-                                        H{h}
-                                      </span>
-                                    ))}
-                                  </div>
+                                  ))}
+                                </div>
+                              </TableCell>
+                              <TableCell className="p-2 text-center">
+                                {hasStrength && (
+                                  <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${sStyle}`}>
+                                    {getStrengthLabel(yoga.strength!, hi)}
+                                  </span>
                                 )}
                               </TableCell>
-                              <TableCell className="p-1.5 align-top">
-                                <p className="text-foreground/90 leading-relaxed">{desc}</p>
+                              <TableCell className="p-2 text-center">
+                                <div className="flex flex-wrap gap-1 justify-center">
+                                  {(yoga.trigger_houses || []).map((h: number) => (
+                                    <span key={h} className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold text-[10px] border border-indigo-100">
+                                      H{h}
+                                    </span>
+                                  ))}
+                                </div>
+                              </TableCell>
+                              <TableCell className="p-2 whitespace-normal break-words max-w-0">
+                                <p className="text-foreground/90 leading-relaxed whitespace-normal break-words">{desc}</p>
                                 {fruition && (
-                                  <div className="flex items-start gap-1 mt-1.5 text-[10px] text-violet-700">
-                                    <Clock className="w-3 h-3 shrink-0 mt-0.5" />
-                                    <span className="italic">{fruition}</span>
-                                  </div>
+                                  <p className="text-[10px] text-violet-700 italic mt-1 leading-relaxed whitespace-normal break-words">{fruition}</p>
                                 )}
                                 {yoga.sloka_ref && (
-                                  <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
-                                    <BookOpen className="w-3 h-3" />
-                                    <span className="italic">{yoga.sloka_ref}</span>
-                                  </div>
+                                  <p className="text-[10px] text-muted-foreground italic mt-0.5">{yoga.sloka_ref}</p>
                                 )}
                               </TableCell>
-                              <TableCell className="p-1.5 text-center align-top">
-                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${nStyle}`}>
+                              <TableCell className="p-2 text-center">
+                                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${nStyle}`}>
                                   {getNatureLabel(nature, hi)}
                                 </span>
                               </TableCell>
@@ -266,22 +260,23 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             })}
           </div>
         )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-6">
         {/* Doshas Table */}
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
-          <div className="flex items-center gap-2 mb-3">
-            <Shield className="w-4 h-4 text-red-700" />
-            <Heading as={4} variant={4}>{t('section.doshas')}</Heading>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden flex flex-col">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <Shield className="w-4 h-4" />
+            <span>{t('section.doshas')}</span>
           </div>
-          <div className="overflow-x-auto flex-1">
-            <Table className="w-full text-xs">
-              <TableHeader className="bg-muted">
+          <div className="flex-1 p-0">
+            <Table className="w-full text-xs table-fixed">
+              <TableHeader>
                 <TableRow>
-                  <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'दोष का नाम' : 'Dosha Name'}</TableHead>
-                  <TableHead className="text-center p-1.5 text-primary font-medium">{hi ? 'तीव्रता' : 'Severity'}</TableHead>
-                  <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'विवरण और उपाय' : 'Description & Remedies'}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{hi ? 'दोष का नाम' : 'Dosha Name'}</TableHead>
+                  <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'तीव्रता' : 'Severity'}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[55%]">{hi ? 'विवरण और उपाय' : 'Description & Remedies'}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -291,9 +286,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                     return <TableRow><TableCell colSpan={3} className="p-4 text-center text-green-600 font-medium">{t('kundli.noDoshasInChart')}</TableCell></TableRow>;
                   }
                   return presentDoshas.map((dosha: any, idx: number) => (
-                    <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
-                      <TableCell className="p-1.5 font-semibold text-foreground whitespace-nowrap">{translateName(dosha.name, language)}</TableCell>
-                      <TableCell className="p-1.5 text-center">
+                    <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                      <TableCell className="p-2 font-semibold text-foreground whitespace-normal break-words">{translateName(dosha.name, language)}</TableCell>
+                      <TableCell className="p-2 text-center">
                         <span className={`px-2 py-0.5 rounded-full font-medium ${
                           dosha.severity === 'high' ? 'bg-red-100 text-red-800' :
                           dosha.severity === 'medium' ? 'bg-amber-100 text-amber-800' : 'bg-yellow-100 text-yellow-800'
@@ -301,14 +296,14 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                           {translateLabel(dosha.severity, language)}
                         </span>
                       </TableCell>
-                      <TableCell className="p-1.5">
+                      <TableCell className="p-2 whitespace-normal break-words max-w-0">
                         <p className="text-foreground mb-1.5">{translateBackend(dosha.description, language)}</p>
                         {dosha.remedies && dosha.remedies.length > 0 && (
                           <div className="bg-white/40 p-1.5 rounded border border-border/20">
                             <p className="text-[10px] font-bold text-primary uppercase mb-1">{t('section.remedies')}:</p>
                             <ul className="space-y-0.5">
                               {dosha.remedies.map((r: string, ri: number) => (
-                                <li key={ri} className="flex items-start gap-1 text-[11px] text-foreground">
+                                <li key={ri} className="flex items-start gap-1 text-xs text-foreground">
                                   <span className="mt-1 w-1 h-1 rounded-full bg-muted shrink-0" />
                                   {translateRemedy(r, language)}
                                 </li>
@@ -326,52 +321,52 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
         </div>
 
         {/* Specific Dosha Analysis */}
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-4 h-4 text-orange-600" />
-            <Heading as={4} variant={4}>{t('section.doshaAnalysis')}</Heading>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden flex flex-col">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>{t('section.doshaAnalysis')}</span>
           </div>
           {loadingDosha ? (
             <div className="flex items-center justify-center py-8 flex-1"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
           ) : (
-            <div className="overflow-x-auto flex-1">
-              <Table className="w-full text-xs">
-                <TableHeader className="bg-muted">
+            <div className="flex-1">
+              <Table className="w-full text-xs table-fixed">
+                <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'दोष' : 'Analysis'}</TableHead>
-                    <TableHead className="text-center p-1.5 text-primary font-medium">{hi ? 'स्थिति' : 'Status'}</TableHead>
-                    <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'विवरण' : 'Details'}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{hi ? 'दोष' : 'Analysis'}</TableHead>
+                    <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'स्थिति' : 'Status'}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[55%]">{hi ? 'विवरण' : 'Details'}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {doshaDisplay ? (
                     <>
-                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors">
-                        <TableCell className="p-1.5 font-semibold text-foreground whitespace-nowrap">{translateName('Mangal Dosha', language)}</TableCell>
-                        <TableCell className="p-1.5 text-center">
+                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                        <TableCell className="p-2 font-semibold text-foreground">{translateName('Mangal Dosha', language)}</TableCell>
+                        <TableCell className="p-2 text-center">
                           <span className={`px-2 py-0.5 rounded-full font-medium ${doshaDisplay.mangal.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaDisplay.mangal.has_dosha ? (hi ? 'उपस्थित' : 'Present') : (hi ? 'नहीं है' : 'Absent')}
                           </span>
                         </TableCell>
-                        <TableCell className="p-1.5 text-foreground">{translateBackend(doshaDisplay.mangal.description, language)}</TableCell>
+                        <TableCell className="p-2 text-foreground whitespace-normal break-words">{translateBackend(doshaDisplay.mangal.description, language)}</TableCell>
                       </TableRow>
-                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors">
-                        <TableCell className="p-1.5 font-semibold text-foreground whitespace-nowrap">{translateName('Kaal Sarp Dosha', language)}</TableCell>
-                        <TableCell className="p-1.5 text-center">
+                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                        <TableCell className="p-2 font-semibold text-foreground">{translateName('Kaal Sarp Dosha', language)}</TableCell>
+                        <TableCell className="p-2 text-center">
                           <span className={`px-2 py-0.5 rounded-full font-medium ${doshaDisplay.kaalsarp.has_dosha ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                             {doshaDisplay.kaalsarp.has_dosha ? (hi ? 'उपस्थित' : 'Present') : (hi ? 'नहीं है' : 'Absent')}
                           </span>
                         </TableCell>
-                        <TableCell className="p-1.5 text-foreground">{translateBackend(doshaDisplay.kaalsarp.description, language)}</TableCell>
+                        <TableCell className="p-2 text-foreground whitespace-normal break-words">{translateBackend(doshaDisplay.kaalsarp.description, language)}</TableCell>
                       </TableRow>
-                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors">
-                        <TableCell className="p-1.5 font-semibold text-foreground whitespace-nowrap">{translateName('Sade Sati', language)}</TableCell>
-                        <TableCell className="p-1.5 text-center">
+                      <TableRow className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                        <TableCell className="p-2 font-semibold text-foreground">{translateName('Sade Sati', language)}</TableCell>
+                        <TableCell className="p-2 text-center">
                           <span className={`px-2 py-0.5 rounded-full font-medium ${doshaDisplay.sadesati.has_sade_sati ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-800'}`}>
                             {doshaDisplay.sadesati.has_sade_sati ? (hi ? 'सक्रिय' : 'Active') : (hi ? 'नहीं है' : 'Inactive')}
                           </span>
                         </TableCell>
-                        <TableCell className="p-1.5 text-foreground">
+                        <TableCell className="p-2 text-foreground whitespace-normal break-words">
                           {doshaDisplay.sadesati.has_sade_sati && <span className="font-bold text-orange-700">[{translateLabel(doshaDisplay.sadesati.phase, language)}] </span>}
                           {translateBackend(doshaDisplay.sadesati.description, language)}
                         </TableCell>
@@ -388,18 +383,18 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
 
       {/* Gemstones */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
-          <Gem className="w-4 h-4 text-primary" />
-          <Heading as={4} variant={4}>{t('section.remediesGemstone')}</Heading>
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden flex flex-col">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Gem className="w-4 h-4" />
+          <span>{t('section.remediesGemstone')}</span>
         </div>
-        <div className="overflow-x-auto flex-1">
-          <Table className="w-full text-xs">
-            <TableHeader className="bg-muted">
+        <div className="flex-1">
+          <Table className="w-full text-xs table-fixed">
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'रत्न' : 'Gemstone'}</TableHead>
-                <TableHead className="text-center p-1.5 text-primary font-medium">{hi ? 'ग्रह' : 'Planet'}</TableHead>
-                <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'विवरण और धारण विधि' : 'Reason & wearing'}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium w-[20%]">{hi ? 'रत्न' : 'Gemstone'}</TableHead>
+                <TableHead className="text-center p-1.5 text-primary font-medium w-[15%]">{hi ? 'ग्रह' : 'Planet'}</TableHead>
+                <TableHead className="text-left p-1.5 text-primary font-medium w-[65%]">{hi ? 'विवरण और धारण विधि' : 'Reason & wearing'}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -417,8 +412,8 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                       </span>
                     </TableCell>
                     <TableCell className="p-1.5 text-center font-medium">{translatePlanet(gem.planet, language)}</TableCell>
-                    <TableCell className="p-1.5">
-                      <p className="text-foreground mb-1.5 leading-relaxed">{translateBackend(gem.reason, language)}</p>
+                    <TableCell className="p-1.5 whitespace-normal break-words max-w-0">
+                      <p className="text-foreground mb-1.5 leading-relaxed whitespace-normal break-words">{translateBackend(gem.reason, language)}</p>
                       <div className="flex flex-wrap gap-2 text-[10px] text-primary font-bold">
                         {gem.metal && <span className="bg-white/50 px-1.5 py-0.5 rounded border border-border/10 whitespace-nowrap">{hi ? 'धातु' : 'Metal'}: {translateBackend(gem.metal, language)}</span>}
                         {gem.finger && <span className="bg-white/50 px-1.5 py-0.5 rounded border border-border/10 whitespace-nowrap">{hi ? 'उंगली' : 'Finger'}: {translateBackend(gem.finger, language)}</span>}
@@ -434,20 +429,19 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
       </div>
 
       {/* Nabhasa / Maha Yogas Section */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-600" />
-            <Heading as={4} variant={4}>
-              {hi ? 'नभस योग (Nabhasa Yogas)' : 'Nabhasa Yogas (नभस योग)'}
-            </Heading>
+            <Sparkles className="w-4 h-4" />
+            <span>{hi ? 'नभस योग (Nabhasa Yogas)' : 'Nabhasa Yogas (नभस योग)'}</span>
           </div>
           {mahaData && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-800">
+            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white">
               {mahaData.count} {hi ? 'योग' : 'yogas'}
             </span>
           )}
         </div>
+        <div className="p-4">
 
         {loadingMaha ? (
           <div className="flex items-center justify-center py-8">
@@ -490,35 +484,25 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                       <span className="text-xs text-muted-foreground">{items.length}</span>
                       <div className="flex-1 border-t border-border/40" />
                     </div>
-                    <div className="overflow-x-auto">
-                      <Table className="w-full text-xs">
-                        <TableHeader className="bg-muted/50">
+                    <div>
+                      <Table className="w-full text-xs table-fixed">
+                        <TableHeader>
                           <TableRow>
-                            <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'योग' : 'Yoga'}</TableHead>
-                            <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'फल' : 'Effect'}</TableHead>
-                            <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'श्लोक संदर्भ' : 'Sloka Ref'}</TableHead>
+                            <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{hi ? 'योग' : 'Yoga'}</TableHead>
+                            <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'भाव' : 'Houses'}</TableHead>
+                            <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[45%]">{hi ? 'फल' : 'Effect'}</TableHead>
+                            <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'श्लोक' : 'Sloka'}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {items.map((yoga: any, idx: number) => (
-                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
-                              <TableCell className="p-1.5 align-top">
-                                <p className="font-semibold text-foreground leading-tight">{yoga.name}</p>
-                                {yoga.count !== undefined && (
-                                  <span className="text-[10px] text-muted-foreground">{hi ? 'भाव' : 'Houses'}: {yoga.count}</span>
-                                )}
+                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                              <TableCell className="p-2 font-semibold text-foreground leading-snug">{yoga.name}</TableCell>
+                              <TableCell className="p-2 text-center text-foreground/70">
+                                {yoga.count !== undefined ? yoga.count : '—'}
                               </TableCell>
-                              <TableCell className="p-1.5 align-top">
-                                <p className="text-foreground/90 leading-relaxed">{hi ? yoga.effect_hi : yoga.effect_en}</p>
-                              </TableCell>
-                              <TableCell className="p-1.5 align-top">
-                                {yoga.sloka_ref && (
-                                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                    <BookOpen className="w-3 h-3 shrink-0" />
-                                    <span className="italic">{yoga.sloka_ref}</span>
-                                  </div>
-                                )}
-                              </TableCell>
+                              <TableCell className="p-2 text-foreground/90 leading-relaxed whitespace-normal break-words max-w-0">{hi ? yoga.effect_hi : yoga.effect_en}</TableCell>
+                              <TableCell className="p-2 text-[10px] text-muted-foreground italic">{yoga.sloka_ref || '—'}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -532,24 +516,24 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             <p className="text-[10px] text-muted-foreground text-right italic">{mahaData.sloka_ref}</p>
           </div>
         )}
+        </div>
       </div>
 
       {/* Raja Yogas — Phaladeepika Adhyaya 7 */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Crown className="w-4 h-4 text-violet-600" />
-            <Heading as={4} variant={4}>
-              {hi ? 'राज योग — अध्याय ७' : 'Raja Yogas — Adhyaya 7'}
-            </Heading>
+            <Crown className="w-4 h-4" />
+            <span>{hi ? 'राज योग — अध्याय ७' : 'Raja Yogas — Adhyaya 7'}</span>
           </div>
           {rajaData && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-violet-100 text-violet-800">
+            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white">
               {(rajaData.yogas || []).filter((y: any) => y.present).length} / {(rajaData.yogas || []).length} {hi ? 'सक्रिय' : 'active'}
             </span>
           )}
         </div>
 
+        <div className="p-4">
         {loadingRaja ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -570,59 +554,53 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                   {hi ? 'इस कुंडली में कोई राज योग सक्रिय नहीं है।' : 'No Raja Yogas active in this chart.'}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <Table className="w-full text-xs">
-                    <TableHeader className="bg-muted/50">
+                <div>
+                  <Table className="w-full text-xs table-fixed">
+                    <TableHeader>
                       <TableRow>
-                        <TableHead className="text-left p-1.5 text-primary font-medium w-44">{hi ? 'योग' : 'Yoga'}</TableHead>
-                        <TableHead className="text-left p-1.5 text-primary font-medium">{hi ? 'फल' : 'Effect'}</TableHead>
-                        <TableHead className="text-left p-1.5 text-primary font-medium w-36">{hi ? 'श्लोक' : 'Sloka'}</TableHead>
+                        <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'योग' : 'Yoga'}</TableHead>
+                        <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{hi ? 'ग्रह' : 'Planets'}</TableHead>
+                        <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'बल' : 'Strength'}</TableHead>
+                        <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'भाव' : 'Houses'}</TableHead>
+                        <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[45%]">{hi ? 'फल' : 'Effect'}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {present.map((yoga: YogaObject, idx: number) => {
                         const rajaHasStrength = !!yoga.strength;
                         const rajaSStyle = rajaHasStrength ? (STRENGTH_STYLE[yoga.strength!] || '') : '';
-                        const rajaHasTriggerHouses = Array.isArray(yoga.trigger_houses) && yoga.trigger_houses.length > 0;
                         return (
-                        <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors">
-                          <TableCell className="p-1.5 align-top">
-                            <p className="font-semibold text-violet-800 leading-tight">{yoga.name}</p>
-                            {yoga.planets_involved && yoga.planets_involved.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {yoga.planets_involved.map((p: string) => (
-                                  <span key={p} className="px-1 py-0.5 rounded bg-violet-100 text-violet-700 font-medium text-[10px]">
-                                    {translatePlanet(p, language)}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            {rajaHasStrength && (
-                              <div className="mt-1">
-                                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${rajaSStyle}`}>
-                                  {getStrengthLabel(yoga.strength!, hi)}
+                        <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top">
+                          <TableCell className="p-2 font-semibold text-violet-800 leading-snug">{yoga.name}</TableCell>
+                          <TableCell className="p-2">
+                            <div className="flex flex-wrap gap-1">
+                              {(yoga.planets_involved || []).map((p: string) => (
+                                <span key={p} className="px-1.5 py-0.5 rounded bg-violet-100 text-violet-700 font-medium text-[10px] whitespace-nowrap">
+                                  {translatePlanet(p, language)}
                                 </span>
-                              </div>
-                            )}
-                            {rajaHasTriggerHouses && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {yoga.trigger_houses!.map((h: number) => (
-                                  <span key={h} className="px-1 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium text-[10px] border border-indigo-100">
-                                    H{h}
-                                  </span>
-                                ))}
-                              </div>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="p-2 text-center">
+                            {rajaHasStrength && (
+                              <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${rajaSStyle}`}>
+                                {getStrengthLabel(yoga.strength!, hi)}
+                              </span>
                             )}
                           </TableCell>
-                          <TableCell className="p-1.5 align-top text-foreground/90 leading-relaxed">
-                            {hi ? yoga.description_hi : yoga.description}
+                          <TableCell className="p-2 text-center">
+                            <div className="flex flex-wrap gap-1 justify-center">
+                              {(yoga.trigger_houses || []).map((h: number) => (
+                                <span key={h} className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold text-[10px] border border-indigo-100">
+                                  H{h}
+                                </span>
+                              ))}
+                            </div>
                           </TableCell>
-                          <TableCell className="p-1.5 align-top">
+                          <TableCell className="p-2 text-foreground/90 leading-relaxed whitespace-normal break-words max-w-0">
+                            <p>{hi ? yoga.description_hi : yoga.description}</p>
                             {yoga.sloka_ref && (
-                              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                <BookOpen className="w-3 h-3 shrink-0" />
-                                <span className="italic">{yoga.sloka_ref}</span>
-                              </div>
+                              <p className="text-[10px] text-muted-foreground italic mt-0.5">{yoga.sloka_ref}</p>
                             )}
                           </TableCell>
                         </TableRow>
@@ -644,6 +622,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
             </div>
           );
         })()}
+        </div>
       </div>
     </div>
   );

@@ -531,4 +531,17 @@ def detect_adh7_raja_yogas(planets: dict, asc_sign: str) -> List[dict]:
             results.append(fn(planets, asc_sign))
         except Exception:
             logger.exception("Adh. 7 Raja Yoga checker failed: %s", getattr(fn, "__name__", "unknown"))
+
+    for yoga in results:
+        if not yoga.get("present"):
+            continue
+        involved = yoga.get("planets_involved") or []
+        houses = sorted({_h(p, planets) for p in involved if _h(p, planets) > 0})
+        yoga["trigger_houses"] = houses
+        strong = sum(1 for p in involved if _is_strong(p, planets))
+        total = len(involved)
+        if total > 0:
+            ratio = strong / total
+            yoga["strength"] = "high" if ratio >= 0.67 else ("medium" if ratio >= 0.33 else "low")
+
     return results

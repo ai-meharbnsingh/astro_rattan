@@ -1,32 +1,30 @@
 import { Loader2 } from 'lucide-react';
 import { getDivisionalChartOptions } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 
 // ── Lord Significance sub-components ──────────────────────────
 
 function HoraLordCard({ positions, language }: { positions: any[]; language: string }) {
   const isHi = language === 'hi';
-  // Collect unique hora lords across planets
   const lords = positions
     .filter((p: any) => p.hora_lord)
     .map((p: any) => ({ planet: p.planet, ...p.hora_lord }));
   if (!lords.length) return null;
   return (
-    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
-      <Heading as={5} variant={5} className="text-primary mb-2">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden mt-4">
+      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
         {isHi ? 'होरा स्वामी का महत्व (D2)' : 'Hora Lord Significance (D2)'}
-      </Heading>
-      <div className="space-y-2">
+      </div>
+      <div className="p-4 space-y-2">
         {lords.map((l: any, i: number) => (
           <div key={i} className="flex items-start gap-3 text-sm border-b border-border/20 pb-2 last:border-0">
             <span className="font-bold text-primary w-24 shrink-0">{translatePlanet(l.planet, language)}</span>
             <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase shrink-0 ${l.planet === 'Sun' ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-blue-100 text-blue-700 border border-blue-300'}`}>
               {isHi ? (l.planet === 'Sun' ? 'सूर्य होरा' : 'चंद्र होरा') : `${l.planet} Hora`}
             </span>
-            <span className="text-foreground text-xs leading-relaxed">{isHi ? l.meaning_hi : l.meaning_en}</span>
+            <span className="text-foreground text-xs leading-relaxed whitespace-normal break-words">{isHi ? l.meaning_hi : l.meaning_en}</span>
           </div>
         ))}
       </div>
@@ -45,19 +43,19 @@ function DrekkanaLordCard({ positions, language }: { positions: any[]; language:
     Sarpa:  'bg-green-100 text-green-800 border-green-300',
   };
   return (
-    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
-      <Heading as={5} variant={5} className="text-primary mb-2">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden mt-4">
+      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
         {isHi ? 'द्रेष्काण स्वामी और प्रकार (D3)' : 'Drekkana Lord & Decanate Type (D3)'}
-      </Heading>
-      <div className="overflow-x-auto">
-        <Table className="w-full text-sm">
+      </div>
+      <div className="p-0">
+        <Table className="w-full text-xs table-fixed">
           <TableHeader>
-            <TableRow className="bg-muted/10">
-              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'ग्रह' : 'Planet'}</TableHead>
-              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'द्रेष्काण' : 'Decanate'}</TableHead>
-              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'स्वामी' : 'Lord'}</TableHead>
-              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'प्रकार' : 'Type'}</TableHead>
-              <TableHead className="p-2 text-primary font-bold border-b border-border">{isHi ? 'अर्थ' : 'Meaning'}</TableHead>
+            <TableRow>
+              <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{isHi ? 'ग्रह' : 'Planet'}</TableHead>
+              <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{isHi ? 'द्रेष्काण' : 'Decanate'}</TableHead>
+              <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{isHi ? 'स्वामी' : 'Lord'}</TableHead>
+              <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{isHi ? 'प्रकार' : 'Type'}</TableHead>
+              <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[37%]">{isHi ? 'अर्थ' : 'Meaning'}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -74,7 +72,7 @@ function DrekkanaLordCard({ positions, language }: { positions: any[]; language:
                       {dl.type}
                     </span>
                   </TableCell>
-                  <TableCell className="p-2 text-xs text-foreground/80">{isHi ? dl.meaning_hi : dl.meaning_en}</TableCell>
+                  <TableCell className="p-2 text-xs text-foreground/80 whitespace-normal break-words max-w-0">{isHi ? dl.meaning_hi : dl.meaning_en}</TableCell>
                 </TableRow>
               );
             })}
@@ -90,18 +88,18 @@ function TrimsamshaLordCard({ positions, language }: { positions: any[]; languag
   const lords = positions.filter((p: any) => p.trimsamsha_lord);
   if (!lords.length) return null;
   return (
-    <div className="bg-muted rounded-xl p-4 border border-border shadow-sm mt-4">
-      <Heading as={5} variant={5} className="text-primary mb-2">
+    <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden mt-4">
+      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
         {isHi ? 'त्रिंशांश स्वामी (D30)' : 'Trimsamsha Lord Significance (D30)'}
-      </Heading>
-      <div className="space-y-2">
+      </div>
+      <div className="p-4 space-y-2">
         {lords.map((p: any, i: number) => (
           <div key={i} className="flex items-start gap-3 text-sm border-b border-border/20 pb-2 last:border-0">
             <span className="font-bold text-primary w-24 shrink-0">{translatePlanet(p.planet, language)}</span>
             <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-red-100 text-red-700 border border-red-300 shrink-0">
               {translatePlanet(p.trimsamsha_lord.lord, language)}
             </span>
-            <span className="text-foreground text-xs leading-relaxed">{isHi ? p.trimsamsha_lord.meaning_hi : p.trimsamsha_lord.meaning_en}</span>
+            <span className="text-foreground text-xs leading-relaxed whitespace-normal break-words">{isHi ? p.trimsamsha_lord.meaning_hi : p.trimsamsha_lord.meaning_en}</span>
           </div>
         ))}
       </div>
@@ -141,8 +139,10 @@ export default function DivisionalTab({
     is_exalted: !!p.is_exalted,
     is_debilitated: !!p.is_debilitated,
   } as any);
+
   return (
     <div className="space-y-6">
+      {/* Chart selector */}
       <div className="flex items-center gap-4 mb-4">
         <label className="text-sm font-medium text-foreground">{t('kundli.selectChart')}:</label>
         <select
@@ -163,14 +163,18 @@ export default function DivisionalTab({
         </div>
       ) : divisionalData ? (
         <div className="space-y-6">
-          <div className="bg-gradient-to-r from-muted to-muted rounded-xl p-4 border border-border">
-            <Heading as={4} variant={4}>{translateBackend(divisionalData.chart_name || divisionalData.chart_type, language)}</Heading>
-            <p className="text-sm text-foreground">{t('kundli.division')}: {divisionalData.division}</p>
+
+          {/* Chart name / division header */}
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+            <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+              <span>{translateBackend(divisionalData.chart_name || divisionalData.chart_type, language)}</span>
+              <span className="text-xs font-bold px-2 py-0.5 bg-white/20 rounded">D{divisionalData.division}</span>
+            </div>
           </div>
 
-          {/* Kundli Chart and Table side by side - same height, no scroll */}
+          {/* Kundli Chart and Planet Table side by side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            {/* Left: Kundli Chart - 25% smaller */}
+            {/* Left: Kundli Chart */}
             {divisionalData.planet_positions && (
               <div className="flex justify-center">
                 <div className="w-full max-w-[420px]">
@@ -197,14 +201,17 @@ export default function DivisionalTab({
               </div>
             )}
 
-            {/* Right: Planet Table - full height, no scroll */}
-            <div className="rounded-xl border border-sacred-gold/20 h-fit">
-              <Table className="w-full">
-                <TableHeader className="bg-muted">
+            {/* Right: Planet Table */}
+            <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+              <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+                {t('table.planet')} — {t('table.sign')} / {t('table.degree')}
+              </div>
+              <Table className="w-full text-xs table-fixed">
+                <TableHeader>
                   <TableRow>
-                    <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.planet')}</TableHead>
-                    <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.sign')}</TableHead>
-                    <TableHead className="text-left p-3 text-primary font-medium text-sm">{t('table.degree')}</TableHead>
+                    <TableHead className="text-left p-3 text-primary font-semibold uppercase tracking-wide text-xs w-[40%]">{t('table.planet')}</TableHead>
+                    <TableHead className="text-left p-3 text-primary font-semibold uppercase tracking-wide text-xs w-[35%]">{t('table.sign')}</TableHead>
+                    <TableHead className="text-left p-3 text-primary font-semibold uppercase tracking-wide text-xs w-[25%]">{t('table.degree')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -244,68 +251,40 @@ export default function DivisionalTab({
             <TrimsamshaLordCard positions={divisionalData.planet_positions} language={language} />
           )}
 
-          {/* Varga Strength (Phaladeepika Adh. 3 — Vargadhyaya) */}
+          {/* Varga Strength */}
           {divisionalData.varga_strength?.planets && (
-            <div className="rounded-xl p-5 border border-sacred-gold/20 bg-transparent shadow-sm animate-in fade-in slide-in-from-bottom-4">
-              <div className="mb-3 border-b border-border/30 pb-3">
-                <Heading as={4} variant={4} className="text-primary">
-                  {t('auto.vargaStrength')}
-                </Heading>
-                <p className="text-xs text-foreground/70 mt-1">
-                  {t('auto.vargaStrengthDesc')}
-                </p>
+            <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+              <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+                <span>{t('auto.vargaStrength')}</span>
                 {divisionalData.varga_strength.sloka_ref && (
-                  <p className="text-[10px] italic text-foreground/50 mt-1">
-                    {divisionalData.varga_strength.sloka_ref}
-                  </p>
+                  <span className="text-[10px] italic font-normal opacity-80">{divisionalData.varga_strength.sloka_ref}</span>
                 )}
               </div>
-
-              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-                <Table className="w-full text-sm border-collapse">
+              <div className="p-3">
+                <p className="text-xs text-foreground/70 mb-3">{t('auto.vargaStrengthDesc')}</p>
+                <Table className="w-full text-xs table-fixed">
                   <TableHeader>
-                    <TableRow className="bg-muted/10">
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
-                        {t('table.planet')}
-                      </TableHead>
-                      <TableHead className="text-center p-2.5 text-primary font-bold border-b border-border">
-                        {t('auto.ownVargas')}
-                      </TableHead>
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
-                        {t('auto.vargaTier')}
-                      </TableHead>
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">
-                        {t('auto.vargaStrengthDesc').split('.')[0]}
-                      </TableHead>
+                    <TableRow>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('table.planet')}</TableHead>
+                      <TableHead className="text-center p-2.5 text-primary font-semibold uppercase tracking-wide w-[15%]">{t('auto.ownVargas')}</TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[20%]">{t('auto.vargaTier')}</TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[40%]">{language === 'hi' ? 'विवरण' : 'Description'}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {Object.entries(divisionalData.varga_strength.planets).map(
-                      ([planet, info]: [string, any]) => {
-                        const tier = info.tier || {};
-                        const tierName = language === 'hi' ? tier.name_hi : tier.name;
-                        const tierDesc = language === 'hi' ? tier.description_hi : tier.description;
-                        return (
-                          <TableRow
-                            key={planet}
-                            className="border-t border-border/20 hover:bg-muted/5 transition-colors"
-                          >
-                            <TableCell className="p-2.5 text-foreground font-bold whitespace-nowrap">
-                              {translatePlanet(planet, language)}
-                            </TableCell>
-                            <TableCell className="p-2.5 text-center text-foreground font-mono">
-                              {info.count}/7
-                            </TableCell>
-                            <TableCell className="p-2.5 text-primary font-bold italic">
-                              {tierName}
-                            </TableCell>
-                            <TableCell className="p-2.5 text-foreground text-xs leading-relaxed">
-                              {tierDesc}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      }
-                    )}
+                    {Object.entries(divisionalData.varga_strength.planets).map(([planet, info]: [string, any]) => {
+                      const tier = info.tier || {};
+                      const tierName = language === 'hi' ? tier.name_hi : tier.name;
+                      const tierDesc = language === 'hi' ? tier.description_hi : tier.description;
+                      return (
+                        <TableRow key={planet} className="border-t border-border/20 hover:bg-muted/5 transition-colors">
+                          <TableCell className="p-2.5 text-foreground font-bold">{translatePlanet(planet, language)}</TableCell>
+                          <TableCell className="p-2.5 text-center text-foreground font-mono">{info.count}/7</TableCell>
+                          <TableCell className="p-2.5 text-primary font-bold italic">{tierName}</TableCell>
+                          <TableCell className="p-2.5 text-foreground text-xs leading-relaxed whitespace-normal break-words max-w-0">{tierDesc}</TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -314,16 +293,19 @@ export default function DivisionalTab({
 
           {/* D60 Special Analysis */}
           {divisionalData.d60_analysis && (
-            <div className="bg-muted rounded-xl p-5 border border-border shadow-sm animate-in fade-in slide-in-from-bottom-4 space-y-6">
-              <div className="flex items-center gap-2 mb-4 border-b border-border/30 pb-3">
-                <Heading as={4} variant={4} className="text-primary">{t('auto.d60ShashtiamsaKarmic')}</Heading>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-muted/10 text-primary border border-border/20 font-bold uppercase tracking-tighter">{t('auto.expert')}</span>
+            <div className="space-y-4">
+              {/* D60 main header */}
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-3">
+                  <span>{t('auto.d60ShashtiamsaKarmic')}</span>
+                  <span className="text-[10px] px-2 py-0.5 bg-white/20 rounded uppercase font-bold tracking-tight">{t('auto.expert')}</span>
+                </div>
               </div>
 
-              {/* Birth Time Sensitivity Warning */}
+              {/* Birth Time Sensitivity */}
               {divisionalData.d60_analysis.birth_time_assessment && (
-                <div className={`p-4 rounded-lg border ${
-                  divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high' 
+                <div className={`rounded-xl border p-4 ${
+                  divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high'
                     ? 'bg-green-50 border-green-200' :
                   divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'moderate'
                     ? 'bg-yellow-50 border-yellow-200' :
@@ -333,26 +315,24 @@ export default function DivisionalTab({
                 }`}>
                   <div className="flex items-start gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high' 
+                      divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'high'
                         ? 'bg-green-100 text-green-700' :
                       divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'moderate'
                         ? 'bg-yellow-100 text-yellow-700' :
                       divisionalData.d60_analysis.birth_time_assessment.confidence_level === 'low'
                         ? 'bg-orange-100 text-orange-700' :
                         'bg-red-100 text-red-700'
-                    }`}>
-                      ⚠
-                    </div>
+                    }`}>⚠</div>
                     <div className="flex-1">
-                      <Heading as={5} variant={5} className="mb-1">
+                      <p className="font-semibold text-sm mb-1">
                         {t('auto.birthTimeAccuracy')}
                         <span className="ml-2 text-xs uppercase tracking-wider opacity-70">
                           ({divisionalData.d60_analysis.birth_time_assessment.confidence_level})
                         </span>
-                      </Heading>
+                      </p>
                       <p className="text-sm mb-2">
-                        {language === 'hi' 
-                          ? divisionalData.d60_analysis.birth_time_assessment.assessment?.hi 
+                        {language === 'hi'
+                          ? divisionalData.d60_analysis.birth_time_assessment.assessment?.hi
                           : divisionalData.d60_analysis.birth_time_assessment.assessment?.en}
                       </p>
                       <p className="text-xs opacity-80 mb-2">
@@ -377,80 +357,71 @@ export default function DivisionalTab({
 
               {/* Karmic Summary */}
               {divisionalData.d60_analysis.karmic_summary && (
-                <div className="bg-transparent rounded-lg p-4 border border-sacred-gold/20">
-                  <Heading as={5} variant={5} className="mb-3">
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
                     {t('auto.karmicSummary')}
-                  </Heading>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="bg-green-50 p-3 rounded-lg">
-                      <div className="text-xs text-green-700 uppercase font-bold">
-                        {t('auto.punyaScoreBenefic')}
-                      </div>
-                      <div className="text-2xl font-bold text-green-800">
-                        {divisionalData.d60_analysis.karmic_summary.punya_score}%
-                      </div>
-                    </div>
-                    <div className="bg-red-50 p-3 rounded-lg">
-                      <div className="text-xs text-red-700 uppercase font-bold">
-                        {t('auto.papaScoreMalefic')}
-                      </div>
-                      <div className="text-2xl font-bold text-red-800">
-                        {divisionalData.d60_analysis.karmic_summary.papa_score}%
-                      </div>
-                    </div>
                   </div>
-                  <p className="text-sm text-foreground mb-3">
-                    {language === 'hi'
-                      ? divisionalData.d60_analysis.karmic_summary.overall_description?.hi
-                      : divisionalData.d60_analysis.karmic_summary.overall_description?.en}
-                  </p>
-                  
-                  {/* Life Purpose */}
-                  {divisionalData.d60_analysis.karmic_summary.life_purpose && (
-                    <div className="mt-4 p-3 bg-muted/10 rounded-lg">
-                      <Heading as={6} variant={6} className="text-primary mb-1">
-                        {t('auto.lifePurpose')}: {' '}
-                        {language === 'hi'
-                          ? divisionalData.d60_analysis.karmic_summary.life_purpose.primary_hi
-                          : divisionalData.d60_analysis.karmic_summary.life_purpose.primary}
-                      </Heading>
-                      <p className="text-xs text-foreground">
-                        {language === 'hi'
-                          ? divisionalData.d60_analysis.karmic_summary.life_purpose.description_hi
-                          : divisionalData.d60_analysis.karmic_summary.life_purpose.description}
-                      </p>
+                  <div className="p-4 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <div className="text-xs text-green-700 uppercase font-bold">{t('auto.punyaScoreBenefic')}</div>
+                        <div className="text-2xl font-bold text-green-800">{divisionalData.d60_analysis.karmic_summary.punya_score}%</div>
+                      </div>
+                      <div className="bg-red-50 p-3 rounded-lg">
+                        <div className="text-xs text-red-700 uppercase font-bold">{t('auto.papaScoreMalefic')}</div>
+                        <div className="text-2xl font-bold text-red-800">{divisionalData.d60_analysis.karmic_summary.papa_score}%</div>
+                      </div>
                     </div>
-                  )}
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {language === 'hi'
+                        ? divisionalData.d60_analysis.karmic_summary.overall_description?.hi
+                        : divisionalData.d60_analysis.karmic_summary.overall_description?.en}
+                    </p>
+                    {divisionalData.d60_analysis.karmic_summary.life_purpose && (
+                      <div className="p-3 bg-muted/10 rounded-lg border border-border/20">
+                        <p className="text-sm font-semibold text-primary mb-1">
+                          {t('auto.lifePurpose')}: {' '}
+                          {language === 'hi'
+                            ? divisionalData.d60_analysis.karmic_summary.life_purpose.primary_hi
+                            : divisionalData.d60_analysis.karmic_summary.life_purpose.primary}
+                        </p>
+                        <p className="text-xs text-foreground whitespace-normal break-words">
+                          {language === 'hi'
+                            ? divisionalData.d60_analysis.karmic_summary.life_purpose.description_hi
+                            : divisionalData.d60_analysis.karmic_summary.life_purpose.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Planetary Analysis Table */}
-              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-                <Heading as={5} variant={5} className="mb-3">
+              {/* Planetary Karmic Analysis Table */}
+              <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
                   {t('auto.planetWiseKarmicAnal')}
-                </Heading>
-                <Table className="w-full text-sm border-collapse">
+                </div>
+                <Table className="w-full text-xs table-fixed">
                   <TableHeader>
-                    <TableRow className="bg-muted/10">
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">{t('table.planet')}</TableHead>
-                      <TableHead className="text-center p-2.5 text-primary font-bold border-b border-border">{t('auto.unit')}</TableHead>
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">{t('auto.sanskritName')}</TableHead>
-                      <TableHead className="text-center p-2.5 text-primary font-bold border-b border-border">{t('auto.nature')}</TableHead>
-                      <TableHead className="text-left p-2.5 text-primary font-bold border-b border-border">{t('auto.pastLifeTheme')}</TableHead>
+                    <TableRow>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('table.planet')}</TableHead>
+                      <TableHead className="text-center p-2.5 text-primary font-semibold uppercase tracking-wide w-[12%]">{t('auto.unit')}</TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.sanskritName')}</TableHead>
+                      <TableHead className="text-center p-2.5 text-primary font-semibold uppercase tracking-wide w-[12%]">{t('auto.nature')}</TableHead>
+                      <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[40%]">{t('auto.pastLifeTheme')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {Object.entries(divisionalData.d60_analysis.planetary_analysis || {}).map(([planet, info]: [string, any]) => {
                       const isMalefic = info.nature === 'Malefic';
                       const isBenefic = info.nature === 'Benefic';
-                      const natureLabel = language === 'hi' 
-                        ? (isBenefic ? 'शुभ' : isMalefic ? 'पाप' : 'मिश्रित') 
+                      const natureLabel = language === 'hi'
+                        ? (isBenefic ? 'शुभ' : isMalefic ? 'पाप' : 'मिश्रित')
                         : info.nature;
                       const theme = language === 'hi' ? info.past_life_theme?.theme_hi : info.past_life_theme?.theme;
-
                       return (
                         <TableRow key={planet} className="border-t border-border/20 hover:bg-muted/5 transition-colors">
-                          <TableCell className="p-2.5 text-foreground font-bold whitespace-nowrap">{translatePlanet(planet, language)}</TableCell>
+                          <TableCell className="p-2.5 text-foreground font-bold">{translatePlanet(planet, language)}</TableCell>
                           <TableCell className="p-2.5 text-center text-foreground font-mono">{info.unit}</TableCell>
                           <TableCell className="p-2.5 text-primary font-bold italic">{language === 'hi' ? info.name_hi : info.name}</TableCell>
                           <TableCell className="p-2.5 text-center">
@@ -462,7 +433,7 @@ export default function DivisionalTab({
                               {natureLabel}
                             </span>
                           </TableCell>
-                          <TableCell className="p-2.5 text-foreground text-xs leading-relaxed">
+                          <TableCell className="p-2.5 text-foreground text-xs leading-relaxed overflow-hidden whitespace-normal break-words">
                             {theme || info.description}
                           </TableCell>
                         </TableRow>
@@ -474,24 +445,24 @@ export default function DivisionalTab({
 
               {/* Karmic Debts */}
               {divisionalData.d60_analysis.karmic_summary?.karmic_debts?.length > 0 && (
-                <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-                  <Heading as={5} variant={5} className="text-red-800 mb-3">
+                <div className="rounded-xl border border-red-200 bg-red-50 overflow-hidden">
+                  <div className="bg-red-700 text-white px-4 py-2 text-[15px] font-semibold">
                     {t('auto.identifiedKarmicDebt')}
-                  </Heading>
-                  <div className="space-y-3">
+                  </div>
+                  <div className="p-4 space-y-3">
                     {divisionalData.d60_analysis.karmic_summary.karmic_debts.map((debt: any, idx: number) => (
                       <div key={idx} className="bg-white p-3 rounded border border-red-100">
-                        <Heading as={6} variant={6} className="text-red-700">
+                        <p className="font-semibold text-sm text-red-700">
                           {language === 'hi' ? debt.debt_type_hi : debt.debt_type}
-                        </Heading>
+                        </p>
                         <p className="text-xs text-foreground mt-1">
                           <span className="font-semibold">{t('auto.planets')}</span>
                           {debt.planets_involved?.join(', ')}
                         </p>
-                        <p className="text-xs text-foreground mt-1">
+                        <p className="text-xs text-foreground mt-1 whitespace-normal break-words">
                           {language === 'hi' ? debt.manifestation_hi : debt.manifestation}
                         </p>
-                        <p className="text-xs text-green-700 mt-2 font-medium">
+                        <p className="text-xs text-green-700 mt-2 font-medium whitespace-normal break-words">
                           <span className="font-semibold">{t('auto.resolution')}</span>
                           {language === 'hi' ? debt.resolution_hi : debt.resolution}
                         </p>
@@ -503,38 +474,40 @@ export default function DivisionalTab({
 
               {/* Remedy Accessibility */}
               {divisionalData.d60_analysis.karmic_summary?.remedy_accessibility && (
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                  <Heading as={5} variant={5} className="text-blue-800 mb-2">
+                <div className="rounded-xl border border-blue-200 bg-blue-50 overflow-hidden">
+                  <div className="bg-blue-700 text-white px-4 py-2 text-[15px] font-semibold">
                     {t('auto.remedyAccessibility')}: {' '}
-                    {language === 'hi' 
+                    {language === 'hi'
                       ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level_hi
                       : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.level}
-                  </Heading>
-                  <p className="text-sm text-foreground mb-3">
-                    {language === 'hi'
-                      ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description_hi
-                      : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description}
-                  </p>
-                  {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations?.length > 0 && (
-                    <ul className="text-xs space-y-1">
-                      {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations.map((rec: any, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2 text-blue-800">
-                          <span>•</span>
-                          <span>{language === 'hi' ? rec.hi : rec.en}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  </div>
+                  <div className="p-4">
+                    <p className="text-sm text-foreground mb-3 whitespace-normal break-words">
+                      {language === 'hi'
+                        ? divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description_hi
+                        : divisionalData.d60_analysis.karmic_summary.remedy_accessibility.description}
+                    </p>
+                    {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations?.length > 0 && (
+                      <ul className="text-xs space-y-1">
+                        {divisionalData.d60_analysis.karmic_summary.remedy_accessibility.recommendations.map((rec: any, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-blue-800">
+                            <span>•</span>
+                            <span className="whitespace-normal break-words">{language === 'hi' ? rec.hi : rec.en}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               )}
 
               {/* Footer Note */}
-              <div className="mt-4 p-3 bg-white/50 rounded-lg border border-border/10 text-xs text-foreground italic leading-relaxed">
-                {t('auto.AccordingToSageParas')
-                }
+              <div className="p-3 bg-muted/10 rounded-lg border border-border/10 text-xs text-foreground italic leading-relaxed">
+                {t('auto.AccordingToSageParas')}
               </div>
             </div>
           )}
+
         </div>
       ) : (
         <p className="text-center text-foreground py-8">{t('kundli.selectChartToLoad')}</p>

@@ -1,7 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 
 interface SodashvargaTabProps {
   sodashvargaData: any;
@@ -77,17 +76,21 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
   return (
     <div className="space-y-6">
       {/* Varga Table */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 overflow-x-auto">
-        <Heading as={4} variant={4} className="mb-3">{t('section.sodashvargaTitle')}</Heading>
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+          {t('section.sodashvargaTitle')}
+        </div>
+        <div className="p-4">
         {(() => {
           const rows = sodashvargaData.varga_table || (Array.isArray(sodashvargaData.by_sign) ? sodashvargaData.by_sign : []);
           if (rows.length > 0) {
             return (
-              <Table className="w-full text-sm min-w-[700px]">
-                <TableHeader><TableRow className="bg-muted">
-                  <TableHead className="text-left p-2 text-primary font-medium">{t('table.varga')}</TableHead>
+              <div className="overflow-x-auto">
+              <Table className="w-full text-xs min-w-[700px]">
+                <TableHeader><TableRow>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('table.varga')}</TableHead>
                   {['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa', 'Ra', 'Ke'].map(p => (
-                    <TableHead key={p} className="text-center p-1.5 text-primary font-medium">{p}</TableHead>
+                    <TableHead key={p} className="text-center p-1.5 text-primary font-semibold">{p}</TableHead>
                   ))}
                 </TableRow></TableHeader>
                 <TableBody>
@@ -117,11 +120,12 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
                   })}
                 </TableBody>
               </Table>
+              </div>
             );
           }
           if (sodashvargaData.by_sign && typeof sodashvargaData.by_sign === 'object') {
             return (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                 {Object.entries(sodashvargaData.by_sign).map(([planet, data]: [string, any]) => (
                   <div key={planet} className="bg-white rounded-lg p-3">
                     <p className="font-semibold text-foreground mb-1">{translatePlanet(planet, language)}</p>
@@ -135,19 +139,24 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           }
           return <p className="text-center text-foreground">{t('common.noData')}</p>;
         })()}
-        <div className="flex flex-wrap gap-2 mt-3 text-sm">
+        <div className="flex flex-wrap gap-2 mt-3 text-xs">
           <span className="px-2 py-1 rounded bg-green-100 text-green-800">{t('dignity.exalted')}</span>
           <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">{t('dignity.ownMoolatrikona')}</span>
           <span className="px-2 py-1 rounded bg-amber-100 text-amber-800">{t('dignity.friend')}</span>
           <span className="px-2 py-1 rounded bg-orange-100 text-orange-800">{t('dignity.enemy')}</span>
           <span className="px-2 py-1 rounded bg-red-100 text-red-800">{t('dignity.debilitated')}</span>
         </div>
+        </div>
       </div>
 
       {/* Vimshopak Bala */}
       {(sodashvargaData.by_planet || sodashvargaData.vimshopak) && (
-        <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4 overflow-x-auto">
-          <Heading as={4} variant={4} className="mb-3">{t('section.vimshopakBala')}</Heading>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {t('section.vimshopakBala')}
+          </div>
+          <div className="p-4">
+          <div className="overflow-x-auto">
           <div className="space-y-3 min-w-[420px]">
             {(() => {
               const items = Array.isArray(sodashvargaData.vimshopak) ? sodashvargaData.vimshopak
@@ -242,6 +251,8 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
               </div>
             </div>
           )}
+          </div>
+          </div>
         </div>
       )}
     </div>
