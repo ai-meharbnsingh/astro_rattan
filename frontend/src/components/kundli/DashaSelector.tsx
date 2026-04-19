@@ -121,6 +121,29 @@ const EMPTY_DATA: Record<DashaSystem, DashaResponse | null> = {
   tara: null,
 };
 
+const SIGN_LORD: Record<string, string> = {
+  Aries: 'Mars',
+  Taurus: 'Venus',
+  Gemini: 'Mercury',
+  Cancer: 'Moon',
+  Leo: 'Sun',
+  Virgo: 'Mercury',
+  Libra: 'Venus',
+  Scorpio: 'Mars',
+  Sagittarius: 'Jupiter',
+  Capricorn: 'Saturn',
+  Aquarius: 'Saturn',
+  Pisces: 'Jupiter',
+};
+
+function naturePlanetFor(system: DashaSystem, period?: DashaPeriod | null): string {
+  if (!period) return '';
+  if (system === 'tara') return String(period.lord ?? '');
+  if (system === 'moola') return SIGN_LORD[String(period.sign ?? period.planet ?? '')] || '';
+  // vimshottari / ashtottari
+  return String(period.planet ?? '');
+}
+
 function normalizeResponse(system: DashaSystem, raw: any): DashaResponse {
   const src = (raw && typeof raw === 'object') ? raw : {};
 
@@ -368,19 +391,20 @@ export default function DashaSelector({
             const mdLabel = currentMD?.planet || currentData.current_dasha || '';
             const adLabel = currentADList?.planet || currentData.current_antardasha || currentData.current_sub_period || '';
             const ptLabel = currentPT?.planet || currentData.current_pratyantar || '';
+            const mdNaturePlanet = naturePlanetFor(selectedSystem, currentMD);
             return (
               <div className="flex flex-wrap gap-3 text-sm">
                 <div className="flex items-center gap-1">
                   <span className="text-foreground/70">{t('kundli.mahadasha')}:</span>
-                  <span className={`font-bold ${periodColor(mdLabel)}`}>
+                  <span className={`font-bold ${periodColor(mdNaturePlanet || mdLabel)}`}>
                     {formatLabel(selectedSystem, mdLabel, language)}
                   </span>
-                  {natureBadge(mdLabel, hi)}
+                  {natureBadge(mdNaturePlanet, hi)}
                 </div>
                 {adLabel && (
                   <div className="flex items-center gap-1">
                     <span className="text-foreground/70">{t('kundli.antardasha')}:</span>
-                    <span className={`font-bold ${periodColor(adLabel)}`}>
+                    <span className={`font-bold ${periodColor(mdNaturePlanet || adLabel)}`}>
                       {formatLabel(selectedSystem, adLabel, language)}
                     </span>
                   </div>
@@ -388,7 +412,7 @@ export default function DashaSelector({
                 {ptLabel && (
                   <div className="flex items-center gap-1">
                     <span className="text-foreground/70">{t('kundli.pratyantar')}:</span>
-                    <span className={`font-bold ${periodColor(ptLabel)}`}>
+                    <span className={`font-bold ${periodColor(mdNaturePlanet || ptLabel)}`}>
                       {formatLabel(selectedSystem, ptLabel, language)}
                     </span>
                   </div>
@@ -425,6 +449,7 @@ export default function DashaSelector({
                 {periods.map((md) => {
                   const mdKey = `${md.planet}-${md.start}-${md.end}`;
                   const mdLabel = formatLabel(selectedSystem, md.planet, language);
+                  const mdNaturePlanet = naturePlanetFor(selectedSystem, md);
                   const isMdExpanded = expandedMD === mdKey;
                   const hasChildren = (md.antardasha || []).length > 0;
                   const mdYears = md.years ?? md.span ?? (md.duration_years ? parseFloat(String(md.duration_years)).toFixed(1) : '');
@@ -433,7 +458,7 @@ export default function DashaSelector({
                     <React.Fragment key={`${selectedSystem}-${mdKey}`}>
                       {/* Mahadasha row */}
                       <TableRow
-                        className={`cursor-pointer transition-colors ${md.is_current ? `${periodBg(md.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/5'}`}
+                        className={`cursor-pointer transition-colors ${md.is_current ? `${periodBg(mdNaturePlanet || md.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/5'}`}
                         onClick={() => hasChildren && setExpandedMD(isMdExpanded ? null : mdKey)}
                       >
                         <TableCell className="p-1.5 text-center">
@@ -444,7 +469,7 @@ export default function DashaSelector({
                           ) : <span className="w-3.5 h-3.5 inline-block" />}
                         </TableCell>
                         <TableCell className="p-1.5">
-                          <span className={`font-bold ${md.is_current ? 'text-primary' : periodColor(md.planet)}`}>
+                          <span className={`font-bold ${md.is_current ? 'text-primary' : periodColor(mdNaturePlanet || md.planet)}`}>
                             {mdLabel}
                           </span>
                           {md.is_current && (
@@ -456,13 +481,14 @@ export default function DashaSelector({
                         <TableCell className="p-1.5 text-foreground font-medium">{md.start}</TableCell>
                         <TableCell className="p-1.5 text-foreground font-medium">{md.end}</TableCell>
                         <TableCell className="p-1.5 text-center text-primary font-bold">{mdYears}</TableCell>
-                        <TableCell className="p-1.5 text-center">{natureBadge(md.planet, hi)}</TableCell>
+                        <TableCell className="p-1.5 text-center">{natureBadge(mdNaturePlanet, hi)}</TableCell>
                       </TableRow>
 
                       {/* Antardasha rows */}
                       {isMdExpanded && (md.antardasha || []).map((ad) => {
                         const adKey = `${mdKey}-${ad.planet}-${ad.start}-${ad.end}`;
                         const adLabel = formatLabel(selectedSystem, ad.planet, language);
+                        const adNaturePlanet = naturePlanetFor(selectedSystem, ad) || mdNaturePlanet;
                         const isAdExpanded = expandedAD === adKey;
                         const hasADChildren = (ad.pratyantar || []).length > 0;
                         const adYears = ad.years ?? ad.span ?? (ad.duration_years ? parseFloat(String(ad.duration_years)).toFixed(2) : '');
@@ -470,7 +496,7 @@ export default function DashaSelector({
                         return (
                           <React.Fragment key={`${selectedSystem}-${adKey}`}>
                             <TableRow
-                              className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? `${periodBg(ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/10'}`}
+                              className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? `${periodBg(adNaturePlanet || ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/10'}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (hasADChildren) setExpandedAD(isAdExpanded ? null : adKey);
@@ -484,7 +510,7 @@ export default function DashaSelector({
                                 ) : <span className="w-3 h-3 inline-block" />}
                               </TableCell>
                               <TableCell className="p-1.5 pl-6">
-                                <span className={`font-semibold ${ad.is_current ? 'text-primary' : periodColor(ad.planet)}`}>
+                                <span className={`font-semibold ${ad.is_current ? 'text-primary' : periodColor(adNaturePlanet || ad.planet)}`}>
                                   {adLabel}
                                 </span>
                                 {ad.is_current && (
@@ -496,7 +522,7 @@ export default function DashaSelector({
                               <TableCell className="p-1.5 text-foreground italic opacity-80">{ad.start}</TableCell>
                               <TableCell className="p-1.5 text-foreground italic opacity-80">{ad.end}</TableCell>
                               <TableCell className="p-1.5 text-center text-foreground opacity-60">{adYears}</TableCell>
-                              <TableCell className="p-1.5 text-center">{natureBadge(ad.planet, hi)}</TableCell>
+                              <TableCell className="p-1.5 text-center">{natureBadge(adNaturePlanet, hi)}</TableCell>
                             </TableRow>
 
                             {/* Pratyantardasha rows */}
