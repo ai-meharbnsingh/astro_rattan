@@ -747,8 +747,9 @@ export default function ReportTab({
 	                </div>
 
                 {/* 7b. Mangal / Kaal Sarp / Sade Sati Dosha */}
-                <div className="bg-muted rounded-xl border border-border p-4 lg:col-span-2">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.doshaAnalysis')}</Heading>
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden lg:col-span-2">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{t('section.doshaAnalysis')}</div>
+                  <div className="p-3">
                   {loadingDosha ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
                   ) : doshaData ? (
@@ -787,11 +788,13 @@ export default function ReportTab({
                   ) : (
                     <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
                   )}
+                  </div>
                 </div>
 
                 {/* 8. Ashtakvarga SAV bar chart */}
-                <div className="bg-muted rounded-xl border border-border p-4">
-                  <Heading as={4} variant={4} className="mb-3">{t('section.sarvashtakvarga')}</Heading>
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{t('section.sarvashtakvarga')}</div>
+                  <div className="p-3">
                   {loadingAshtakvarga ? (
                     <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
                   ) : ashtakvargaData ? (
@@ -824,13 +827,15 @@ export default function ReportTab({
                   ) : (
                     <p className="text-center text-foreground py-4 text-sm">{t('common.loading')}</p>
                   )}
+                  </div>
                 </div>
 
                 {/* 9. Shadbala + Bhav Bala bar charts */}
-                <div className="bg-muted rounded-xl border border-border p-4 space-y-4">
+                <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden space-y-0">
                   {/* Shadbala */}
+                  <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{t('section.shadbalaStrength')}</div>
+                  <div className="p-3">
                   <div>
-                    <Heading as={4} variant={4} className="mb-3">{t('section.shadbalaStrength')}</Heading>
                     {loadingShadbala ? (
                       <div className="flex items-center justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-primary" /></div>
                     ) : shadbalaData?.planets ? (
@@ -874,8 +879,8 @@ export default function ReportTab({
                   {/* Bhav Bala */}
                   {shadbalaData?.bhav_bala && (
                     <div>
-                      <div className="border-t border-border/30 pt-4">
-                        <Heading as={4} variant={4} className="mb-3">{t('section.bhavBala')}</Heading>
+                      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold mt-0">{t('section.bhavBala')}</div>
+                      <div className="p-3">
                         <div className="overflow-x-auto -mx-1 px-1">
                           <div className="flex items-end gap-1" style={{ height: '160px', minWidth: '360px' }}>
                             {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
@@ -902,6 +907,7 @@ export default function ReportTab({
                       </div>
                     </div>
                   )}
+                  </div>
                 </div>
 
               </div>
