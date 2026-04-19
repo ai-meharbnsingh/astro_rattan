@@ -14,6 +14,7 @@ import type { ClientData } from '@/components/ClientSelector';
 import NameNumerology from './NameNumerology';
 import VehicleNumerology from './VehicleNumerology';
 import HouseNumerology from './HouseNumerology';
+import InsightPanel from './InsightPanel';
 import { Heading } from "@/components/ui/heading";
 
 interface PredictionEntry {
@@ -62,6 +63,7 @@ interface NumerologyResult {
   loshu_planes?: any;
   missing_numbers?: Array<any>;
   repeated_numbers?: Array<any>;
+  insights?: any;
 }
 
 interface MobileCombination {
@@ -336,6 +338,12 @@ export default function NumerologyTabs() {
             </CardContent>
           </Card>
         </div>
+
+          {numResult?.insights && (
+            <div className="max-w-4xl mx-auto w-full">
+              <InsightPanel insights={numResult.insights} />
+            </div>
+          )}
 
 	          {numResult && (
 	            <Card className="bg-card border-sacred-gold/10 shadow-soft-lg">
