@@ -34,7 +34,7 @@ from app.divisional_charts import (
     calculate_d108_analysis,
     DIVISIONAL_CHARTS,
 )
-from app.ashtakvarga_engine import calculate_ashtakvarga, analyze_ashtakvarga_phala
+from app.ashtakvarga_engine import calculate_ashtakvarga, analyze_ashtakvarga_phala, analyze_horasara_phala
 from app.varga_grading_engine import calculate_varga_strength
 from app.shadbala_engine import calculate_shadbala, calculate_bhav_bala
 from app.avakhada_engine import calculate_avakhada
@@ -675,6 +675,16 @@ def get_sookshma_prana(
     return result
 
 
+@router.get("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
+def get_dasha_get(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Calculate Vimshottari Dasha periods for a kundli."""
+    return _compute_dasha(db, kundli_id, current_user["sub"])
+
+
 @router.post("/{kundli_id}/dasha", status_code=status.HTTP_200_OK)
 def get_dasha(
     kundli_id: str,
@@ -875,6 +885,21 @@ def get_ashtakvarga_phala(
     row = _fetch_kundli(db, kundli_id, current_user["sub"])
     chart = _chart_data(row)
     result = analyze_ashtakvarga_phala(chart)
+    result["kundli_id"] = kundli_id
+    result["person_name"] = row["person_name"]
+    return result
+
+
+@router.get("/{kundli_id}/horasara-phala", status_code=status.HTTP_200_OK)
+def get_horasara_phala(
+    kundli_id: str,
+    current_user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Horasara (Prithuyasas) supplementary Ashtakavarga phala rules."""
+    row = _fetch_kundli(db, kundli_id, current_user["sub"])
+    chart = _chart_data(row)
+    result = analyze_horasara_phala(chart)
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
     return result

@@ -25,10 +25,6 @@ export default function Hero() {
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 1.2, delay: 0.5, ease: 'power3.out' }
       );
-      gsap.fromTo('.hero-subtitle',
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, delay: 0.7, ease: 'power3.out' }
-      );
       gsap.fromTo('.hero-cta',
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.8, delay: 0.9, ease: 'power3.out' }
