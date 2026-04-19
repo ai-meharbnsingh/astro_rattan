@@ -26,6 +26,8 @@ export interface KundliChartSVGProps {
   ascendantDegree?: number;
   className?: string;
   language?: string;
+  showHouseNumbers?: boolean;
+  showRashiNumbers?: boolean;
 }
 
 const PLANET_ABBR: Record<string, string> = {
@@ -136,7 +138,15 @@ function normalizeSignName(raw: string | null | undefined): string | null {
   return null;
 }
 
-export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree, className, language = 'en' }: KundliChartSVGProps) {
+export default function KundliChartSVG({
+  planets,
+  ascendantSign,
+  ascendantDegree,
+  className,
+  language = 'en',
+  showHouseNumbers = true,
+  showRashiNumbers = true,
+}: KundliChartSVGProps) {
   const isHi = language === 'hi';
   const [tick, setTick] = useState(0);
   useEffect(() => {
@@ -184,6 +194,23 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
       <line x1={S} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
       <line x1={E} y1={E} x2={M} y2={M} stroke={GOLD} strokeWidth="0.7" opacity="0.35" />
 
+      {/* Ascendant marker (degree-in-sign) */}
+      {lagnaSignIdx >= 0 && (
+        <text
+          x={marker.x}
+          y={marker.y}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize="14"
+          fontWeight="800"
+          fill={GOLD_MED}
+          opacity="0.85"
+          fontFamily="'Inter',sans-serif"
+        >
+          ▲
+        </text>
+      )}
+
       {/* Zodiac sign images — orange, low opacity, at fixed sign positions */}
       {[
         { x: pct(50),   y: pct(28) },   // Aries — top diamond
@@ -213,21 +240,41 @@ export default function KundliChartSVG({ planets, ascendantSign, ascendantDegree
         );
       })}
 
+      {/* House numbers (1..12) — fixed positions. */}
+      {showHouseNumbers && NUMBER_LABEL_POS.map((pos, i) => (
+        <text
+          key={`house-${i}`}
+          x={pos.x}
+          y={pos.y}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize="12"
+          fontWeight="800"
+          fill={GOLD_MED}
+          opacity="0.55"
+          fontFamily="'Inter',sans-serif"
+        >
+          {i + 1}
+        </text>
+      ))}
+
       {/* Rashi numbers (1..12) — rotate with Lagna (Aries=1..Pisces=12). */}
-      {NUMBER_LABEL_POS.map((pos, i) => {
+      {showRashiNumbers && NUMBER_LABEL_POS.map((pos, i) => {
         const signIdx = lagnaSignIdx >= 0 ? (lagnaSignIdx + i) % 12 : i;
         const rashiNum = signIdx + 1;
+        const dy = pos.y > M ? -12 : 12;
+        const ry = Math.min(EI, Math.max(SI, pos.y + dy));
         return (
           <text
             key={`rashi-${i}`}
             x={pos.x}
-            y={pos.y}
+            y={ry}
             textAnchor="middle"
             dominantBaseline="central"
-            fontSize="12"
+            fontSize="10"
             fontWeight="700"
             fill={GOLD}
-            opacity="0.5"
+            opacity="0.35"
             fontFamily="'Inter',sans-serif"
           >
             {rashiNum}
