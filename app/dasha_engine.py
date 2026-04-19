@@ -1520,7 +1520,12 @@ def calculate_sookshma_prana(
 
 
 def get_current_dasha_phala(
-    chart_data: dict, birth_date: str, as_of_date: Optional[str] = None
+    chart_data: dict,
+    birth_date: str,
+    as_of_date: Optional[str] = None,
+    latitude: float = 28.6,
+    longitude: float = 77.2,
+    tz_offset: float = 5.5,
 ) -> Dict[str, Any]:
     """
     Return classical effect narrative for the currently running
@@ -1630,7 +1635,7 @@ def get_current_dasha_phala(
     try:
         from app.astro_engine import calculate_planet_positions
         today_str = now.strftime("%Y-%m-%d")
-        transit_result = calculate_planet_positions(today_str, "12:00:00", 28.6, 77.2, 5.5)
+        transit_result = calculate_planet_positions(today_str, "12:00:00", latitude, longitude, tz_offset)
         transit_planets = transit_result.get("planets", {})
         natal_planets = (chart_data or {}).get("planets", {}) or {}
 

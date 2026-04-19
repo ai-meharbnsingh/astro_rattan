@@ -712,6 +712,9 @@ def get_dasha_phala(
         chart_data=chart,
         birth_date=str(row["birth_date"]),
         as_of_date=as_of,
+        latitude=float(row.get("latitude") or 28.6),
+        longitude=float(row.get("longitude") or 77.2),
+        tz_offset=float(row.get("timezone_offset") or 5.5),
     )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
