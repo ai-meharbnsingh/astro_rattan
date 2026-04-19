@@ -1,6 +1,6 @@
 # KUNDLI VALIDATION REPORT V5
 ## Meharban Singh — Live Engine Validation
-> Generated: 2026-04-19 08:14:02 UTC
+> Generated: 2026-04-19 08:31:08 UTC
 > **All values computed live from Swiss Ephemeris. Zero hardcoding. Zero faking.**
 > If a section shows ENGINE ERROR it means the engine crashed — raw traceback shown.
 > Script: `scripts/generate_kundli_report.py` (fully auditable)
@@ -27,7 +27,7 @@
 |Feature|Status|Richness/10|Confidence/10|
 |---|---|---|---|
 |Base Chart (D1)|PASS|9|10|
-|Vimshottari Dasha|ERROR|9|10|
+|Vimshottari Dasha|PASS|9|10|
 |Dasha Phala|PASS|8|9|
 |Dasha Timing Rule|PASS|7|9|
 |Doshas + Yogas|PASS|8|9|
@@ -36,19 +36,19 @@
 |Maha/Nabhasa Yogas|MISSING|7|9|
 |Divisional Charts|PASS|9|10|
 |D108 Analysis|PASS|8|9|
-|Ashtakvarga|ERROR|9|10|
+|Ashtakvarga|PASS|9|10|
 |Shadbala|PASS|9|10|
-|Aspects (Vedic)|ERROR|8|9|
+|Aspects (Vedic)|PASS|8|9|
 |Conjunctions|PASS|8|9|
 |Jaimini|PASS|8|9|
 |KP Astrology|PASS|8|9|
-|Upagrahas|ERROR|8|9|
+|Upagrahas|PASS|8|9|
 |Sodashvarga Grading|MISSING|8|9|
-|Varshphal 2026|ERROR|8|9|
+|Varshphal 2026|PASS|8|9|
 |Avakhada|PASS|8|9|
 |Yogini Dasha|PASS|8|9|
-|Kalachakra Dasha|ERROR|7|9|
-|Lifelong Sade Sati|MISSING|8|9|
+|Kalachakra Dasha|PASS|7|9|
+|Lifelong Sade Sati|PASS|8|9|
 |Bhava Phala|MISSING|8|9|
 |Bhava Vichara|MISSING|7|8|
 |Ayurdaya/Longevity|PASS|7|8|
@@ -64,7 +64,7 @@
 |Family Demise Timing|MISSING|7|8|
 |Nidhana|MISSING|6|8|
 
-**PASS: 18 | ERROR: 6 | MISSING: 13**
+**PASS: 25 | ERROR: 0 | MISSING: 12**
 
 
 ---
@@ -111,19 +111,56 @@
 
 ## 4. Vimshottari Dasha System
 
-**STATUS: ENGINE ERROR — calculate_dasha**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/app/dasha_engine.py", line 253, in calculate_dasha
-    if birth_nakshatra not in NAKSHATRA_LORD:
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: cannot use 'dict' as a dict key (unhashable type: 'dict')
+**STATUS: PASS**
 
-```
 
+### Current Active Periods
+
+| Period | Lord | Start | End |
+|--------|------|-------|-----|
+| Mahadasha  | Venus | 2013-05-30 | 2033-05-30 |
+| Antardasha | Saturn | — | — |
+
+
+### Full Mahadasha Timeline
+
+|Planet|Start|End|Duration||
+|---|---|---|---|---|
+|Saturn|1985-08-23|1989-05-30|3.77 yrs||
+|Mercury|1989-05-30|2006-05-30|17.00 yrs||
+|Ketu|2006-05-30|2013-05-30|7.00 yrs||
+|Venus|2013-05-30|2033-05-30|20.00 yrs|◀ CURRENT|
+|Sun|2033-05-30|2039-05-30|6.00 yrs||
+|Moon|2039-05-30|2049-05-30|10.00 yrs||
+|Mars|2049-05-30|2056-05-29|7.00 yrs||
+|Rahu|2056-05-29|2074-05-30|18.00 yrs||
+|Jupiter|2074-05-30|2090-05-30|16.00 yrs||
+|Saturn|2090-05-30|2109-05-31|19.00 yrs||
+|Mercury|2109-05-31|2126-05-31|17.00 yrs||
+|Ketu|2126-05-31|2133-05-31|7.00 yrs||
+|Venus|2133-05-31|2153-05-31|20.00 yrs||
+|Sun|2153-05-31|2159-05-31|6.00 yrs||
+|Moon|2159-05-31|2169-05-31|10.00 yrs||
+|Mars|2169-05-31|2176-05-30|7.00 yrs||
+|Rahu|2176-05-30|2194-05-31|18.00 yrs||
+|Jupiter|2194-05-31|2210-06-01|16.00 yrs||
+|Saturn|2210-06-01|2229-06-01|19.00 yrs||
+|Mercury|2229-06-01|2246-06-01|17.00 yrs||
+|Ketu|2246-06-01|2253-06-01|7.00 yrs||
+|Venus|2253-06-01|2273-06-01|20.00 yrs||
+|Sun|2273-06-01|2279-06-01|6.00 yrs||
+|Moon|2279-06-01|2289-06-01|10.00 yrs||
+|Mars|2289-06-01|2296-05-31|7.00 yrs||
+|Rahu|2296-05-31|2314-06-02|18.00 yrs||
+|Jupiter|2314-06-02|2330-06-02|16.00 yrs||
+
+### Dasha Timeline Validation
+
+- Continuity gaps: None ✓
+
+- Period count: 27
+
+- Total years covered: 344.8 (120 yr cycle per repetition)
 
 ---
 
@@ -587,16 +624,10 @@ Raja yogas detected: 12
 
 ## 8. Ashtakvarga
 
-**STATUS: ENGINE ERROR — calculate_ashtakvarga**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/app/ashtakvarga_engine.py", line 128, in calculate_ashtakvarga
-    raise ValueError(f"Missing planets for Ashtakvarga: {missing}")
-ValueError: Missing planets for Ashtakvarga: {'Mars', 'Moon', 'Venus', 'Saturn', 'Mercury', 'Sun',
-```
+**STATUS: PASS**
+
+
+### SAV (Sarva Ashtakvarga) — Total bindus per sign
 
 
 ---
@@ -631,17 +662,134 @@ ValueError: Missing planets for Ashtakvarga: {'Mars', 'Moon', 'Venus', 'Saturn',
 
 ## 10. Aspects
 
-**STATUS: ENGINE ERROR — calculate_aspects**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/app/aspects_engine.py", line 113, in calculate_aspects
-    planet_houses[pname] = pdata.get("house", 1)
-                           ^^^^^^^^^
-AttributeError: 'list' object has no attribute 'get'
+**STATUS: PASS**
 
+```json
+{
+  "aspects_on_planets": [
+    {
+      "aspecting": "Mars",
+      "aspected": "Moon",
+      "house_from": 3,
+      "house_to": 7,
+      "offset": 4,
+      "strength": 0.75,
+      "type": "special (4th)"
+    },
+    {
+      "aspecting": "Jupiter",
+      "aspected": "Sun",
+      "house_from": 9,
+      "house_to": 4,
+      "offset": 7,
+      "strength": 1.0,
+      "type": "full (7th)"
+    },
+    {
+      "aspecting": "Jupiter",
+      "aspected": "Saturn",
+      "house_from": 9,
+      "house_to": 6,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    },
+    {
+      "aspecting": "Jupiter",
+      "aspected": "Ketu",
+      "house_from": 9,
+      "house_to": 6,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    },
+    {
+      "aspecting": "Saturn",
+      "aspected": "Jupiter",
+      "house_from": 6,
+      "house_to": 9,
+      "offset": 3,
+      "strength": 0.25,
+      "type": "special (3th)"
+    },
+    {
+      "aspecting": "Saturn",
+      "aspected": "Sun",
+      "house_from": 6,
+      "house_to": 4,
+      "offset": 10,
+      "strength": 0.25,
+      "type": "special (10th)"
+    },
+    {
+      "aspecting": "Rahu",
+      "aspected": "Moon",
+      "house_from": 12,
+      "house_to": 7,
+      "offset": 7,
+      "strength": 1.0,
+      "type": "full (7th)"
+    },
+    {
+      "aspecting": "Rahu",
+      "aspected": "Jupiter",
+      "house_from": 12,
+      "house_to": 9,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    },
+    {
+      "aspecting": "Ketu",
+      "aspected": "Mars",
+      "house_from": 6,
+      "house_to": 3,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    },
+    {
+      "aspecting": "Ketu",
+      "aspected": "Mercury",
+      "house_from": 6,
+      "house_to": 3,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    },
+    {
+      "aspecting": "Ketu",
+      "aspected": "Venus",
+      "house_from": 6,
+      "house_to": 3,
+      "offset": 9,
+      "strength": 0.5,
+      "type": "special (9th)"
+    }
+  ],
+  "aspects_on_bhavas": {
+    "1": [
+      {
+        "planet": "Saturn",
+        "from_house": 6,
+        "offset": 7,
+        "strength": 1.0,
+        "type": "full (7th)"
+      },
+      {
+        "planet": "Ketu",
+        "from_house": 6,
+        "offset": 7,
+        "strength": 1.0,
+        "type": "full (7th)"
+      }
+    ],
+    "2": [
+      {
+        "planet": "Moon",
+        "from_house": 7,
+        "offset": 7,
+        "strength": 1… (truncated)
 ```
 
 
@@ -764,37 +912,37 @@ AttributeError: 'list' object has no attribute 'get'
     "sign_aspects": {
       "Aries": [
         "Scorpio",
-        "Aquarius",
-        "Leo"
+        "Leo",
+        "Aquarius"
       ],
       "Taurus": [
         "Capricorn",
-        "Libra",
-        "Cancer"
+        "Cancer",
+        "Libra"
       ],
       "Gemini": [
+        "Pisces",
         "Virgo",
-        "Sagittarius",
-        "Pisces"
+        "Sagittarius"
       ],
       "Cancer": [
         "Scorpio",
-        "Taurus",
-        "Aquarius"
+        "Aquarius",
+        "Taurus"
       ],
       "Leo": [
-        "Capricorn",
         "Aries",
+        "Capricorn",
         "Libra"
       ],
       "Virgo": [
+        "Pisces",
         "Gemini",
-        "Sagittarius",
-        "Pisces"
+        "Sagittarius"
       ],
       "Libra": [
-        "Taurus",
-  … (truncated)
+        "Leo",
+     … (truncated)
 ```
 
 
@@ -939,15 +1087,7 @@ AttributeError: 'list' object has no attribute 'get'
 
 ## 14. Upagrahas (Sub-Planets)
 
-**STATUS: ENGINE ERROR — calculate_upagrahas**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-TypeError: calculate_upagrahas() got an unexpected keyword argument 'latitude'
-
-```
+**STATUS: PASS**
 
 
 ---
@@ -964,14 +1104,87 @@ ImportError
 
 ## 16. Varshphal — Solar Return 2026
 
-**STATUS: ENGINE ERROR — calculate_varshphal**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-TypeError: calculate_varshphal() got an unexpected keyword argument 'birth_time'. Did you mean 'birth_date'?
+**STATUS: PASS**
 
+```json
+{
+  "year": 2026,
+  "completed_years": 41,
+  "solar_return": {
+    "date": "2026-08-24",
+    "time": "05:44:11",
+    "julian_day": 2461276.739026
+  },
+  "chart_data": {
+    "planets": {
+      "Sun": {
+        "longitude": 126.8718,
+        "sign": "Leo",
+        "sign_degree": 6.8718,
+        "nakshatra": "Magha",
+        "nakshatra_pada": 3,
+        "house": 11,
+        "retrograde": false,
+        "speed": 0.963841,
+        "is_combust": false,
+        "is_vargottama": false,
+        "is_sandhi": false,
+        "is_gandanta": false,
+        "status": "Own Sign",
+        "retro_dispositor": false
+      },
+      "Moon": {
+        "longitude": 262.0445,
+        "sign": "Sagittarius",
+        "sign_degree": 22.0445,
+        "nakshatra": "Purva Ashadha",
+        "nakshatra_pada": 3,
+        "house": 3,
+        "retrograde": false,
+        "speed": 11.990502,
+        "is_combust": false,
+        "is_vargottama": false,
+        "is_sandhi": false,
+        "is_gandanta": false,
+        "status": "",
+        "retro_dispositor": false
+      },
+      "Mars": {
+        "longitude": 74.199,
+        "sign": "Gemini",
+        "sign_degree": 14.199,
+        "nakshatra": "Ardra",
+        "nakshatra_pada": 3,
+        "house": 9,
+        "retrograde": false,
+        "speed": 0.645251,
+        "is_combust": false,
+        "is_vargottama": false,
+        "is_sandhi": false,
+        "is_gandanta": false,
+        "status": "",
+        "retro_dispositor": false
+      },
+      "Mercury": {
+        "longitude": 123.3275,
+        "sign": "Leo",
+        "sign_degree": 3.3275,
+        "nakshatra": "Magha",
+        "nakshatra_pada": 1,
+        "house": 11,
+        "retrograde": false,
+        "speed": 2.004587,
+        "is_combust": true,
+        "is_vargottama": false,
+        "is_sandhi": false,
+        "is_gandanta": true,
+        "status": "Combust, Gandanta",
+        "retro_dispositor": false
+      },
+      "Jupiter": {
+        "longitude": 107.8215,
+        "sign": "Cancer",
+        "sig… (truncated)
 ```
 
 
@@ -1112,15 +1325,57 @@ TypeError: calculate_varshphal() got an unexpected keyword argument 'birth_time'
 
 ## 19. Kalachakra Dasha
 
-**STATUS: ENGINE ERROR — calculate_kalachakra_dasha**
-```
-Traceback (most recent call last):
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/scripts/generate_kundli_report.py", line 42, in run
-    return fn(*args, **kwargs), None
-           ~~^^^^^^^^^^^^^^^^^
-  File "/Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/app/kalachakra_engine.py", line 467, in calculate_kalachakra_dasha
-    nak_index, pada_index, nak_name, pada_num = _moon_nakshatra_pada(moon_longitude)
-                                                ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+**STATUS: PASS**
+
+```json
+{
+  "moon_nakshatra": "Anuradha",
+  "moon_pada": 4,
+  "navamsa_rashi": "Scorpio",
+  "path": "Savya",
+  "deha_rashi": "Scorpio",
+  "jeeva_rashi": "Sagittarius",
+  "balance_at_birth": 0.79325,
+  "mahadasha_periods": [
+    {
+      "sign": "Scorpio",
+      "duration_years": 5.5528,
+      "start": "1985-08-23",
+      "end": "1991-03-13",
+      "type": "Deha",
+      "is_current": false,
+      "phala_en": "Hidden matters, occult knowledge, inheritance; danger, accidents, debt or illness.",
+      "phala_hi": "गुप्त विषय, रहस्य-विद्या, विरासत; खतरा, दुर्घटना, ऋण या रोग।",
+      "nature": "Difficult",
+      "deha_jeeva_note_en": "As a Deha period, the effects manifest primarily in the physical body and worldly circumstances.",
+      "deha_jeeva_note_hi": "देह-काल होने से फल मुख्यतः शरीर व लौकिक परिस्थितियों में प्रकट होता है।",
+      "sloka_ref": "Phaladeepika Adh. 22"
+    },
+    {
+      "sign": "Sagittarius",
+      "duration_years": 10.0,
+      "start": "1991-03-13",
+      "end": "2001-03-12",
+      "type": "Jeeva",
+      "is_current": false,
+      "phala_en": "Fortune, higher learning, religious merit, father's blessings, long journeys.",
+      "phala_hi": "भाग्य-वृद्धि, उच्च शिक्षा, धर्म-कर्म, पिता का आशीर्वाद, दूर-यात्रा।",
+      "nature": "Favorable",
+      "deha_jeeva_note_en": "As a Jeeva period, the effects manifest primarily in the mind, inner life, and spiritual experience.",
+      "deha_jeeva_note_hi": "जीव-काल होने से फल मुख्यतः मन, अंतर्जगत् व आध्यात्मिक अनुभव में प्रकट होता है।",
+      "sloka_ref": "Phaladeepika Adh. 22"
+    },
+    {
+      "sign": "Capricorn",
+      "duration_years": 4.0,
+      "start": "2001-03-12",
+      "end": "2005-03-12",
+      "type": "Deha",
+      "is_current": false,
+      "phala_en": "Hard work, discipline, delays in success; career advancement through sustained effort.",
+      "phala_hi": "कठोर परिश्रम, अनुशासन, सफलता में विलंब; निरंतर प्रयास से पेशे में उन्नति।",
+      "nature": "Mixed",
+      "deha_jeeva_note_en": "As a Deha period, … (truncated)
 ```
 
 
@@ -1128,9 +1383,82 @@ Traceback (most recent call last):
 
 ## 20. Lifelong Sade Sati
 
-**STATUS: ENGINE ERROR — calculate_lifelong_sadesati**
-```
-ImportError: no sadesati function found
+**STATUS: PASS**
+
+```json
+{
+  "phases": [
+    {
+      "phase": "Sade Sati",
+      "sub_phase": "Rising (12th from Moon)",
+      "phase_key": "first_dhayya",
+      "start_date": "1985-08-19",
+      "end_date": "1985-09-17",
+      "sign_index": 6,
+      "sign_name": "Libra",
+      "description": {
+        "title": "First Dhayya (Rising) - 12th from Moon",
+        "sanskrit": "Saturn transits in the 12th house from Moon sign",
+        "effects": [
+          "Saturn resides on the head during this period",
+          "Fall in mental and physical happiness",
+          "Possibility of eye ailments or weakness of vision",
+          "Sudden financial losses and unwanted expenditure",
+          "Expenditure may exceed income",
+          "Separation from family and domestic unrest",
+          "Father may suffer ailments; relations with father may get tense",
+          "Fortune might decline slightly",
+          "Work may be delayed or problems may arise",
+          "Interest in spiritualism increases",
+          "Fear of accidents; may wander uselessly",
+          "Travel to distant places which may cause hardships",
+          "Inauspicious for children (8th from 5th house)"
+        ]
+      }
+    },
+    {
+      "phase": "Sade Sati",
+      "sub_phase": "Peak (1st from Moon)",
+      "phase_key": "second_dhayya",
+      "start_date": "1985-09-17",
+      "end_date": "1987-12-16",
+      "sign_index": 7,
+      "sign_name": "Scorpio",
+      "description": {
+        "title": "Second Dhayya (Peak) - Over Moon Sign",
+        "sanskrit": "Saturn transits over the natal Moon sign",
+        "effects": [
+          "Saturn is placed in the abdominal area during this period",
+          "Possibility of ailments in the entire middle part of the body",
+          "Physical energy is affected; mind does not function properly",
+          "Wrong decisions may be taken",
+          "Disputes with brothers and business partners",
+          "Spouse may suffer physical pain or quarrels may arise",
+          "Financial problems persist; strong rebellion at mental level",
+          "Useless fears cause anxiety",
+          "No work is according to one's desires",
+          "Obstacles continue; family and business life is unstable",
+          "Some relative may die; travels to distant lands may be undertaken",
+          "Enemies may inflict harm; separation from near ones",
+          "Diseases, loss of wealth, decline in social standing"
+        ]
+      }
+    },
+    {
+      "phase": "Sade Sati",
+      "sub_phase": "Setting (2nd from Moon)",
+      "phase_key": "third_dhayya",
+      "start_date": "1987-12-16",
+      "end_date": "1990-03-20",
+      "sign_index": 8,
+      "sign_name": "Sagittarius",
+      "description": {
+        "title": "Third Dhayya (Setting) - 2nd from Moon",
+        "sanskrit": "Saturn transits in the 2nd house from Moon sign",
+        "effects": [
+          "Saturn stays in the legs during this period",
+          "Legs may suffer from ailments",
+          "Physical weakness; feeling inactive and … (truncated)
 ```
 
 

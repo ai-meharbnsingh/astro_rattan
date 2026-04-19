@@ -83,7 +83,7 @@ retro_set    = {p for p, d in planets.items() if d.get("retrograde")}
 from app.dasha_engine import (
     calculate_dasha, get_current_dasha_phala, analyze_all_dasha_timing
 )
-dasha,       dasha_err  = run("dasha",  calculate_dasha, chart, BIRTH_DATE)
+dasha,       dasha_err  = run("dasha",  calculate_dasha, moon_nak, BIRTH_DATE, moon_lon)
 dasha_phala, dp_err     = run("dasha_phala", get_current_dasha_phala,
                                chart_data=chart, birth_date=BIRTH_DATE,
                                latitude=LATITUDE, longitude=LONGITUDE, tz_offset=TZ_OFFSET)
@@ -120,9 +120,11 @@ div_charts, div_err = run(
 )
 d108, d108_err = run("d108", calculate_d108_analysis, planet_lons)
 
-# 8. Ashtakvarga
+# 8. Ashtakvarga — expects {planet: sign} including "Ascendant"
 from app.ashtakvarga_engine import calculate_ashtakvarga
-ashtak, ashtak_err     = run("ashtakvarga", calculate_ashtakvarga, chart)
+_ashtak_signs = dict(planet_signs)
+_ashtak_signs["Ascendant"] = asc_sign
+ashtak, ashtak_err     = run("ashtakvarga", calculate_ashtakvarga, _ashtak_signs)
 
 # 9. Shadbala
 from app.shadbala_engine import calculate_shadbala
@@ -145,9 +147,9 @@ shadbala, shad_err = run("shadbala", calculate_shadbala,
     planet_speeds=planet_speeds,
 )
 
-# 10. Aspects
+# 10. Aspects — expects planets dict, not full chart
 from app.aspects_engine import calculate_aspects
-aspects, asp_err       = run("aspects", calculate_aspects, chart)
+aspects, asp_err       = run("aspects", calculate_aspects, planets)
 
 # 11. Conjunctions
 from app.conjunction_engine import detect_conjunctions
@@ -168,8 +170,8 @@ from app.upagraha_engine import calculate_upagrahas
 upag, upag_err         = run("upagrahas", calculate_upagrahas,
     birth_date=BIRTH_DATE,
     birth_time=BIRTH_TIME,
-    latitude=LATITUDE,
-    longitude=LONGITUDE,
+    lat=LATITUDE,
+    lon=LONGITUDE,
     tz_offset=TZ_OFFSET,
     asc_sign=asc_sign,
     planet_signs=planet_signs,
@@ -183,15 +185,10 @@ try:
 except ImportError:
     sodash, sodash_err = None, "ImportError"
 
-# 16. Varshphal
+# 16. Varshphal — signature: (natal_chart_data, target_year, birth_date, latitude, longitude, tz_offset)
 from app.varshphal_engine import calculate_varshphal
 varsh, varsh_err       = run("varshphal", calculate_varshphal,
-    birth_date=BIRTH_DATE,
-    birth_time=BIRTH_TIME,
-    latitude=LATITUDE,
-    longitude=LONGITUDE,
-    tz_offset=TZ_OFFSET,
-    year=2026,
+    chart, 2026, BIRTH_DATE, LATITUDE, LONGITUDE, TZ_OFFSET,
 )
 
 # 17. Avakhada
@@ -203,23 +200,23 @@ from app.yogini_dasha_engine import calculate_yogini_dasha
 yogini, yog_err        = run("yogini", calculate_yogini_dasha,
                               moon_nak, BIRTH_DATE, moon_lon)
 
-# 19. Kalachakra
+# 19. Kalachakra — signature: (moon_longitude, birth_date, birth_time)
 try:
     from app.kalachakra_engine import calculate_kalachakra_dasha
-    kalach, kalach_err = run("kalachakra", calculate_kalachakra_dasha, chart, BIRTH_DATE)
+    kalach, kalach_err = run("kalachakra", calculate_kalachakra_dasha,
+                             moon_lon, BIRTH_DATE, BIRTH_TIME)
 except ImportError:
     kalach, kalach_err = None, "ImportError"
 
-# 20. Lifelong Sade Sati
+# 20. Lifelong Sade Sati — signature: (birth_dt: datetime, moon_sign_index: int, moon_sign_name: str)
 try:
-    from app.lifelong_sade_sati import calculate_lifelong_sadesati
-    sadesati, ss_err   = run("sadesati", calculate_lifelong_sadesati, chart, BIRTH_DATE)
+    from app.lifelong_sade_sati import calculate_lifelong_sade_sati
+    _moon_sign_idx = int(moon_lon // 30) % 12
+    _moon_sign_name = planets.get("Moon", {}).get("sign", "")
+    sadesati, ss_err = run("sadesati", calculate_lifelong_sade_sati,
+                           birth_dt, _moon_sign_idx, _moon_sign_name)
 except ImportError:
-    try:
-        from app.lifelong_sade_sati import calculate_sade_sati_lifelong
-        sadesati, ss_err = run("sadesati", calculate_sade_sati_lifelong, chart, BIRTH_DATE)
-    except ImportError:
-        sadesati, ss_err = None, "ImportError: no sadesati function found"
+    sadesati, ss_err = None, "ImportError: calculate_lifelong_sade_sati not found"
 
 # 21. Bhava Phala
 try:
@@ -465,38 +462,41 @@ if dasha_err:
     ERR("calculate_dasha", dasha_err)
 else:
     PASS()
-    cur_md = next((p for p in dasha.get("mahadasha_periods", []) if p.get("is_current")), None)
-    cur_ad = None
-    if cur_md:
-        cur_ad = next((a for a in cur_md.get("antardashas", []) if a.get("is_current")), None)
-    cur_pd = None
-    if cur_ad:
-        cur_pd = next((p for p in cur_ad.get("pratyantar", []) if p.get("is_current")), None)
+    # Dasha returns: {mahadasha_periods: [{planet, start_date, end_date, years}],
+    #                 current_dasha, current_antardasha}
+    cur_dasha_str  = dasha.get("current_dasha", "N/A")
+    cur_antard_str = dasha.get("current_antardasha", "N/A")
+    periods = dasha.get("mahadasha_periods", [])
+
+    # Find current period by date comparison
+    from datetime import date as _date
+    today_str = _date.today().isoformat()
+    cur_md = next(
+        (p for p in periods if p.get("start_date","") <= today_str <= p.get("end_date","")),
+        None,
+    )
 
     SS("Current Active Periods")
     W(f"| Period | Lord | Start | End |\n|--------|------|-------|-----|\n"
-      f"| Mahadasha  | {cur_md['planet'] if cur_md else 'N/A'} | "
-      f"{cur_md.get('start','') if cur_md else ''} | {cur_md.get('end','') if cur_md else ''} |\n"
-      f"| Antardasha | {cur_ad['planet'] if cur_ad else 'N/A'} | "
-      f"{cur_ad.get('start','') if cur_ad else ''} | {cur_ad.get('end','') if cur_ad else ''} |\n"
-      f"| Pratyantar | {cur_pd['planet'] if cur_pd else 'N/A'} | "
-      f"{cur_pd.get('start','') if cur_pd else ''} | {cur_pd.get('end','') if cur_pd else ''} |\n")
+      f"| Mahadasha  | {cur_md['planet'] if cur_md else cur_dasha_str} | "
+      f"{cur_md.get('start_date','') if cur_md else ''} | {cur_md.get('end_date','') if cur_md else ''} |\n"
+      f"| Antardasha | {cur_antard_str} | — | — |\n")
 
     SS("Full Mahadasha Timeline")
     md_rows = []
-    for md in dasha.get("mahadasha_periods", []):
-        cur = "◀ CURRENT" if md.get("is_current") else ""
-        md_rows.append([md["planet"], md["start"], md["end"],
-                        f"{md.get('years', '')} yrs", cur])
+    for md in periods:
+        cur = "◀ CURRENT" if (cur_md and md["planet"] == cur_md["planet"]
+                               and md.get("start_date") == cur_md.get("start_date")) else ""
+        md_rows.append([md["planet"], md.get("start_date",""), md.get("end_date",""),
+                        f"{md.get('years', ''):.2f} yrs", cur])
     W(table(["Planet", "Start", "End", "Duration", ""], md_rows))
 
     SS("Dasha Timeline Validation")
-    periods = dasha.get("mahadasha_periods", [])
     gaps = []
     for i in range(len(periods) - 1):
-        if periods[i]["end"] != periods[i+1]["start"]:
+        if periods[i].get("end_date") != periods[i+1].get("start_date"):
             gaps.append(f"{periods[i]['planet']}→{periods[i+1]['planet']}: "
-                        f"{periods[i]['end']} vs {periods[i+1]['start']}")
+                        f"{periods[i].get('end_date')} vs {periods[i+1].get('start_date')}")
     W(f"- Continuity gaps: {gaps if gaps else 'None ✓'}")
     W(f"\n- Period count: {len(periods)}")
     total_yrs = sum(p.get("years", 0) for p in periods)
