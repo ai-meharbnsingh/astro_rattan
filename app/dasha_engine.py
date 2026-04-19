@@ -1759,7 +1759,10 @@ def analyze_dasha_half_rule(planet: str, chart_data: dict) -> Dict[str, Any]:
     if not isinstance(pdata, dict):
         return {"planet": planet, "error": f"Planet {planet} not found in chart."}
 
-    house = int(pdata.get("house", 0) or 0)
+    try:
+        house = int(pdata.get("house", 0) or 0)
+    except (TypeError, ValueError):
+        house = 0
     sign = str(pdata.get("sign", ""))
     years = _DASHA_YEARS_HALF.get(planet, 0)
 
