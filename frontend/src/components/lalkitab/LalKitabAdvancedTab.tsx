@@ -205,11 +205,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {pickLang(data.teva_type?.description?.ratondha, isHi)}
             </p>
           </div>
-          {data.teva_type.is_ratondha && (
-            <div className="mt-2">
-              <LalKitabDiagnosticChart type="ratondha" planetPositions={planetPositions} />
-            </div>
-          )}
+          <div className={`mt-2 ${!data.teva_type.is_ratondha ? 'opacity-40 grayscale' : ''}`}>
+            <LalKitabDiagnosticChart type="ratondha" planetPositions={planetPositions} />
+          </div>
         </div>
 
         <div className={`p-5 rounded-xl border flex flex-col justify-between ${data.teva_type.is_dharmi ? 'bg-green-500/5 border-green-200' : 'bg-gray-50 border-gray-100'}`}>
@@ -222,11 +220,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
               {pickLang(data.teva_type?.description?.dharmi, isHi)}
             </p>
           </div>
-          {data.teva_type.is_dharmi && (
-            <div className="mt-2">
-              <LalKitabDiagnosticChart type="dharmi" planetPositions={planetPositions} dharmiData={data.teva_type} />
-            </div>
-          )}
+          <div className={`mt-2 ${!data.teva_type.is_dharmi ? 'opacity-40 grayscale' : ''}`}>
+            <LalKitabDiagnosticChart type="dharmi" planetPositions={planetPositions} dharmiData={data.teva_type} />
+          </div>
         </div>
       </div>
 
