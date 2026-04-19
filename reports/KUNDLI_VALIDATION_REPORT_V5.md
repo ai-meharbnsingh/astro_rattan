@@ -1,6 +1,6 @@
 # KUNDLI VALIDATION REPORT V5
 ## Meharban Singh — Live Engine Validation
-> Generated: 2026-04-19 08:31:08 UTC
+> Generated: 2026-04-19 08:42:12 UTC
 > **All values computed live from Swiss Ephemeris. Zero hardcoding. Zero faking.**
 > If a section shows ENGINE ERROR it means the engine crashed — raw traceback shown.
 > Script: `scripts/generate_kundli_report.py` (fully auditable)
@@ -33,7 +33,7 @@
 |Doshas + Yogas|PASS|8|9|
 |Rule Engine Yogas|PASS|8|9|
 |Raja Yogas|PASS|8|9|
-|Maha/Nabhasa Yogas|MISSING|7|9|
+|Maha/Nabhasa Yogas|PASS|7|9|
 |Divisional Charts|PASS|9|10|
 |D108 Analysis|PASS|8|9|
 |Ashtakvarga|PASS|9|10|
@@ -49,22 +49,23 @@
 |Yogini Dasha|PASS|8|9|
 |Kalachakra Dasha|PASS|7|9|
 |Lifelong Sade Sati|PASS|8|9|
-|Bhava Phala|MISSING|8|9|
-|Bhava Vichara|MISSING|7|8|
+|Bhava Phala|PASS|8|9|
+|Bhava Vichara|PASS|7|8|
 |Ayurdaya/Longevity|PASS|7|8|
-|Roga/Disease|MISSING|7|8|
+|Roga/Disease|PASS|7|8|
 |Sarvatobhadra Chakra|PASS|7|8|
 |Nadi Analysis|PASS|8|9|
 |Transit 30-day|PASS|8|9|
-|Graha Sambandha|MISSING|7|9|
-|Panchadha Maitri|MISSING|7|9|
-|Gochara Vedha|MISSING|7|9|
-|Transit Interpretations|MISSING|7|8|
-|Navamsha Career|MISSING|7|8|
-|Family Demise Timing|MISSING|7|8|
-|Nidhana|MISSING|6|8|
+|Graha Sambandha|PASS|7|9|
+|Panchadha Maitri|PASS|7|9|
+|Gochara Vedha|PASS|7|9|
+|Transit Interpretations|PASS|7|8|
+|Navamsha Career|PASS|7|8|
+|Family Demise Timing|PASS|7|8|
+|Nidhana/Longevity|PASS|6|8|
+|Varga Strength|PASS|8|9|
 
-**PASS: 25 | ERROR: 0 | MISSING: 12**
+**PASS: 37 | ERROR: 0 | MISSING: 1**
 
 
 ---
@@ -308,7 +309,42 @@ Raja yogas detected: 12
 
 ### Maha / Nabhasa Yogas
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "detected": [
+    {
+      "name": "Pasha",
+      "category": "Sankhya",
+      "effect_en": "Planets in five houses — native is caught in entanglements, obligations, and bonds. Skilled in networking but prone to entrapment and complex interpersonal situations.",
+      "effect_hi": "ग्रह पांच भावों में — जातक उलझनों, दायित्वों एवं बंधनों में। नेटवर्किंग में कुशल परन्तु जाल एवं जटिल पारस्परिक स्थितियों की प्रवृत्ति।",
+      "planets_involved": [
+        "Sun",
+        "Moon",
+        "Mars",
+        "Mercury",
+        "Jupiter",
+        "Venus",
+        "Saturn"
+      ],
+      "sloka_ref": "Phaladeepika Adh. 6 sloka 15",
+      "houses_occupied": [
+        3,
+        4,
+        6,
+        7,
+        9
+      ],
+      "count": 5
+    }
+  ],
+  "count": 1,
+  "summary_en": "1 Nabhasa yoga detected: Pasha.",
+  "summary_hi": "1 नभस योग पाया गया: Pasha।",
+  "sloka_ref": "Phaladeepika Adh. 6"
+}
+```
 
 
 ---
@@ -911,38 +947,38 @@ Raja yogas detected: 12
   "jaimini_drishti": {
     "sign_aspects": {
       "Aries": [
-        "Scorpio",
+        "Aquarius",
         "Leo",
-        "Aquarius"
+        "Scorpio"
       ],
       "Taurus": [
         "Capricorn",
-        "Cancer",
-        "Libra"
+        "Libra",
+        "Cancer"
       ],
       "Gemini": [
-        "Pisces",
+        "Sagittarius",
         "Virgo",
-        "Sagittarius"
+        "Pisces"
       ],
       "Cancer": [
-        "Scorpio",
         "Aquarius",
-        "Taurus"
+        "Taurus",
+        "Scorpio"
       ],
       "Leo": [
-        "Aries",
         "Capricorn",
+        "Aries",
         "Libra"
       ],
       "Virgo": [
-        "Pisces",
+        "Sagittarius",
         "Gemini",
-        "Sagittarius"
+        "Pisces"
       ],
       "Libra": [
-        "Leo",
-     … (truncated)
+        "Aquarius",
+… (truncated)
 ```
 
 
@@ -1466,14 +1502,97 @@ ImportError
 
 ## 21. Bhava Phala (House Effects)
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "planet_placements": [
+    {
+      "planet": "Sun",
+      "house": 4,
+      "sign": "Leo",
+      "effect_en": "Devoid of happiness from mother, loss of conveyance and land, mental distress, and domestic discord.",
+      "effect_hi": "मातृ-सुख हीन, वाहन-भूमि की हानि, मानसिक क्लेश तथा गृह-कलह का योग।",
+      "sloka_ref": "Phaladeepika Adh. 8 sloka 4",
+      "dignity_modifier_en": "Sun is in its own sign (Leo) — strong and comfortable. The house 4 significations are expressed fully and reliably.",
+      "dignity_modifier_hi": "Sun अपनी राशि (Leo) में — बली एवं सहज। भाव 4 के विषय पूर्ण रूप से व्यक्त।",
+      "owned_houses": [
+        4
+      ],
+      "lordship_effect_en": "Sun lords house 4 (home and mother), and occupies house 4 (home and mother). Per Phaladeepika Adh. 8, it activates and delivers results of H4 simultaneously — lordship + placement together determine the full Bhava Phala.",
+      "lordship_effect_hi": "Sun भाव 4 (गृह एवं माता) का स्वामी है और भाव 4 (गृह एवं माता) में स्थित है। फलदीपिका अ. 8 के अनुसार यह भाव 4 के फल एक साथ देता है — भावेशत्व + स्थिति दोनों मिलकर पूर्ण भाव फल निर्धारित करते हैं।"
+    },
+    {
+      "planet": "Moon",
+      "house": 7,
+      "sign": "Scorpio",
+      "effect_en": "Beautiful, emotionally attached spouse, domestic harmony, romantic nature, travel benefits.",
+      "effect_hi": "सुन्दर, भावुक जीवनसाथी, दाम्पत्य-सौहार्द, प्रेमी-स्वभाव, यात्रा-लाभ।",
+      "sloka_ref": "Phaladeepika Adh. 8 sloka 19",
+      "dignity_modifier_en": "Moon is debilitated in Scorpio — its natural strength is diminished. Despite debilitation, the house 7 significations remain active; results manifest with greater struggle, delay, or mixed outcomes compared to an unafflicted placement.",
+      "dignity_modifier_hi": "Moon Scorpio में नीच — प्राकृतिक बल कम। नीचत्व के बावजूद भाव 7 के विषय सक्रिय रहते हैं; फल अधिक संघर्ष, विलम्ब या मिश्रित परिणामों के साथ मिलते हैं।",
+      "owned_houses": [
+        3
+      ],
+      "lordship_effect_en": "Moon lords house 3 (courage and siblings), and occupies house 7 (marriage and partnerships). Per Phaladeepika Adh. 8, it activates and delivers results of H3, H7 simultaneously — lordship + placement together determine the full Bhava Phala.",
+      "lordship_effect_hi": "Moon भाव 3 (पराक्रम एवं भाई-बहन) का स्वामी है और भाव 7 (विवाह एवं साझेदारी) में स्थित है। फलदीपिका अ. 8 के अनुसार यह भाव 3、भाव 7 के फल एक साथ देता है — भावेशत्व + स्थिति दोनों मिलकर पूर्ण भाव फल निर्धारित करते हैं।"
+    },
+    {
+      "planet": "Mars",
+      "house": 3,
+      "sign": "Cancer",
+      "effect_en": "Great courage, strong younger siblings, wealth through effort, respected; a strong placement for Mars.",
+      "effect_hi": "उत्कृष्ट पराक्रम, बलशाली छोटे भाई-बहन, श्रम से धन-प्राप्ति, सम्मानित; मंगल के लिए बली स्थान।",
+      "sloka_ref": "Phaladeepika Adh. 8 sloka 27",
+      "dignity_modifier_en": "Mars is debilitated in Cancer — its natural strength is reduced. However, Jupiter's aspect on house 3 provides a significant … (truncated)
+```
 
 
 ---
 
 ## 22. Bhava Vichara (House Examination)
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "bhava_assessments": [
+    {
+      "house": 1,
+      "name_en": "Tanu",
+      "name_hi": "तनु",
+      "lord": "Venus",
+      "lord_placement": 3,
+      "karaka": "Sun",
+      "flourishing": true,
+      "destruction_risk": false,
+      "malefic_in_dusthana_strengthens": false,
+      "bhava_kamanda": false,
+      "malefic_in_kendra_harms": false,
+      "reasons_en": [
+        "Benefic support: benefic aspect by Moon, Jupiter."
+      ],
+      "reasons_hi": [
+        "शुभ सहायता: Moon, Jupiter की शुभ दृष्टि।"
+      ],
+      "karaka_as_lagna_analysis_en": "Karaka-as-Lagna (Sun): Sun is in own sign (Leo). Malefic aspect by Rahu may challenge body and self.",
+      "karaka_as_lagna_analysis_hi": "कारक-से-लग्न (Sun): Sun स्वराशि (Leo) में है। Rahu की अशुभ दृष्टि शरीर एवं स्व के लिए चुनौती बन सकती है।",
+      "transit_triggers": [
+        {
+          "planet": "Jupiter",
+          "trigger_sign": "Taurus",
+          "trigger_condition_en": "When Jupiter transits Taurus (the 1th house sign), the natal flourishing potential of body and self is amplified.",
+          "trigger_condition_hi": "जब बृहस्पति Taurus (1वें भाव की राशि) में गोचर करे, तब शरीर एवं स्व की जन्मकालीन समृद्धि-क्षमता प्रवर्धित होती है।",
+          "expected_effect_en": "Expansion, growth, and good fortune in body and self are likely. Initiatives and investments in this domain tend to yield positive results.",
+          "expected_effect_hi": "शरीर एवं स्व में विस्तार, विकास एवं सौभाग्य की संभावना है। इस क्षेत्र में उद्यम एवं निवेश सकारात्मक परिणाम देते हैं।",
+          "sloka_ref": "Phaladeepika Adh. 15-16"
+        },
+        {
+          "planet": "Venus",
+          "trigger_sign": "Taurus",
+          "trigger_condition_en": "When Venus transits Taurus (Kendra/Trikona 1th house), harmony, beauty, and enjoyment in body and self are especially enhanced.",
+          "trigger_condition_hi": "जब शुक्र Taurus (केंद्र/त्रिकोण 1वें भाव) में गोचर करे, तब शरीर एवं स्व में सौहार्द, सौंदर्य एवं आनंद विशेष रूप से बढ़ता… (truncated)
+```
 
 
 ---
@@ -1585,7 +1704,84 @@ ImportError
 
 ## 24. Roga / Disease Analysis
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "general_tendencies": [
+    {
+      "planet": "Saturn",
+      "house": 6,
+      "severity": "moderate",
+      "diseases_en": [
+        "Chronic diseases",
+        "Bone disorders",
+        "Arthritis",
+        "Paralysis risk",
+        "Depression",
+        "Leg problems",
+        "Dental issues",
+        "Rheumatism"
+      ],
+      "diseases_hi": [
+        "पुराने रोग",
+        "अस्थि-विकार",
+        "गठिया",
+        "पक्षाघात का जोखिम",
+        "अवसाद",
+        "पैरों की समस्या",
+        "दन्त-रोग",
+        "वात-रोग"
+      ],
+      "body_part_en": "Lower abdomen, kidneys, large intestine",
+      "body_part_hi": "निम्न उदर, गुर्दे, बड़ी आँत",
+      "reason_en": "Saturn in house 6 — moderate susceptibility.",
+      "reason_hi": "Saturn भाव 6 में — moderate प्रवृत्ति।"
+    },
+    {
+      "planet": "Ketu",
+      "house": 6,
+      "severity": "moderate",
+      "diseases_en": [
+        "Sudden-onset accidents",
+        "Spiritual-cause afflictions",
+        "Undiagnosed fevers",
+        "Parasitic infections",
+        "Viral illnesses",
+        "Nerve disorders"
+      ],
+      "diseases_hi": [
+        "अचानक दुर्घटनाएं",
+        "आध्यात्मिक-जनित पीड़ा",
+        "निदान-रहित ज्वर",
+        "परजीवी संक्रमण",
+        "विषाणु जनित रोग",
+        "स्नायु विकार"
+      ],
+      "body_part_en": "Lower abdomen, kidneys, large intestine",
+      "body_part_hi": "निम्न उदर, गुर्दे, बड़ी आँत",
+      "reason_en": "Ketu in house 6 — moderate susceptibility.",
+      "reason_hi": "Ketu भाव 6 में — moderate प्रवृत्ति।"
+    },
+    {
+      "planet": "Rahu",
+      "house": 12,
+      "severity": "chronic",
+      "diseases_en": [
+        "Undiagnosed / mysterious diseases",
+        "Psychological disturbances",
+        "Foreign / imported diseases",
+        "Poisoning risk",
+        "Sudden-onset illness",
+        "Addictions"
+      ],
+      "diseases_hi": [
+        "निदान-रहित रहस्यमय रोग",
+        "मनोवैज्ञानिक विकार",
+        "विदेशी / आयातित रोग",
+        "विष-जोखिम",
+        "अचानक रोग… (truncated)
+```
 
 
 ---
@@ -1726,49 +1922,432 @@ Total Nadi insights: 0
 
 ## 28. Graha Sambandha
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "connections": [
+    {
+      "planet_a": "Sun",
+      "planet_b": "Rahu",
+      "house_a": 4,
+      "house_b": 12,
+      "sambandha_type": "Eka Drishti",
+      "effect_en": "One-way aspect — one planet aspects the other but not vice versa. The aspecting planet exerts influence over the other's house significations. Phaladeepika Adh. 15: partial Sambandha — one planet shapes the destiny of the other.",
+      "effect_hi": "एकदृष्टि — एक ग्रह दूसरे को देखता है पर दूसरा नहीं। एकतरफा प्रभाव। फलदीपिका अ. 15: आंशिक संबंध — दृष्टि डालने वाला ग्रह दूसरे के भाव को प्रभावित करता है।",
+      "sloka_ref": "Phaladeepika Adh. 15-16"
+    },
+    {
+      "planet_a": "Moon",
+      "planet_b": "Mars",
+      "house_a": 7,
+      "house_b": 3,
+      "sambandha_type": "Parivartana",
+      "effect_en": "Exchange of signs — each planet occupies the other's own sign. Considered as powerful as conjunction. The two planets 'swap' houses, each giving results of the other. Phaladeepika Adh. 15: Parivartana is a Raja Yoga-level connection when involving strong bhavas.",
+      "effect_hi": "परिवर्तन — दोनों ग्रह एक-दूसरे की राशि में हैं। युति के समान प्रबल संबंध। फलदीपिका अ. 15: शुभ भावों में परिवर्तन राज-योग समान फल देता है।",
+      "sloka_ref": "Phaladeepika Adh. 15-16"
+    },
+    {
+      "planet_a": "Moon",
+      "planet_b": "Mercury",
+      "house_a": 7,
+      "house_b": 3,
+      "sambandha_type": "Lordship Sambandha",
+      "effect_en": "Lordship connection — one planet lords the house occupied by the other. Creates a teacher-student or ruler-resident relationship between them. Phaladeepika Adh. 16: the lord of a house carries the karma of its resident planet.",
+      "effect_hi": "भावेश संबंध — एक ग्रह उस भाव का स्वामी है जिसमें दूसरा बैठा है। फलदीपिका अ. 16: भावेश अपने भाव के निवासी ग्रह का कर्म वहन करता है।",
+      "sloka_ref": "Phaladeepika Adh. 15-16"
+    },
+    {
+      "planet_a": "Moon",
+      "planet_b": "Venus",
+      "house_a": 7,
+      "house_b": 3,
+      "sambandha_type": "Lord… (truncated)
+```
 
 
 ---
 
 ## 29. Panchadha Maitri
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "planet_pairs": [
+    {
+      "planet_a": "Sun",
+      "planet_b": "Moon",
+      "natural_relation": "Friend",
+      "natural_relation_b_to_a": "Friend",
+      "temporary_relation": "Friend",
+      "temporary_relation_b_to_a": "Enemy",
+      "panchadha_relation": "Adhimitra",
+      "panchadha_relation_hi": "अधिमित्र",
+      "effect_en": "Sun and Moon are great friends (Adhimitra) — they powerfully support each other's significations (vitality and mind). Classically: mind and vitality are perfectly aligned; robust health and emotional clarity.",
+      "effect_hi": "Sun और Moon अधिमित्र हैं — ये एक-दूसरे के कारकत्व (vitality and mind) का अधिकतम समर्थन करते हैं।",
+      "house_distance_a_to_b": 3,
+      "house_distance_b_to_a": 9,
+      "sloka_ref": "Phaladeepika Adh. 2"
+    },
+    {
+      "planet_a": "Sun",
+      "planet_b": "Mars",
+      "natural_relation": "Friend",
+      "natural_relation_b_to_a": "Friend",
+      "temporary_relation": "Friend",
+      "temporary_relation_b_to_a": "Enemy",
+      "panchadha_relation": "Adhimitra",
+      "panchadha_relation_hi": "अधिमित्र",
+      "effect_en": "Sun and Mars are great friends (Adhimitra) — they powerfully support each other's significations (authority and courage). Classically: leadership and courage reinforce each other; bold decisive action.",
+      "effect_hi": "Sun और Mars अधिमित्र हैं — ये एक-दूसरे के कारकत्व (authority and courage) का अधिकतम समर्थन करते हैं।",
+      "house_distance_a_to_b": 11,
+      "house_distance_b_to_a": 1,
+      "sloka_ref": "Phaladeepika Adh. 2"
+    },
+    {
+      "planet_a": "Sun",
+      "planet_b": "Mercury",
+      "natural_relation": "Neutral",
+      "natural_relation_b_to_a": "Friend",
+      "temporary_relation": "Friend",
+      "temporary_relation_b_to_a": "Enemy",
+      "panchadha_relation": "Mitra",
+      "panchadha_relation_hi": "मित्र",
+      "effect_en": "Sun and Mercury are friends (Mitra) — good cooperation between intellect and self-expression; generally helpful to each other… (truncated)
+```
 
 
 ---
 
 ## 30. Gochara Vedha
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+[
+  {
+    "planet": "Sun",
+    "sign": "Aries",
+    "house": 10,
+    "longitude": 4.9957,
+    "natal_house_from_moon": 6,
+    "effect_base": "favorable",
+    "effect_final": "favorable",
+    "vedha_active": false,
+    "vedha_by": null,
+    "latta_modifier": 1.25,
+    "latta_type": "prishta",
+    "latta_nakshatra_distance": 12,
+    "latta_description_en": "Prishta Latta: Sun strengthens transit (+25%) — at nakshatra 12 from natal Moon",
+    "latta_description_hi": "प्रिष्ठ लत्ता: Sun युति को बलवान (+25%) — जन्म चंद्र से 12 नक्षत्र पर",
+    "sloka_ref": "Phaladeepika Adh. 26"
+  },
+  {
+    "planet": "Moon",
+    "sign": "Aries",
+    "house": 10,
+    "longitude": 29.6771,
+    "natal_house_from_moon": 6,
+    "effect_base": "favorable",
+    "effect_final": "favorable",
+    "vedha_active": false,
+    "vedha_by": null,
+    "latta_modifier": 1.0,
+    "latta_type": null,
+    "latta_nakshatra_distance": 14,
+    "latta_description_en": null,
+    "latta_description_hi": null,
+    "sloka_ref": "Phaladeepika Adh. 26"
+  },
+  {
+    "planet": "Mars",
+    "sign": "Pisces",
+    "house": 9,
+    "longitude": 343.1161,
+    "natal_house_from_moon": 5,
+    "effect_base": "unfavorable",
+    "effect_final": "unfavorable",
+    "vedha_active": false,
+    "vedha_by": null,
+    "latta_modifier": 1.0,
+    "latta_type": null,
+    "latta_nakshatra_distance": 10,
+    "latta_description_en": null,
+    "latta_description_hi": null,
+    "sloka_ref": "Phaladeepika Adh. 26"
+  },
+  {
+    "planet": "Mercury",
+    "sign": "Pisces",
+    "house": 9,
+    "longitude": 341.8417,
+    "natal_house_from_moon": 5,
+    "effect_base": "unfavorable",
+    "effect_final": "unfavorable",
+    "vedha_active": false,
+    "vedha_by": null,
+    "latta_modifier": 1.0,
+    "latta_type": null,
+    "latta_nakshatra_distance": 10,
+    "latta_description_en": null,
+    "latta_description_hi": null,
+    "sloka_ref": "Phaladeepika Adh. 26"
+  },
+  {
+    "planet": "Jupiter",
+    "sign": "Gemini",
+    "house": 12,
+    "longitude": 83.2024,… (truncated)
+```
 
 
 ---
 
-## 31. Transit Interpretations
+## 31. Transit Interpretations (Current Planet Positions)
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+
+### Sun in House 10
+
+**General:** Sun transiting your 10th house is a powerful placement for career and public recognition. Authority, status, and ambition reach their peak. Government dealings and interactions with powerful people ar
+
+**Love:** Your professional success enhances your attractiveness in romantic matters. However, career ambitions may overshadow relationship needs. Find time for love despite professional demands to maintain har
+
+**Career:** This is the most powerful transit for career advancement and public honors. Promotions, awards, and recognition from authority figures are likely. Take bold steps in your profession and showcase leade
+
+**Finance:** Income from profession and government sources peaks during this transit. Career-related investments and professional development pay dividends. Use this period to negotiate better compensation.
+
+**Health:** Knees and joints may experience strain from the pressures of ambition. Work-related stress requires conscious management. Maintain a disciplined health routine despite a demanding schedule.
+
+
+### Moon in House 10
+
+**General:** Moon transiting your 10th house brings emotional investment in career and public image. Your nurturing qualities earn public appreciation and recognition. Reputation is influenced by how emotionally c
+
+**Love:** Your public success and emotional warmth make you especially attractive now. Work-life balance challenges may strain romantic relationships. A partner who supports your career ambitions strengthens th
+
+**Career:** Public visibility peaks as your emotional authenticity resonates with people. Careers in public service, healthcare management, and hospitality shine. Let your genuine care for others guide profession
+
+**Finance:** Professional income benefits from public approval and emotional connection with clients. Government or institutional support for your work may materialize. Invest in building your professional reputat
+
+**Health:** Knees and skeletal system may feel the strain of emotional pressures at work. Public scrutiny can cause anxiety affecting physical health. Set clear boundaries between professional obligations and per
+
+
+### Mars in House 9
+
+**General:** Mars in the 9th house drives passionate pursuit of higher knowledge and dharma. Long-distance travel for adventure or learning beckons strongly. Father's health or relationship with mentors may need a
+
+**Love:** Philosophical and spiritual compatibility becomes important in relationships. Foreign or long-distance romance possibilities increase. Religious or cultural differences in partnerships require patient
+
+**Career:** Academic, legal, publishing, and international careers gain momentum. Bold initiatives in higher education or overseas ventures yield results. Advocating for your beliefs creates professional opportun
+
+**Finance:** International trade, publishing royalties, and education-related investments attract attention. Father or guru may influence financial decisions. Long-distance financial dealings require careful docum
+
+**Health:** Hips, thighs, and liver areas need care during this transit. Overexertion during travel or sports affects the lower body. Moderate physical activity and adequate hydration support wellbeing.
+
+
+### Mercury in House 9
+
+**General:** Mercury in the 9th house expands intellectual horizons through higher learning and philosophy. Foreign languages, cultures, and academic publishing attract your curious mind. Guru-disciple connections
+
+**Love:** Philosophical and intellectual depth enriches romantic conversations. Long-distance communication with lovers flows naturally. Cultural and educational activities make excellent date settings.
+
+**Career:** Academic research, publishing, international consulting, and legal careers soar. Language skills open international doors. Higher certifications and advanced degrees enhance career trajectory.
+
+**Finance:** International transactions and export-import businesses benefit from sharp negotiation. Royalties from publications and teaching fees supplement income. Father or mentor may influence positive financi
+
+**Health:** Travel-related stress on nerves and hips needs attention. Higher study pressure may cause eye strain and headaches. Balance intellectual pursuit with physical movement for overall wellness.
+
+
+### Jupiter in House 12
+
+**General:** Jupiter in the 12th house blesses spiritual liberation, foreign connections, and charitable works. Moksha-oriented activities bring deep inner fulfillment. Foreign travel for spiritual purposes or hig
+
+**Love:** Spiritual and karmic connections define romantic relationships. Unconditional love and selfless giving strengthen bonds. Foreign or spiritually-oriented partners attract your interest.
+
+**Career:** International organizations, spiritual institutions, and charitable foundations offer fulfilling career paths. Behind-the-scenes advisory and research roles bring quiet satisfaction. Hospital and heal
+
+**Finance:** Charitable giving and spiritual expenditure bring karmic returns. Foreign investments and international income sources prove beneficial. Material wealth may decrease but spiritual wealth increases imm
+
+**Health:** Feet and lymphatic system need gentle care. Sleep quality improves through spiritual practices. Jupiter protects overall health but watch for hidden conditions requiring preventive attention.
+
+
+### Venus in House 10
+
+**General:** Venus in the 10th house enhances professional reputation through charm and creative excellence. Public image shines with grace and aesthetic appeal. Authority figures and the public respond favorably 
+
+**Love:** Professional success and public charm attract romantic attention. Workplace romance possibilities increase. Partner takes pride in your professional achievements and public grace.
+
+**Career:** Fashion, entertainment, luxury brands, and creative industries peak professionally. Public relations and brand management roles excel. Government or corporate recognition for creative contributions is
+
+**Finance:** Professional income through creative and beauty-related fields increases. Luxury brand endorsements and artistic commissions bring premium earnings. Public-facing business ventures attract clientele.
+
+**Health:** Professional grace and calm demeanor support cardiovascular health. Knees and skin reflect overall wellness status. Work-life beauty balance sustains long-term professional and personal health.
+
+
+### Saturn in House 9
+
+**General:** Saturn in the 9th house tests faith, dharma, and philosophical convictions. Higher education demands rigorous disciplined effort. Long-distance travels face delays but yield profound learning experien
+
+**Love:** Cross-cultural or long-distance relationships face tests of commitment. Philosophical differences with partners require mature dialogue. Religious or spiritual practices shared with partners deepen bo
+
+**Career:** Academic tenure, legal proceedings, and international postings require sustained patience. Teaching and publishing face initial obstacles but build lasting authority. Government and judicial positions
+
+**Finance:** International financial dealings face regulatory hurdles. Educational loans and academic investments require careful planning. Father or mentor may face financial challenges needing your support.
+
+**Health:** Hip joints and thigh areas need care during long journeys and extended sitting. Philosophical stress affects physical wellbeing through tension. Traditional healing practices and nature-based remedies
+
+
+### Rahu in House 8
+
+**General:** Rahu in the 8th house brings sudden transformations, secrets, and deep psychological themes. Interest in occult subjects may increase. Avoid risky behavior and keep insurance and paperwork updated.
+
+**Love:** Intimacy can deepen, but trust must be earned. Avoid jealousy and hidden games. Healing conversations strengthen bonds.
+
+**Career:** Good for research, investigation, cybersecurity, and crisis management. Hidden opportunities appear through confidential work. Maintain strict ethics with sensitive data.
+
+**Finance:** Be cautious with loans, taxes, and shared assets. Sudden gains or losses are possible; avoid leverage. Keep compliance clean to prevent penalties.
+
+**Health:** Reproductive health, chronic issues, and stress need attention. Avoid extreme detox or unverified therapies. Grounding and steady routines support recovery.
+
+
+### Ketu in House 2
+
+**General:** Ketu in the 2nd house reduces attachment to wealth and can make speech more blunt or detached. Family patterns from the past may surface. Speak with kindness and keep financial basics in order.
+
+**Love:** You may value simplicity over romance theatrics. Express affection through care rather than words alone. Avoid withdrawing when family pressure increases.
+
+**Career:** Work involving analysis, data, or minimalistic communication suits you. Be careful with negotiations; detached tone can be misread. Maintain professionalism with clients.
+
+**Finance:** Avoid ignoring savings and documentation. Sudden expenses can arise through family or dental matters. Keep an emergency buffer.
+
+**Health:** Teeth, throat, and digestion may need care if diet becomes irregular. Prefer simple, sattvic meals. Hydration and routine improve stability.
 
 
 ---
 
 ## 32. Navamsha Career
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "d9_lagna": "Aries",
+  "d9_lagna_hi": "मेष",
+  "d9_10th_house_sign": "Capricorn",
+  "d9_10th_house_sign_hi": "मकर",
+  "d9_10th_lord": "Saturn",
+  "d9_10th_lord_sign": "Gemini",
+  "d9_10th_lord_sign_hi": "मिथुन",
+  "profession_type_en": "Labor, industry, land, mining, and disciplined service",
+  "profession_type_hi": "श्रम, उद्योग, भूमि, खनन तथा अनुशासित सेवा",
+  "detailed_interpretation_en": "The 10th house of your Navamsha (D9) is Capricorn, ruled by Saturn, placed in Gemini in D9. Saturn as the 10th Navamsha lord brings a career shaped by discipline, hard work, and service over long durations. Mining, construction, iron and coal trade, oil, waste management, land administration, or any occupation requiring endurance and systematic effort are classically indicated. Success comes through persistent, dutiful labor.",
+  "detailed_interpretation_hi": "आपके नवांश (D9) का दशम भाव मकर है, जिसका स्वामी Saturn है, जो D9 में मिथुन में स्थित है। शनि का दशम नवांश-लॉर्ड होना अनुशासन, परिश्रम और दीर्घकालीन सेवा से गढ़ी वृत्ति दर्शाता है। खनन, निर्माण, लोहा और कोयले का व्यापार, तेल, अपशिष्ट-प्रबन्धन, भूमि प्रशासन अथवा किसी भी ऐसे कार्य का संकेत है जिसमें धैर्य और व्यवस्थित प्रयास अपेक्षित हो। निरन्तर, कर्तव्यनिष्ठ श्रम से सफलता मिलती है।",
+  "supporting_planets_en": "Mercury in this D9 sign enhances intellectual precision and communication in the career.",
+  "supporting_planets_hi": "Mercury का D9 के मकर में स्थित होना आपकी वृत्ति में अपने स्वाभाविक गुण जोड़ता है।",
+  "career_examples_… (truncated)
+```
 
 
 ---
 
-## 33. Family Longevity / Demise Timing
+## 33. Family Longevity / Demise Indicators
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "father": {
+    "member": "Father",
+    "karaka": "Sun",
+    "primary_house": 9,
+    "bhava_lord": "Saturn",
+    "maraka_lords": {
+      "house_10_lord": "Saturn",
+      "house_3_lord": "Moon",
+      "house_4_lord (8th from bhava)": "Sun"
+    },
+    "affliction_indicators": [
+      "Lord of house 9 (Saturn) is afflicted — the father's Bhava is weakened."
+    ],
+    "affliction_indicators_hi": [
+      "भाव 9 के स्वामी (Saturn) पर पीड़ा — Father के भाव की स्थिति कमज़ोर।"
+    ],
+    "timing_en": "Phaladeepika Adh. 17: Demise of father is timed during the Mahadasha or Antardasha of maraka lords — house 10 lord (Saturn) and house 3 lord (Moon) from house 9. The 8th lord from house 9 (house 4, lord Sun) also acts as death-timer. Saturn or Rahu transiting house 9 or aspecting its lord during such a dasha amplifies the indication. Strong Sun and Saturn without affliction give long life to father.",
+    "timing_hi": "फलदीपिका अ. 17: Father की आयु-समाप्ति का समय मारक भावों की महादशा/अंतर्दशा में — भाव 10 का स्वामी (Saturn) तथा भाव 3 का स्वामी (Moon) भाव 9 से। भाव 9 से अष्टम भाव 4 का स्वामी (Sun) भी मृत्यु-कारक। इस दशा में शनि या राहु का भाव 9 पर गोचर संकेत तीव्र करता है।",
+    "outlook_en": "Mild affliction present. Monitor maraka dasha periods carefully.",
+    "outlook_hi": "हल्की पीड़ा। मारक दशा अवधि में सावधानी रखें।",
+    "sloka_ref": "Phaladeepika Adh. 17"
+  },
+  "mother": {
+    "member": "Mother",
+    "karaka": "Moon",
+    "primary_house": 4,
+    "bhava_lord": "Sun",
+    "maraka_lords": {
+      "house_5_lord": "Mercury",
+      "house_10_lord": "Saturn",
+      "house_11_lord (8th from bhava)": "Jupiter"
+    },
+    "affliction_indicators": [
+      "Moon (karaka for mother) is debilitated — weakens the mother's longevity signification.",
+      "Malefic(s) Sun occupy house 4 — direct affliction to mother signification."
+    ],
+    "affliction_indicators_hi": [
+      "Moon (Mother का कारक ग्रह) debilitated है — mother की आयु-संकेत कमज़ोर।",
+      "पापी ग्रह Sun भाव 4 में… (truncated)
+```
 
 
 ---
 
-## 34. Nidhana Analysis
+## 34. Nidhana / Classical Longevity Analysis
 
-**STATUS: MISSING / NOT WIRED**
+**STATUS: PASS**
+
+```json
+{
+  "overall_longevity_strength": "moderate",
+  "maraka_planets": [
+    {
+      "planet": "Mercury",
+      "role": "2nd lord",
+      "role_hi": "द्वितीयेश",
+      "placement": 3,
+      "strength": "moderate",
+      "notes_en": "Mercury as 2nd lord is in house 3. Classical notes consider this a neutral karmic indicator.",
+      "notes_hi": "Mercury (द्वितीयेश) भाव 3 में है। शास्त्रानुसार यह तटस्थ कर्म-सूचक है।"
+    },
+    {
+      "planet": "Mars",
+      "role": "7th lord",
+      "role_hi": "सप्तमेश",
+      "placement": 3,
+      "strength": "moderate",
+      "notes_en": "Mars as 7th lord is in house 3. Classical notes consider this a neutral karmic indicator.",
+      "notes_hi": "Mars (सप्तमेश) भाव 3 में है। शास्त्रानुसार यह तटस्थ कर्म-सूचक है।"
+    }
+  ],
+  "eighth_house_analysis": {
+    "eighth_lord": "Jupiter",
+    "eighth_lord_placement": 9,
+    "eighth_lord_strength": "weak",
+    "planets_in_8th": [],
+    "interpretation_en": "The 8th lord (Jupiter) is in a weak condition — house 9. Classical texts advise pursuing a disciplined lifestyle and spiritual practices.",
+    "interpretation_hi": "अष्टमेश (Jupiter) दुर्बल स्थिति में है (भाव 9)। शास्त्र संयमित जीवन एवं आध्यात्मिक साधना की अनुशंसा करते हैं।"
+  },
+  "saturn_longevity_assessment": {
+    "saturn_placement": 6,
+    "saturn_sign": "Libra",
+    "saturn_strength": "strong",
+    "interpretation_en": "Saturn is well placed (Libra, house 6). As the natural significator of longevity and endurance, this strengthens vitality and resilience.",
+    "interpretation_hi": "शनि उत्तम स्थिति में है (Libra, भाव 6)। शनि आयुकारक है; यह स्थिरता एवं सहनशीलता को सुदृढ़ करता है।"
+  },
+  "karmic_transitions_en": "Life transitions are shown as balanced — neither overwhelming nor effortless. Classical texts teach that consciousness shapes the quality of every chapter. This narrative is philosophical; it is not a prediction of specific events.",
+  "karmic_transitions_hi": "जीवन के मोड़ संतुलित दिखाई देते हैं — न अत्यधिक कठिन, न पूर्णतः … (truncated)
+```
 
 
 ---
@@ -1812,6 +2391,107 @@ Total Nadi insights: 0
       "timing_phase_label_en": "SECOND HALF (weak planet delays results to latter portion)",
       "timing_phase_label_hi": "द्वितीय अर्ध (दुर्बल ग्रह दशा के उत्तरार्ध में फल देता है)",
       "timing_en": "Moon's 10-year Mahadasha: results peak in the SECOND HALF (weak planet delays results to latter portion). Moon occupies house 7 (marriage/partnerships) — a odd house, and i… (truncated)
+```
+
+
+---
+
+## 36. Varga Strength (Saptavarga)
+
+**STATUS: PASS**
+
+```json
+{
+  "sloka_ref": "Phaladeepika Adh. 3 (Vargadhyaya), verses 1-8",
+  "scheme": "Saptavarga",
+  "vargas": [
+    1,
+    2,
+    3,
+    7,
+    9,
+    12,
+    30
+  ],
+  "varga_names": {
+    "1": "Rasi (D1)",
+    "2": "Hora (D2)",
+    "3": "Drekkana (D3)",
+    "7": "Saptamsa (D7)",
+    "9": "Navamsa (D9)",
+    "12": "Dwadasamsa (D12)",
+    "30": "Trimsamsa (D30)"
+  },
+  "planets": {
+    "Sun": {
+      "holds": {
+        "1": {
+          "varga": "Rasi (D1)",
+          "division": 1,
+          "sign": "Leo",
+          "sign_index": 4,
+          "hold": true,
+          "category": "moolatrikona"
+        },
+        "2": {
+          "varga": "Hora (D2)",
+          "division": 2,
+          "sign": "Leo",
+          "sign_index": 4,
+          "hold": true,
+          "category": "moolatrikona"
+        },
+        "3": {
+          "varga": "Drekkana (D3)",
+          "division": 3,
+          "sign": "Leo",
+          "sign_index": 4,
+          "hold": true,
+          "category": "moolatrikona"
+        },
+        "7": {
+          "varga": "Saptamsa (D7)",
+          "division": 7,
+          "sign": "Virgo",
+          "sign_index": 5,
+          "hold": false,
+          "category": "none"
+        },
+        "9": {
+          "varga": "Navamsa (D9)",
+          "division": 9,
+          "sign": "Gemini",
+          "sign_index": 2,
+          "hold": false,
+          "category": "none"
+        },
+        "12": {
+          "varga": "Dwadasamsa (D12)",
+          "division": 12,
+          "sign": "Libra",
+          "sign_index": 6,
+          "hold": false,
+          "category": "none"
+        },
+        "30": {
+          "varga": "Trimsamsa (D30)",
+          "division": 30,
+          "sign": "Aquarius",
+          "sign_index": 10,
+          "hold": false,
+          "category": "none"
+        }
+      },
+      "own_vargas": [
+        1,
+        2,
+        3
+      ],
+      "count": 3,
+      "tier": {
+        "name": "Uttamamsa",
+        "name_hi": "उत्तमांश",
+        "description": "Very good — 3 own… (truncated)
 ```
 
 

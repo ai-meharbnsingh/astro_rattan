@@ -103,11 +103,8 @@ raja_yogas, raj_err     = run("raja_yogas", detect_adh7_raja_yogas,
                               planets, asc_sign)
 
 # 6. Maha yogas
-try:
-    from app.maha_yoga_engine import detect_maha_yogas
-    maha_yogas, maha_err = run("maha_yogas", detect_maha_yogas, chart)
-except ImportError:
-    maha_yogas, maha_err = None, "ImportError: maha_yoga_engine not found"
+from app.maha_yoga_engine import analyze_maha_yogas
+maha_yogas, maha_err = run("maha_yogas", analyze_maha_yogas, planets)
 
 # 7. Divisional charts — call calculate_divisional_chart_detailed per varga
 from app.divisional_charts import calculate_divisional_chart_detailed, calculate_d108_analysis
@@ -218,93 +215,96 @@ try:
 except ImportError:
     sadesati, ss_err = None, "ImportError: calculate_lifelong_sade_sati not found"
 
-# 21. Bhava Phala
-try:
-    from app.bhava_phala_engine import calculate_bhava_phala
-    bhava_phala, bp_err = run("bhava_phala", calculate_bhava_phala, chart)
-except ImportError:
-    bhava_phala, bp_err = None, "ImportError"
+# 21. Bhava Phala — analyze_bhava_phala(chart_data)
+from app.bhava_phala_engine import analyze_bhava_phala
+bhava_phala, bp_err = run("bhava_phala", analyze_bhava_phala, chart)
 
-# 22. Bhava Vichara
-try:
-    from app.bhava_vichara_engine import calculate_bhava_vichara
-    bhava_vic, bv_err  = run("bhava_vichara", calculate_bhava_vichara, chart)
-except ImportError:
-    bhava_vic, bv_err  = None, "ImportError"
+# 22. Bhava Vichara — analyze_bhava_vichara(chart_data)
+from app.bhava_vichara_engine import analyze_bhava_vichara
+bhava_vic, bv_err   = run("bhava_vichara", analyze_bhava_vichara, chart)
 
 # 23. Ayurdaya / Longevity
 from app.ayurdaya_engine import calculate_lifespan
-ayur, ayur_err         = run("ayurdaya", calculate_lifespan, chart)
+ayur, ayur_err      = run("ayurdaya", calculate_lifespan, chart)
 
-# 24. Roga
-try:
-    from app.roga_engine import calculate_roga
-    roga, roga_err     = run("roga", calculate_roga, chart)
-except ImportError:
-    roga, roga_err     = None, "ImportError"
+# 24. Roga — analyze_diseases(chart_data)
+from app.roga_engine import analyze_diseases
+roga, roga_err      = run("roga", analyze_diseases, chart)
 
 # 25. Sarvatobhadra Chakra
 from app.sarvatobhadra_chakra_engine import calculate_sarvatobhadra
-sarva, sarva_err       = run("sarvatobhadra", calculate_sarvatobhadra,
+sarva, sarva_err    = run("sarvatobhadra", calculate_sarvatobhadra,
     planet_positions={p: v["longitude"] for p, v in planets.items()})
 
 # 26. Nadi Analysis
 from app.nadi_engine import calculate_nadi_insights
-nadi, nadi_err         = run("nadi", calculate_nadi_insights, planets)
+nadi, nadi_err      = run("nadi", calculate_nadi_insights, planets)
 
-# 27. Graha Sambandha
-try:
-    from app.graha_sambandha_engine import calculate_graha_sambandha
-    sambandha, sb_err  = run("sambandha", calculate_graha_sambandha, chart)
-except ImportError:
-    sambandha, sb_err  = None, "ImportError"
+# 27. Graha Sambandha — analyze_graha_sambandha(planets, asc_sign)
+from app.graha_sambandha_engine import analyze_graha_sambandha
+sambandha, sb_err   = run("sambandha", analyze_graha_sambandha, planets, asc_sign)
 
-# 28. Panchadha Maitri
-try:
-    from app.panchadha_maitri_engine import calculate_panchadha_maitri
-    maitri, mt_err     = run("maitri", calculate_panchadha_maitri, chart)
-except ImportError:
-    maitri, mt_err     = None, "ImportError"
+# 28. Panchadha Maitri — analyze_panchadha_maitri(chart_data)
+from app.panchadha_maitri_engine import analyze_panchadha_maitri
+maitri, mt_err      = run("maitri", analyze_panchadha_maitri, chart)
 
 # 29. Transit forecast (30 days)
 from app.transit_engine import calculate_transit_forecast
-transit30, tr_err      = run("transit", calculate_transit_forecast,
-                              chart, LATITUDE, LONGITUDE, 30)
+transit30, tr_err   = run("transit", calculate_transit_forecast,
+                           chart, LATITUDE, LONGITUDE, 30)
 
-# 30. Gochara Vedha
-try:
-    from app.gochara_vedha_engine import calculate_gochara_vedha
-    vedha, vedha_err   = run("vedha", calculate_gochara_vedha, chart)
-except ImportError:
-    vedha, vedha_err   = None, "ImportError"
+# 30. Gochara Vedha — enrich_transits(transits, natal_chart)
+#     Requires a transits list; build minimal one from today's planet positions
+from app.gochara_vedha_engine import enrich_transits
+from app.astro_engine import calculate_planet_positions as _calc_pos
+from datetime import date as _date_cls
+_today = _date_cls.today().isoformat()
+_today_chart, _tc_err = run("today_chart", _calc_pos,
+                             _today, "12:00:00", LATITUDE, LONGITUDE, TZ_OFFSET)
+if _today_chart and not _tc_err:
+    _transit_list = [
+        {"planet": p, "sign": d.get("sign",""), "house": d.get("house",1),
+         "longitude": d.get("longitude", 0.0)}
+        for p, d in _today_chart.get("planets", {}).items()
+    ]
+    vedha, vedha_err = run("vedha", enrich_transits, _transit_list, chart)
+else:
+    vedha, vedha_err = None, "Could not compute today's chart for Vedha"
 
-# 31. Transit Interpretations
-try:
-    from app.transit_interpretations import calculate_transit_interpretations
-    t_interp, ti_err   = run("t_interp", calculate_transit_interpretations, chart)
-except ImportError:
-    t_interp, ti_err   = None, "ImportError"
+# 31. Transit Interpretations — TRANSIT_FRAGMENTS data matrix
+#     Build summary: for each transiting planet, get its current house interpretation
+from app.transit_interpretations import TRANSIT_FRAGMENTS
+def _build_transit_interp(natal, today_ch):
+    if not today_ch:
+        return None
+    out = {}
+    asc_h = 1
+    for planet, pdata in today_ch.get("planets", {}).items():
+        house = pdata.get("house", 1)
+        frags = TRANSIT_FRAGMENTS.get(planet, {}).get(house, {})
+        if frags:
+            out[planet] = {"house": house, "areas": frags}
+    return out
 
-# 32. Navamsha Career
-try:
-    from app.navamsha_profession_engine import calculate_navamsha_profession
-    nav_career, nc_err = run("navamsha_career", calculate_navamsha_profession, chart)
-except ImportError:
-    nav_career, nc_err = None, "ImportError"
+t_interp, ti_err = run("t_interp", _build_transit_interp, chart, _today_chart)
+if not _today_chart:
+    ti_err = "Could not compute today's chart"
 
-# 33. Family Demise Timing
-try:
-    from app.family_demise_engine import calculate_family_demise_timing
-    family, fam_err    = run("family", calculate_family_demise_timing, chart, BIRTH_DATE)
-except ImportError:
-    family, fam_err    = None, "ImportError"
+# 32. Navamsha Career — analyze_navamsha_profession(planet_longitudes)
+from app.navamsha_profession_engine import analyze_navamsha_profession
+nav_career, nc_err  = run("navamsha_career", analyze_navamsha_profession, planet_lons)
 
-# 34. Nidhana
-try:
-    from app.nidhana_engine import calculate_nidhana
-    nidhana, nidh_err  = run("nidhana", calculate_nidhana, chart, BIRTH_DATE)
-except ImportError:
-    nidhana, nidh_err  = None, "ImportError"
+# 33. Family Demise Indicators — analyze_family_demise_indicators(planets, asc_sign)
+from app.family_demise_engine import analyze_family_demise_indicators
+family, fam_err     = run("family", analyze_family_demise_indicators, planets, asc_sign)
+
+# 34. Nidhana / Longevity — analyze_longevity_indicators(chart_data)
+from app.nidhana_engine import analyze_longevity_indicators
+nidhana, nidh_err   = run("nidhana", analyze_longevity_indicators, chart)
+
+# 35. Varga Strength — calculate_varga_strength(planet_longitudes)
+from app.varga_grading_engine import calculate_varga_strength
+varga_str, vs_err   = run("varga_strength", calculate_varga_strength, planet_lons)
 
 print("All engines executed. Building report…")
 
@@ -394,7 +394,8 @@ summary_rows = [
     ["Transit Interpretations", eng_status(t_interp, ti_err),       "7", "8"],
     ["Navamsha Career",         eng_status(nav_career, nc_err),     "7", "8"],
     ["Family Demise Timing",    eng_status(family, fam_err),        "7", "8"],
-    ["Nidhana",                 eng_status(nidhana, nidh_err),      "6", "8"],
+    ["Nidhana/Longevity",       eng_status(nidhana, nidh_err),      "6", "8"],
+    ["Varga Strength",          eng_status(varga_str, vs_err),      "8", "9"],
 ]
 
 W(table(["Feature", "Status", "Richness/10", "Confidence/10"], summary_rows))
@@ -570,9 +571,7 @@ else:
                  for y in all_raja[:15]]))
 
 SS("Maha / Nabhasa Yogas")
-if maha_err and "ImportError" in maha_err:
-    MISSING()
-elif maha_err:
+if maha_err:
     ERR("detect_maha_yogas", maha_err)
 else:
     PASS()
@@ -783,10 +782,8 @@ else:
 
 # ── Section 21: Bhava Phala ───────────────────────────────────────────────────
 S("21. Bhava Phala (House Effects)")
-if bp_err and "ImportError" in bp_err:
-    MISSING()
-elif bp_err:
-    ERR("calculate_bhava_phala", bp_err)
+if bp_err:
+    ERR("analyze_bhava_phala", bp_err)
 else:
     PASS()
     dump(bhava_phala, limit=3000)
@@ -794,10 +791,8 @@ else:
 
 # ── Section 22: Bhava Vichara ─────────────────────────────────────────────────
 S("22. Bhava Vichara (House Examination)")
-if bv_err and "ImportError" in bv_err:
-    MISSING()
-elif bv_err:
-    ERR("calculate_bhava_vichara", bv_err)
+if bv_err:
+    ERR("analyze_bhava_vichara", bv_err)
 else:
     PASS()
     dump(bhava_vic, limit=2000)
@@ -806,7 +801,7 @@ else:
 # ── Section 23: Ayurdaya ─────────────────────────────────────────────────────
 S("23. Ayurdaya / Longevity")
 if ayur_err:
-    ERR("calculate_ayurdaya", ayur_err)
+    ERR("calculate_lifespan", ayur_err)
 else:
     PASS()
     dump(ayur, limit=2000)
@@ -814,10 +809,8 @@ else:
 
 # ── Section 24: Roga ─────────────────────────────────────────────────────────
 S("24. Roga / Disease Analysis")
-if roga_err and "ImportError" in roga_err:
-    MISSING()
-elif roga_err:
-    ERR("calculate_roga", roga_err)
+if roga_err:
+    ERR("analyze_diseases", roga_err)
 else:
     PASS()
     dump(roga, limit=2000)
@@ -862,10 +855,8 @@ else:
 
 # ── Section 28: Graha Sambandha ───────────────────────────────────────────────
 S("28. Graha Sambandha")
-if sb_err and "ImportError" in sb_err:
-    MISSING()
-elif sb_err:
-    ERR("calculate_graha_sambandha", sb_err)
+if sb_err:
+    ERR("analyze_graha_sambandha", sb_err)
 else:
     PASS()
     dump(sambandha, limit=2000)
@@ -873,10 +864,8 @@ else:
 
 # ── Section 29: Panchadha Maitri ──────────────────────────────────────────────
 S("29. Panchadha Maitri")
-if mt_err and "ImportError" in mt_err:
-    MISSING()
-elif mt_err:
-    ERR("calculate_panchadha_maitri", mt_err)
+if mt_err:
+    ERR("analyze_panchadha_maitri", mt_err)
 else:
     PASS()
     dump(maitri, limit=2000)
@@ -884,54 +873,48 @@ else:
 
 # ── Section 30: Gochara Vedha ─────────────────────────────────────────────────
 S("30. Gochara Vedha")
-if vedha_err and "ImportError" in vedha_err:
-    MISSING()
-elif vedha_err:
-    ERR("calculate_gochara_vedha", vedha_err)
+if vedha_err:
+    ERR("enrich_transits", vedha_err)
 else:
     PASS()
     dump(vedha, limit=2000)
 
 
 # ── Section 31: Transit Interpretations ──────────────────────────────────────
-S("31. Transit Interpretations")
-if ti_err and "ImportError" in ti_err:
-    MISSING()
-elif ti_err:
-    ERR("calculate_transit_interpretations", ti_err)
+S("31. Transit Interpretations (Current Planet Positions)")
+if ti_err:
+    ERR("transit_interpretations", ti_err)
 else:
     PASS()
-    dump(t_interp, limit=2000)
+    if t_interp:
+        for planet, info in t_interp.items():
+            SS(f"{planet} in House {info.get('house','?')}")
+            for area, texts in info.get("areas", {}).items():
+                W(f"**{area.title()}:** {str(texts.get('en',''))[:200]}\n")
 
 
 # ── Section 32: Navamsha Career ───────────────────────────────────────────────
 S("32. Navamsha Career")
-if nc_err and "ImportError" in nc_err:
-    MISSING()
-elif nc_err:
-    ERR("calculate_navamsha_profession", nc_err)
+if nc_err:
+    ERR("analyze_navamsha_profession", nc_err)
 else:
     PASS()
     dump(nav_career, limit=1500)
 
 
-# ── Section 33: Family Demise Timing ──────────────────────────────────────────
-S("33. Family Longevity / Demise Timing")
-if fam_err and "ImportError" in fam_err:
-    MISSING()
-elif fam_err:
-    ERR("calculate_family_demise_timing", fam_err)
+# ── Section 33: Family Longevity Indicators ───────────────────────────────────
+S("33. Family Longevity / Demise Indicators")
+if fam_err:
+    ERR("analyze_family_demise_indicators", fam_err)
 else:
     PASS()
     dump(family, limit=2000)
 
 
-# ── Section 34: Nidhana ───────────────────────────────────────────────────────
-S("34. Nidhana Analysis")
-if nidh_err and "ImportError" in nidh_err:
-    MISSING()
-elif nidh_err:
-    ERR("calculate_nidhana", nidh_err)
+# ── Section 34: Nidhana / Longevity ──────────────────────────────────────────
+S("34. Nidhana / Classical Longevity Analysis")
+if nidh_err:
+    ERR("analyze_longevity_indicators", nidh_err)
 else:
     PASS()
     dump(nidhana, limit=2000)
@@ -944,6 +927,15 @@ if dt_err:
 else:
     PASS()
     dump(dasha_timing, limit=2000)
+
+
+# ── Section 36: Varga Strength ────────────────────────────────────────────────
+S("36. Varga Strength (Saptavarga)")
+if vs_err:
+    ERR("calculate_varga_strength", vs_err)
+else:
+    PASS()
+    dump(varga_str, limit=2000)
 
 
 # ── Section 36: Truthfulness Audit ───────────────────────────────────────────
