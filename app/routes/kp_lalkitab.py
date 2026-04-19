@@ -898,8 +898,15 @@ def get_nishaniyan(
         )
 
     rows = db.execute(query, params).fetchall()
-    nishaniyan = [
-        {
+    nishaniyan = []
+    seen: set[tuple] = set()
+    for r in rows:
+        # Deduplicate on (planet, house, text) — DB may contain duplicate rows
+        dedup_key = (r["planet"], r["house"], r.get("nishani_text_en") or r.get("nishani_text") or "")
+        if dedup_key in seen:
+            continue
+        seen.add(dedup_key)
+        nishaniyan.append({
             "id": r["id"],
             "planet": r["planet"],
             "house": r["house"],
@@ -907,9 +914,7 @@ def get_nishaniyan(
             "nishani_text_en": r["nishani_text_en"],
             "category": r["category"],
             "severity": r["severity"],
-        }
-        for r in rows
-    ]
+        })
     return {"nishaniyan": nishaniyan}
 
 
