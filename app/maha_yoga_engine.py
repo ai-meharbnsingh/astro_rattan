@@ -88,7 +88,9 @@ def _yoga(name: str, category: str, effect_en: str, effect_hi: str, planets_invo
 
 def _check_rajju(planets: dict) -> dict | None:
     s = _signs(planets)
-    if all(s[p] in MOVABLE for p in CHART_PLANETS if s[p]):
+    # Require ALL 7 planets to have a populated sign AND all in MOVABLE.
+    # If any planet has an empty sign the condition is indeterminate — do not fire.
+    if all(s[p] for p in CHART_PLANETS) and all(s[p] in MOVABLE for p in CHART_PLANETS):
         return _yoga("Rajju", "Aashraya",
             "All seven planets in movable signs — the native is a wanderer, restless, fond of travel and change. Earns through movement and enterprise. Leadership in dynamic fields.",
             "सातों ग्रह चर राशियों में — जातक घुमक्कड़, चंचल, यात्रा-प्रिय। गति एवं उद्यम से कमाई। गतिशील क्षेत्रों में नेतृत्व।",
@@ -98,7 +100,8 @@ def _check_rajju(planets: dict) -> dict | None:
 
 def _check_musala(planets: dict) -> dict | None:
     s = _signs(planets)
-    if all(s[p] in FIXED for p in CHART_PLANETS if s[p]):
+    # Require ALL 7 planets to have a populated sign AND all in FIXED.
+    if all(s[p] for p in CHART_PLANETS) and all(s[p] in FIXED for p in CHART_PLANETS):
         return _yoga("Musala", "Aashraya",
             "All seven planets in fixed signs — the native is steadfast, obstinate, fond of stability and authority. Earns through persistence. Accumulates property and wealth.",
             "सातों ग्रह स्थिर राशियों में — जातक दृढ़, हठी, स्थिरता-प्रिय। दृढ़ता से कमाई। संपत्ति एवं धन का संचय।",
@@ -108,7 +111,8 @@ def _check_musala(planets: dict) -> dict | None:
 
 def _check_nala(planets: dict) -> dict | None:
     s = _signs(planets)
-    if all(s[p] in DUAL for p in CHART_PLANETS if s[p]):
+    # Require ALL 7 planets to have a populated sign AND all in DUAL.
+    if all(s[p] for p in CHART_PLANETS) and all(s[p] in DUAL for p in CHART_PLANETS):
         return _yoga("Nala", "Aashraya",
             "All seven planets in dual signs — the native is versatile, skilled in crafts and arts, manages multiple affairs simultaneously. Success through adaptability and skill.",
             "सातों ग्रह द्विस्वभाव राशियों में — जातक बहुमुखी, शिल्प-कलाओं में निपुण, एक साथ अनेक कार्य। अनुकूलता एवं कौशल से सफलता।",

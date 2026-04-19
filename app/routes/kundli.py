@@ -1189,6 +1189,7 @@ def get_upagrahas(
     chart = _chart_data(row)
     
     planets = chart.get("planets", {})
+    ascendant = chart.get("ascendant", {})
     result = calculate_upagrahas(
         birth_date=row["birth_date"],
         birth_time=row["birth_time"] or "12:00:00",
@@ -1196,6 +1197,8 @@ def get_upagrahas(
         lon=row["longitude"],
         tz_offset=row["timezone_offset"],
         planet_houses={p: int(v.get("house", 0)) for p, v in planets.items() if isinstance(v, dict)},
+        planet_signs={p: str(v.get("sign", "")) for p, v in planets.items() if isinstance(v, dict)},
+        asc_sign=str(ascendant.get("sign", "")),
     )
     return {
         "kundli_id": kundli_id,

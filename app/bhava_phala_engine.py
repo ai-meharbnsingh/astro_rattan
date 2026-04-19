@@ -379,6 +379,85 @@ def analyze_bhava_phala(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "sloka_ref": entry.get("sloka_ref", ""),
         }
 
+        # ── Dignity modifier (Issues 2 & 3) ──────────────────────────────
+        # Determine dignity state of this planet in this sign
+        is_exalted = bool(sign) and _EXALTATION.get(planet) == sign
+        is_own = bool(sign) and sign in _OWN_SIGNS.get(planet, set())
+        is_debilitated = bool(sign) and _DEBILITATION.get(planet) == sign
+
+        # Check if Jupiter aspects this house (special 5th/9th + universal 7th)
+        jup_data = planets_raw.get("Jupiter")
+        jup_aspects_this_house = False
+        if isinstance(jup_data, dict):
+            jup_house = _house(jup_data)
+            if jup_house > 0:
+                jup_aspects_this_house = _planet_aspects_house("Jupiter", jup_house, house)
+
+        if is_debilitated:
+            if jup_aspects_this_house:
+                # Issue 3: debilitated but aspected by Jupiter AND in a dharma-kama house
+                # Provide reconciliation note rather than flat negative
+                placement["dignity_modifier_en"] = (
+                    f"{planet} is debilitated in {sign} — its natural strength is reduced. "
+                    f"However, Jupiter's aspect on house {house} provides a significant "
+                    f"mitigating influence: challenges manifest with delay or effort rather "
+                    f"than being entirely absent. Results require sustained effort to achieve. "
+                    f"(Phaladeepika: debilitated planet in good house — effect is diminished "
+                    f"but not nullified when aspected by a benefic.)"
+                )
+                placement["dignity_modifier_hi"] = (
+                    f"{planet} {sign} में नीच — स्वाभाविक बल घटा। किन्तु बृहस्पति का "
+                    f"भाव {house} पर दृष्टि डालना एक महत्त्वपूर्ण शमनकारी प्रभाव देती है: "
+                    f"चुनौतियाँ विलम्ब या प्रयास से प्रकट होती हैं, पूर्णतः अनुपस्थित नहीं। "
+                    f"फल प्राप्ति हेतु निरंतर प्रयास अपेक्षित।"
+                )
+            else:
+                placement["dignity_modifier_en"] = (
+                    f"{planet} is debilitated in {sign} — its natural strength is diminished. "
+                    f"Despite debilitation, the house {house} significations remain active; "
+                    f"results manifest with greater struggle, delay, or mixed outcomes compared "
+                    f"to an unafflicted placement."
+                )
+                placement["dignity_modifier_hi"] = (
+                    f"{planet} {sign} में नीच — प्राकृतिक बल कम। नीचत्व के बावजूद "
+                    f"भाव {house} के विषय सक्रिय रहते हैं; फल अधिक संघर्ष, विलम्ब "
+                    f"या मिश्रित परिणामों के साथ मिलते हैं।"
+                )
+        elif is_exalted:
+            placement["dignity_modifier_en"] = (
+                f"{planet} is exalted in {sign} — maximum natural strength. "
+                f"The house {house} significations are greatly enhanced; "
+                f"results manifest prominently and with less obstruction."
+            )
+            placement["dignity_modifier_hi"] = (
+                f"{planet} {sign} में उच्च — अधिकतम प्राकृतिक बल। "
+                f"भाव {house} के विषय अत्यधिक प्रबल; फल स्पष्ट एवं बाधा-रहित।"
+            )
+        elif is_own:
+            placement["dignity_modifier_en"] = (
+                f"{planet} is in its own sign ({sign}) — strong and comfortable. "
+                f"The house {house} significations are expressed fully and reliably."
+            )
+            placement["dignity_modifier_hi"] = (
+                f"{planet} अपनी राशि ({sign}) में — बली एवं सहज। "
+                f"भाव {house} के विषय पूर्ण रूप से व्यक्त।"
+            )
+        elif jup_aspects_this_house and planet not in NATURAL_BENEFICS:
+            # Malefic planet aspected by Jupiter — beneficial mitigant
+            placement["dignity_modifier_en"] = (
+                f"Jupiter's aspect on house {house} mitigates the challenges "
+                f"indicated by {planet}'s placement here — difficulties are reduced "
+                f"and some positive results emerge despite the malefic influence."
+            )
+            placement["dignity_modifier_hi"] = (
+                f"बृहस्पति की भाव {house} पर दृष्टि {planet} की स्थिति से "
+                f"संकेतित चुनौतियों को कम करती है — कठिनाइयाँ घटती हैं "
+                f"और पापी प्रभाव के बावजूद कुछ शुभ फल उभरते हैं।"
+            )
+        else:
+            placement["dignity_modifier_en"] = None
+            placement["dignity_modifier_hi"] = None
+
         # P0-2: Rahu/Ketu results modified by sign lord (Phaladeepika Adh. 8)
         if planet in ("Rahu", "Ketu") and sign:
             base_planet = "Saturn" if planet == "Rahu" else "Mars"
