@@ -16,11 +16,44 @@ interface YogaDoshaTabProps {
   t: (key: string) => string;
 }
 
+interface YogaObject {
+  name?: string;
+  name_hi?: string;
+  name_en?: string;
+  present?: boolean;
+  category?: string;
+  category_label_hi?: string;
+  category_label_en?: string;
+  nature?: string;
+  description?: string;
+  description_hi?: string;
+  description_en?: string;
+  fruition_note_hi?: string;
+  fruition_note_en?: string;
+  sloka_ref?: string;
+  planets_involved?: string[];
+  strength?: 'strong' | 'moderate' | 'weak';
+  trigger_houses?: number[];
+}
+
 const NATURE_STYLE: Record<string, string> = {
   benefic: 'bg-emerald-100 text-emerald-800',
   malefic: 'bg-red-100 text-red-800',
   mixed:   'bg-amber-100 text-amber-800',
 };
+
+const STRENGTH_STYLE: Record<string, string> = {
+  strong:   'bg-green-100 text-green-800',
+  moderate: 'bg-amber-100 text-amber-800',
+  weak:     'bg-red-100 text-red-800',
+};
+
+function getStrengthLabel(strength: string, hi: boolean): string {
+  if (hi) {
+    return strength === 'strong' ? 'प्रबल' : strength === 'moderate' ? 'मध्यम' : 'दुर्बल';
+  }
+  return strength === 'strong' ? 'Strong' : strength === 'moderate' ? 'Moderate' : 'Weak';
+}
 
 const CATEGORY_STYLE: Record<string, string> = {
   raja:              'bg-violet-100 text-violet-800',
