@@ -954,6 +954,7 @@ def _conjunct(p1: str, p2: str, planets: dict) -> bool:
 
 def _house_lord(house_num: int, asc_sign: str) -> str:
     """Get lord of a house given ascendant sign."""
+    asc_sign = asc_sign.strip().capitalize() if asc_sign else ""
     asc_idx = ZODIAC_INDEX.get(asc_sign, 0)
     sign_on_house = ZODIAC_SIGNS[(asc_idx + house_num - 1) % 12]
     return SIGN_LORDS.get(sign_on_house, "")
@@ -1947,6 +1948,10 @@ def check_ghatak_dosha(planets: dict) -> dict:
 
 def check_daridra_dosha(planets: dict, asc_sign: str) -> dict:
     """Daridra Dosha: Lord of 11th in trik house (6/8/12)."""
+    # Fallback: derive ascendant from planets dict if not passed directly
+    if not asc_sign:
+        asc_sign = (planets.get("Ascendant") or {}).get("sign", "") or \
+                   (planets.get("Asc") or {}).get("sign", "")
     if not asc_sign:
         return {"name": "Daridra Dosha", "present": False, "severity": "none", "description": "Ascendant data missing.", "remedies": []}
     lord11 = _house_lord(11, asc_sign)
