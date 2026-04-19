@@ -57,11 +57,13 @@ interface DashaSystemMeta {
   labelEn: string;
   labelHi: string;
   endpoint: string;
+  method?: 'GET' | 'POST';
 }
 
 const DASHA_SYSTEMS: DashaSystemMeta[] = [
-  { key: 'vimshottari', labelEn: 'Vimshottari (120yr)', labelHi: 'विंशोत्तरी (120 वर्ष)', endpoint: '/api/kundli/{id}/dasha' },
-  { key: 'yogini', labelEn: 'Yogini (120yr)', labelHi: 'योगिनी (120 वर्ष)', endpoint: '/api/kundli/{id}/yogini-dasha' },
+  // Use extended endpoint so rows can expand MD → AD → PT in the UI.
+  { key: 'vimshottari', labelEn: 'Vimshottari (120yr)', labelHi: 'विंशोत्तरी (120 वर्ष)', endpoint: '/api/kundli/{id}/extended-dasha', method: 'POST' },
+  { key: 'yogini', labelEn: 'Yogini (36yr)', labelHi: 'योगिनी (36 वर्ष)', endpoint: '/api/kundli/{id}/yogini-dasha' },
   { key: 'ashtottari', labelEn: 'Ashtottari (108yr)', labelHi: 'अष्टोत्तरी (108 वर्ष)', endpoint: '/api/kundli/{id}/ashtottari-dasha' },
   { key: 'moola', labelEn: 'Moola', labelHi: 'मूल', endpoint: '/api/kundli/{id}/moola-dasha' },
   { key: 'tara', labelEn: 'Tara', labelHi: 'तारा', endpoint: '/api/kundli/{id}/tara-dasha' },
@@ -285,7 +287,7 @@ export default function DashaSelector({
     try {
       const meta = DASHA_SYSTEMS.find((s) => s.key === system)!;
       const url = meta.endpoint.replace('{id}', kundliId);
-      const res = await api.get(url);
+      const res = meta.method === 'POST' ? await api.post(url, {}) : await api.get(url);
       const normalized = normalizeResponse(system, res);
       setData((prev) => ({ ...prev, [system]: cloneResponse(normalized) }));
     } catch (err: any) {
@@ -451,7 +453,7 @@ export default function DashaSelector({
                   const mdLabel = formatLabel(selectedSystem, md.planet, language);
                   const mdNaturePlanet = naturePlanetFor(selectedSystem, md);
                   const isMdExpanded = expandedMD === mdKey;
-                  const hasChildren = (md.antardasha || []).length > 0;
+                  const hasChildren = selectedSystem === 'yogini' ? true : (md.antardasha || []).length > 0;
                   const mdYears = md.years ?? md.span ?? (md.duration_years ? parseFloat(String(md.duration_years)).toFixed(1) : '');
 
                   return (
@@ -483,6 +485,15 @@ export default function DashaSelector({
                         <TableCell className="p-1.5 text-center text-primary font-bold">{mdYears}</TableCell>
                         <TableCell className="p-1.5 text-center">{natureBadge(mdNaturePlanet, hi)}</TableCell>
                       </TableRow>
+
+                      {/* Yogini has no sub-periods in our current API — allow expand to show context */}
+                      {selectedSystem === 'yogini' && isMdExpanded && (md.antardasha || []).length === 0 && (
+                        <TableRow className="bg-white/40">
+                          <TableCell colSpan={6} className="p-3 pl-10 text-[11px] text-foreground/70">
+                            {l('No sub-periods available for Yogini in this table yet.', 'योगिनी दशा के उप-अवधि इस तालिका में अभी उपलब्ध नहीं हैं।')}
+                          </TableCell>
+                        </TableRow>
+                      )}
 
                       {/* Antardasha rows */}
                       {isMdExpanded && (md.antardasha || []).map((ad) => {
