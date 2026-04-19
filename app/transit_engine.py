@@ -506,6 +506,7 @@ def assemble_section(
     dasha_lord: str = None,
     moon_nakshatra_index: int = 0,
     moon_pada: int = 1,
+    target_date: str = None,
 ) -> str:
     """
     Combine relevant interpretation fragments into a coherent 3-5 sentence paragraph
@@ -536,8 +537,15 @@ def assemble_section(
         weights[dasha_lord] = weights.get(dasha_lord, 1) * 2
     pick_count = FRAGMENT_COUNTS.get(period, 3)
 
-    # P1: Nakshatra-seed gives 108 unique positions (27 × 4) → daily freshness
-    nak_seed = moon_nakshatra_index * 4 + (moon_pada - 1)
+    # P1: Nakshatra-seed (108 positions) + day-of-year offset so fragments
+    # rotate even when Moon stays in the same nakshatra/house 2+ days.
+    try:
+        from datetime import date as _date_cls
+        _d = _date_cls.fromisoformat(target_date) if target_date else _date_cls.today()
+        _doy = _d.timetuple().tm_yday
+    except Exception:
+        _doy = 0
+    nak_seed = moon_nakshatra_index * 4 + (moon_pada - 1) + _doy
 
     scored_fragments: List[Tuple[float, str, str, str]] = []
     # (score, fragment_text, planet_name, dignity)
@@ -745,9 +753,11 @@ def generate_transit_horoscope(
     for area in AREAS:
         sections[area] = {
             "en": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "en",
-                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada),
+                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada,
+                                   target_date=target_date),
             "hi": assemble_section(lagna_sign, area, planet_houses, planet_data, period_lower, "hi",
-                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada),
+                                   dasha_lord=dasha_lord, moon_nakshatra_index=moon_nak_idx, moon_pada=moon_pada,
+                                   target_date=target_date),
         }
 
     # P3: Append tithi suffix to general section for daily period
@@ -878,8 +888,8 @@ def generate_monthly_extras(sign: str, target_date: str = None, native_lagna: st
             scores = compute_scores(lagna_sign, planet_houses, planet_data)
 
             # Use phase index as fragment_offset so each phase leads with a different planet's fragment
-            summary_en = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "en", fragment_offset=i)
-            summary_hi = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "hi", fragment_offset=i)
+            summary_en = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "en", fragment_offset=i, target_date=date_str)
+            summary_hi = assemble_section(lagna_sign, "general", planet_houses, planet_data, "monthly", "hi", fragment_offset=i, target_date=date_str)
         except Exception:
             logger.exception("Monthly extras: failed for %s", date_str)
             scores = {"overall": 5}
