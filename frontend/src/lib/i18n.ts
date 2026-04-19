@@ -945,7 +945,6 @@ export const translations: Record<Language, TranslationMap> = {
 
     // Lal Kitab audit remediation keys
     'lk.43DayProtocol': '43-Day Chandra Protocol',
-    'lk.varshphal.comingSoon': 'Real Varshapravesh calculation coming soon',
     'lk.chart.incompleteWarning': 'Chart is incomplete — please regenerate',
     'lk.dashboard.loadError': 'Could not load advanced analysis',
     'lk.timezone.browserFallback': 'Using browser timezone — confirm accurate',
@@ -962,7 +961,6 @@ export const translations: Record<Language, TranslationMap> = {
     'nav.palmistry': 'Palmistry',
     'nav.library': 'Library',
     'nav.blog': 'Blog',
-    'nav.shop': 'Shop',
     'nav.consultation': 'Consultation',
     'nav.community': 'Community',
     'nav.feedback': 'Feedback',
@@ -973,7 +971,6 @@ export const translations: Record<Language, TranslationMap> = {
     'nav.admin': 'Admin',
     'nav.dashboard': 'Dashboard',
     'nav.astrologerDashboard': 'Astrologer Dashboard',
-    'nav.cart': 'Cart',
     'nav.profile': 'Profile',
 
     // Auth
@@ -1011,9 +1008,6 @@ export const translations: Record<Language, TranslationMap> = {
     'common.generate': 'Generate',
     'common.download': 'Download',
     'common.share': 'Share',
-    'common.price': 'Price',
-    'common.addToCart': 'Add to Cart',
-    'common.buyNow': 'Buy Now',
     'common.free': 'Free',
     'common.new': 'New',
     'common.popular': 'Popular',
@@ -3582,7 +3576,6 @@ export const translations: Record<Language, TranslationMap> = {
 
     // Lal Kitab audit remediation keys
     'lk.43DayProtocol': '43-दिवसीय चंद्र प्रोटोकॉल',
-    'lk.varshphal.comingSoon': 'वास्तविक वर्षप्रवेश गणना जल्द ही',
     'lk.chart.incompleteWarning': 'चार्ट अधूरा है — कृपया पुनः बनाएं',
     'lk.dashboard.loadError': 'उन्नत विश्लेषण लोड नहीं हो सका',
     'lk.timezone.browserFallback': 'ब्राउज़र का समय क्षेत्र उपयोग किया जा रहा है',
@@ -3599,7 +3592,6 @@ export const translations: Record<Language, TranslationMap> = {
     'nav.palmistry': 'हस्तरेखा',
     'nav.library': 'पुस्तकालय',
     'nav.blog': 'ब्लॉग',
-    'nav.shop': 'दुकान',
     'nav.consultation': 'परामर्श',
     'nav.community': 'समुदाय',
     'nav.feedback': 'फीडबैक',
@@ -3610,7 +3602,6 @@ export const translations: Record<Language, TranslationMap> = {
     'nav.admin': 'एडमिन',
     'nav.dashboard': 'डैशबोर्ड',
     'nav.astrologerDashboard': 'ज्योतिषी डैशबोर्ड',
-    'nav.cart': 'कार्ट',
     'nav.profile': 'प्रोफ़ाइल',
 
     // Auth
@@ -3648,9 +3639,6 @@ export const translations: Record<Language, TranslationMap> = {
     'common.generate': 'बनाएं',
     'common.download': 'डाउनलोड',
     'common.share': 'साझा करें',
-    'common.price': 'मूल्य',
-    'common.addToCart': 'कार्ट में जोड़ें',
-    'common.buyNow': 'अभी खरीदें',
     'common.free': 'मुफ़्त',
     'common.new': 'नया',
     'common.popular': 'लोकप्रिय',
