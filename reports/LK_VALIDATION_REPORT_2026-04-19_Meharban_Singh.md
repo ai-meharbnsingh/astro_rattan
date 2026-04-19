@@ -1,7 +1,7 @@
 # Lal Kitaab Engine Validation Report
 
 **Subject:** Meharban Singh  
-**Generated:** 2026-04-19 13:46:04 IST  
+**Generated:** 2026-04-19 14:10:40 IST  
 **Environment:** Local (`http://localhost:8000`)  
 **Kundli ID:** `2230f7131a1ba878def4c64cce0378ed`  
 **User ID:** `788341ad4c14d11fd49c7db7353c236e`  
@@ -48,7 +48,7 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 - `/api/lalkitab/gochar` (live transits — changes per day)
 - `/api/lalkitab/age-activation` (age-dependent — changes each birthday)
 
-**Report generated:** 2026-04-19 13:46:04 IST
+**Report generated:** 2026-04-19 14:10:40 IST
 
 ---
 
@@ -90,10 +90,12 @@ All chart computations are deterministic for fixed birth inputs. Same birth deta
 | PDF Report | ✅ STRONG | 10 | 10 | HTTP 200 · PASS |
 | Lk Analysis (POST) | ✅ STRONG | 7 | 9 | HTTP 200 · PASS |
 | Validated Remedies | ✅ STRONG | 9 | 9 | HTTP 200 · PASS |
+| Master Summary | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
+| Marriage / H7 Analysis | ✅ STRONG | 7 | 7 | HTTP 200 · PASS |
 
 
-**Total features tested:** 33  
-**Passing:** 32/33  
+**Total features tested:** 35  
+**Passing:** 34/35  
 **Report date:** 2026-04-19
 
 
@@ -2000,9 +2002,9 @@ STATUS: Evidence rows not present at top level — embedded in area data.
 | Planet | Transit H | Natal H | Degree | Dir | On Natal Pos? | Pakka Ghar? | Note |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Sun | H1 | H5 | 5.1° | D | — | ✓ | Sun transiting H1 (Pakka Ghar) — vitality and authority peak |
-| Moon | H2 | H8 | 0.8° | D | — | — | Moon transiting H2 — emotional attachment to family and weal |
+| Moon | H2 | H8 | 1.0° | D | — | — | Moon transiting H2 — emotional attachment to family and weal |
 | Mars | H12 | H4 | 13.2° | D | — | — | Mars transiting H12 — hidden aggression drains energy. Spiri |
-| Mercury | H12 | H4 | 11.9° | D | — | — | Mercury transiting H12 — spiritual or foreign writing active |
+| Mercury | H12 | H4 | 12.0° | D | — | — | Mercury transiting H12 — spiritual or foreign writing active |
 | Jupiter | H3 | H10 | 23.2° | D | — | — | Jupiter transiting H3 — courage and communication get Jupite |
 | Venus | H1 | H4 | 29.9° | D | — | — | Venus transiting H1 — beauty, charm, and physical attraction |
 | Saturn | H12 | H7 | 13.6° | D | — | — | Saturn transiting H12 — expenditures rise and isolation incr |
@@ -2722,14 +2724,14 @@ Keys present in `/advanced` response: `['masnui_planets', 'karmic_debts', 'karmi
 
 > All conclusions in this section are **computed from actual test results** — not pre-written. Strongest/weakest rankings are derived from richness scores.
 
-### Engine Status: **PASS (55/55 endpoints returning data)**
+### Engine Status: **PASS (57/57 endpoints returning data)**
 
-Core engine is functional. 55/55 endpoints return non-empty responses. 2 endpoints return empty data (infrastructure exists, requires user-initiated data).
+Core engine is functional. 57/57 endpoints return non-empty responses. 2 endpoints return empty data (infrastructure exists, requires user-initiated data).
 
 | Metric | Count |
 | --- | --- |
-| Total endpoints tested | 55 |
-| Returning data (HTTP 200/201) | 55 |
+| Total endpoints tested | 57 |
+| Returning data (HTTP 200/201) | 57 |
 | Empty responses (200 but no data) | 2 |
 | HTTP errors / not found | 0 |
 | Connection/exception errors | 0 |
@@ -2737,13 +2739,13 @@ Core engine is functional. 55/55 endpoints return non-empty responses. 2 endpoin
 
 ### 28.1 Strongest Sections (by response richness)
 
-1. **lk_full** — richness 10/10, 35ms
-2. **remedies_enriched** — richness 10/10, 62ms
-3. **pdf_report** — richness 10/10, 15ms
-4. **calculation_details** — richness 9/10, 14ms
-5. **lk_advanced** — richness 9/10, 67ms
-6. **lk_validated_remedies** — richness 9/10, 65ms
-7. **remedy_wizard_marriage** — richness 9/10, 33ms
+1. **lk_full** — richness 10/10, 37ms
+2. **remedies_enriched** — richness 10/10, 63ms
+3. **pdf_report** — richness 10/10, 24ms
+4. **calculation_details** — richness 9/10, 13ms
+5. **lk_validated_remedies** — richness 9/10, 55ms
+6. **lk_advanced** — richness 9/10, 71ms
+7. **remedy_wizard_marriage** — richness 9/10, 44ms
 
 
 ### 28.2 Sections Requiring Attention
@@ -2763,4 +2765,154 @@ These endpoints return HTTP 200 but no computed data — they require user inter
 ### 28.4 Response Time Summary
 
 - Average response time: **34 ms**
-- Slowest endpoints: `remedies_post` (68ms), `lk_advanced` (67ms), `lk_validated_remedies` (65ms)
+- Slowest endpoints: `lk_advanced` (71ms), `remedies_post` (71ms), `lk_rin` (70ms)
+
+
+---
+
+
+## 29. Master Summary
+
+> Derived from sacrifice patterns, karmic debts, remedy strength scores, and saala grah dasha data — no hardcoded text.
+
+**STATUS: PASS** · HTTP 200 · 21ms
+
+
+### 29.1 Core Life Pattern
+
+> Moon sacrifices mother, mental peace, emotions to sustain mother, mental peace, emotions (Moon in 8th house). Rahu sacrifices soul, authority, father, career to sustain worldly desires, obsession, foreign (Rahu in 1st house).
+
+*Moon माता, मानसिक शांति, भावनाएं का बलिदान करके माता, मानसिक शांति, भावनाएं को बनाए रखता है (Moon in 8th house)। Rahu आत्मा, अधिकार, पिता, करियर का बलिदान करके सांसारिक इच्छाएं, जुनून, विदेश को बनाए रखता है (Rahu in 1st house)।*
+
+
+### 29.2 Main Problem
+
+| Field | Value |
+| --- | --- |
+| Planet | Mars |
+| LK House | 4 |
+| Strength | 0.0% |
+| Urgency | high |
+
+
+**Problem (EN):** Home life is volatile — 'fire in the water house'. Inner peace is chronically disrupted, the mother's health can be poor, and property matters attract disputes or losses.
+
+**Problem (HI):** घर का जीवन उथल-पुथल भरा है — 'जल-घर में अग्नि'। आंतरिक शांति पुरानी रूप से बाधित रहती है, माता का स्वास्थ्य कमज़ोर हो सकता है, और संपत्ति के मामले विवादों या हानियों को आकर्षित करते हैं।
+
+
+### 29.3 Top 3 Remedy Actions
+
+**1. Rahu in H1 — urgency: high · strength: 0.35%**
+
+- *Remedy:* Keep a solid silver square piece with you at all times (in pocket or wallet); keep fennel seeds (saunf) handy and avoid blue/black clothing near the face.
+
+- *How:* Keeping a silver square piece (chaukor chaandi — Moon's geometric symbol) in the pocket or wallet continuously acts as a direct counter to Rahu in H1. Silver is Moon's metal and Moon is Rahu's primary enemy in Lal Kitab — carrying Moon's metal on your person places a constant anti-Rahu shield on the H1 self, stabilising identity and cutting through the smoke.
+
+- *Day:* Saturday · *Class:* trial
+
+**2. Ketu in H7 — urgency: high · strength: 0.35%**
+
+- *Remedy:* Donate saffron and silver to a temple on Tuesdays; avoid spiritual pride in marriage.
+
+- *How:* Both partners together feeding dogs on Tuesday — a joint act of Ketu's animal seva — creates a shared ritual that addresses H7 Ketu's karmic marriage theme. The joint act (H7 = partnership) of Ketu's seva (dog feeding) performed together makes the karmic debt a shared responsibility rather than a burden one partner carries, which is precisely the remedy H7 requires.
+
+- *Day:* Tuesday · *Class:* remedy
+
+**3. Mars in H4 — urgency: high · strength: 0.0%**
+
+- *Remedy:* Fix all water leaks and broken walls in the home immediately; donate bricks or construction materials.
+
+- *How:* Burying a small copper plate with Mars's yantra under the home's main entrance and pouring honey over it (cooling the fire) on Tuesday performs the LK dabana remedy for H4 Neech Mars; sealing the Martian heat underground restores the fourth house's cool peace.
+
+- *Day:* Tuesday · *Class:* remedy
+
+
+### 29.4 2-Year Saala Grah Outlook
+
+> 2025 (Rahu): Year of confusion, foreign connections, sudden changes, and illusions. → 2026 (Saturn): Year of hard work, discipline, service, and obstacles that teach lessons. → 2027 (Mercury): Year of trade, communication, skill, and business acumen.
+
+| Year | Planet | Planet (HI) | Label | Description (truncated) |
+| --- | --- | --- | --- | --- |
+| 2025 | Rahu | राहु | current | Year of confusion, foreign connections, sudden changes, and illusions. Be wary of deception. Unexpec… |
+| 2026 | Saturn | शनि | upcoming | Year of hard work, discipline, service, and obstacles that teach lessons. Avoid shortcuts. Karmic de… |
+| 2027 | Mercury | बुध | upcoming | Year of trade, communication, skill, and business acumen. Favorable for writing, education, and comm… |
+
+
+---
+
+
+## 30. Marriage & H7 Analysis
+
+> All marriage predictions derived from actual H7 planet positions, Venus dignity, Moon emotional readiness, and Saturn house placement — no hardcoded text.
+
+**STATUS: PASS** · HTTP 200 · 20ms
+
+
+### 30.1 Overall Marriage Score
+
+| Metric | Value |
+| --- | --- |
+| Overall Marriage Score | 38/100 |
+| Timing Outlook (EN) | Delayed — Saturn directly in H7; marriage typically after age 28-30. Patience and Saturn remedies are essential. |
+| Timing Outlook (HI) | विलंबित — H7 में सीधे शनि; विवाह सामान्यतः 28-30 की आयु के बाद। धैर्य और शनि उपाय आवश्यक हैं। |
+
+
+### 30.2 Planets in H7
+
+**Saturn in H7** — marriage strength: 38/100 · timing: `delayed_after_28_or_30`
+
+- *Partner nature:* mature, serious, disciplined, hardworking, possibly older
+
+- *Challenge:* delayed marriage (typically after 28–30); karmic dues must be settled first
+
+- *Advice:* do not rush marriage; Saturn in H7 demands patience and karmic readiness; do Saturday remedies
+
+**Ketu in H7** — marriage strength: 48/100 · timing: `spiritually_oriented_or_detached`
+
+- *Partner nature:* spiritually inclined, detached, philosophical, karmic connection
+
+- *Challenge:* emotional detachment; partner may seem distant or unworldly
+
+- *Advice:* Ketu in H7 indicates a spiritually karmic relationship; honour the spiritual dimension of the bond
+
+
+### 30.3 Venus Analysis (Marriage Karaka)
+
+| Field | Value |
+| --- | --- |
+| House | H4 |
+| Dignity | Enemy |
+| Strength | 0.25% |
+| Marriage Score | 45/100 |
+| Pakka Ghar (H7) | False |
+| Note (EN) | Venus in H4 (enemy) is moderately placed — consistent remedies will strengthen marriage prospects. |
+
+
+### 30.4 Moon Analysis (Emotional Readiness)
+
+| Field | Value |
+| --- | --- |
+| House | H8 |
+| Dignity | Debilitated |
+| Strength | 0.2% |
+| Emotional Readiness Score | 30/100 |
+| Note (EN) | Moon in H8 (Debilitated) indicates emotional vulnerability in relationships. |
+
+
+### 30.5 Saturn Influence on Marriage Timing
+
+| Field | Value |
+| --- | --- |
+| House | H7 |
+| Causes Delay | True |
+| Direct H7 | True |
+| Note (EN) | Saturn in H7 directly delays marriage — patience and Saturn remedies are essential |
+
+
+### 30.6 Top Advice from Chart Data
+
+1. do not rush marriage; Saturn in H7 demands patience and karmic readiness; do Saturday remedies
+
+2. Ketu in H7 indicates a spiritually karmic relationship; honour the spiritual dimension of the bond
+
+3. Venus in H4 (enemy) is moderately placed — consistent remedies will strengthen marriage prospects.

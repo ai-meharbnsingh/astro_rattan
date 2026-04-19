@@ -365,5 +365,5 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 ---
 
-*Generated: 2026-04-19 13:35:36 | `scripts/horoscope_report.py`*  
+*Generated: 2026-04-19 14:10:22 | `scripts/horoscope_report.py`*  
 *Subject: Meharban Singh (1985-08-23, Delhi, India) | Moon: Scorpio/Anuradha pada 4 | Lagna: Taurus*

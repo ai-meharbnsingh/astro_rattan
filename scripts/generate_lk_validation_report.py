@@ -294,6 +294,10 @@ def build_endpoint_calls(kid: str) -> list[dict]:
         {"name": "pdf_report",             "method": "GET",  "url": f"{B}/api/lalkitab/pdf-report/{kid}"},
         # Saved predictions
         {"name": "predictions_saved",      "method": "GET",  "url": f"{B}/api/lalkitab/predictions/saved/{kid}"},
+        # Master Summary (new)
+        {"name": "master_summary",         "method": "GET",  "url": f"{B}/api/lalkitab/master-summary/{kid}"},
+        # Marriage / H7 Analysis (new)
+        {"name": "marriage_analysis",      "method": "GET",  "url": f"{B}/api/lalkitab/marriage/{kid}"},
     ]
 
 
@@ -568,6 +572,8 @@ def section_2_summary(results: dict[str, EndpointResult]) -> str:
         ("PDF Report",                 "pdf_report",            None),
         ("Lk Analysis (POST)",         "lk_analysis",           None),
         ("Validated Remedies",         "lk_validated_remedies", None),
+        ("Master Summary",             "master_summary",        None),
+        ("Marriage / H7 Analysis",     "marriage_analysis",     None),
     ]
 
     rows = []
@@ -2070,6 +2076,181 @@ def section_28_verdict(results: dict[str, EndpointResult]) -> str:
     return "\n".join(out)
 
 
+def section_29_master_summary(results: dict[str, EndpointResult]) -> str:
+    out = [h(2, "29. Master Summary")]
+    out.append(
+        "> Derived from sacrifice patterns, karmic debts, remedy strength scores, and "
+        "saala grah dasha data — no hardcoded text.\n"
+    )
+
+    r = results.get("master_summary")
+    if not r or not r.ok:
+        out.append(f"**STATUS: {'NOT RUN' if not r else r.status_label}**\n")
+        return "\n".join(out)
+
+    out.append(f"**STATUS: {r.status_label}** · HTTP {r.status} · {round(r.elapsed_ms)}ms\n")
+    d = r.data or {}
+
+    # Core pattern
+    out.append(h(3, "29.1 Core Life Pattern"))
+    cp = d.get("core_pattern", {})
+    if cp.get("en"):
+        out.append(f"> {cp['en']}\n")
+        out.append(f"*{cp.get('hi', '')}*\n")
+    else:
+        out.append("No core pattern derived.\n")
+
+    # Main problem
+    out.append(h(3, "29.2 Main Problem"))
+    mp = d.get("main_problem", {})
+    if mp.get("planet"):
+        out.append(table(
+            ["Field", "Value"],
+            [
+                ["Planet", mp.get("planet", "—")],
+                ["LK House", str(mp.get("lk_house", "—"))],
+                ["Strength", f"{mp.get('strength', '?')}%"],
+                ["Urgency", mp.get("urgency", "—")],
+            ]
+        ))
+        out.append(f"\n**Problem (EN):** {mp.get('en', '')}\n")
+        out.append(f"**Problem (HI):** {mp.get('hi', '')}\n")
+    else:
+        out.append("No critical problem identified.\n")
+
+    # Top 3 actions
+    out.append(h(3, "29.3 Top 3 Remedy Actions"))
+    actions = d.get("top_3_actions", [])
+    if actions:
+        for i, a in enumerate(actions, 1):
+            out.append(f"**{i}. {a.get('planet')} in H{a.get('lk_house')} "
+                       f"— urgency: {a.get('urgency')} · strength: {a.get('strength')}%**\n")
+            out.append(f"- *Remedy:* {a.get('remedy_en', '—')}\n")
+            out.append(f"- *How:* {a.get('how_en', '—')}\n")
+            out.append(f"- *Day:* {a.get('day', '—')} · *Class:* {a.get('classification', '—')}\n")
+    else:
+        out.append("No actionable remedies found.\n")
+
+    # Dasha 2-year outlook
+    out.append(h(3, "29.4 2-Year Saala Grah Outlook"))
+    dasha = d.get("dasha_2yr", {})
+    summary_en = dasha.get("summary_en", "")
+    if summary_en:
+        out.append(f"> {summary_en}\n")
+    timeline = dasha.get("timeline", [])
+    if timeline:
+        rows = []
+        for entry in timeline:
+            rows.append([
+                str(entry.get("year", "—")),
+                entry.get("planet", "—"),
+                entry.get("planet_hi", ""),
+                entry.get("label", ""),
+                (entry.get("en", "") or "")[:100] + ("…" if len(entry.get("en", "") or "") > 100 else ""),
+            ])
+        out.append(table(["Year", "Planet", "Planet (HI)", "Label", "Description (truncated)"], rows))
+
+    return "\n".join(out)
+
+
+def section_30_marriage(results: dict[str, EndpointResult]) -> str:
+    out = [h(2, "30. Marriage & H7 Analysis")]
+    out.append(
+        "> All marriage predictions derived from actual H7 planet positions, Venus dignity, "
+        "Moon emotional readiness, and Saturn house placement — no hardcoded text.\n"
+    )
+
+    r = results.get("marriage_analysis")
+    if not r or not r.ok:
+        out.append(f"**STATUS: {'NOT RUN' if not r else r.status_label}**\n")
+        return "\n".join(out)
+
+    out.append(f"**STATUS: {r.status_label}** · HTTP {r.status} · {round(r.elapsed_ms)}ms\n")
+    d = r.data or {}
+
+    # Overall score
+    score = d.get("overall_marriage_score", "—")
+    timing = d.get("timing_outlook", {})
+    out.append(h(3, "30.1 Overall Marriage Score"))
+    out.append(table(
+        ["Metric", "Value"],
+        [
+            ["Overall Marriage Score", f"{score}/100"],
+            ["Timing Outlook (EN)", timing.get("en", "—")],
+            ["Timing Outlook (HI)", timing.get("hi", "—")],
+        ]
+    ))
+
+    # H7 planets
+    out.append(h(3, "30.2 Planets in H7"))
+    h7 = d.get("h7_planets", [])
+    if h7:
+        for p in h7:
+            planet = p.get("planet", "—")
+            out.append(f"**{planet} in H7** — marriage strength: {p.get('marriage_strength', '?')}/100 · timing: `{p.get('timing', '—')}`\n")
+            pn = p.get("partner_nature", {})
+            ch = p.get("challenge", {})
+            adv = p.get("advice", {})
+            out.append(f"- *Partner nature:* {pn.get('en', '—')}\n")
+            out.append(f"- *Challenge:* {ch.get('en', '—')}\n")
+            out.append(f"- *Advice:* {adv.get('en', '—')}\n")
+    else:
+        out.append(f"No planets in H7 (H7 planet count: {d.get('h7_planet_count', 0)}).\n")
+
+    # Venus
+    out.append(h(3, "30.3 Venus Analysis (Marriage Karaka)"))
+    va = d.get("venus_analysis", {})
+    out.append(table(
+        ["Field", "Value"],
+        [
+            ["House", f"H{va.get('house', '—')}"],
+            ["Dignity", va.get("dignity", "—")],
+            ["Strength", f"{va.get('strength', '—')}%"],
+            ["Marriage Score", f"{va.get('marriage_score', '—')}/100"],
+            ["Pakka Ghar (H7)", str(va.get("is_pakka", False))],
+            ["Note (EN)", va.get("note_en", "—")],
+        ]
+    ))
+
+    # Moon
+    out.append(h(3, "30.4 Moon Analysis (Emotional Readiness)"))
+    ma = d.get("moon_analysis", {})
+    out.append(table(
+        ["Field", "Value"],
+        [
+            ["House", f"H{ma.get('house', '—')}"],
+            ["Dignity", ma.get("dignity", "—")],
+            ["Strength", f"{ma.get('strength', '—')}%"],
+            ["Emotional Readiness Score", f"{ma.get('emotional_readiness_score', '—')}/100"],
+            ["Note (EN)", ma.get("note_en", "—")],
+        ]
+    ))
+
+    # Saturn
+    out.append(h(3, "30.5 Saturn Influence on Marriage Timing"))
+    si = d.get("saturn_influence", {})
+    out.append(table(
+        ["Field", "Value"],
+        [
+            ["House", f"H{si.get('house', '—')}"],
+            ["Causes Delay", str(si.get("causes_delay", False))],
+            ["Direct H7", str(si.get("direct_h7", False))],
+            ["Note (EN)", si.get("note_en", "—")],
+        ]
+    ))
+
+    # Top advice
+    out.append(h(3, "30.6 Top Advice from Chart Data"))
+    advice = d.get("top_advice", [])
+    if advice:
+        for i, a in enumerate(advice, 1):
+            out.append(f"{i}. {a.get('en', '—')}\n")
+    else:
+        out.append("No advice derived.\n")
+
+    return "\n".join(out)
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2193,6 +2374,8 @@ def main() -> None:
         section_26_consistency(results, lk_positions),
         section_27_audit(results),
         section_28_verdict(results),
+        section_29_master_summary(results),
+        section_30_marriage(results),
     ]
 
     report = "\n\n---\n\n".join(s for s in sections if s.strip())
