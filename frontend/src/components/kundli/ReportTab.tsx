@@ -88,6 +88,7 @@ export default function ReportTab({
               </div>
 
               {/* Charts row — Lagna, Moon, Gochar side by side */}
+              <p className="text-xs text-muted-foreground text-center -mb-2">{t('kundli.clickHouseToRotate')}</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 print:grid-cols-3">
                 {/* 1. Lagna Chart (D1) — click house to rotate lagan */}
                 <div className="bg-muted rounded-xl border border-border p-3">
@@ -170,7 +171,6 @@ export default function ReportTab({
                 <div className="bg-muted rounded-xl border border-border p-3">
                   <Heading as={4} variant={4} className="mb-2 text-center">
                     {t('section.gochar')} {transitData?.transit_date ? `(${transitData.transit_date})` : ''}
-                    <span className="text-sm font-normal text-muted-foreground"> ({t('kundli.clickHouseToRotate')})</span>
                   </Heading>
                   <div className="flex justify-center">
                     {loadingTransit ? (
