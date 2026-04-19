@@ -121,14 +121,18 @@ export default function DashaSelector({
     tara: null,
   });
 
+  // Track which systems have been fetched — avoids stale-closure cascade
+  const fetchedRef = React.useRef<Set<DashaSystem>>(new Set());
+
   // Accordion state
   const [expandedMD, setExpandedMD] = useState<string | null>(null);
   const [expandedAD, setExpandedAD] = useState<string | null>(null);
 
-  /* Fetch on system change if not cached */
+  /* Fetch on system change — stable callback (no data dependency) */
   const fetchDasha = useCallback(async (system: DashaSystem) => {
-    if (data[system]) return;
+    if (fetchedRef.current.has(system)) return;
     if (!kundliId) return;
+    fetchedRef.current.add(system);
     setLoading(true);
     setError(null);
     try {
@@ -137,11 +141,12 @@ export default function DashaSelector({
       const res = await api.get(url);
       setData((prev) => ({ ...prev, [system]: res }));
     } catch (err: any) {
+      fetchedRef.current.delete(system); // allow retry on error
       setError(err?.message || 'Failed to load dasha data');
     } finally {
       setLoading(false);
     }
-  }, [kundliId, data]);
+  }, [kundliId]);
 
   useEffect(() => {
     fetchDasha(selectedSystem);
@@ -192,7 +197,7 @@ export default function DashaSelector({
       {error && !loading && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
           {error}
-          <Button size="sm" variant="outline" className="ml-3" onClick={() => { setData((prev) => ({ ...prev, [selectedSystem]: null })); fetchDasha(selectedSystem); }}>
+          <Button size="sm" variant="outline" className="ml-3" onClick={() => { fetchedRef.current.delete(selectedSystem); setData((prev) => ({ ...prev, [selectedSystem]: null })); fetchDasha(selectedSystem); }}>
             {l('Retry', 'पुनः प्रयास')}
           </Button>
         </div>
