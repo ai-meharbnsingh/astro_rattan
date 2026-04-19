@@ -29,7 +29,11 @@ interface MookResult {
   method_hi: string;
 }
 
-export default function MookPrashna() {
+interface Props {
+  mode: 'mook' | 'vastu';
+}
+
+export default function MookPrashna({ mode }: Props) {
   const { language } = useTranslation();
   const isHi = language === 'hi';
 
@@ -75,12 +79,14 @@ export default function MookPrashna() {
       {/* Header */}
       <div className="text-center space-y-1">
         <Heading as={3} variant={3}>
-          {isHi ? 'मूक प्रश्न & खोई वस्तु' : 'Mook Prashna & Khoyi Vastu'}
+          {mode === 'mook'
+            ? (isHi ? 'मूक प्रश्न' : 'Mook Prashna')
+            : (isHi ? 'खोई वस्तु (खोयी वास्तु)' : 'Khoyi Vastu — Lost Item Finder')}
         </Heading>
         <p className="text-sm text-muted-foreground">
-          {isHi
-            ? 'बिना बोले 9 अंक लिखें — आपका मन क्या सोच रहा है?'
-            : 'Write 9 random numbers without thinking — reveal what your mind is asking'}
+          {mode === 'mook'
+            ? (isHi ? 'बिना बोले 9 अंक लिखें — आपका मन क्या सोच रहा है?' : 'Write 9 numbers spontaneously — reveal the topic on your mind')
+            : (isHi ? 'बिना सोचे 9 अंक लिखें — खोई वस्तु कहाँ मिलेगी?' : 'Write 9 numbers spontaneously — find where your lost item is')}
         </p>
       </div>
 
@@ -92,15 +98,15 @@ export default function MookPrashna() {
             <div className="space-y-1 text-xs text-amber-800 leading-relaxed">
               {isHi ? (
                 <>
-                  <p><strong>विधि:</strong> मन में कोई प्रश्न रखें। बिना सोचे 9 अंक (0-9) लिखें।</p>
-                  <p>सभी 9 अंकों का योग + 3 = आपका प्रश्न संख्या</p>
-                  <p>यह प्रकट करता है: आप किस बारे में सोच रहे हैं और खोई वस्तु कहाँ है।</p>
+                  <p><strong>विधि:</strong> {mode === 'mook' ? 'मन में कोई प्रश्न रखें।' : 'खोई वस्तु का ध्यान करें।'} बिना सोचे 9 अंक (0-9) लिखें।</p>
+                  <p>सभी 9 अंकों का योग + 3 = आपका संख्या</p>
+                  <p>{mode === 'mook' ? 'यह प्रकट करता है: आप किस विषय के बारे में सोच रहे हैं।' : 'यह प्रकट करता है: खोई वस्तु कहाँ हो सकती है।'}</p>
                 </>
               ) : (
                 <>
-                  <p><strong>Method:</strong> Hold a question in mind. Write 9 numbers (0–9) spontaneously, without thinking.</p>
+                  <p><strong>Method:</strong> {mode === 'mook' ? 'Hold a question in mind.' : 'Think of the lost item.'} Write 9 numbers (0–9) without thinking.</p>
                   <p>Sum of all 9 numbers + 3 = your derived number</p>
-                  <p>Reveals: what topic you are thinking about AND where a lost item may be.</p>
+                  <p>{mode === 'mook' ? 'Reveals the topic your mind is focused on.' : 'Reveals the likely location of the lost item.'}</p>
                 </>
               )}
             </div>
@@ -169,8 +175,8 @@ export default function MookPrashna() {
             </div>
           </div>
 
-          {/* Question Topic */}
-          {result.question_topic && (
+          {/* Question Topic — Mook Prashna mode only */}
+          {mode === 'mook' && result.question_topic && (
             <Card className="bg-gradient-to-br from-purple-50/80 to-purple-50/30 border-purple-200/60">
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center gap-2">
@@ -192,8 +198,8 @@ export default function MookPrashna() {
             </Card>
           )}
 
-          {/* Lost Item Location */}
-          {result.lost_item_location && (
+          {/* Lost Item Location — Khoyi Vastu mode only */}
+          {mode === 'vastu' && result.lost_item_location && (
             <Card className="bg-gradient-to-br from-green-50/80 to-green-50/30 border-green-200/60">
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center gap-2">
