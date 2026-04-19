@@ -866,6 +866,11 @@ export default function NumerologyTabs() {
                                   <p className="text-sm font-semibold text-foreground">
                                     {numResult.loshu_planes[k]?.score} ({numResult.loshu_planes[k]?.percentage}%)
                                   </p>
+                                  {numResult.loshu_planes[k]?.interpretation && (
+                                    <p className="text-[9px] text-muted-foreground mt-1 italic leading-tight">
+                                      {isHi ? (numResult.loshu_planes[k]?.interpretation_hi || numResult.loshu_planes[k]?.interpretation) : numResult.loshu_planes[k]?.interpretation}
+                                    </p>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1351,6 +1356,11 @@ export default function NumerologyTabs() {
                                   <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
                                     <div className={`h-full rounded-full ${colorMap[k]}`} style={{ width: `${Math.min(pct, 100)}%` }} />
                                   </div>
+                                  {plane.interpretation && (
+                                    <p className="text-[9px] text-muted-foreground mt-1 italic">
+                                      {isHi ? (plane.interpretation_hi || plane.interpretation) : plane.interpretation}
+                                    </p>
+                                  )}
                                 </div>
                               );
                             })}
