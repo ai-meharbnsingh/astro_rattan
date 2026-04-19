@@ -147,10 +147,10 @@ OWN_SIGNS: Dict[str, List[str]] = {
 # -- Importance weights by period --
 
 PERIOD_WEIGHTS: Dict[str, Dict[str, int]] = {
-    "daily": {"Moon": 5, "Sun": 3, "Mercury": 3, "Venus": 3, "Mars": 2, "Jupiter": 1, "Saturn": 1},
-    "weekly": {"Mercury": 4, "Venus": 4, "Mars": 3, "Moon": 3, "Sun": 2, "Jupiter": 2, "Saturn": 1},
-    "monthly": {"Saturn": 5, "Jupiter": 5, "Mars": 3, "Venus": 2, "Mercury": 2, "Sun": 2, "Moon": 1},
-    "yearly": {"Saturn": 5, "Jupiter": 5, "Mars": 3, "Venus": 2, "Mercury": 1, "Sun": 1, "Moon": 1},
+    "daily": {"Moon": 5, "Sun": 3, "Mercury": 3, "Venus": 3, "Mars": 2, "Jupiter": 1, "Saturn": 1, "Rahu": 1, "Ketu": 1},
+    "weekly": {"Mercury": 4, "Venus": 4, "Mars": 3, "Moon": 3, "Sun": 2, "Jupiter": 2, "Saturn": 1, "Rahu": 1, "Ketu": 1},
+    "monthly": {"Saturn": 5, "Jupiter": 5, "Mars": 3, "Venus": 2, "Mercury": 2, "Sun": 2, "Moon": 1, "Rahu": 2, "Ketu": 2},
+    "yearly": {"Saturn": 5, "Jupiter": 5, "Mars": 3, "Venus": 2, "Mercury": 1, "Sun": 1, "Moon": 1, "Rahu": 2, "Ketu": 2},
 }
 
 # -- Dignity multipliers --
@@ -861,6 +861,7 @@ def generate_yearly_extras(sign: str, year: int = None, native_lagna: str = None
             scores = {"overall": 5}
 
         quarters.append({
+            "quarter": q_idx + 1,
             "label": QUARTER_LABELS[q_idx],
             "theme": {"en": theme_en, "hi": theme_hi},
             "best_area": best_area,
