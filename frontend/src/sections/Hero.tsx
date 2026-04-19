@@ -242,7 +242,7 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
     setGenerating(false);
   };
 
-  const inputClass = "w-full px-3 py-1.5 pl-9 rounded-lg bg-[#f0ecf8]/40 border border-sacred-gold/50 text-foreground text-sm focus:border-sacred-gold focus:outline-none placeholder:text-sacred-gold-dark/40";
+  const inputClass = "input-sacred pl-9";
 
   return (
     <div className="flex flex-col justify-start gap-3">

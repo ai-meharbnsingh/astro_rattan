@@ -218,7 +218,7 @@ function FeedbackRow({
         <select
           value={item.action_taken}
           onChange={e => saveAction(e.target.value)}
-          className={`text-xs border rounded-lg px-2 py-1 font-medium cursor-pointer focus:outline-none ${actionStyle[item.action_taken]}`}
+          className={`input-sacred text-xs font-medium cursor-pointer ${actionStyle[item.action_taken]}`}
         >
           <option value="NR">{l('Not Reviewed', 'समीक्षा नहीं')}</option>
           <option value="yes">{l('Action Taken', 'कार्यवाही हुई')}</option>
@@ -234,7 +234,7 @@ function FeedbackRow({
           onBlur={saveRemarks}
           onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
           placeholder={l('Add remark…', 'टिप्पणी जोड़ें…')}
-          className="w-full text-xs border border-sacred-gold/20 rounded-lg px-2 py-1.5 bg-white/80 text-foreground focus:outline-none focus:ring-1 focus:ring-sacred-gold/40 placeholder:text-muted-foreground"
+          className="input-sacred text-xs placeholder:text-muted-foreground"
         />
       </td>
 

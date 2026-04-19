@@ -1175,7 +1175,7 @@ export default function Features() {
                 <input type="text" value={prashnaCity}
                   onChange={e => searchPrashnaCity(e.target.value)}
                   placeholder={l('Search city…', 'शहर खोजें…')}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-sacred-gold/40 bg-white text-sm focus:border-sacred-gold focus:outline-none placeholder:text-muted-foreground/50" />
+                  className="input-sacred pl-9 pr-3 placeholder:text-muted-foreground/50" />
                 {prashnaSuggs.length > 0 && (
                   <div className="absolute left-0 right-0 top-full z-20 bg-white border border-sacred-gold/20 rounded-lg shadow-lg max-h-40 overflow-y-auto mt-1">
                     {prashnaSuggs.map((s, i) => (

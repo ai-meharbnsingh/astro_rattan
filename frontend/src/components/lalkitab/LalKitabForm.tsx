@@ -156,8 +156,7 @@ export default function LalKitabForm({ onGenerate, loading }: LalKitabFormProps)
     }
   };
 
-  const inputClass =
-    'w-full rounded-lg bg-muted border border-sacred-gold text-sacred-brown px-3 py-2 focus:outline-none focus:border-sacred-gold-dark transition-colors text-sm h-10';
+  const inputClass = 'input-sacred';
 
   return (
     <form onSubmit={handleSubmit} className="bg-transparent rounded-xl p-4 md:p-6">

@@ -255,7 +255,7 @@ export default function HoroscopePage() {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full px-2 py-1.5 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none"
+            className="input-sacred"
           />
         </div>
 
@@ -279,7 +279,7 @@ export default function HoroscopePage() {
                   type="date"
                   value={birthParams.birth_date}
                   onChange={e => saveBirthParams({ ...birthParams, birth_date: e.target.value })}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                  className="input-sacred"
                 />
               </div>
               <div>
@@ -288,7 +288,7 @@ export default function HoroscopePage() {
                   type="time"
                   value={birthParams.birth_time}
                   onChange={e => saveBirthParams({ ...birthParams, birth_time: e.target.value })}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                  className="input-sacred"
                 />
               </div>
               <div>
@@ -299,7 +299,7 @@ export default function HoroscopePage() {
                   placeholder="28.6139"
                   value={birthParams.birth_lat}
                   onChange={e => saveBirthParams({ ...birthParams, birth_lat: e.target.value })}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                  className="input-sacred"
                 />
               </div>
               <div>
@@ -310,7 +310,7 @@ export default function HoroscopePage() {
                   placeholder="77.2090"
                   value={birthParams.birth_lon}
                   onChange={e => saveBirthParams({ ...birthParams, birth_lon: e.target.value })}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg border border-border bg-white text-foreground focus:border-sacred-gold focus:outline-none"
+                  className="input-sacred"
                 />
               </div>
               {birthQuery && (

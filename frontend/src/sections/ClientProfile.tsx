@@ -199,32 +199,32 @@ export default function ClientProfile() {
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t('auth.fullName')}</label>
                 <input type="text" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none" />
+                  className="input-sacred" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block"><Phone className="w-3 h-3 inline mr-1" />{t('auth.phoneNumberRequired')}</label>
                 <input type="tel" value={editForm.phone} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none" />
+                  className="input-sacred" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block"><Calendar className="w-3 h-3 inline mr-1" />{t('auto.birthDate')}</label>
                 <input type="date" value={editForm.birth_date} onChange={e => setEditForm(f => ({ ...f, birth_date: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none" />
+                  className="input-sacred" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t('auto.birthTime')}</label>
                 <input type="time" step="1" value={editForm.birth_time} onChange={e => setEditForm(f => ({ ...f, birth_time: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none" />
+                  className="input-sacred" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block"><MapPin className="w-3 h-3 inline mr-1" />Birth Place</label>
                 <input type="text" value={editForm.birth_place} onChange={e => setEditForm(f => ({ ...f, birth_place: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none" />
+                  className="input-sacred" />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">{t('auto.gender')}</label>
                 <select value={editForm.gender} onChange={e => setEditForm(f => ({ ...f, gender: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none">
+                  className="input-sacred">
                   <option value="">{t('auto.select')}</option>
                   <option value="male">{t('auto.male')}</option>
                   <option value="female">{t('auto.female')}</option>
@@ -235,11 +235,10 @@ export default function ClientProfile() {
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Notes</label>
               <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-white border border-border text-foreground text-sm focus:border-sacred-gold focus:outline-none resize-none" />
+                className="input-sacred resize-none" />
             </div>
             <div className="flex gap-2">
-              <Button onClick={saveEdit} disabled={editSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm font-medium hover:bg-sacred-gold transition-all disabled:opacity-50">
+              <Button onClick={saveEdit} disabled={editSaving} className="flex items-center gap-2 px-4 py-2 text-sm">
                 {editSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : editSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
                 {editSaving ? 'Saving...' : editSaved ? 'Saved!' : 'Save'}
               </Button>

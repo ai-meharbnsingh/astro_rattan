@@ -67,7 +67,7 @@ export default function ProfileEditPanel() {
     setPwSaving(false);
   };
 
-  const inputClass = 'w-full px-3 py-2 rounded-lg bg-white border text-foreground text-sm focus:border-sacred-gold focus:outline-none';
+  const inputClass = 'input-sacred';
 
   return (
     <div className="border border-sacred-gold rounded-xl p-5 bg-background">
@@ -105,8 +105,7 @@ export default function ProfileEditPanel() {
 
         {error && <p className="text-xs text-red-600">{error}</p>}
 
-        <button onClick={handleSave} disabled={saving}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-sacred-gold-dark text-white rounded-lg font-medium text-sm hover:bg-sacred-gold transition-all disabled:opacity-50">
+        <button onClick={handleSave} disabled={saving} className="btn-sacred w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
           {saving ? l('Saving...', 'सहेज रहे...') : saved ? l('Saved!', 'सहेजा गया!') : l('Save Profile', 'प्रोफ़ाइल सहेजें')}
         </button>
@@ -129,11 +128,11 @@ export default function ProfileEditPanel() {
             {pwMsg && <p className="text-xs text-sacred-gold-dark">{pwMsg}</p>}
             <div className="flex gap-2">
               <button onClick={handlePasswordChange} disabled={pwSaving}
-                className="flex-1 px-3 py-2 bg-sacred-gold-dark text-white rounded-lg text-sm font-medium disabled:opacity-50">
+                className="btn-sacred flex-1 px-3 py-2 text-sm">
                 {pwSaving ? l('Updating...', 'अपडेट हो रहा...') : l('Update Password', 'पासवर्ड अपडेट करें')}
               </button>
               <button onClick={() => { setShowPwForm(false); setPwMsg(''); }}
-                className="px-3 py-2 border text-foreground rounded-lg text-sm">
+                className="px-3 py-2 border border-sacred-gold/40 text-foreground rounded-lg text-sm hover:bg-sacred-gold/10 transition-colors">
                 {l('Cancel', 'रद्द')}
               </button>
             </div>
