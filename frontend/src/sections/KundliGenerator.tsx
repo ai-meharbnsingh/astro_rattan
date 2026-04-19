@@ -567,9 +567,8 @@ export default function KundliGenerator() {
 
           <TabsContent value="dasha" className="min-h-[300px]">
             <DashaSelector
+              key={result?.id || ''}
               kundliId={result?.id || ''}
-              vimshottariData={dashaData}
-              yoginiData={yoginiData}
               language={language}
               t={t}
             />

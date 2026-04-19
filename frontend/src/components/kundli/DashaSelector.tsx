@@ -36,10 +36,6 @@ interface DashaResponse {
 
 interface DashaSelectorProps {
   kundliId: string;
-  /** Pre-loaded Vimshottari data from parent (optional) */
-  vimshottariData?: any;
-  /** Pre-loaded Yogini data from parent (optional) */
-  yoginiData?: any;
   language: string;
   t: (key: string) => string;
 }
@@ -108,8 +104,6 @@ function natureBadge(planet: string, hi: boolean): React.ReactNode {
 
 export default function DashaSelector({
   kundliId,
-  vimshottariData,
-  yoginiData,
   language,
   t,
 }: DashaSelectorProps) {
@@ -130,19 +124,6 @@ export default function DashaSelector({
   // Accordion state
   const [expandedMD, setExpandedMD] = useState<string | null>(null);
   const [expandedAD, setExpandedAD] = useState<string | null>(null);
-
-  // Seed pre-loaded data
-  useEffect(() => {
-    if (vimshottariData && !data.vimshottari) {
-      setData((prev) => ({ ...prev, vimshottari: vimshottariData }));
-    }
-  }, [vimshottariData]);
-
-  useEffect(() => {
-    if (yoginiData && !data.yogini) {
-      setData((prev) => ({ ...prev, yogini: yoginiData }));
-    }
-  }, [yoginiData]);
 
   /* Fetch on system change if not cached */
   const fetchDasha = useCallback(async (system: DashaSystem) => {
