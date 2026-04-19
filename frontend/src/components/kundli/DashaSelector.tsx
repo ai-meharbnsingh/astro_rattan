@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { api } from '@/lib/api';
-import { translatePlanet, translateName } from '@/lib/backend-translations';
+import { translatePlanet, translateName, translateSign } from '@/lib/backend-translations';
 import { PLANET_NATURE } from '@/components/kundli/kundli-utils';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button';
 interface DashaPeriod {
   planet: string;
   yogini?: string;
+  sign?: string;
+  tara?: string;
   start: string;
   end: string;
   years?: number;
@@ -22,6 +24,9 @@ interface DashaPeriod {
   is_current?: boolean;
   antardasha?: DashaPeriod[];
   pratyantar?: DashaPeriod[];
+  sub_periods?: DashaPeriod[];
+  lord?: string;
+  nakshatras?: string[];
 }
 
 interface DashaResponse {
@@ -29,6 +34,7 @@ interface DashaResponse {
   current_dasha?: string;
   current_antardasha?: string;
   current_pratyantar?: string;
+  current_sub_period?: string;
   mahadasha?: DashaPeriod[];
   periods?: DashaPeriod[];
   dashas?: DashaPeriod[];
@@ -55,7 +61,7 @@ interface DashaSystemMeta {
 
 const DASHA_SYSTEMS: DashaSystemMeta[] = [
   { key: 'vimshottari', labelEn: 'Vimshottari (120yr)', labelHi: 'विंशोत्तरी (120 वर्ष)', endpoint: '/api/kundli/{id}/dasha' },
-  { key: 'yogini', labelEn: 'Yogini (36yr)', labelHi: 'योगिनी (36 वर्ष)', endpoint: '/api/kundli/{id}/yogini-dasha' },
+  { key: 'yogini', labelEn: 'Yogini (120yr)', labelHi: 'योगिनी (120 वर्ष)', endpoint: '/api/kundli/{id}/yogini-dasha' },
   { key: 'ashtottari', labelEn: 'Ashtottari (108yr)', labelHi: 'अष्टोत्तरी (108 वर्ष)', endpoint: '/api/kundli/{id}/ashtottari-dasha' },
   { key: 'moola', labelEn: 'Moola', labelHi: 'मूल', endpoint: '/api/kundli/{id}/moola-dasha' },
   { key: 'tara', labelEn: 'Tara', labelHi: 'तारा', endpoint: '/api/kundli/{id}/tara-dasha' },
@@ -67,6 +73,7 @@ const DASHA_SYSTEMS: DashaSystemMeta[] = [
 
 function periodColor(planet: string): string {
   const nature = PLANET_NATURE[planet];
+  if (!nature) return 'text-foreground';
   if (nature === 'Benefic') return 'text-green-600';
   if (nature === 'Malefic') return 'text-red-600';
   return 'text-amber-600';
@@ -75,6 +82,7 @@ function periodColor(planet: string): string {
 function periodBg(planet: string, isCurrent: boolean): string {
   if (!isCurrent) return '';
   const nature = PLANET_NATURE[planet];
+  if (!nature) return 'bg-muted/10';
   if (nature === 'Benefic') return 'bg-green-50';
   if (nature === 'Malefic') return 'bg-red-50';
   return 'bg-amber-50';
@@ -112,6 +120,103 @@ const EMPTY_DATA: Record<DashaSystem, DashaResponse | null> = {
   moola: null,
   tara: null,
 };
+
+function normalizeResponse(system: DashaSystem, raw: any): DashaResponse {
+  const src = (raw && typeof raw === 'object') ? raw : {};
+
+  if (system === 'yogini') {
+    const periods = (src.periods || src.dashas || []) as any[];
+    const mahadasha = periods.map((p: any) => ({
+      planet: String(p?.planet ?? p?.yogini ?? ''),
+      start: String(p?.start ?? ''),
+      end: String(p?.end ?? ''),
+      years: p?.years,
+      duration_years: p?.duration_years,
+      span: p?.span,
+      is_current: !!p?.is_current,
+    })) as DashaPeriod[];
+    return {
+      system,
+      mahadasha,
+      current_dasha: src.current_dasha,
+      current_antardasha: src.current_antardasha,
+      current_pratyantar: src.current_pratyantar,
+      current_sub_period: src.current_sub_period,
+    };
+  }
+
+  if (system === 'moola') {
+    const md = (src.mahadasha || []) as any[];
+    const mahadasha = md.map((m: any) => ({
+      planet: String(m?.sign ?? ''),
+      sign: m?.sign,
+      start: String(m?.start ?? ''),
+      end: String(m?.end ?? ''),
+      years: m?.years,
+      is_current: !!m?.is_current,
+      antardasha: ((m?.sub_periods || []) as any[]).map((sp: any) => ({
+        planet: String(sp?.sign ?? ''),
+        sign: sp?.sign,
+        start: String(sp?.start ?? ''),
+        end: String(sp?.end ?? ''),
+        years: sp?.years,
+        is_current: !!sp?.is_current,
+      })),
+    })) as DashaPeriod[];
+    return {
+      system,
+      mahadasha,
+      current_dasha: src.current_dasha,
+      current_antardasha: src.current_sub_period || src.current_antardasha,
+      current_pratyantar: src.current_pratyantar,
+      current_sub_period: src.current_sub_period,
+    };
+  }
+
+  if (system === 'tara') {
+    const md = (src.mahadasha || []) as any[];
+    const mahadasha = md.map((m: any) => ({
+      planet: String(m?.tara ?? ''),
+      tara: m?.tara,
+      lord: m?.lord,
+      nakshatras: m?.nakshatras,
+      start: String(m?.start ?? ''),
+      end: String(m?.end ?? ''),
+      years: m?.years,
+      is_current: !!m?.is_current,
+      antardasha: ((m?.sub_periods || []) as any[]).map((sp: any) => ({
+        planet: String(sp?.tara ?? ''),
+        tara: sp?.tara,
+        lord: sp?.lord,
+        start: String(sp?.start ?? ''),
+        end: String(sp?.end ?? ''),
+        years: sp?.years,
+        is_current: !!sp?.is_current,
+      })),
+    })) as DashaPeriod[];
+    return {
+      system,
+      mahadasha,
+      current_dasha: src.current_dasha,
+      current_antardasha: src.current_sub_period || src.current_antardasha,
+      current_pratyantar: src.current_pratyantar,
+      current_sub_period: src.current_sub_period,
+    };
+  }
+
+  // vimshottari / ashtottari (already structured)
+  return {
+    ...(src as DashaResponse),
+    system,
+  };
+}
+
+function formatLabel(system: DashaSystem, rawLabel: string, language: string): string {
+  if (!rawLabel) return '';
+  if (system === 'yogini' || system === 'tara') return translateName(rawLabel, language as any) || rawLabel;
+  if (system === 'moola') return translateSign(rawLabel, language as any) || rawLabel;
+  return translatePlanet(rawLabel, language as any) || translateName(rawLabel, language as any) || rawLabel;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -158,9 +263,7 @@ export default function DashaSelector({
       const meta = DASHA_SYSTEMS.find((s) => s.key === system)!;
       const url = meta.endpoint.replace('{id}', kundliId);
       const res = await api.get(url);
-      const normalized = (res && typeof res === 'object')
-        ? ({ ...(res as any), system } as DashaResponse)
-        : ({ system } as DashaResponse);
+      const normalized = normalizeResponse(system, res);
       setData((prev) => ({ ...prev, [system]: cloneResponse(normalized) }));
     } catch (err: any) {
       // Only surface the error if this is still the latest request (prevents stale errors)
@@ -262,15 +365,15 @@ export default function DashaSelector({
             if (!currentMD && !currentData.current_dasha) return (
               <p className="text-sm text-foreground/70">{l('No current period identified', 'कोई वर्तमान दशा नहीं मिली')}</p>
             );
-            const mdLabel = currentMD?.yogini || currentMD?.planet || currentData.current_dasha || '';
-            const adLabel = currentADList?.yogini || currentADList?.planet || currentData.current_antardasha || '';
-            const ptLabel = currentPT?.yogini || currentPT?.planet || currentData.current_pratyantar || '';
+            const mdLabel = currentMD?.planet || currentData.current_dasha || '';
+            const adLabel = currentADList?.planet || currentData.current_antardasha || currentData.current_sub_period || '';
+            const ptLabel = currentPT?.planet || currentData.current_pratyantar || '';
             return (
               <div className="flex flex-wrap gap-3 text-sm">
                 <div className="flex items-center gap-1">
                   <span className="text-foreground/70">{t('kundli.mahadasha')}:</span>
                   <span className={`font-bold ${periodColor(mdLabel)}`}>
-                    {translatePlanet(mdLabel, language) || translateName(mdLabel, language)}
+                    {formatLabel(selectedSystem, mdLabel, language)}
                   </span>
                   {natureBadge(mdLabel, hi)}
                 </div>
@@ -278,7 +381,7 @@ export default function DashaSelector({
                   <div className="flex items-center gap-1">
                     <span className="text-foreground/70">{t('kundli.antardasha')}:</span>
                     <span className={`font-bold ${periodColor(adLabel)}`}>
-                      {translatePlanet(adLabel, language) || translateName(adLabel, language)}
+                      {formatLabel(selectedSystem, adLabel, language)}
                     </span>
                   </div>
                 )}
@@ -286,7 +389,7 @@ export default function DashaSelector({
                   <div className="flex items-center gap-1">
                     <span className="text-foreground/70">{t('kundli.pratyantar')}:</span>
                     <span className={`font-bold ${periodColor(ptLabel)}`}>
-                      {translatePlanet(ptLabel, language) || translateName(ptLabel, language)}
+                      {formatLabel(selectedSystem, ptLabel, language)}
                     </span>
                   </div>
                 )}
@@ -320,10 +423,8 @@ export default function DashaSelector({
               </TableHeader>
               <TableBody className="divide-y divide-border/30">
                 {periods.map((md) => {
-                  const mdKey = md.yogini || md.planet;
-                  const mdLabel = md.yogini
-                    ? translateName(md.yogini, language)
-                    : translatePlanet(md.planet, language);
+                  const mdKey = `${md.planet}-${md.start}-${md.end}`;
+                  const mdLabel = formatLabel(selectedSystem, md.planet, language);
                   const isMdExpanded = expandedMD === mdKey;
                   const hasChildren = (md.antardasha || []).length > 0;
                   const mdYears = md.years ?? md.span ?? (md.duration_years ? parseFloat(String(md.duration_years)).toFixed(1) : '');
@@ -360,10 +461,8 @@ export default function DashaSelector({
 
                       {/* Antardasha rows */}
                       {isMdExpanded && (md.antardasha || []).map((ad) => {
-                        const adKey = `${mdKey}-${ad.yogini || ad.planet}`;
-                        const adLabel = ad.yogini
-                          ? translateName(ad.yogini, language)
-                          : translatePlanet(ad.planet, language);
+                        const adKey = `${mdKey}-${ad.planet}-${ad.start}-${ad.end}`;
+                        const adLabel = formatLabel(selectedSystem, ad.planet, language);
                         const isAdExpanded = expandedAD === adKey;
                         const hasADChildren = (ad.pratyantar || []).length > 0;
                         const adYears = ad.years ?? ad.span ?? (ad.duration_years ? parseFloat(String(ad.duration_years)).toFixed(2) : '');
@@ -402,10 +501,8 @@ export default function DashaSelector({
 
                             {/* Pratyantardasha rows */}
                             {isAdExpanded && (ad.pratyantar || []).map((pt, idx) => {
-                              const ptLabel = pt.yogini
-                                ? translateName(pt.yogini, language)
-                                : translatePlanet(pt.planet, language);
-                              const ptKey = `${selectedSystem}-${adKey}-${pt.yogini || pt.planet}-${pt.start}-${pt.end}-${idx}`;
+                              const ptLabel = formatLabel(selectedSystem, pt.planet, language);
+                              const ptKey = `${selectedSystem}-${adKey}-${pt.planet}-${pt.start}-${pt.end}-${idx}`;
                               return (
                                 <TableRow
                                   key={ptKey}
