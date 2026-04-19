@@ -105,10 +105,10 @@ def _engine_birth_chart(dob: str, tob: str, lat: float, lon: float, tz: float) -
         return {"error": str(e)}
 
 
-def _engine_dasha(nakshatra: str, dob: str) -> Dict:
+def _engine_dasha(nakshatra: str, dob: str, moon_longitude: float = None) -> Dict:
     try:
         from app.dasha_engine import calculate_dasha
-        return calculate_dasha(nakshatra, dob)
+        return calculate_dasha(nakshatra, dob, moon_longitude=moon_longitude)
     except Exception as e:
         return {"error": str(e)}
 
@@ -275,7 +275,13 @@ class ReportBuilder:
 
         print("[2/10] Computing Vimshottari Dasha...")
         if self.nakshatra:
-            dr = _engine_dasha(self.nakshatra, a.dob)
+            # Compute moon_longitude from sign + sign_degree for birth balance
+            moon_data = self.birth_chart.get("planets", {}).get("Moon", {})
+            sign_order = ["aries","taurus","gemini","cancer","leo","virgo",
+                          "libra","scorpio","sagittarius","capricorn","aquarius","pisces"]
+            sign_idx = sign_order.index(moon_data.get("sign","aries").lower()) if moon_data.get("sign","").lower() in sign_order else 0
+            moon_lon = sign_idx * 30 + float(moon_data.get("sign_degree", 0))
+            dr = _engine_dasha(self.nakshatra, a.dob, moon_longitude=moon_lon)
             md = dr.get("current_dasha")
             ad = dr.get("current_antardasha")
             if md and md != "Unknown":
@@ -805,13 +811,18 @@ class ReportBuilder:
         pers  = 8 if self.active_dasha and self.daily.get("active_dasha") else (6 if self.ascendant else 4)
         trans = 9 if all_claims_for_heuristic and all(c["match"] for c in all_claims_for_heuristic) else 6
         uniq  = 8 if all(s_today.get(a,"") != _sections_map(self.daily_case2).get(a,"") for a in ["general","love"]) else 4
+        # Dynamic transit coverage rationale (fixes stale "only general section" hardcode)
+        _secs_w = [a for a in ["general","love","career","finance","health"]
+                   if _per_section_transit_map(s_today, self.transits_raw, lagna_for_check).get(a)]
+        transit_rationale = (f"✅ {len(_secs_w)}/5 sections verified" if len(_secs_w) == 5
+                             else f"PARTIAL — {len(_secs_w)}/5 sections have verifiable claims")
 
         self._table(
             ["Dimension","Score","Rationale"],
             [
-                ["Specificity",       f"{spec}/10", "House-mapped general section; area sections implicit"],
+                ["Specificity",       f"{spec}/10", "House-mapped; all sections now name planet+house explicitly"],
                 ["Personalization",   f"{pers}/10", "Lagna active" + (", Dasha active" if self.daily.get("active_dasha") else " (Dasha: server restart needed)")],
-                ["Transit Relevance", f"{trans}/10" if all_claims_for_heuristic else "6/10", "PARTIAL — only general section verified"],
+                ["Transit Relevance", f"{trans}/10" if all_claims_for_heuristic else "6/10", transit_rationale],
                 ["Uniqueness",        f"{uniq}/10", "Word overlap <15% across different users"],
             ],
         )
@@ -888,7 +899,7 @@ class ReportBuilder:
         self._table(
             ["Metric","Score","Notes"],
             [
-                ["**Accuracy**",            f"{transit_acc_score}/10", "PARTIAL — only general section has verifiable transit claims"],
+                ["**Accuracy**",            f"{transit_acc_score}/10", transit_rationale],
                 ["**Personalization**",      f"{pers}/10",              "Lagna works; dasha boost needs Ketu/Rahu weight tuning"],
                 ["**Authenticity**",         f"{'9' if not hits else '6'}/10", "0% fake, real ephemeris, no generic phrases"],
                 ["**Content Depth**",        f"{spec}/10",              "General section: 9 sentences, house-mapped. Area sections: implicit."],

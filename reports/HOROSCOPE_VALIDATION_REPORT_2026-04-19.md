@@ -15,8 +15,8 @@
 | **Nakshatra Pada**    | 4           | Ephemeris                                          |
 | **Ascendant (Lagna)** | Taurus      | Ephemeris                                          |
 | Sun Sign              | Leo         |                                                    |
-| Active Mahadasha      | Ketu        | Vimshottari Dasha engine                           |
-| Active Antardasha     | Jupiter     | Vimshottari Dasha engine                           |
+| Active Mahadasha      | Venus       | Vimshottari Dasha engine                           |
+| Active Antardasha     | Saturn      | Vimshottari Dasha engine                           |
 
 ### Full Birth Chart
 | Planet  | Sign      | Nakshatra | Pada | Deg in Sign | Retro |
@@ -64,24 +64,24 @@
 ## 3. Daily Horoscope Audit
 
 **Sign:** Scorpio | **Date:** 2026-04-19 | **Lagna:** Taurus (janma_lagna)  
-**Active Dasha:** {'mahadasha': 'Ketu', 'antardasha': 'Jupiter'}  
+**Active Dasha:** {'mahadasha': 'Venus', 'antardasha': 'Saturn'}  
 **Scores:** {'overall': 6, 'love': 4, 'career': 6, 'finance': 5, 'health': 5}
 
 ### Section Content
 **[GENERAL]** 734 chars | 10 sentences | planet refs: {'moon': 1, 'sun': 1, 'venus': 1} | house refs: 3
-> Moon transiting your 12th house heightens spiritual sensitivity and need for solitude. Dreams become vivid and emotionally significant. This is a period of emotional release, healing, and preparation for renewal. Sun transiting your 12th house directs energy t…
+> Venus in the 12th house brings pleasures of solitude, spiritual beauty, and foreign luxuries. Creative imagination and dream life become exceptionally vivid. Hidden romance or private pleasures mark this intimate transit. Moon transiting your 12th house height…
 
 **[LOVE]** 669 chars | 10 sentences | planet refs: {'venus': 1} | house refs: 1
-> Venus transiting your 12th house highlights romance and sensory pleasure. Love takes on a deeply spiritual and selfless dimension. Hidden emotions or secret attractions may surface for resolution. Unconditional compassion and forgiveness transform your romanti…
+> Venus transiting your 12th house highlights romance and sensory pleasure. Secret romantic feelings and private emotional worlds are deeply fulfilling. Spiritual love transcends physical boundaries. Foreign or long-distance romance carries special karmic signif…
 
 **[CAREER]** 719 chars | 10 sentences | planet refs: {'saturn': 1} | house refs: 1
-> Saturn transiting your 11th house demands sustained discipline and long-term planning. Careers in hospitals, ashrams, and foreign lands bring emotional peace. Creative work done in solitude yields profound results. Take time for introspection before making maj…
+> Saturn transiting your 11th house demands sustained discipline and long-term planning. Behind-the-scenes creative work, foreign luxury industries, and spiritual arts flourish. Hospitality in foreign locations and retreat center management suit this transit. Ch…
 
 **[FINANCE]** 716 chars | 10 sentences | planet refs: {'jupiter': 1} | house refs: 1
-> Jupiter transiting your 2nd house expands material opportunities and abundance. Expenses on comfort, sleep aids, and spiritual retreats may increase. Foreign earnings or hidden sources of income may surface. Practice detachment from material outcomes while mai…
+> Jupiter transiting your 2nd house expands material opportunities and abundance. Expenses on luxury, foreign travel, and spiritual retreats increase significantly. Hidden sources of beauty-related income may emerge. Charitable donations bring karmic returns bey…
 
 **[HEALTH]** 715 chars | 10 sentences | planet refs: {'saturn': 1} | house refs: 1
-> Saturn transiting your 11th house tests physical endurance and structural vitality. Sleep quality and feet health require careful attention during this transit. Emotional exhaustion can manifest as physical fatigue and lethargy. Warm foot soaks, adequate sleep…
+> Saturn transiting your 11th house tests physical endurance and structural vitality. Feet and lymphatic system need pampering and care. Sleep quality improves through beauty routines and relaxation practices. Spa treatments and aesthetic healing provide excepti…
 
 ### Transit Claims — Per-Section Breakdown
 
@@ -104,15 +104,15 @@
 
 Overlap thresholds: ≥90% = almost identical (⚠️), 60-90% = low variation (⚠️), <40% = good variation (✅)
 
-| Section | vs Tomorrow      | vs Yesterday                          | vs Case2 (1975)                 |
-| ------- | ---------------- | ------------------------------------- | ------------------------------- |
-| general | 40% — 🔶 MODERATE | 96% — ⚠️ VERY HIGH — almost identical | 14% — ✅ GOOD — distinct content |
-| love    | 36% — 🔶 MODERATE | 95% — ⚠️ VERY HIGH — almost identical | 19% — ✅ GOOD — distinct content |
-| career  | 38% — 🔶 MODERATE | 96% — ⚠️ VERY HIGH — almost identical | 12% — ✅ GOOD — distinct content |
-| finance | 40% — 🔶 MODERATE | 96% — ⚠️ VERY HIGH — almost identical | 12% — ✅ GOOD — distinct content |
-| health  | 37% — 🔶 MODERATE | 97% — ⚠️ VERY HIGH — almost identical | 20% — ✅ GOOD — distinct content |
+| Section | vs Tomorrow      | vs Yesterday                           | vs Case2 (1975)                 |
+| ------- | ---------------- | -------------------------------------- | ------------------------------- |
+| general | 40% — 🔶 MODERATE | 100% — ⚠️ VERY HIGH — almost identical | 14% — ✅ GOOD — distinct content |
+| love    | 36% — 🔶 MODERATE | 100% — ⚠️ VERY HIGH — almost identical | 20% — ✅ GOOD — distinct content |
+| career  | 38% — 🔶 MODERATE | 100% — ⚠️ VERY HIGH — almost identical | 13% — ✅ GOOD — distinct content |
+| finance | 40% — 🔶 MODERATE | 100% — ⚠️ VERY HIGH — almost identical | 14% — ✅ GOOD — distinct content |
+| health  | 36% — 🔶 MODERATE | 100% — ⚠️ VERY HIGH — almost identical | 20% — ✅ GOOD — distinct content |
 
-> ⚠️ **Daily variation is LOW** — avg 96% overlap with yesterday. Moon changes house every ~2.3 days; if Moon did NOT change house, fragments may stay the same. This is expected behavior but reduces perceived freshness. Consider adding fragment rotation.
+> ⚠️ **Daily variation is LOW** — avg 100% overlap with yesterday. Moon changes house every ~2.3 days; if Moon did NOT change house, fragments may stay the same. This is expected behavior but reduces perceived freshness. Consider adding fragment rotation.
 
 ### Generic Phrase Detection
 > ✅ **0 generic phrases.** No boilerplate filler detected.
@@ -133,7 +133,7 @@ Overlap thresholds: ≥90% = almost identical (⚠️), 60-90% = low variation (
 
 ## 5. Monthly Horoscope Audit
 
-**Scores:** {'overall': 10, 'love': 7, 'career': 8, 'finance': 7, 'health': 8} | **Active Dasha:** {'mahadasha': 'Ketu', 'antardasha': 'Jupiter'}
+**Scores:** {'overall': 10, 'love': 7, 'career': 8, 'finance': 7, 'health': 8} | **Active Dasha:** {'mahadasha': 'Venus', 'antardasha': 'Saturn'}
 
 **Phases (3):**
 | Range       | Score | Summary (first 100 chars)                                                                             |
@@ -210,14 +210,13 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 | Source Section  | Planet  | Claimed H | Actual Sign | Actual H | Verdict    |
 | --------------- | ------- | --------- | ----------- | -------- | ---------- |
+| general         | Venus   | 12        | Aries       | 12       | ✅ MATCHING |
 | general         | Moon    | 12        | Aries       | 12       | ✅ MATCHING |
 | general         | Sun     | 12        | Aries       | 12       | ✅ MATCHING |
-| general         | Venus   | 12        | Aries       | 12       | ✅ MATCHING |
 | career          | Saturn  | 11        | Pisces      | 11       | ✅ MATCHING |
 | finance         | Jupiter | 2         | Gemini      | 2        | ✅ MATCHING |
 | weekly_general  | Moon    | 10        | Aries       | 12       | ❌ MISMATCH |
 | weekly_general  | Mars    | 11        | Pisces      | 11       | ✅ MATCHING |
-| monthly_general | Ketu    | 4         | Leo         | 4        | ✅ MATCHING |
 | monthly_general | Mars    | 10        | Pisces      | 11       | ❌ MISMATCH |
 
 **20/22 claims verified MATCHING (91%)**
@@ -230,27 +229,27 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 | Section | Word Overlap | Verdict                   |
 | ------- | ------------ | ------------------------- |
 | general | 14%          | ✅ GOOD — distinct content |
-| love    | 19%          | ✅ GOOD — distinct content |
-| career  | 12%          | ✅ GOOD — distinct content |
-| finance | 12%          | ✅ GOOD — distinct content |
+| love    | 20%          | ✅ GOOD — distinct content |
+| career  | 13%          | ✅ GOOD — distinct content |
+| finance | 14%          | ✅ GOOD — distinct content |
 | health  | 20%          | ✅ GOOD — distinct content |
 
-**Meharban 1985-08-23:** {'mahadasha': 'Ketu', 'antardasha': 'Jupiter'}
+**Meharban 1985-08-23:** {'mahadasha': 'Venus', 'antardasha': 'Saturn'}
 **Case2 1975-08-23:** mahadasha=Venus antardasha=Rahu
 
 ### Case B: Same DOB, Different Date (Yesterday)
 
 | Section | Word Overlap | Verdict                         |
 | ------- | ------------ | ------------------------------- |
-| general | 96%          | ⚠️ VERY HIGH — almost identical |
-| love    | 95%          | ⚠️ VERY HIGH — almost identical |
-| career  | 96%          | ⚠️ VERY HIGH — almost identical |
-| finance | 96%          | ⚠️ VERY HIGH — almost identical |
-| health  | 97%          | ⚠️ VERY HIGH — almost identical |
+| general | 100%         | ⚠️ VERY HIGH — almost identical |
+| love    | 100%         | ⚠️ VERY HIGH — almost identical |
+| career  | 100%         | ⚠️ VERY HIGH — almost identical |
+| finance | 100%         | ⚠️ VERY HIGH — almost identical |
+| health  | 100%         | ⚠️ VERY HIGH — almost identical |
 **Today scores:** {'overall': 6, 'love': 4, 'career': 6, 'finance': 5, 'health': 5}  
 **Yesterday scores:** {'overall': 6, 'love': 4, 'career': 6, 'finance': 5, 'health': 5}
 
-> ⚠️ **Day-to-day variation is LOW** (avg 96% overlap). When Moon stays in the same house across consecutive days, fragments repeat. Engine needs fragment rotation to improve perceived freshness.
+> ⚠️ **Day-to-day variation is LOW** (avg 100% overlap). When Moon stays in the same house across consecutive days, fragments repeat. Engine needs fragment rotation to improve perceived freshness.
 
 ## 9. Fake Detection Heuristics
 
@@ -277,12 +276,12 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 | finance | 716   | 10        | 1           | 1          |
 | health  | 715   | 10        | 1           | 1          |
 
-| Dimension         | Score | Rationale                                            |
-| ----------------- | ----- | ---------------------------------------------------- |
-| Specificity       | 7/10  | House-mapped general section; area sections implicit |
-| Personalization   | 8/10  | Lagna active, Dasha active                           |
-| Transit Relevance | 9/10  | PARTIAL — only general section verified              |
-| Uniqueness        | 8/10  | Word overlap <15% across different users             |
+| Dimension         | Score | Rationale                                                   |
+| ----------------- | ----- | ----------------------------------------------------------- |
+| Specificity       | 7/10  | House-mapped; all sections now name planet+house explicitly |
+| Personalization   | 8/10  | Lagna active, Dasha active                                  |
+| Transit Relevance | 9/10  | ✅ 5/5 sections verified                                     |
+| Uniqueness        | 8/10  | Word overlap <15% across different users                    |
 
 ## 11. Engine Classification
 
@@ -303,9 +302,9 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 | Section | Daily↔Weekly | Daily↔Monthly | Verdict |
 | ------- | ------------ | ------------- | ------- |
-| general | 32%          | 6%            | ✅ OK    |
-| love    | 34%          | 18%           | ✅ OK    |
-| career  | 38%          | 14%           | ✅ OK    |
+| general | 32%          | 21%           | ✅ OK    |
+| love    | 34%          | 34%           | ✅ OK    |
+| career  | 38%          | 34%           | ✅ OK    |
 
 > ~30% overlap daily↔weekly is normal (same dominant planet).
 > Higher overlap between daily and monthly would indicate period-weight logic not working.
@@ -327,11 +326,11 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 | Metric                   | Score | Notes                                                                |
 | ------------------------ | ----- | -------------------------------------------------------------------- |
-| **Accuracy**             | 9/10  | PARTIAL — only general section has verifiable transit claims         |
+| **Accuracy**             | 9/10  | ✅ 5/5 sections verified                                              |
 | **Personalization**      | 8/10  | Lagna works; dasha boost needs Ketu/Rahu weight tuning               |
 | **Authenticity**         | 9/10  | 0% fake, real ephemeris, no generic phrases                          |
 | **Content Depth**        | 7/10  | General section: 9 sentences, house-mapped. Area sections: implicit. |
-| **Daily Variation**      | 6/10  | Avg 96% overlap with yesterday — LOW                                 |
+| **Daily Variation**      | 6/10  | Avg 100% overlap with yesterday — LOW                                |
 | **Production Readiness** | 86%   | All endpoints + dasha + no fakes                                     |
 
 ## 15. Final Verdict
@@ -343,16 +342,16 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 **Yes, within its category.** Every prediction derives from a verified real-time planetary position. The engine makes no arbitrary claims. However: daily variation is low when Moon does not change house between days — this is a known limitation that reduces perceived freshness.
 
 ### Is it competitive vs Astrosage / Clickastro?
-| Capability                     | Astrorattan                    | Market Leader |
-| ------------------------------ | ------------------------------ | ------------- |
-| Real Swiss Ephemeris           | ✅                              | ✅             |
-| Janma Lagna personalization    | ✅                              | ✅             |
-| Dasha-aware readings           | ✅                              | ✅             |
-| Moon sign auto-detection (API) | ✅ /natal-sign endpoint         | ✅             |
-| Daily freshness (day-to-day)   | ⚠️ LOW (96% overlap yesterday) | ✅             |
-| Transit explicitly named       | ✅ ALL sections (5/5)           | ✅             |
-| Bilingual EN + HI              | ✅                              | Partial       |
-| Tomorrow tab                   | ✅                              | Rare          |
+| Capability                     | Astrorattan                     | Market Leader |
+| ------------------------------ | ------------------------------- | ------------- |
+| Real Swiss Ephemeris           | ✅                               | ✅             |
+| Janma Lagna personalization    | ✅                               | ✅             |
+| Dasha-aware readings           | ✅                               | ✅             |
+| Moon sign auto-detection (API) | ✅ /natal-sign endpoint          | ✅             |
+| Daily freshness (day-to-day)   | ⚠️ LOW (100% overlap yesterday) | ✅             |
+| Transit explicitly named       | ✅ ALL sections (5/5)            | ✅             |
+| Bilingual EN + HI              | ✅                               | Partial       |
+| Tomorrow tab                   | ✅                               | Rare          |
 
 ### What % is fake/template?
 | Layer                                 | Classification | % of Output |
@@ -366,5 +365,5 @@ Dates tested: `2026-04-17, 2026-04-11, 2026-04-01, 2026-03-09, 2026-03-02`
 
 ---
 
-*Generated: 2026-04-19 13:28:27 | `scripts/horoscope_report.py`*  
+*Generated: 2026-04-19 13:35:36 | `scripts/horoscope_report.py`*  
 *Subject: Meharban Singh (1985-08-23, Delhi, India) | Moon: Scorpio/Anuradha pada 4 | Lagna: Taurus*
