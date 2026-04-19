@@ -1313,7 +1313,7 @@ export default function NumerologyTabs() {
 
                     {/* Table */}
                     <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-                      <table className="w-full text-sm">
+                      <table className="table-sacred w-full text-sm">
                         <thead>
                           <tr className="bg-sacred-gold/10">
                             <th className="px-4 py-2 text-left font-medium text-foreground">{t('numerology.mobile.pair')}</th>

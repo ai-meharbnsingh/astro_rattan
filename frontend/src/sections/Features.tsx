@@ -1032,7 +1032,7 @@ export default function Features() {
                     <span>{l('Planetary Positions', 'ग्रह स्थिति')}</span>
                     <span className="text-xs font-normal opacity-80">{l('Lagna', 'लग्न')}: {hi ? (SIGN_HI[currentSky.lagna_sign] || currentSky.lagna_sign) : currentSky.lagna_sign}</span>
                   </div>
-                  <table className="w-full text-sm">
+                  <table className="table-sacred w-full text-sm">
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-3 py-2">{l('Planet', 'ग्रह')}</th>
@@ -1655,7 +1655,7 @@ export default function Features() {
                   {l('Hora Table', 'होरा तालिका')}
                 </div>
                 <div className="p-2.5 max-h-[400px] overflow-y-auto">
-                  <table className="w-full text-sm">
+                  <table className="table-sacred w-full text-sm">
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-2 py-1.5">{l('Hora', 'होरा')}</th>
@@ -1690,7 +1690,7 @@ export default function Features() {
                   {l('Choghadiya', 'चौघड़िया')}
                 </div>
                 <div className="p-2.5 max-h-[400px] overflow-y-auto">
-                  <table className="w-full text-sm">
+                  <table className="table-sacred w-full text-sm">
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-2 py-1.5">{l('Name', 'नाम')}</th>

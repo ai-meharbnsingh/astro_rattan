@@ -336,7 +336,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
           </h3>
           {/* Three-system comparison table */}
           <div className="overflow-x-auto mb-4">
-            <table className="w-full text-sm">
+            <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="border-b border-sacred-gold/20">
                   <th className="text-left py-1 pr-4 text-muted-foreground font-medium text-xs uppercase tracking-wide">
@@ -434,7 +434,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
           )}
           {avPindayu.planet_contributions && (avPindayu.planet_contributions as any[]).length > 0 && (
             <div className="overflow-x-auto">
-              <table className="w-full text-xs">
+              <table className="table-sacred w-full text-xs">
                 <thead>
                   <tr className="border-b border-sacred-gold/20">
                     <th className="text-left py-1 pr-3 text-muted-foreground font-medium">{isHi ? 'ग्रह' : 'Planet'}</th>

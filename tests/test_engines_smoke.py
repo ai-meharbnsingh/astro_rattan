@@ -337,25 +337,19 @@ class TestDashaEngine:
         assert "mahadasha_periods" in result
         assert "current_dasha" in result
         assert "current_antardasha" in result
-        # Design change: dasha now covers at least 240 years (2 full cycles)
-        # to handle dates beyond the first 120-year cycle.
-        # With no moon_longitude (full balance), expect exactly 18 periods (2 cycles).
-        assert len(result["mahadasha_periods"]) == 18
+        # One 120-year cycle = 9 mahadashas (repeat loop removed per user requirement)
+        assert len(result["mahadasha_periods"]) == 9
 
-    def test_calculate_dasha_total_years_240(self):
-        """Design change: dasha now covers 2 full 120-year cycles = 240 years total."""
+    def test_calculate_dasha_total_years_120(self):
+        """One full 120-year cycle = exactly 120 years total."""
         from app.dasha_engine import calculate_dasha
         result = calculate_dasha("Rohini", "1995-01-01")
         total = sum(p["years"] for p in result["mahadasha_periods"])
-        assert total == 240
+        assert total == 120
 
     def test_calculate_dasha_with_moon_longitude(self):
         """When moon_longitude is given, first dasha balance is partial.
-
-        Design change: dasha now covers at least 240 years from birth.
-        With partial first period, total will be slightly less than 240
-        but additional full cycles are appended to reach the 240-year
-        coverage threshold, so total may exceed 240.
+        One 120-year cycle returned; partial first period makes total < 120.
         """
         from app.dasha_engine import calculate_dasha
         # Ashwini spans 0 to 13.333 degrees. Moon at 6.666 = halfway through
@@ -365,10 +359,11 @@ class TestDashaEngine:
         assert periods[0]["planet"] == "Ketu"
         assert periods[0]["years"] < 7  # Less than full
         assert periods[0]["years"] > 0  # More than zero
-        # Total covers at least 240 years from birth (partial first + full cycles)
+        # 9 periods, total slightly less than 120 due to partial first dasha
+        assert len(periods) == 9
         total = sum(p["years"] for p in periods)
-        assert total > 240  # Partial first dasha means an extra cycle is needed
-        assert total < 360  # But not more than 3 cycles
+        assert total < 120
+        assert total > 110
 
     def test_calculate_dasha_current_is_valid_planet(self):
         from app.dasha_engine import calculate_dasha, DASHA_ORDER

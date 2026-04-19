@@ -24,7 +24,7 @@ function renderMarkdown(md: string) {
     const body = tableRows.slice(2); // skip separator row
     elements.push(
       <div key={key++} className="overflow-x-auto my-6">
-        <table className="w-full text-sm border-collapse">
+        <table className="table-sacred w-full text-sm border-collapse">
           <thead>
             <tr className="border-b-2 border-sacred-gold/30">
               {headers.map((h, i) => (
@@ -125,7 +125,7 @@ function ComparisonTable() {
     <div className="mt-12">
       <h2 className="text-2xl font-bold text-foreground mb-6">{t('blog.compare.title')}</h2>
       <div className="overflow-x-auto rounded-xl border border-cosmic-border">
-        <table className="w-full text-sm">
+        <table className="table-sacred w-full text-sm">
           <thead>
             <tr className="bg-sacred-gold/10">
               <th className="text-left py-3 px-4 text-sacred-gold-dark font-semibold">{t('blog.compare.feature')}</th>

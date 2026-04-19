@@ -246,7 +246,7 @@ export default function CalculationDetailPanel({ kundliId, visible, onToggle, is
               defaultOpen
             >
               <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse">
+                <table className="table-sacred w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-foreground/5 text-foreground">
                       <th className="text-left p-1.5">{isHi ? 'ग्रह' : 'Planet'}</th>
@@ -317,7 +317,7 @@ export default function CalculationDetailPanel({ kundliId, visible, onToggle, is
                   : 'Each planet\u2019s bunyaad = 9th house from its pakka ghar. See which friends/enemies occupy that house.'}
               </p>
               <div className="overflow-x-auto">
-                <table className="w-full text-xs border-collapse">
+                <table className="table-sacred w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-foreground/5">
                       <th className="text-left p-1.5">{isHi ? 'ग्रह' : 'Planet'}</th>

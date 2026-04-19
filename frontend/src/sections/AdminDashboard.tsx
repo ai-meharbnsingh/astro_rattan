@@ -586,7 +586,7 @@ export default function AdminDashboard() {
             {userTotal} {l('total users', 'कुल उपयोगकर्ता')}
           </p>
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-            <table className="w-full text-sm">
+            <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                   <th className="py-3 px-4">{l('Name', 'नाम')}</th>
@@ -647,7 +647,7 @@ export default function AdminDashboard() {
       {tab === 'kundlis' && (
         <div>
           <div className="overflow-x-auto rounded-xl border border-sacred-gold/20">
-            <table className="w-full text-sm">
+            <table className="table-sacred w-full text-sm">
               <thead>
                 <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                   <th className="py-3 px-4">{l('Person', 'व्यक्ति')}</th>
@@ -886,7 +886,7 @@ export default function AdminDashboard() {
               <div className="py-8 text-center text-sm text-muted-foreground">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/10 text-left text-xs text-muted-foreground uppercase tracking-wider">
                       <th className="py-2.5 px-5">{l('Path', 'पाथ')}</th>
@@ -1060,7 +1060,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">
                       <th className="py-3 px-4">{l('User', 'उपयोगकर्ता')}</th>

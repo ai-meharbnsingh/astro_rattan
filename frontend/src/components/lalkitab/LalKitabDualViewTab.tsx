@@ -345,7 +345,7 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="table-sacred w-full text-sm">
             <thead className="bg-sacred-gold/5 text-xs uppercase tracking-wider text-sacred-gold-dark">
               <tr>
                 <th className="text-left px-4 py-2 font-semibold">{isHi ? 'ग्रह' : 'Planet'}</th>

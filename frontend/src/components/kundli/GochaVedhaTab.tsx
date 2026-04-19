@@ -87,7 +87,7 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-white/50">
-          <table className="w-full text-sm">
+          <table className="table-sacred w-full text-sm">
             <thead>
               <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5">
                 <th className="px-4 py-3 text-left font-semibold text-sacred-gold-dark">
