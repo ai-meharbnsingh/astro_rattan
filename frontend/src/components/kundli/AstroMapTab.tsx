@@ -1,29 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, Map, ChevronDown, ChevronUp, Briefcase, Heart, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Heading } from '@/components/ui/heading';
 
-interface CityAnalysis {
+// Backend shape: city_analysis is a dict { cityName: { ascendant, planet_houses, strengths, cautions, overall_score } }
+// best_cities is { career: [[name,score,reason],...], relationships: [...], wealth: [...], health: [...], spiritual: [...] }
+interface CityDetail {
   city: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  score: number;
+  ascendant?: { sign: string; degree: number };
+  planet_houses?: Record<string, { house: number; sign: string; longitude: number }>;
   strengths: string[];
   cautions: string[];
-  house_placements: Record<string, number>;
-}
-
-interface BestCitiesByArea {
-  career: string[];
-  love: string[];
-  health: string[];
+  overall_score: number;
 }
 
 interface AstroMapData {
-  city_analysis: CityAnalysis[];
-  best_cities_by_area: BestCitiesByArea;
-  planetary_lines: unknown[];
+  city_analysis: Record<string, Omit<CityDetail, 'city'>>;
+  best_cities: Record<string, [string, number, string][]>;
+  planetary_lines?: unknown;
 }
 
 interface Props {
@@ -33,6 +26,13 @@ interface Props {
 }
 
 type LifeArea = 'career' | 'love' | 'health';
+
+// Frontend area → backend key mapping
+const AREA_KEY: Record<LifeArea, string> = {
+  career: 'career',
+  love: 'relationships',
+  health: 'health',
+};
 
 const AREA_CONFIG: Record<LifeArea, { label_en: string; label_hi: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
   career: {
@@ -53,7 +53,7 @@ const AREA_CONFIG: Record<LifeArea, { label_en: string; label_hi: string; icon: 
 };
 
 function ScoreBadge({ score }: { score: number }) {
-  const pct = Math.min(Math.max(score, 0), 100);
+  const pct = Math.min(Math.max(Math.round(score), 0), 100);
   const color =
     pct >= 75 ? 'bg-emerald-100 border-emerald-300 text-emerald-800' :
     pct >= 50 ? 'bg-amber-100 border-amber-300 text-amber-800' :
@@ -65,7 +65,7 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-function CityRow({ city, isHi, defaultOpen }: { city: CityAnalysis; isHi: boolean; defaultOpen?: boolean }) {
+function CityRow({ city, isHi, defaultOpen }: { city: CityDetail; isHi: boolean; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen ?? false);
 
   return (
@@ -74,38 +74,28 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityAnalysis; isHi: boolea
         onClick={() => setOpen(prev => !prev)}
         className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-sacred-gold/[0.03] transition-colors text-left"
       >
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="font-semibold text-foreground text-sm">{city.city}</span>
-          {city.country && (
-            <span className="text-xs text-muted-foreground">{city.country}</span>
-          )}
-        </div>
+        <span className="font-semibold text-foreground text-sm">{city.city}</span>
         <div className="flex items-center gap-2 shrink-0">
-          <ScoreBadge score={city.score} />
+          <ScoreBadge score={city.overall_score} />
           {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
         </div>
       </button>
 
       {open && (
         <div className="px-4 pb-4 space-y-3">
-          {/* Coordinates */}
-          <p className="text-[11px] text-muted-foreground font-mono">
-            {city.latitude?.toFixed(2)}°N {city.longitude?.toFixed(2)}°E
-          </p>
-
           {/* Score bar */}
           <div>
             <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
               <span>{isHi ? 'स्कोर' : 'Score'}</span>
-              <span>{city.score ?? 0}/100</span>
+              <span>{Math.round(city.overall_score)}/100</span>
             </div>
             <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
               <div
                 className={`h-full transition-all ${
-                  (city.score ?? 0) >= 75 ? 'bg-emerald-500' :
-                  (city.score ?? 0) >= 50 ? 'bg-amber-400' : 'bg-red-400'
+                  city.overall_score >= 75 ? 'bg-emerald-500' :
+                  city.overall_score >= 50 ? 'bg-amber-400' : 'bg-red-400'
                 }`}
-                style={{ width: `${Math.min(city.score ?? 0, 100)}%` }}
+                style={{ width: `${Math.min(city.overall_score, 100)}%` }}
               />
             </div>
           </div>
@@ -114,7 +104,7 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityAnalysis; isHi: boolea
           {(city.strengths?.length ?? 0) > 0 && (
             <div>
               <p className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide mb-1">
-                {isHi ? 'शक्ति / Strengths' : 'Strengths'}
+                {isHi ? 'शक्ति' : 'Strengths'}
               </p>
               <ul className="space-y-1">
                 {city.strengths.map((s, i) => (
@@ -131,7 +121,7 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityAnalysis; isHi: boolea
           {(city.cautions?.length ?? 0) > 0 && (
             <div>
               <p className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-1">
-                {isHi ? 'सावधानी / Cautions' : 'Cautions'}
+                {isHi ? 'सावधानी' : 'Cautions'}
               </p>
               <ul className="space-y-1">
                 {city.cautions.map((c, i) => (
@@ -144,23 +134,30 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityAnalysis; isHi: boolea
             </div>
           )}
 
-          {/* House placements */}
-          {city.house_placements && Object.keys(city.house_placements).length > 0 && (
+          {/* Planet houses */}
+          {city.planet_houses && Object.keys(city.planet_houses).length > 0 && (
             <div>
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                 {isHi ? 'ग्रह-भाव स्थान' : 'House Placements'}
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {Object.entries(city.house_placements).map(([planet, house]) => (
+                {Object.entries(city.planet_houses).map(([planet, info]) => (
                   <span
                     key={planet}
                     className="px-2 py-0.5 rounded-full bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-[10px] font-medium"
                   >
-                    {planet}: H{house}
+                    {planet}: H{info.house}
                   </span>
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Ascendant */}
+          {city.ascendant && (
+            <p className="text-[10px] text-muted-foreground">
+              {isHi ? 'लग्न:' : 'Ascendant:'} {city.ascendant.sign} ({city.ascendant.degree?.toFixed(1)}°)
+            </p>
           )}
         </div>
       )}
@@ -200,16 +197,14 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
       .finally(() => setLoading(false));
   }, [kundliData]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   if (!kundliData) {
     return (
       <div className="p-6 rounded-xl border border-amber-200 bg-amber-50/40 text-center">
         <Map className="w-10 h-10 text-amber-400 mx-auto mb-3" />
         <p className="text-sm text-amber-800 font-medium">
-          {isHi ? 'कुंडली डेटा उपलब्ध नहीं — एस्ट्रो मैप लोड नहीं हो सकता' : 'Kundli data not available — cannot load Astro Map'}
+          {isHi ? 'कुंडली डेटा उपलब्ध नहीं' : 'Kundli data not available — cannot load Astro Map'}
         </p>
       </div>
     );
@@ -226,9 +221,7 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
   if (error) {
     return (
       <div className="space-y-3">
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
-        </div>
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
         <button
           onClick={fetchData}
           className="px-4 py-2 rounded-lg bg-sacred-gold/10 border border-sacred-gold/30 text-sacred-gold-dark text-sm font-medium hover:bg-sacred-gold/20 transition-colors"
@@ -241,15 +234,17 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
 
   if (!data) return null;
 
-  const bestCities = data.best_cities_by_area ?? { career: [], love: [], health: [] };
+  // city_analysis is a dict { cityName: {...} } — convert to array
+  const cityArray: CityDetail[] = Object.entries(data.city_analysis ?? {}).map(([name, d]) => ({
+    city: name,
+    ...d,
+  }));
 
-  const sortedCities = [...(data.city_analysis ?? [])].sort((a, b) => {
+  const sortedCities = [...cityArray].sort((a, b) => {
     if (sortKey === 'score') {
-      return sortAsc ? (a.score ?? 0) - (b.score ?? 0) : (b.score ?? 0) - (a.score ?? 0);
+      return sortAsc ? (a.overall_score ?? 0) - (b.overall_score ?? 0) : (b.overall_score ?? 0) - (a.overall_score ?? 0);
     }
-    return sortAsc
-      ? (a.city ?? '').localeCompare(b.city ?? '')
-      : (b.city ?? '').localeCompare(a.city ?? '');
+    return sortAsc ? a.city.localeCompare(b.city) : b.city.localeCompare(a.city);
   });
 
   const toggleSort = (key: SortKey) => {
@@ -257,19 +252,32 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
     else { setSortKey(key); setSortAsc(key === 'city'); }
   };
 
+  // best_cities entries are tuples [name, score, reason]
+  const bestCities = data.best_cities ?? {};
+  const getAreaCities = (area: LifeArea): [string, number, string][] => {
+    const key = AREA_KEY[area];
+    const raw = bestCities[key];
+    return Array.isArray(raw) ? raw : [];
+  };
+
+  const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+  const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <Map className="w-6 h-6" />
-          {isHi ? 'एस्ट्रो मैप — भौगोलिक ज्योतिष' : 'Astro Map — Geographic Astrology'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi
-            ? 'जन्म कुंडली के ग्रहों की स्थिति के आधार पर विश्व के सर्वश्रेष्ठ स्थानों का विश्लेषण'
-            : 'Best world locations based on planetary positions in your birth chart'}
-        </p>
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Map className="w-4 h-4" />
+          <span>{isHi ? 'एस्ट्रो मैप — भौगोलिक ज्योतिष' : 'Astro Map — Geographic Astrology'}</span>
+        </div>
+        <div className="px-4 py-3">
+          <p className="text-xs text-muted-foreground">
+            {isHi
+              ? 'जन्म कुंडली के ग्रहों की स्थिति के आधार पर विश्व के सर्वश्रेष्ठ स्थानों का विश्लेषण'
+              : 'Best world locations based on planetary positions in your birth chart'}
+          </p>
+        </div>
       </div>
 
       {/* Best Cities by Life Area */}
@@ -303,29 +311,28 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
 
         {/* Top 3 cities for active area */}
         <div className={`p-4 rounded-xl border ${AREA_CONFIG[activeArea].border} ${AREA_CONFIG[activeArea].bg}`}>
-          {(bestCities[activeArea]?.length ?? 0) === 0 ? (
+          {getAreaCities(activeArea).length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-2">
               {isHi ? 'कोई शहर उपलब्ध नहीं' : 'No cities available'}
             </p>
           ) : (
             <div className="space-y-2">
-              {bestCities[activeArea].slice(0, 3).map((cityName, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+              {getAreaCities(activeArea).slice(0, 3).map(([cityName, score, reason], i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${
                     i === 0 ? 'bg-amber-400 text-white' :
                     i === 1 ? 'bg-gray-300 text-gray-800' :
                                'bg-orange-300 text-white'
                   }`}>
                     {i + 1}
                   </span>
-                  <span className={`text-sm font-semibold ${AREA_CONFIG[activeArea].color}`}>
-                    {cityName}
-                  </span>
-                  {/* Show score from city_analysis if available */}
-                  {(() => {
-                    const match = data.city_analysis?.find(c => c.city === cityName);
-                    return match ? <ScoreBadge score={match.score} /> : null;
-                  })()}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-sm font-semibold ${AREA_CONFIG[activeArea].color}`}>{cityName}</span>
+                      <ScoreBadge score={score * 10} />
+                    </div>
+                    {reason && <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{reason}</p>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -333,7 +340,7 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
         </div>
       </div>
 
-      {/* City table — sortable */}
+      {/* All cities sortable list */}
       {sortedCities.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -357,7 +364,7 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
             </div>
           </div>
 
-          <div className="rounded-xl border border-sacred-gold/20 bg-white/50 overflow-hidden">
+          <div className={ohContainer}>
             {sortedCities.map((city, i) => (
               <CityRow key={`${city.city}-${i}`} city={city} isHi={isHi} defaultOpen={i === 0} />
             ))}
@@ -365,7 +372,7 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
         </div>
       )}
 
-      {/* Footer note */}
+      {/* Footer */}
       <div className="p-4 rounded-lg bg-sacred-gold/5 border border-sacred-gold/20 text-xs text-muted-foreground flex items-start gap-2">
         <Map className="w-4 h-4 text-sacred-gold-dark shrink-0 mt-0.5" />
         <span>

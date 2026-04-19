@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Loader2, AlertTriangle, ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
+import { Loader2, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { translateSign, translateNakshatra } from '@/lib/backend-translations';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
 
 interface UpagrahasTabProps {
   upagrahasData: any;
@@ -30,6 +28,11 @@ const NATURE_LABEL: Record<string, { en: string; hi: string }> = {
   neutral:        { en: 'Neutral',        hi: 'सम' },
   benefic:        { en: 'Benefic',        hi: 'शुभ' },
 };
+
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top';
 
 export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language, t }: UpagrahasTabProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -61,13 +64,12 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
     ? raw
     : Object.entries(raw || {}).map(([name, data]: [string, any]) => ({ name, ...data }));
 
-  // Gulika or Mandi in Lagna (house 1) — critical alert
   const lagnaAlerts = items.filter(
     u => (u.name === 'Gulika' || u.name === 'Mandi') && u.house === 1
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Critical Gulika/Mandi in Lagna alert */}
       {lagnaAlerts.map(u => (
         <div key={u.name} className="rounded-xl border-2 border-red-400 bg-red-50 p-4 flex items-start gap-3">
@@ -88,88 +90,97 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
       ))}
 
       {/* Main table */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <Heading as={4} variant={4} className="mb-3">{t('section.upagrahasTitle')}</Heading>
-        <div className="overflow-x-auto">
-          <Table className="w-full text-sm min-w-[600px]">
-            <TableHeader>
-              <TableRow className="bg-muted">
-                <TableHead className="text-left p-2 text-primary font-medium w-6"></TableHead>
-                <TableHead className="text-left p-2 text-primary font-medium">{t('table.upagraha')}</TableHead>
-                <TableHead className="text-center p-2 text-primary font-medium">{t('table.house')}</TableHead>
-                <TableHead className="text-left p-2 text-primary font-medium">{t('table.sign')}</TableHead>
-                <TableHead className="text-left p-2 text-primary font-medium">{t('table.nakshatra')}</TableHead>
-                <TableHead className="text-left p-2 text-primary font-medium">{t('table.longitude')}</TableHead>
-                <TableHead className="text-left p-2 text-primary font-medium">{isHi ? 'स्वभाव' : 'Nature'}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((u: any) => {
-                const hasInterp = u.interpretation_en || u.classical_meaning_en;
-                const isOpen = expanded.has(u.name);
-                const natStyle = NATURE_STYLE[u.nature] || NATURE_STYLE.neutral;
-                const natLabel = isHi
-                  ? (NATURE_LABEL[u.nature]?.hi || u.nature)
-                  : (NATURE_LABEL[u.nature]?.en || u.nature);
-                const isLagna = u.house === 1 && (u.name === 'Gulika' || u.name === 'Mandi');
-
-                return (
-                  <>
-                    <TableRow
-                      key={u.name}
-                      className={`border-t border-border ${hasInterp ? 'cursor-pointer hover:bg-muted/20' : ''} ${isLagna ? 'bg-red-50' : ''}`}
-                      onClick={hasInterp ? () => toggle(u.name) : undefined}
-                    >
-                      <TableCell className="p-2 text-center w-6">
-                        {hasInterp && (
-                          isOpen
-                            ? <ChevronDown className="w-3 h-3 text-primary" />
-                            : <ChevronRight className="w-3 h-3 text-primary" />
-                        )}
-                      </TableCell>
-                      <TableCell className="p-2 font-semibold text-foreground">
-                        {uLabel(u.name)}
-                        {isLagna && <span className="ml-1.5 text-[10px] font-bold text-red-600">⚠</span>}
-                      </TableCell>
-                      <TableCell className="p-2 text-center text-foreground">
-                        {u.house > 0 ? u.house : '—'}
-                      </TableCell>
-                      <TableCell className="p-2 text-foreground">{translateSign(u.sign, language)}</TableCell>
-                      <TableCell className="p-2 text-foreground">
-                        {translateNakshatra(u.nakshatra, language) || u.nakshatra}
-                        {(u.nakshatra_pada || u.pada) && ` (${t('kundli.pada')} ${u.nakshatra_pada || u.pada})`}
-                      </TableCell>
-                      <TableCell className="p-2 text-foreground">
-                        {typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '°' : u.longitude}
-                      </TableCell>
-                      <TableCell className="p-2">
-                        {u.nature && (
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${natStyle}`}>
-                            {natLabel}
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                    {isOpen && hasInterp && (
-                      <TableRow key={`${u.name}-interp`} className="bg-muted/30">
-                        <TableCell colSpan={7} className="p-3">
-                          {(u.classical_meaning_en || u.classical_meaning_hi) && (
-                            <p className="text-xs text-foreground/70 italic mb-1">
-                              {isHi ? (u.classical_meaning_hi || u.classical_meaning_en) : (u.classical_meaning_en || u.classical_meaning_hi)}
-                            </p>
-                          )}
-                          <p className="text-xs text-foreground/80 leading-relaxed">
-                            {isHi ? (u.interpretation_hi || u.interpretation_en) : (u.interpretation_en || u.interpretation_hi)}
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </>
-                );
-              })}
-            </TableBody>
-          </Table>
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <span>{isHi ? 'उपग्रह' : t('section.upagrahasTitle')}</span>
         </div>
+        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <colgroup>
+            <col style={{ width: '4%' }} />
+            <col style={{ width: '16%' }} />
+            <col style={{ width: '8%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '26%' }} />
+            <col style={{ width: '16%' }} />
+            <col style={{ width: '16%' }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th className={thCls}></th>
+              <th className={thCls}>{t('table.upagraha')}</th>
+              <th className={`${thCls} text-center`}>{t('table.house')}</th>
+              <th className={thCls}>{t('table.sign')}</th>
+              <th className={thCls}>{t('table.nakshatra')}</th>
+              <th className={thCls}>{t('table.longitude')}</th>
+              <th className={thCls}>{isHi ? 'स्वभाव' : 'Nature'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((u: any) => {
+              const hasInterp = u.interpretation_en || u.classical_meaning_en;
+              const isOpen = expanded.has(u.name);
+              const natStyle = NATURE_STYLE[u.nature] || NATURE_STYLE.neutral;
+              const natLabel = isHi
+                ? (NATURE_LABEL[u.nature]?.hi || u.nature)
+                : (NATURE_LABEL[u.nature]?.en || u.nature);
+              const isLagna = u.house === 1 && (u.name === 'Gulika' || u.name === 'Mandi');
+
+              return (
+                <>
+                  <tr
+                    key={u.name}
+                    className={`${hasInterp ? 'cursor-pointer hover:bg-muted/20' : ''} ${isLagna ? 'bg-red-50' : ''}`}
+                    onClick={hasInterp ? () => toggle(u.name) : undefined}
+                  >
+                    <td className={`${tdCls} text-center`}>
+                      {hasInterp && (
+                        isOpen
+                          ? <ChevronDown className="w-3 h-3 text-primary inline" />
+                          : <ChevronRight className="w-3 h-3 text-primary inline" />
+                      )}
+                    </td>
+                    <td className={`${tdCls} font-semibold`}>
+                      {uLabel(u.name)}
+                      {isLagna && <span className="ml-1.5 text-[10px] font-bold text-red-600">⚠</span>}
+                    </td>
+                    <td className={`${tdCls} text-center`}>
+                      {u.house > 0 ? u.house : '—'}
+                    </td>
+                    <td className={tdCls}>{translateSign(u.sign, language)}</td>
+                    <td className={`${tdCls} break-words overflow-hidden`}>
+                      {translateNakshatra(u.nakshatra, language) || u.nakshatra}
+                      {(u.nakshatra_pada || u.pada) && ` (${t('kundli.pada')} ${u.nakshatra_pada || u.pada})`}
+                    </td>
+                    <td className={tdCls}>
+                      {typeof u.longitude === 'number' ? u.longitude.toFixed(2) + '°' : u.longitude}
+                    </td>
+                    <td className={tdCls}>
+                      {u.nature && (
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${natStyle}`}>
+                          {natLabel}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                  {isOpen && hasInterp && (
+                    <tr key={`${u.name}-interp`} className="bg-muted/30">
+                      <td colSpan={7} className="p-3 border-t border-border">
+                        {(u.classical_meaning_en || u.classical_meaning_hi) && (
+                          <p className="text-xs text-foreground/70 italic mb-1">
+                            {isHi ? (u.classical_meaning_hi || u.classical_meaning_en) : (u.classical_meaning_en || u.classical_meaning_hi)}
+                          </p>
+                        )}
+                        <p className="text-xs text-foreground/80 leading-relaxed">
+                          {isHi ? (u.interpretation_hi || u.interpretation_en) : (u.interpretation_en || u.interpretation_hi)}
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

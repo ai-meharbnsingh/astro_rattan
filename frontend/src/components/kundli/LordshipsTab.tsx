@@ -1,14 +1,12 @@
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { SIGN_LORD } from './kundli-utils';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 
 interface LordshipsTabProps {
   planets: any[];
   houses: any;
 }
 
-// House significance with direct Hindi translations
 const HOUSE_SIGNIFICANCE_HI: Record<number, string> = {
   1: 'स्वयं, व्यक्तित्व, रूप',
   2: 'धन, परिवार, वाणी',
@@ -39,47 +37,61 @@ const HOUSE_SIGNIFICANCE_EN: Record<number, string> = {
   12: 'Losses, Moksha, Foreign Lands',
 };
 
+const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
+
 export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   const { language, t } = useTranslation();
-  const HOUSE_SIGNIFICANCE = language === 'hi' ? HOUSE_SIGNIFICANCE_HI : HOUSE_SIGNIFICANCE_EN;
+  const isHi = language === 'hi';
+  const HOUSE_SIGNIFICANCE = isHi ? HOUSE_SIGNIFICANCE_HI : HOUSE_SIGNIFICANCE_EN;
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-        <Table className="w-full text-xs">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-left">{t('auto.house')}</TableHead>
-              <TableHead className="text-left">{t('auto.sign')}</TableHead>
-              <TableHead className="text-left">{t('auto.lord')}</TableHead>
-              <TableHead className="text-left">{t('auto.placedIn')}</TableHead>
-              <TableHead className="text-left">{t('auto.significance')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 12 }, (_, i) => {
-              const houseNum = i + 1;
-              // Houses can be an array or object
-              const houseData = Array.isArray(houses) ? houses[i] : houses[houseNum] || houses[String(houseNum)];
-              const houseSign = houseData?.sign || (Array.isArray(houses) ? houseData : '\u2014');
-              const signName = typeof houseSign === 'string' ? houseSign : '\u2014';
-              const lord = SIGN_LORD[signName] || '\u2014';
+    <div className={ohContainer}>
+      <div className={ohHeader}>
+        <span>{isHi ? 'भाव स्वामित्व' : 'House Lordships'}</span>
+      </div>
+      <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <colgroup>
+          <col style={{ width: '8%' }} />
+          <col style={{ width: '16%' }} />
+          <col style={{ width: '16%' }} />
+          <col style={{ width: '16%' }} />
+          <col style={{ width: '44%' }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <th className={thCls}>{t('auto.house')}</th>
+            <th className={thCls}>{t('auto.sign')}</th>
+            <th className={thCls}>{t('auto.lord')}</th>
+            <th className={thCls}>{t('auto.placedIn')}</th>
+            <th className={thCls}>{t('auto.significance')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 12 }, (_, i) => {
+            const houseNum = i + 1;
+            const houseData = Array.isArray(houses) ? houses[i] : houses[houseNum] || houses[String(houseNum)];
+            const houseSign = houseData?.sign || (Array.isArray(houses) ? houseData : '\u2014');
+            const signName = typeof houseSign === 'string' ? houseSign : '\u2014';
+            const lord = SIGN_LORD[signName] || '\u2014';
 
-              // Find which house the lord sits in
-              const lordPlanet = planets.find((p: any) => p.planet === lord);
-              const lordPlacedIn = lordPlanet ? `${t('auto.house')} ${lordPlanet.house}` : '\u2014';
+            const lordPlanet = planets.find((p: any) => p.planet === lord);
+            const lordPlacedIn = lordPlanet ? `${t('auto.house')} ${lordPlanet.house}` : '\u2014';
 
-              return (
-                <TableRow key={houseNum}>
-                  <TableCell className="font-medium text-foreground">{houseNum}</TableCell>
-                  <TableCell className="text-foreground">{translateSign(signName, language)}</TableCell>
-                  <TableCell className="font-medium text-foreground">{translatePlanet(lord, language)}</TableCell>
-                  <TableCell className="text-foreground">{lordPlacedIn}</TableCell>
-                  <TableCell className="text-foreground">{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+            return (
+              <tr key={houseNum}>
+                <td className={`${tdCls} font-medium text-center`}>{houseNum}</td>
+                <td className={tdCls}>{translateSign(signName, language)}</td>
+                <td className={`${tdCls} font-medium`}>{translatePlanet(lord, language)}</td>
+                <td className={tdCls}>{lordPlacedIn}</td>
+                <td className={tdCls}>{HOUSE_SIGNIFICANCE[houseNum] || '\u2014'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

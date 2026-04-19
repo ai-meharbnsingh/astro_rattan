@@ -4,9 +4,7 @@ import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import type { Language } from '@/lib/i18n';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
-import { Heading } from '@/components/ui/heading';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 
 /* ────────────────────────────── Props ────────────────────────────── */
 
@@ -216,15 +214,6 @@ function SeverityBadge({ severity, lang }: { severity: 'high' | 'medium' | 'low'
   );
 }
 
-function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
-  return (
-    <Heading as={4} variant={4} className="mb-3 flex items-center gap-2">
-      {icon}
-      {title}
-    </Heading>
-  );
-}
-
 function LoadingSpinner({ lang }: { lang: string }) {
   return (
     <div className="flex items-center justify-center py-12">
@@ -366,13 +355,21 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         birth_chart_ascendant: birthAscendant,
         birth_chart_houses: birthHouses,
         transits: transitsArr,
-        houses: (raw?.house_analysis || []).map((h: unknown) => {
+        houses: (raw?.house_analysis || flat.house_analysis || []).map((h: unknown) => {
           const house = (h || {}) as Record<string, unknown>;
+          const mm = house.mundane_meaning;
+          const meaning = typeof mm === 'object' && mm
+            ? ((mm as Record<string, string>)[lang] || (mm as Record<string, string>).en || '')
+            : (mm as string) || '';
+          const cond = house.condition as string || '';
+          const status = /positive|stable|growth|good/i.test(cond) ? 'positive'
+            : /negative|unstable|pressure|risk|conflict/i.test(cond) ? 'negative'
+            : 'neutral';
           return {
             ...house,
-            mundane_meaning: typeof house.mundane_meaning === 'object' && house.mundane_meaning
-              ? ((house.mundane_meaning as Record<string, string>)[lang] || (house.mundane_meaning as Record<string, string>).en)
-              : house.mundane_meaning,
+            meaning,
+            transiting_planets: house.transit_planets || house.transiting_planets || [],
+            status,
           };
         }),
         // build indicators from summary
@@ -386,6 +383,17 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         risks: flat.risks || flat.conflict_indicators,
         // economic analysis
         economic_analysis: flat.economic_analysis || flat.economic_indicators,
+        // political analysis — backend key is political_indicators
+        political_analysis: (() => {
+          const pi = flat.political_indicators as Record<string, unknown> | null | undefined;
+          if (!pi) return null;
+          const stability = (pi.government_stability as string) || '';
+          const factors = pi.factors;
+          const description = Array.isArray(factors)
+            ? factors.map((f: unknown) => (typeof f === 'string' ? f : (f as Record<string,string>)?.en || '')).filter(Boolean).join('. ')
+            : '';
+          return { stability, description };
+        })(),
       };
       setAnalysisData(normalized);
     } catch (err) {
@@ -396,12 +404,12 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   }, [lang]);
 
   /* ── fetch eclipses ── */
-  const fetchEclipses = useCallback(async (year: number) => {
+  const fetchEclipses = useCallback(async (year: number, country: string) => {
     setLoadingEclipse(true);
     try {
-      const raw = await api.get(`/api/mundane/eclipses?year=${year}`);
-      const data = flattenBilingual<{ eclipses?: EclipseEntry[] } | EclipseEntry[]>(raw, lang);
-      setEclipseData(Array.isArray(data) ? data : data?.eclipses ?? null);
+      const raw = await api.get(`/api/mundane/eclipses?year=${year}&country=${country}`);
+      const data = flattenBilingual<Record<string, unknown> | EclipseEntry[]>(raw, lang);
+      setEclipseData(Array.isArray(data) ? data : (data as Record<string, unknown>)?.eclipses as EclipseEntry[] ?? null);
     } catch {
       setEclipseData(null);
     }
@@ -413,8 +421,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     setLoadingIngress(true);
     try {
       const raw = await api.get(`/api/mundane/ingress?year=${year}`);
-      const data = flattenBilingual<{ ingresses?: IngressEntry[] } | IngressEntry[]>(raw, lang);
-      setIngressData(Array.isArray(data) ? data : data?.ingresses ?? null);
+      const data = flattenBilingual<Record<string, unknown> | IngressEntry[]>(raw, lang);
+      setIngressData(Array.isArray(data) ? data : (data as Record<string, unknown>)?.ingress as IngressEntry[] ?? null);
     } catch {
       setIngressData(null);
     }
@@ -424,7 +432,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
   /* ── initial load + reload on country/year change ── */
   useEffect(() => {
     fetchAnalysis(selectedCountry, selectedYear);
-    fetchEclipses(selectedYear);
+    fetchEclipses(selectedYear, selectedCountry);
     fetchIngress(selectedYear);
   }, [selectedCountry, selectedYear, fetchAnalysis, fetchEclipses, fetchIngress]);
 
@@ -474,50 +482,40 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
     return 'border-amber-300';
   };
 
-  /* ── Build ChartData for InteractiveKundli (birth chart) ── */
-  const birthChartData: ChartData | null = useMemo(() => {
+  /* ── Build PlanetEntry[] for KundliChartSVG (birth chart) ── */
+  const birthChartPlanets: PlanetEntry[] | null = useMemo(() => {
     if (!analysisData?.birth_chart || analysisData.birth_chart.length === 0) return null;
-    const planets: PlanetData[] = analysisData.birth_chart.map(p => ({
+    return analysisData.birth_chart.map(p => ({
       planet: p.planet,
       sign: p.sign,
-      house: p.house,
-      nakshatra: p.nakshatra || '',
       sign_degree: parseFloat(p.degree?.replace('\u00b0', '') || '0') || 0,
       status: p.retrograde ? 'Retrograde' : '',
       is_retrograde: !!p.retrograde,
-    }));
-    return {
-      planets,
-      houses: analysisData.birth_chart_houses || undefined,
-      ascendant: analysisData.birth_chart_ascendant || undefined,
-    };
+    } as PlanetEntry));
   }, [analysisData]);
 
-  /* ── Build ChartData for InteractiveKundli (transit / gochar chart) ── */
-  const transitChartData: ChartData | null = useMemo(() => {
+  /* ── Build PlanetEntry[] for KundliChartSVG (transit chart) ── */
+  const transitChartPlanets: PlanetEntry[] | null = useMemo(() => {
     if (!analysisData?.transits || analysisData.transits.length === 0) return null;
-    const planets: PlanetData[] = analysisData.transits.map(t => ({
+    return analysisData.transits.map(t => ({
       planet: t.planet,
       sign: t.current_sign || t.sign || '',
-      house: t.house,
-      nakshatra: '',
       sign_degree: t.sign_degree || 0,
       status: t.retrograde ? 'Retrograde' : '',
       is_retrograde: !!t.retrograde,
-    }));
-    // For transit chart, derive houses from the country birth chart ascendant
-    // so transit planets are placed relative to the natal ascendant
-    return {
-      planets,
-      houses: analysisData.birth_chart_houses || undefined,
-      ascendant: analysisData.birth_chart_ascendant || undefined,
-    };
+    } as PlanetEntry));
   }, [analysisData]);
 
   /* ────────────────────────────── Render ────────────────────────────── */
 
+  const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
+  const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
+  const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-primary border-b border-border';
+  const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top';
+  const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
 
       {/* Error Banner */}
       {error && (
@@ -542,528 +540,459 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
         </div>
       )}
 
-      {/* ══════════════════ 1. Country Selector + Summary Dashboard ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Globe2 className="w-5 h-5 text-primary" />}
-          title={T.mundaneAstrology(lang)}
-        />
-
-        {/* Country selector */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-foreground mb-1">
-            {T.selectCountry(lang)}
-          </label>
-          <select
-            value={selectedCountry}
-            onChange={e => setSelectedCountry(e.target.value)}
-            className="w-full sm:w-64 rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {countries.map(c => (
-              <option key={c.code} value={c.code}>
-                {c.flag ? `${c.flag} ` : ''}{lang === 'hi' && c.name_hi ? c.name_hi : c.name}
-              </option>
-            ))}
-          </select>
+      {/* ── 1. Country Selector + Summary ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Globe2 className="w-4 h-4" />
+          <span>{T.mundaneAstrology(lang)}</span>
         </div>
-
-        {/* Indicator cards */}
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.indicators && analysisData.indicators.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {analysisData.indicators.slice(0, 4).map((card, idx) => (
-              <div
-                key={idx}
-                className={`rounded-xl border bg-white p-3 text-center ${indicatorBorderColor(card.status)}`}
-              >
-                <div className="text-2xl mb-1">{indicatorEmoji(idx, card.status)}</div>
-                <div className="text-sm font-medium text-foreground mb-0.5">
-                  {loc(card.label, card.label_hi)}
-                </div>
-                <div className="text-sm font-semibold text-foreground">
-                  {loc(card.value, card.value_hi)}
-                </div>
-              </div>
-            ))}
+        <div className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">{T.selectCountry(lang)}</label>
+            <select
+              value={selectedCountry}
+              onChange={e => setSelectedCountry(e.target.value)}
+              className="w-full sm:w-64 rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {countries.map(c => (
+                <option key={c.code} value={c.code}>
+                  {c.flag ? `${c.flag} ` : ''}{lang === 'hi' && c.name_hi ? c.name_hi : c.name}
+                </option>
+              ))}
+            </select>
           </div>
-        ) : !loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { label: T.nationalMood(lang), emoji: '\uD83D\uDFE1' },
-              { label: T.govStability(lang), emoji: '\uD83D\uDFE1' },
-              { label: T.economyTrend(lang), emoji: '\u27A1\uFE0F' },
-              { label: T.riskLevel(lang), emoji: '\u26A0\uFE0F' },
-            ].map((card, idx) => (
-              <div key={idx} className="rounded-xl border border-border bg-white p-3 text-center">
-                <div className="text-2xl mb-1">{card.emoji}</div>
-                <div className="text-sm font-medium text-foreground mb-0.5">{card.label}</div>
-                <div className="text-sm text-foreground italic">{T.dataUnavailable(lang)}</div>
-              </div>
-            ))}
-          </div>
-        )}
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.indicators && analysisData.indicators.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {analysisData.indicators.slice(0, 4).map((card, idx) => (
+                <div key={idx} className={`rounded-xl border bg-white p-3 text-center ${indicatorBorderColor(card.status)}`}>
+                  <div className="text-2xl mb-1">{indicatorEmoji(idx, card.status)}</div>
+                  <div className="text-sm font-medium text-foreground mb-0.5">{loc(card.label, card.label_hi)}</div>
+                  <div className="text-sm font-semibold text-foreground">{loc(card.value, card.value_hi)}</div>
+                </div>
+              ))}
+            </div>
+          ) : !loading && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: T.nationalMood(lang), emoji: '\uD83D\uDFE1' },
+                { label: T.govStability(lang), emoji: '\uD83D\uDFE1' },
+                { label: T.economyTrend(lang), emoji: '\u27A1\uFE0F' },
+                { label: T.riskLevel(lang), emoji: '\u26A0\uFE0F' },
+              ].map((card, idx) => (
+                <div key={idx} className="rounded-xl border border-border bg-white p-3 text-center">
+                  <div className="text-2xl mb-1">{card.emoji}</div>
+                  <div className="text-sm font-medium text-foreground mb-0.5">{card.label}</div>
+                  <div className="text-sm text-foreground italic">{T.dataUnavailable(lang)}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ══════════════════ 2. Country Birth Chart ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Landmark className="w-5 h-5 text-primary" />}
-          title={T.countryBirthChart(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData ? (
-          <>
-            {/* Independence metadata */}
-            {(analysisData.independence_date || analysisData.independence_place) && (
-              <div className="mb-4 text-sm space-y-1 text-foreground">
-                {analysisData.independence_date && (
-                  <p><span className="font-medium text-foreground">{T.independenceDate(lang)}:</span> {analysisData.independence_date}</p>
-                )}
-                {analysisData.independence_time && (
-                  <p><span className="font-medium text-foreground">{T.time(lang)}:</span> {analysisData.independence_time}</p>
-                )}
-                {analysisData.independence_place && (
-                  <p><span className="font-medium text-foreground">{T.place(lang)}:</span> {analysisData.independence_place}</p>
-                )}
-              </div>
-            )}
-
-            {/* Kundli Chart + Table Side by Side */}
-            {birthChartData && analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 items-start">
-                {/* Chart */}
-                <div className="flex flex-col items-center">
-                  <Heading as={5} variant={5} className="mb-3">{T.kundliChart(lang)}</Heading>
-                  <div className="max-w-[320px] w-full">
-                    <InteractiveKundli
-                      chartData={birthChartData}
-                      compact
-                    />
-                  </div>
+      {/* ── 2. Country Birth Chart ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Landmark className="w-4 h-4" />
+          <span>{T.countryBirthChart(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData ? (
+            <>
+              {(analysisData.independence_date || analysisData.independence_place) && (
+                <div className="mb-4 text-xs space-y-1 text-foreground">
+                  {analysisData.independence_date && <p><span className="font-medium">{T.independenceDate(lang)}:</span> {analysisData.independence_date}</p>}
+                  {analysisData.independence_time && <p><span className="font-medium">{T.time(lang)}:</span> {analysisData.independence_time}</p>}
+                  {analysisData.independence_place && <p><span className="font-medium">{T.place(lang)}:</span> {analysisData.independence_place}</p>}
                 </div>
-                
-                {/* Planet positions table */}
-                <div className="overflow-x-auto">
-                  <Table className="w-full text-sm border-collapse">
-                    <TableHeader>
-                      <TableRow className="bg-muted">
-                        <TableHead className="text-left p-2 font-medium text-primary">{T.planet(lang)}</TableHead>
-                        <TableHead className="text-left p-2 font-medium text-primary">{T.sign(lang)}</TableHead>
-                        <TableHead className="text-center p-2 font-medium text-primary">{T.house(lang)}</TableHead>
-                        <TableHead className="text-center p-2 font-medium text-primary">{T.degree(lang)}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+              )}
+              {birthChartPlanets && analysisData.birth_chart && analysisData.birth_chart.length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                  <div className="flex flex-col items-center">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{T.kundliChart(lang)}</p>
+                    <div className="w-full max-w-[340px] aspect-square">
+                      <KundliChartSVG
+                        planets={birthChartPlanets}
+                        ascendantSign={analysisData.birth_chart_ascendant?.sign || ''}
+                        language={lang}
+                        showHouseNumbers={false}
+                        showRashiNumbers
+                        rashiNumberPlacement="corner"
+                        showAscendantMarker={false}
+                      />
+                    </div>
+                  </div>
+                  <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                    <colgroup>
+                      <col style={{ width: '30%' }} /><col style={{ width: '30%' }} /><col style={{ width: '20%' }} /><col style={{ width: '20%' }} />
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th className={thCls}>{T.planet(lang)}</th>
+                        <th className={thCls}>{T.sign(lang)}</th>
+                        <th className={thCls}>{T.house(lang)}</th>
+                        <th className={thCls}>{T.degree(lang)}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {analysisData.birth_chart.map((p, idx) => (
-                        <TableRow key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                          <TableCell className="p-2 font-semibold">{translatePlanet(p.planet, lang)}</TableCell>
-                          <TableCell className="p-2">{translateSign(p.sign, lang)}</TableCell>
-                          <TableCell className="p-2 text-center">{p.house}</TableCell>
-                          <TableCell className="p-2 text-center font-mono text-sm">{p.degree}</TableCell>
-                        </TableRow>
+                        <tr key={idx}>
+                          <td className={`${tdCls} font-semibold`}>{translatePlanet(p.planet, lang)}</td>
+                          <td className={tdCls}>{translateSign(p.sign, lang)}</td>
+                          <td className={`${tdCls} text-center`}>{p.house}</td>
+                          <td className={`${tdCls} font-mono`}>{p.degree}</td>
+                        </tr>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </tbody>
+                  </table>
                 </div>
-              </div>
-            ) : (
-              <DataUnavailable lang={lang} />
-            )}
-          </>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
-      </div>
-
-      {/* ══════════════════ 3. Current Transits Impact ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<TrendingUp className="w-5 h-5 text-primary" />}
-          title={T.currentTransits(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.transits && analysisData.transits.length > 0 ? (
-          <>
-            {/* Gochar Chart + Table Side by Side */}
-            {transitChartData && analysisData.transits && analysisData.transits.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                {/* Chart */}
-                <div className="flex flex-col items-center">
-                  <Heading as={5} variant={5} className="mb-3">{T.gocharChart(lang)}</Heading>
-                  <div className="max-w-[320px] w-full">
-                    <InteractiveKundli
-                      chartData={transitChartData}
-                      compact
-                    />
-                  </div>
-                </div>
-                
-                {/* Transits table */}
-                <div className="overflow-x-auto">
-                  <Table className="w-full text-sm border-collapse">
-                    <TableHeader>
-                      <TableRow className="bg-muted">
-                        <TableHead className="text-left p-2 font-medium text-primary">{T.planet(lang)}</TableHead>
-                        <TableHead className="text-left p-2 font-medium text-primary">{T.currentSign(lang)}</TableHead>
-                        <TableHead className="text-center p-2 font-medium text-primary">{T.house(lang)}</TableHead>
-                        <TableHead className="text-left p-2 font-medium text-primary">{T.impact(lang)}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {analysisData.transits.map((t_item, idx) => {
-                        const rowColor = t_item.type === 'benefic'
-                          ? 'bg-emerald-50'
-                          : t_item.type === 'malefic'
-                          ? 'bg-red-50'
-                          : 'bg-amber-50';
-                        const textColor = t_item.type === 'benefic'
-                          ? 'text-emerald-700'
-                          : t_item.type === 'malefic'
-                          ? 'text-red-700'
-                          : 'text-amber-700';
-                        return (
-                          <TableRow key={idx} className={`border-b border-slate-100 ${rowColor}`}>
-                            <TableCell className="p-2 font-semibold">{translatePlanet(t_item.planet, lang)}</TableCell>
-                            <TableCell className="p-2">{translateSign(t_item.current_sign, lang)}</TableCell>
-                            <TableCell className="p-2 text-center">{t_item.house}</TableCell>
-                            <TableCell className={`p-2 text-sm ${textColor}`}>{loc(t_item.impact, t_item.impact_hi)}</TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            ) : (
-              <DataUnavailable lang={lang} />
-            )}
-          </>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
-      </div>
-
-      {/* ══════════════════ 4. House Analysis (12 houses) ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Building2 className="w-5 h-5 text-primary" />}
-          title={T.houseAnalysis(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.houses && analysisData.houses.length > 0 ? (
-          <div className="space-y-2">
-            {analysisData.houses.map(h => {
-              const isExpanded = expandedHouses.has(h.house);
-              return (
-                <div key={h.house} className="border border-border rounded-lg bg-white overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => toggleHouse(h.house)}
-                    className="w-full flex items-center justify-between p-3 text-left hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white-dark font-bold text-sm">
-                        {h.house}
-                      </span>
-                      <div>
-                        <span className="text-sm font-medium text-foreground">
-                          {t('auto.houseHHouse')}
-                        </span>
-                        <span className="text-sm text-foreground ml-2">
-                          {(() => {
-                            // Handle meaning as bilingual object
-                            if (h.meaning && typeof h.meaning === 'object') {
-                              const meaning = h.meaning as Record<string, string>;
-                              return lang === 'hi' ? meaning.hi || meaning.en : meaning.en;
-                            }
-                            return loc(
-                              h.meaning || (t('auto.unavailable')),
-                              h.meaning_hi || 'उपलब्ध नहीं',
-                            );
-                          })()}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={h.status} lang={lang} />
-                      <ChevronDown className={`w-4 h-4 text-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                    </div>
-                  </button>
-
-                  {isExpanded && (
-                    <div className="px-3 pb-3 border-t border-border pt-2 text-sm space-y-2">
-                      <div>
-                        <span className="font-medium text-foreground">{T.condition(lang)}: </span>
-                        <span className="text-foreground">{
-                          // Handle condition as bilingual object or string
-                          typeof h.condition === 'object' && h.condition !== null
-                            ? (() => {
-                              const condition = h.condition as Record<string, string>;
-                              return (lang === 'hi' ? condition.hi : condition.en) || '';
-                            })()
-                            : loc(h.condition, h.condition_hi)
-                        }</span>
-                      </div>
-                      {h.transiting_planets && h.transiting_planets.length > 0 && (
-                        <div>
-                          <span className="font-medium text-foreground">{T.transitingPlanets(lang)}: </span>
-                          <span className="text-foreground">
-                            {h.transiting_planets.map(p => translatePlanet(p, lang)).join(', ')}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
-      </div>
-
-      {/* ══════════════════ 5. Conflict & Risk Indicators ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<AlertTriangle className="w-5 h-5 text-primary" />}
-          title={T.conflictIndicators(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.risks && analysisData.risks.length > 0 ? (
-          <div className="space-y-2">
-            {analysisData.risks.map((risk, idx) => {
-              const borderColor = risk.severity === 'high'
-                ? 'border-l-red-500'
-                : risk.severity === 'medium'
-                ? 'border-l-amber-400'
-                : 'border-l-emerald-400';
-              const bgColor = risk.severity === 'high'
-                ? 'bg-red-50'
-                : risk.severity === 'medium'
-                ? 'bg-amber-50'
-                : 'bg-emerald-50';
-              return (
-                <div key={idx} className={`border border-border border-l-4 ${borderColor} ${bgColor} rounded-lg p-3`}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold text-foreground">
-                      {loc(risk.title, risk.title_hi)}
-                    </span>
-                    <SeverityBadge severity={risk.severity} lang={lang} />
-                  </div>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {loc(risk.description, risk.description_hi)}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <Shield className="w-8 h-8 mx-auto text-emerald-400 mb-2" />
-            <p className="text-sm text-foreground">{T.noRisks(lang)}</p>
-          </div>
-        )}
-      </div>
-
-      {/* ══════════════════ 6. Economic Analysis ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<TrendingUp className="w-5 h-5 text-primary" />}
-          title={T.economicAnalysis(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.economic_analysis ? (
-          <div className="flex items-start gap-4">
-            <div className="shrink-0">
-              {analysisData.economic_analysis.trend === 'growth' && (
-                <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-emerald-600" />
-                </div>
+              ) : (
+                <DataUnavailable lang={lang} />
               )}
-              {analysisData.economic_analysis.trend === 'pressure' && (
-                <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center">
-                  <TrendingDown className="w-6 h-6 text-red-600" />
-                </div>
-              )}
-              {analysisData.economic_analysis.trend === 'neutral' && (
-                <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
-                  <Minus className="w-6 h-6 text-amber-600" />
-                </div>
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground mb-1">
-                {analysisData.economic_analysis.trend === 'growth' ? T.growth(lang)
-                  : analysisData.economic_analysis.trend === 'pressure' ? T.pressure(lang)
-                  : T.neutral(lang)}
-              </p>
-              <p className="text-sm text-foreground leading-relaxed">
-                {loc(analysisData.economic_analysis.description, analysisData.economic_analysis.description_hi)}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
-      </div>
-
-      {/* ══════════════════ 7. Political Analysis ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Landmark className="w-5 h-5 text-primary" />}
-          title={T.politicalAnalysis(lang)}
-        />
-
-        {loading ? (
-          <LoadingSpinner lang={lang} />
-        ) : analysisData?.political_analysis ? (
-          <div className="flex items-start gap-4">
-            <div className="shrink-0">
-              {analysisData.political_analysis.stability === 'stable' && (
-                <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-emerald-600" />
-                </div>
-              )}
-              {analysisData.political_analysis.stability === 'unstable' && (
-                <div className="w-12 h-12 rounded-full bg-red-50 border border-red-200 flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-red-600" />
-                </div>
-              )}
-              {analysisData.political_analysis.stability === 'pressured' && (
-                <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-amber-600" />
-                </div>
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground mb-1">
-                {analysisData.political_analysis.stability === 'stable' ? T.stable(lang)
-                  : analysisData.political_analysis.stability === 'unstable' ? T.unstable(lang)
-                  : T.pressured(lang)}
-              </p>
-              <p className="text-sm text-foreground leading-relaxed">
-                {loc(analysisData.political_analysis.description, analysisData.political_analysis.description_hi)}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
-      </div>
-
-      {/* ══════════════════ 8. Eclipse Tracker ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Moon className="w-5 h-5 text-primary" />}
-          title={T.eclipseTracker(lang)}
-        />
-
-        {/* Year navigation */}
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <button
-            type="button"
-            onClick={prevYear}
-            className="p-1.5 rounded-lg border border-border hover:bg-muted/10 text-foreground transition-colors"
-            aria-label={t('auto.previousYear')}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="text-sm font-semibold text-foreground min-w-[60px] text-center">
-            {selectedYear}
-          </span>
-          <button
-            type="button"
-            onClick={nextYear}
-            className="p-1.5 rounded-lg border border-border hover:bg-muted/10 text-foreground transition-colors"
-            aria-label={t('auto.nextYear')}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+            </>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
         </div>
-
-        {loadingEclipse ? (
-          <LoadingSpinner lang={lang} />
-        ) : eclipseData && eclipseData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table className="w-full text-sm border-collapse">
-              <TableHeader>
-                <TableRow className="bg-muted">
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.date(lang)}</TableHead>
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.type(lang)}</TableHead>
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.solarLunar(lang)}</TableHead>
-                  <TableHead className="text-center p-2 font-medium text-primary">{T.affectedHouse(lang)}</TableHead>
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.impact(lang)}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {eclipseData.map((e, idx) => (
-                  <TableRow key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                    <TableCell className="p-2 font-mono text-sm">{e.date}</TableCell>
-                    <TableCell className="p-2">{loc(e.type, e.type_hi)}</TableCell>
-                    <TableCell className="p-2">
-                      {e.solar_lunar === 'Solar' ? (
-                        <span className="inline-flex items-center gap-1"><Sun className="w-3.5 h-3.5 text-amber-500" />{T.solar(lang)}</span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1"><Moon className="w-3.5 h-3.5 text-muted-foreground" />{T.lunar(lang)}</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="p-2 text-center">{e.affected_house}</TableCell>
-                    <TableCell className="p-2 text-sm text-foreground">{loc(e.impact, e.impact_hi)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
       </div>
 
-      {/* ══════════════════ 9. Ingress / Sankranti Dates ══════════════════ */}
-      <div className="rounded-xl border border-sacred-gold/20 bg-transparent p-4">
-        <SectionHeader
-          icon={<Sun className="w-5 h-5 text-primary" />}
-          title={T.ingressDates(lang)}
-        />
+      {/* ── 3. Current Transits Impact ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <TrendingUp className="w-4 h-4" />
+          <span>{T.currentTransits(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.transits && analysisData.transits.length > 0 && transitChartPlanets ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              <div className="flex flex-col items-center">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{T.gocharChart(lang)}</p>
+                <div className="w-full max-w-[340px] aspect-square">
+                  <KundliChartSVG
+                    planets={transitChartPlanets}
+                    ascendantSign={analysisData.birth_chart_ascendant?.sign || ''}
+                    language={lang}
+                    showHouseNumbers={false}
+                    showRashiNumbers
+                    rashiNumberPlacement="corner"
+                    showAscendantMarker={false}
+                  />
+                </div>
+              </div>
+              <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                <colgroup>
+                  <col style={{ width: '22%' }} /><col style={{ width: '22%' }} /><col style={{ width: '12%' }} /><col style={{ width: '44%' }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th className={thCls}>{T.planet(lang)}</th>
+                    <th className={thCls}>{T.currentSign(lang)}</th>
+                    <th className={thCls}>{T.house(lang)}</th>
+                    <th className={thCls}>{T.impact(lang)}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {analysisData.transits.map((t_item, idx) => {
+                    const rowCls = t_item.type === 'benefic' ? 'bg-emerald-50' : t_item.type === 'malefic' ? 'bg-red-50' : '';
+                    const impCls = t_item.type === 'benefic' ? 'text-emerald-700' : t_item.type === 'malefic' ? 'text-red-700' : 'text-amber-700';
+                    return (
+                      <tr key={idx} className={rowCls}>
+                        <td className={`${tdCls} font-semibold`}>{translatePlanet(t_item.planet, lang)}</td>
+                        <td className={tdCls}>{translateSign(t_item.current_sign, lang)}</td>
+                        <td className={`${tdCls} text-center`}>{t_item.house}</td>
+                        <td className={`${tdWrapCls} ${impCls}`}>{loc(t_item.impact, t_item.impact_hi)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : !loading && (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
+      </div>
 
-        {loadingIngress ? (
-          <LoadingSpinner lang={lang} />
-        ) : ingressData && ingressData.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table className="w-full text-sm border-collapse">
-              <TableHeader>
-                <TableRow className="bg-muted">
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.sign(lang)}</TableHead>
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.date(lang)}</TableHead>
-                  <TableHead className="text-left p-2 font-medium text-primary">{T.theme(lang)}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ingressData.map((entry, idx) => (
-                  <TableRow key={idx} className="border-b border-slate-100 hover:bg-slate-50">
-                    <TableCell className="p-2 font-semibold">{translateSign(entry.sign, lang)}</TableCell>
-                    <TableCell className="p-2 font-mono text-sm">{entry.date}</TableCell>
-                    <TableCell className="p-2 text-sm text-foreground">{loc(entry.theme, entry.theme_hi)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+      {/* ── 4. House Analysis ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Building2 className="w-4 h-4" />
+          <span>{T.houseAnalysis(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.houses && analysisData.houses.length > 0 ? (
+            <div className="space-y-2">
+              {analysisData.houses.map(h => {
+                const isExpanded = expandedHouses.has(h.house);
+                return (
+                  <div key={h.house} className="border border-border rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => toggleHouse(h.house)}
+                      className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-sacred-gold-dark text-white font-bold text-xs">
+                          {h.house}
+                        </span>
+                        <span className="text-sm text-foreground">
+                          {(h.meaning as string) || '—'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={h.status} lang={lang} />
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                      </div>
+                    </button>
+                    {isExpanded && (
+                      <div className="px-4 pb-3 border-t border-border pt-2 text-xs space-y-1.5">
+                        <div>
+                          <span className="font-semibold text-foreground uppercase tracking-wide">{T.condition(lang)}: </span>
+                          <span className="text-foreground">{
+                            typeof h.condition === 'object' && h.condition !== null
+                              ? (() => { const c = h.condition as Record<string, string>; return (lang === 'hi' ? c.hi : c.en) || ''; })()
+                              : loc(h.condition, h.condition_hi)
+                          }</span>
+                        </div>
+                        {h.transiting_planets && h.transiting_planets.length > 0 && (
+                          <div>
+                            <span className="font-semibold text-foreground uppercase tracking-wide">{T.transitingPlanets(lang)}: </span>
+                            <span className="text-foreground">{h.transiting_planets.map(p => translatePlanet(p, lang)).join(', ')}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
+      </div>
+
+      {/* ── 5. Conflict & Risk Indicators ── */}
+      <div className={ohContainer}>
+        <div className="bg-red-700 text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4" />
+          <span>{T.conflictIndicators(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.risks && analysisData.risks.length > 0 ? (
+            <div className="space-y-2">
+              {analysisData.risks.map((risk, idx) => {
+                const borderColor = risk.severity === 'high' ? 'border-l-red-500' : risk.severity === 'medium' ? 'border-l-amber-400' : 'border-l-emerald-400';
+                const bgColor = risk.severity === 'high' ? 'bg-red-50' : risk.severity === 'medium' ? 'bg-amber-50' : 'bg-emerald-50';
+                return (
+                  <div key={idx} className={`border border-border border-l-4 ${borderColor} ${bgColor} rounded-lg p-3`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-foreground">{loc(risk.title, risk.title_hi)}</span>
+                      <SeverityBadge severity={risk.severity} lang={lang} />
+                    </div>
+                    <p className="text-xs text-foreground leading-relaxed">{loc(risk.description, risk.description_hi)}</p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <Shield className="w-8 h-8 mx-auto text-emerald-400 mb-2" />
+              <p className="text-sm text-foreground">{T.noRisks(lang)}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── 6. Economic Analysis ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <TrendingUp className="w-4 h-4" />
+          <span>{T.economicAnalysis(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.economic_analysis ? (
+            <div className="flex items-start gap-4">
+              <div className="shrink-0">
+                {analysisData.economic_analysis.trend === 'growth' && (
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  </div>
+                )}
+                {analysisData.economic_analysis.trend === 'pressure' && (
+                  <div className="w-10 h-10 rounded-full bg-red-50 border border-red-200 flex items-center justify-center">
+                    <TrendingDown className="w-5 h-5 text-red-600" />
+                  </div>
+                )}
+                {analysisData.economic_analysis.trend === 'neutral' && (
+                  <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
+                    <Minus className="w-5 h-5 text-amber-600" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground mb-1">
+                  {analysisData.economic_analysis.trend === 'growth' ? T.growth(lang)
+                    : analysisData.economic_analysis.trend === 'pressure' ? T.pressure(lang)
+                    : T.neutral(lang)}
+                </p>
+                <p className="text-xs text-foreground leading-relaxed">
+                  {loc(analysisData.economic_analysis.description, analysisData.economic_analysis.description_hi)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
+      </div>
+
+      {/* ── 7. Political Analysis ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Landmark className="w-4 h-4" />
+          <span>{T.politicalAnalysis(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loading ? (
+            <LoadingSpinner lang={lang} />
+          ) : analysisData?.political_analysis ? (
+            <div className="flex items-start gap-4">
+              <div className="shrink-0">
+                {analysisData.political_analysis.stability === 'stable' && (
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-emerald-600" />
+                  </div>
+                )}
+                {analysisData.political_analysis.stability === 'unstable' && (
+                  <div className="w-10 h-10 rounded-full bg-red-50 border border-red-200 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                  </div>
+                )}
+                {analysisData.political_analysis.stability === 'pressured' && (
+                  <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-amber-600" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground mb-1">
+                  {analysisData.political_analysis.stability === 'stable' ? T.stable(lang)
+                    : analysisData.political_analysis.stability === 'unstable' ? T.unstable(lang)
+                    : T.pressured(lang)}
+                </p>
+                <p className="text-xs text-foreground leading-relaxed">
+                  {loc(analysisData.political_analysis.description, analysisData.political_analysis.description_hi)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
+      </div>
+
+      {/* ── 8. Eclipse Tracker ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Moon className="w-4 h-4" />
+          <span>{T.eclipseTracker(lang)}</span>
+        </div>
+        <div className="p-4">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button type="button" onClick={prevYear} className="p-1.5 rounded-lg border border-border hover:bg-muted/10 transition-colors" aria-label={t('auto.previousYear')}>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm font-semibold min-w-[60px] text-center">{selectedYear}</span>
+            <button type="button" onClick={nextYear} className="p-1.5 rounded-lg border border-border hover:bg-muted/10 transition-colors" aria-label={t('auto.nextYear')}>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-        ) : (
-          <DataUnavailable lang={lang} />
-        )}
+          {loadingEclipse ? (
+            <LoadingSpinner lang={lang} />
+          ) : eclipseData && eclipseData.length > 0 ? (
+            <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+              <colgroup>
+                <col style={{ width: '16%' }} /><col style={{ width: '14%' }} /><col style={{ width: '14%' }} /><col style={{ width: '10%' }} /><col style={{ width: '46%' }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th className={thCls}>{T.date(lang)}</th>
+                  <th className={thCls}>{T.type(lang)}</th>
+                  <th className={thCls}>{T.solarLunar(lang)}</th>
+                  <th className={thCls}>{T.affectedHouse(lang)}</th>
+                  <th className={thCls}>{T.impact(lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {eclipseData.map((e, idx) => (
+                  <tr key={idx}>
+                    <td className={`${tdCls} font-mono`}>{e.date}</td>
+                    <td className={tdCls}>{loc(e.type, e.type_hi)}</td>
+                    <td className={tdCls}>
+                      {(e.type as string)?.toLowerCase() === 'solar'
+                        ? <span className="inline-flex items-center gap-1"><Sun className="w-3 h-3 text-amber-500" />{T.solar(lang)}</span>
+                        : <span className="inline-flex items-center gap-1"><Moon className="w-3 h-3 text-muted-foreground" />{T.lunar(lang)}</span>}
+                    </td>
+                    <td className={`${tdCls} text-center`}>{e.affected_house || '—'}</td>
+                    <td className={tdWrapCls}>{loc(e.impact, e.impact_hi) || (e as any).affected_domain || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
+      </div>
+
+      {/* ── 9. Ingress / Sankranti Dates ── */}
+      <div className={ohContainer}>
+        <div className={ohHeader}>
+          <Sun className="w-4 h-4" />
+          <span>{T.ingressDates(lang)}</span>
+        </div>
+        <div className="p-4">
+          {loadingIngress ? (
+            <LoadingSpinner lang={lang} />
+          ) : ingressData && ingressData.length > 0 ? (
+            <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+              <colgroup>
+                <col style={{ width: '28%' }} /><col style={{ width: '22%' }} /><col style={{ width: '50%' }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th className={thCls}>{T.sign(lang)}</th>
+                  <th className={thCls}>{T.date(lang)}</th>
+                  <th className={thCls}>{T.theme(lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ingressData.map((entry, idx) => (
+                  <tr key={idx}>
+                    <td className={`${tdCls} font-semibold`}>{(entry as any).sign || '—'}</td>
+                    <td className={`${tdCls} font-mono`}>{entry.date}</td>
+                    <td className={tdWrapCls}>{(entry as any).sankranti || loc(entry.theme, entry.theme_hi) || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <DataUnavailable lang={lang} />
+          )}
+        </div>
       </div>
     </div>
   );
