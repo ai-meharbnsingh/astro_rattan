@@ -113,6 +113,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
   const [debts, setDebts] = useState<Debt[]>([]);
   const [afflicted, setAfflicted] = useState<string[]>([]);
   const [compound, setCompound] = useState<CompoundAnalysis | null>(null);
+  const [currentDashaLord, setCurrentDashaLord] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -121,6 +122,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
       setDebts([]);
       setAfflicted([]);
       setCompound(null);
+      setCurrentDashaLord(null);
       setError('');
       return;
     }
@@ -131,6 +133,7 @@ export default function LalKitabRinTab({ kundliId }: Props) {
         setDebts(Array.isArray(res?.debts) ? res.debts : []);
         setAfflicted(Array.isArray(res?.afflicted_planets) ? res.afflicted_planets : []);
         setCompound(res?.compound_analysis || null);
+        setCurrentDashaLord(res?.current_dasha_lord || null);
       })
       .catch(() => setError(t('auto.failedToLoadDebtData')))
       .finally(() => setLoading(false));
@@ -151,6 +154,24 @@ export default function LalKitabRinTab({ kundliId }: Props) {
           {t('auto.pastLifeKarmicDebtsT')}
         </p>
       </div>
+
+      {/* Current dasha lord banner */}
+      {!loading && currentDashaLord && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-orange-300/40 bg-orange-500/5 text-sm">
+          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse shrink-0" />
+          <span className="text-orange-700 font-semibold">
+            {isHi ? 'वर्तमान साल-ग्रह:' : 'Current Saala Grah:'}
+          </span>
+          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${PLANET_COLOR[currentDashaLord.toLowerCase()] ?? 'bg-gray-100 text-gray-700'}`}>
+            {isHi
+              ? (PLANET_HI[currentDashaLord.toLowerCase()] ?? currentDashaLord)
+              : currentDashaLord.charAt(0).toUpperCase() + currentDashaLord.slice(1)}
+          </span>
+          <span className="text-xs text-foreground/60">
+            {isHi ? '— इस ग्रह से जुड़े ऋण अभी सक्रिय हैं' : '— debts linked to this planet are live now'}
+          </span>
+        </div>
+      )}
 
       {/* Afflicted planets notice */}
       {!loading && afflicted.length > 0 && (

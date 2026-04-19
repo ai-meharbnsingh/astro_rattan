@@ -2551,8 +2551,16 @@ def get_active_rin(
         # Non-fatal — the raw debt list still ships.
         compound_analysis = None
 
+    afflicted_planets = sorted({
+        str(d.get("planet") or "").lower()
+        for d in enriched
+        if d.get("activation_status") == "active" or d.get("dasha_active")
+        if d.get("planet")
+    })
+
     return {
         "debts": enriched,
+        "afflicted_planets": afflicted_planets,
         "current_dasha_lord": current_dasha_lord,
         "compound_analysis": compound_analysis,
     }
@@ -3886,3 +3894,194 @@ def get_abhimantrit_items(
 ):
     """Return the static Abhimantrit specialty items catalogue (LK 4.20)."""
     return {"kundli_id": kundli_id, "items": ABHIMANTRIT_ITEMS, "source": "LK_ABHIMANTRIT"}
+
+
+# ─────────────────────────────────────────────────────────────
+# Lal Kitab Sapt Var (7-Day Weekly Forecast)
+# ─────────────────────────────────────────────────────────────
+
+_DAY_LORDS = {0: "Moon", 1: "Mars", 2: "Mercury", 3: "Jupiter", 4: "Venus", 5: "Saturn", 6: "Sun"}
+_DAY_NAMES_EN = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+_DAY_NAMES_HI = {0: "सोमवार", 1: "मंगलवार", 2: "बुधवार", 3: "गुरुवार", 4: "शुक्रवार", 5: "शनिवार", 6: "रविवार"}
+
+_SAPT_VAR_HOUSE_THEMES = {
+    1:  {"en": "self, health, personality, and fresh starts", "hi": "स्वयं, स्वास्थ्य, व्यक्तित्व और नई शुरुआत"},
+    2:  {"en": "family, wealth, speech, and food", "hi": "परिवार, धन, वाणी और भोजन"},
+    3:  {"en": "courage, siblings, communication, and short journeys", "hi": "साहस, भाई-बहन, संवाद और छोटी यात्राएँ"},
+    4:  {"en": "home, mother, real estate, and emotional peace", "hi": "घर, माता, संपत्ति और भावनात्मक शांति"},
+    5:  {"en": "intelligence, children, creativity, and speculation", "hi": "बुद्धि, संतान, रचनात्मकता और सट्टा"},
+    6:  {"en": "enemies, debts, health challenges, and service", "hi": "शत्रु, ऋण, स्वास्थ्य चुनौतियाँ और सेवा"},
+    7:  {"en": "partnerships, marriage, contracts, and open dealings", "hi": "साझेदारी, विवाह, अनुबंध और खुले व्यवहार"},
+    8:  {"en": "transformation, in-laws, occult, and hidden matters", "hi": "परिवर्तन, ससुराल, गुप्त विद्या और छुपे मामले"},
+    9:  {"en": "luck, dharma, father, religion, and long journeys", "hi": "भाग्य, धर्म, पिता, धर्म और लंबी यात्राएँ"},
+    10: {"en": "career, reputation, authority, and public life", "hi": "करियर, प्रतिष्ठा, अधिकार और सार्वजनिक जीवन"},
+    11: {"en": "gains, desires, elder siblings, and social networks", "hi": "लाभ, इच्छाएँ, बड़े भाई-बहन और सामाजिक संपर्क"},
+    12: {"en": "expenditure, isolation, foreign matters, and spirituality", "hi": "खर्च, एकांत, विदेशी मामले और आध्यात्मिकता"},
+}
+
+_DUSTHANA_SV = {6, 8, 12}
+_KENDRA_SV = {1, 4, 7, 10}
+_TRIKONA_SV = {1, 5, 9}
+
+_LK_PAKKA_SV: dict[str, set] = {
+    "Sun": {1}, "Moon": {4}, "Mars": {3, 8}, "Mercury": {3, 6},
+    "Jupiter": {2, 9, 12}, "Venus": {7}, "Saturn": {7, 10},
+    "Rahu": {6, 11, 12}, "Ketu": {3, 6, 12},
+}
+_LK_FRIENDLY_SV: dict[str, set] = {
+    "Sun": {9, 10, 11}, "Moon": {1, 2, 7, 11}, "Mars": {1, 4, 9},
+    "Mercury": {1, 2, 10, 11}, "Jupiter": {5, 7, 11}, "Venus": {1, 4, 5, 11},
+    "Saturn": {2, 3, 11}, "Rahu": {3, 9}, "Ketu": {9},
+}
+_LK_ENEMY_SV: dict[str, set] = {
+    "Sun": {7, 12}, "Moon": {8, 12}, "Mars": {2, 6, 12},
+    "Mercury": {7, 12}, "Jupiter": {3, 6, 8}, "Venus": {8, 12},
+    "Saturn": {1, 4, 8}, "Rahu": {2, 4, 7, 8}, "Ketu": {1, 2, 5, 7, 10},
+}
+
+
+def _lk_natal_strength_sv(planet: str, natal_house: int) -> tuple[int, str]:
+    if natal_house in _LK_PAKKA_SV.get(planet, set()):
+        score, label = 92, "pakka_ghar"
+    elif natal_house in _LK_FRIENDLY_SV.get(planet, set()):
+        score, label = 70, "friendly"
+    elif natal_house in _LK_ENEMY_SV.get(planet, set()):
+        score, label = 28, "enemy"
+    else:
+        score, label = 50, "neutral"
+    if natal_house in _DUSTHANA_SV and label != "pakka_ghar":
+        score = max(10, score - 15)
+        label = f"{label}_dusthana"
+    if label == "neutral" and natal_house in (_KENDRA_SV | _TRIKONA_SV):
+        score = min(65, score + 10)
+        label = "neutral_angular"
+    return score, label
+
+
+def _build_sapt_var_entry(date_obj, weekday_num: int, day_lord: str,
+                          natal_house: int, lk_score: int, lk_label: str) -> dict:
+    theme = _SAPT_VAR_HOUSE_THEMES.get(natal_house, {"en": "", "hi": ""})
+    day_en = _DAY_NAMES_EN[weekday_num]
+    day_hi = _DAY_NAMES_HI[weekday_num]
+    is_pakka = lk_label == "pakka_ghar"
+
+    if is_pakka:
+        strength_label = "strong"
+        pred_en = (
+            f"{day_en} is ruled by {day_lord}, which sits in its Pakka Ghar (H{natal_house}) "
+            f"in your chart. This is an exceptionally powerful day for: {theme['en']}. "
+            f"Initiate important activities, sign contracts, or make key decisions today."
+        )
+        pred_hi = (
+            f"{day_hi} का स्वामी {day_lord} आपकी जन्म कुंडली में अपने पक्के घर (भाव {natal_house}) में है। "
+            f"यह दिन अत्यंत शक्तिशाली है: {theme['hi']}। "
+            f"महत्वपूर्ण कार्य, अनुबंध या मुख्य निर्णय आज ही करें।"
+        )
+    elif lk_score >= 65:
+        strength_label = "strong"
+        pred_en = (
+            f"{day_en} ({day_lord}'s day) is favorable for you. "
+            f"{day_lord} in H{natal_house} activates {theme['en']}. "
+            f"Use this day's energy for forward momentum in these areas."
+        )
+        pred_hi = (
+            f"{day_hi} ({day_lord} का दिन) आपके लिए अनुकूल है। "
+            f"भाव {natal_house} में {day_lord} सक्रिय करता है: {theme['hi']}। "
+            f"इन क्षेत्रों में आगे बढ़ने के लिए इस दिन की ऊर्जा का उपयोग करें।"
+        )
+    elif lk_score >= 40:
+        strength_label = "moderate"
+        pred_en = (
+            f"{day_en} ({day_lord}'s day) brings mixed results. "
+            f"{day_lord} in H{natal_house} touches {theme['en']}, "
+            f"but with some friction. Plan carefully and avoid major commitments."
+        )
+        pred_hi = (
+            f"{day_hi} ({day_lord} का दिन) मिश्रित परिणाम देता है। "
+            f"भाव {natal_house} में {day_lord} — {theme['hi']} — पर कुछ घर्षण है। "
+            f"सावधानी से योजना बनाएँ और बड़ी प्रतिबद्धताओं से बचें।"
+        )
+    else:
+        strength_label = "weak"
+        pred_en = (
+            f"{day_en} ({day_lord}'s day) requires extra care. "
+            f"{day_lord} in H{natal_house} creates challenges in {theme['en']}. "
+            f"Apply patience, perform the planet's LK remedy, and avoid impulsive actions."
+        )
+        pred_hi = (
+            f"{day_hi} ({day_lord} का दिन) अतिरिक्त सावधानी चाहता है। "
+            f"भाव {natal_house} में {day_lord} — {theme['hi']} — में चुनौतियाँ। "
+            f"धैर्य रखें, ग्रह का लाल किताब उपाय करें और आवेगी कार्यों से बचें।"
+        )
+
+    return {
+        "date": date_obj.isoformat(),
+        "weekday_en": day_en,
+        "weekday_hi": day_hi,
+        "day_lord": day_lord,
+        "natal_house": natal_house,
+        "is_pakka_ghar": is_pakka,
+        "lk_strength_score": lk_score,
+        "strength_label": strength_label,
+        "house_theme_en": theme["en"],
+        "house_theme_hi": theme["hi"],
+        "prediction_en": pred_en,
+        "prediction_hi": pred_hi,
+    }
+
+
+@router.get("/api/lalkitab/sapt_var/{kundli_id}")
+def get_sapt_var(
+    kundli_id: str,
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """
+    LK Sapt Var (7-day weekly forecast).
+    Each weekday is ruled by a planet; that planet's natal LK house determines
+    which life area activates that day and how powerfully (LK Pakka Ghar system).
+    """
+    from datetime import timedelta
+
+    row = db.execute(
+        "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+        (kundli_id, user["sub"]),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Kundli not found")
+
+    chart_data = json.loads(row["chart_data"])
+    natal_lk_houses: dict[str, int] = {}
+    for pname, info in chart_data.get("planets", {}).items():
+        if pname in _KNOWN_PLANETS:
+            natal_lk_houses[pname] = _derive_lk_house(info)
+
+    today = _date.today()
+    week: list[dict] = []
+    for offset in range(7):
+        day = today + timedelta(days=offset)
+        wd = day.weekday()
+        day_lord = _DAY_LORDS[wd]
+        natal_house = natal_lk_houses.get(day_lord, 0)
+        if natal_house == 0:
+            week.append({
+                "date": day.isoformat(),
+                "weekday_en": _DAY_NAMES_EN[wd],
+                "weekday_hi": _DAY_NAMES_HI[wd],
+                "day_lord": day_lord,
+                "natal_house": None,
+                "strength_label": "unknown",
+                "prediction_en": f"{day_lord} position not found in natal chart.",
+                "prediction_hi": f"जन्म कुंडली में {day_lord} की स्थिति नहीं मिली।",
+            })
+            continue
+        lk_score, lk_label = _lk_natal_strength_sv(day_lord, natal_house)
+        week.append(_build_sapt_var_entry(day, wd, day_lord, natal_house, lk_score, lk_label))
+
+    return {
+        "kundli_id": kundli_id,
+        "today": week[0] if week else {},
+        "week": week,
+        "note_en": "Each day's energy is determined by its ruling planet's strength in your natal Lal Kitab chart (Pakka Ghar system).",
+        "note_hi": "प्रत्येक दिन की ऊर्जा उसके शासक ग्रह की आपकी जन्म लाल किताब कुंडली में शक्ति (पक्का घर प्रणाली) से निर्धारित होती है।",
+    }

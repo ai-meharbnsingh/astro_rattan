@@ -8,6 +8,15 @@ import { Heading } from '@/components/ui/heading';
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
+interface DashaQuality {
+  tag: string;
+  tag_hi: string;
+  label_en: string;
+  label_hi: string;
+  reasons: string[];
+  sloka_ref: string;
+}
+
 interface MahadashaAnalysis {
   planet: string;
   strength: 'strong' | 'weak' | 'neutral';
@@ -24,6 +33,7 @@ interface MahadashaAnalysis {
   dignity_modifier?: 'excellent' | 'challenged' | 'obstructed' | 'neutral';
   dignity_note_en?: string;
   dignity_note_hi?: string;
+  dasha_quality?: DashaQuality;
 }
 
 interface AntardashaAnalysis {
@@ -51,6 +61,18 @@ interface AntardashaRecord {
   analysis: AntardashaAnalysis;
 }
 
+interface TransitCorrelation {
+  md_planet: string;
+  natal_longitude: number;
+  transit_longitude: number;
+  orb_degrees: number;
+  natal_sign: string;
+  transit_sign: string;
+  intensified: boolean;
+  note_en: string;
+  note_hi: string;
+}
+
 interface DashaPhalaResponse {
   as_of: string;
   kundli_id?: string;
@@ -58,6 +80,7 @@ interface DashaPhalaResponse {
   error?: string;
   mahadasha: MahadashaRecord | null;
   antardasha: AntardashaRecord | null;
+  transit_correlation?: TransitCorrelation | null;
 }
 
 interface DashaPhalaTabProps {
@@ -121,6 +144,17 @@ function dignityBadge(modifier?: string): { classes: string; labelEn: string; la
         labelHi: 'मध्यम',
       };
   }
+}
+
+function dashaQualityBadgeClasses(tag: string): string {
+  const lower = tag.toLowerCase();
+  if (lower.includes('auspicious') || lower.includes('shubha')) {
+    return 'bg-green-100 text-green-800 border-green-300';
+  }
+  if (lower.includes('challenging') || lower.includes('ashubha') || lower.includes('difficult')) {
+    return 'bg-red-100 text-red-800 border-red-300';
+  }
+  return 'bg-slate-100 text-slate-600 border-slate-300';
 }
 
 /* ------------------------------------------------------------------ */
@@ -262,6 +296,30 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
             </div>
           )}
 
+          {/* Dasha Quality */}
+          {md.analysis.dasha_quality && (
+            <div className="mt-3 rounded-lg border border-border bg-background p-3 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${dashaQualityBadgeClasses(md.analysis.dasha_quality.tag)}`}>
+                  {hi ? md.analysis.dasha_quality.tag_hi : md.analysis.dasha_quality.tag}
+                </span>
+                <span className="text-xs text-foreground/80">
+                  {hi ? md.analysis.dasha_quality.label_hi : md.analysis.dasha_quality.label_en}
+                </span>
+              </div>
+              {md.analysis.dasha_quality.reasons.length > 0 && (
+                <ul className="list-disc list-inside space-y-0.5">
+                  {md.analysis.dasha_quality.reasons.map((reason, idx) => (
+                    <li key={idx} className="text-xs text-foreground/70">{reason}</li>
+                  ))}
+                </ul>
+              )}
+              {md.analysis.dasha_quality.sloka_ref && (
+                <p className="text-[10px] italic text-foreground/50">{md.analysis.dasha_quality.sloka_ref}</p>
+              )}
+            </div>
+          )}
+
           <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
             {md.analysis.factors.map((f) => (
               <span
@@ -350,6 +408,36 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
             {ad.analysis.sloka_ref && (
               <span className="ml-auto text-foreground/50 italic">{ad.analysis.sloka_ref}</span>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Transit-Dasha Correlation */}
+      {data?.transit_correlation && (
+        <div className={`rounded-xl border p-4 ${
+          data.transit_correlation.intensified
+            ? 'border-amber-400/50 bg-amber-50/30'
+            : 'border-border bg-muted'
+        }`}>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="text-xs font-bold text-foreground uppercase tracking-wide">
+              {l('Transit-Dasha Correlation', 'गोचर-दशा सहसंबंध')}
+            </span>
+            {data.transit_correlation.intensified && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                {l('Intensified', 'तीव्र')}
+              </span>
+            )}
+            <span className="text-[10px] text-foreground/60 ml-auto">
+              {l('Orb', 'कोण')}: {data.transit_correlation.orb_degrees}°
+            </span>
+          </div>
+          <p className="text-xs text-foreground/80 leading-relaxed">
+            {hi ? data.transit_correlation.note_hi : data.transit_correlation.note_en}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-3 text-[10px] text-foreground/60">
+            <span>{l('Natal', 'जन्म')}: {data.transit_correlation.natal_sign} ({data.transit_correlation.natal_longitude}°)</span>
+            <span>{l('Transit', 'गोचर')}: {data.transit_correlation.transit_sign} ({data.transit_correlation.transit_longitude}°)</span>
           </div>
         </div>
       )}

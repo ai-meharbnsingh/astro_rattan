@@ -190,14 +190,45 @@ export default function DashaTab({
                               <TableCell className="p-1.5 text-center text-foreground opacity-60">{(ad.years || (parseFloat(ad.duration_years) || 0).toFixed(2))}</TableCell>
                             </TableRow>
 
-                            {/* Antardasha Synthesis */}
-                            {isAdExpanded && (ad.analysis?.combined_synthesis_en || ad.analysis?.combined_synthesis_hi) && (
+                            {/* Antardasha Synthesis + Effect + Severity */}
+                            {isAdExpanded && ad.analysis && (
                               <TableRow className="bg-indigo-50/30">
-                                <TableCell colSpan={5} className="p-3 pl-8">
-                                  <p className="text-[11px] text-indigo-900 leading-relaxed">
-                                    <span className="font-semibold text-indigo-700">{hi ? 'दशा विश्लेषण: ' : 'Dasha Analysis: '}</span>
-                                    {hi ? (ad.analysis?.combined_synthesis_hi || ad.analysis?.combined_synthesis_en) : (ad.analysis?.combined_synthesis_en || ad.analysis?.combined_synthesis_hi)}
-                                  </p>
+                                <TableCell colSpan={5} className="p-3 pl-8 space-y-2">
+                                  {/* Severity badge */}
+                                  {ad.analysis.severity && (
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                        ad.analysis.severity === 'favorable'
+                                          ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                          : ad.analysis.severity === 'challenging'
+                                            ? 'bg-rose-100 text-rose-800 border-rose-300'
+                                            : 'bg-amber-100 text-amber-800 border-amber-300'
+                                      }`}>
+                                        {ad.analysis.severity.charAt(0).toUpperCase() + ad.analysis.severity.slice(1)}
+                                      </span>
+                                      {(ad.analysis.severity_factors || []).map((f: string) => (
+                                        <span key={f} className="text-[9px] px-1 py-0.5 rounded bg-background border border-border text-foreground/60 uppercase">{f.replace(/_/g, ' ')}</span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {/* Phala effect */}
+                                  {(ad.analysis.effect_en || ad.analysis.effect_hi) && (
+                                    <p className="text-[11px] text-indigo-900 leading-relaxed">
+                                      <span className="font-semibold text-indigo-700">{hi ? 'फल: ' : 'Effect: '}</span>
+                                      {hi ? (ad.analysis.effect_hi || ad.analysis.effect_en) : (ad.analysis.effect_en || ad.analysis.effect_hi)}
+                                    </p>
+                                  )}
+                                  {/* Combined synthesis */}
+                                  {(ad.analysis.combined_synthesis_en || ad.analysis.combined_synthesis_hi) && (
+                                    <p className="text-[11px] text-indigo-900/80 leading-relaxed italic">
+                                      <span className="font-semibold not-italic text-indigo-700">{hi ? 'विश्लेषण: ' : 'Analysis: '}</span>
+                                      {hi ? (ad.analysis.combined_synthesis_hi || ad.analysis.combined_synthesis_en) : (ad.analysis.combined_synthesis_en || ad.analysis.combined_synthesis_hi)}
+                                    </p>
+                                  )}
+                                  {/* Sloka reference */}
+                                  {ad.analysis.sloka_ref && (
+                                    <p className="text-[9px] italic text-foreground/40">{ad.analysis.sloka_ref}</p>
+                                  )}
                                 </TableCell>
                               </TableRow>
                             )}

@@ -222,5 +222,88 @@ def build_rules(planet_positions: Dict[str, int]) -> Dict[str, Any]:
             }
         )
 
-    return {"mirror_axis": mirror_axis, "cross_effects": cross_effects}
+    # Add LK Pakka Ghar strength for each planet in the chart
+    lk_strengths = []
+    for planet, house in planet_positions.items():
+        if not house:
+            continue
+        score, label = compute_lk_strength(planet, int(house))
+        lk_strengths.append({
+            "planet": planet,
+            "natal_house": int(house),
+            "lk_strength_score": score,
+            "lk_strength_label": label,
+        })
+    lk_strengths.sort(key=lambda x: x["lk_strength_score"], reverse=True)
+
+    return {"mirror_axis": mirror_axis, "cross_effects": cross_effects, "lk_strengths": lk_strengths}
+
+
+_LK_PAKKA_HOUSES: Dict[str, set] = {
+    "Sun": {1}, "Moon": {4}, "Mars": {3, 8}, "Mercury": {3, 6},
+    "Jupiter": {2, 9, 12}, "Venus": {7}, "Saturn": {7, 10},
+    "Rahu": {6, 11, 12}, "Ketu": {3, 6, 12},
+}
+_LK_FRIENDLY_HOUSES: Dict[str, set] = {
+    "Sun": {9, 10, 11}, "Moon": {1, 2, 7, 11}, "Mars": {1, 4, 9},
+    "Mercury": {1, 2, 10, 11}, "Jupiter": {5, 7, 11}, "Venus": {1, 4, 5, 11},
+    "Saturn": {2, 3, 11}, "Rahu": {3, 9}, "Ketu": {9},
+}
+_LK_ENEMY_HOUSES: Dict[str, set] = {
+    "Sun": {7, 12}, "Moon": {8, 12}, "Mars": {2, 6, 12},
+    "Mercury": {7, 12}, "Jupiter": {3, 6, 8}, "Venus": {8, 12},
+    "Saturn": {1, 4, 8}, "Rahu": {2, 4, 7, 8}, "Ketu": {1, 2, 5, 7, 10},
+}
+_DUSTHANA: set = {6, 8, 12}
+_KENDRA: set = {1, 4, 7, 10}
+_TRIKONA: set = {1, 5, 9}
+
+_LK_STRENGTH_LABELS: Dict[str, str] = {
+    "pakka_ghar": "Pakka Ghar — Planet in its permanent LK house. Maximum strength.",
+    "friendly": "Friendly house — Planet operates with ease and support.",
+    "friendly_dusthana": "Friendly but dusthana — Support tempered by H6/H8/H12 challenges.",
+    "enemy": "Enemy house — Planet struggles; results are difficult or delayed.",
+    "enemy_dusthana": "Enemy + dusthana — Planet at its weakest; strong remedies needed.",
+    "neutral": "Neutral — Average strength; results depend on surrounding planets.",
+    "neutral_angular": "Neutral angular/trikona — Moderate strength with structural support.",
+    "neutral_dusthana": "Neutral dusthana — Average potential but constrained by house.",
+}
+
+
+def compute_lk_strength(planet: str, lk_house: int) -> Tuple[int, str]:
+    """
+    Return (score 0-100, label) using LK 1952 Pakka Ghar system.
+    This replaces Rashi-based exaltation for LK-native planet assessment.
+    """
+    if lk_house in _LK_PAKKA_HOUSES.get(planet, set()):
+        score, label = 92, "pakka_ghar"
+    elif lk_house in _LK_FRIENDLY_HOUSES.get(planet, set()):
+        score, label = 70, "friendly"
+    elif lk_house in _LK_ENEMY_HOUSES.get(planet, set()):
+        score, label = 28, "enemy"
+    else:
+        score, label = 50, "neutral"
+
+    if lk_house in _DUSTHANA and label != "pakka_ghar":
+        score = max(10, score - 15)
+        label = f"{label}_dusthana"
+    elif label == "neutral" and lk_house in (_KENDRA | _TRIKONA):
+        score = min(65, score + 10)
+        label = "neutral_angular"
+
+    return score, label
+
+
+def get_lk_strength_detail(planet: str, lk_house: int) -> Dict[str, Any]:
+    """Full strength breakdown for a planet in its LK house."""
+    score, label = compute_lk_strength(planet, lk_house)
+    return {
+        "planet": planet,
+        "lk_house": lk_house,
+        "lk_strength_score": score,
+        "lk_strength_label": label,
+        "lk_strength_description": _LK_STRENGTH_LABELS.get(label, ""),
+        "is_pakka_ghar": label == "pakka_ghar",
+        "is_afflicted": score < 35,
+    }
 

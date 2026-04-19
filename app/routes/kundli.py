@@ -818,6 +818,15 @@ def get_divisional_chart(
         logger.exception("Varga-strength grading failed")
         varga_strength = None
 
+    # D108 moksha potential — computed for all requests so the frontend can
+    # always display the spiritual score regardless of which divisional is active.
+    try:
+        d108_result = calculate_d108_analysis(planet_longitudes)
+        moksha_potential = d108_result.get("moksha_potential")
+    except Exception:  # pragma: no cover — defensive guard only
+        logger.exception("D108 moksha-potential calculation failed")
+        moksha_potential = None
+
     return {
         "kundli_id": kundli_id,
         "person_name": row["person_name"],
@@ -829,6 +838,7 @@ def get_divisional_chart(
         "houses": houses,
         "d60_analysis": d60_analysis,
         "varga_strength": varga_strength,
+        "moksha_potential": moksha_potential,
     }
 
 
@@ -2445,6 +2455,7 @@ def get_kp_analysis(
             "star_lord": pinfo.get("star_lord", ""),
             "sub_lord": pinfo.get("sub_lord", ""),
             "sub_sub_lord": pinfo.get("sub_sub_lord", ""),
+            "star_lord_of_sub_lord": pinfo.get("star_lord_of_sub_lord", ""),
             "nakshatra": pinfo.get("nakshatra", ""),
             "pada": pinfo.get("pada", 0),
             "degree": pinfo.get("longitude", 0.0),

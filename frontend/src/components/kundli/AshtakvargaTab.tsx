@@ -229,6 +229,30 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                 <span>{t('kundli.weak')} (&lt;28)</span>
               </div>
             </div>
+
+            {/* SAV Grand Total */}
+            {(() => {
+              const savTotal = Object.values(ashtakvargaData.sarvashtakvarga as Record<string, number>).reduce((a, b) => a + b, 0);
+              const isAbove = savTotal >= 337;
+              const isAvg   = savTotal >= 300 && savTotal < 337;
+              const totalColor = isAbove ? 'text-green-700' : isAvg ? 'text-amber-600' : 'text-red-700';
+              const totalBg    = isAbove ? 'bg-green-50 border-green-200' : isAvg ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
+              const note = isAbove
+                ? (language === 'hi' ? 'औसत से ऊपर — जीवन-शक्ति सबल है' : 'Above average — strong overall life force')
+                : isAvg
+                  ? (language === 'hi' ? 'औसत — संतुलित क्षमता' : 'Average — balanced potential')
+                  : (language === 'hi' ? 'औसत से कम — केंद्रित उपाय आवश्यक' : 'Below average — requires focused remedies');
+              return (
+                <div className={`mt-4 flex flex-wrap items-center gap-3 rounded-lg border px-4 py-3 ${totalBg}`}>
+                  <span className="text-sm font-semibold text-foreground/80">
+                    {language === 'hi' ? 'SAV कुल' : 'SAV Total'}:
+                  </span>
+                  <span className={`text-xl font-bold ${totalColor}`}>{savTotal}</span>
+                  <span className="text-xs text-foreground/60">/ 337 {language === 'hi' ? 'औसत' : 'avg'}</span>
+                  <span className={`text-xs font-medium ml-1 ${totalColor}`}>{note}</span>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Bhinna Ashtakvarga Charts — Parashara's Light format: table + diamond chart per planet */}

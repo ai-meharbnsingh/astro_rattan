@@ -182,6 +182,8 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{language === 'hi' ? 'चन्द्र' : 'Chandra'}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('table.total')}</TableHead>
                 <TableHead className="text-center p-2 text-primary font-medium text-xs">{t('auto.ratio')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{language === 'hi' ? 'इष्ट' : 'Ishta'}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-medium text-xs">{language === 'hi' ? 'कष्ट' : 'Kashta'}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -228,13 +230,19 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                           </span>
                         </div>
                       </TableCell>
+                      <TableCell className="text-center p-2 text-xs text-emerald-700 font-medium">
+                        {d.ishta_phala != null ? Number(d.ishta_phala).toFixed(1) : '—'}
+                      </TableCell>
+                      <TableCell className="text-center p-2 text-xs text-rose-600 font-medium">
+                        {d.kashta_phala != null ? Number(d.kashta_phala).toFixed(1) : '—'}
+                      </TableCell>
                     </TableRow>
                     {isExpanded && d.sthana_detail && (
                       <TableRow className="bg-muted">
                         <TableCell className="p-2 pl-6 text-sm text-foreground italic" colSpan={2}>
                           {t('auto.sthanaDetail')}
                         </TableCell>
-                        <TableCell colSpan={7} className="p-2 text-sm text-foreground">
+                        <TableCell colSpan={9} className="p-2 text-sm text-foreground">
                           {(['uchcha', 'saptavargaja', 'ojhayugma', 'kendra', 'drekkana'] as const)
                             .filter((k) => d.sthana_detail[k] != null)
                             .map((k) => {
@@ -250,7 +258,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                         <TableCell className="p-2 pl-6 text-sm text-foreground italic" colSpan={2}>
                           {t('auto.kalaDetail')}
                         </TableCell>
-                        <TableCell colSpan={7} className="p-2 text-sm text-foreground">
+                        <TableCell colSpan={9} className="p-2 text-sm text-foreground">
                           {(['nathonnatha', 'paksha', 'tribhaga', 'abda', 'masa', 'vara', 'hora', 'ayana'] as const)
                             .filter((k) => d.kala_detail[k] != null)
                             .map((k) => {
@@ -266,7 +274,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                         <TableCell className="p-2 pl-6 text-sm font-medium text-amber-700" colSpan={2}>
                           {language === 'hi' ? 'चन्द्रवृत्त-बल (अ. 4)' : 'Chandravritta Bala (Adh. 4)'}
                         </TableCell>
-                        <TableCell colSpan={7} className="p-2 text-xs text-foreground/80">
+                        <TableCell colSpan={9} className="p-2 text-xs text-foreground/80">
                           <span className="font-semibold text-amber-700 mr-2">
                             {language === 'hi' ? 'कुल:' : 'Total:'} {d.chandravritta_bala.total?.toFixed(1)}
                           </span>
@@ -294,6 +302,42 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             : 'Minimum Shadbala per Phaladeepika Adh. 4 — Sun 390, Moon 360, Mars 300, Mercury 420, Jupiter 390, Venus 330, Saturn 300 (Rupas)'}
         </p>
       </div>
+
+      {/* Ishta-Kashta Summary */}
+      {shadbalaData.ishta_kashta_summary && (
+        <div className="bg-muted rounded-xl p-5 border border-border">
+          <Heading as={4} variant={4} className="mb-1">
+            {language === 'hi' ? 'इष्ट-कष्ट फल (फलदीपिका अध्याय 4, श्लोक 26)' : 'Ishta-Kashta Phala (Phaladeepika Adh. 4 Sloka 26)'}
+          </Heading>
+          <p className="text-xs text-muted-foreground mb-4">
+            {language === 'hi'
+              ? 'इष्ट > कष्ट = शुभकारक ग्रह; कष्ट > इष्ट = पीड़ित ग्रह'
+              : 'Ishta > Kashta = beneficial planet; Kashta > Ishta = afflicted planet'}
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].map((planet) => {
+              const s = shadbalaData.ishta_kashta_summary[planet];
+              if (!s) return null;
+              const isBeneficial = s.ishta > s.kashta;
+              return (
+                <div
+                  key={planet}
+                  className={`rounded-xl p-3 border text-center ${isBeneficial ? 'border-emerald-300/50 bg-emerald-50/30' : 'border-rose-300/50 bg-rose-50/30'}`}
+                >
+                  <p className="text-xs font-semibold text-foreground mb-1">{translatePlanet(planet, language)}</p>
+                  <div className="flex justify-center gap-2 text-xs">
+                    <span className="text-emerald-700 font-medium">I: {Number(s.ishta).toFixed(1)}</span>
+                    <span className="text-rose-600 font-medium">K: {Number(s.kashta).toFixed(1)}</span>
+                  </div>
+                  <span className={`mt-1 inline-block text-[10px] font-bold px-1.5 py-0.5 rounded ${isBeneficial ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                    {language === 'hi' ? s.verdict_hi : s.verdict_en}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
