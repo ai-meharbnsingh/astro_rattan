@@ -341,7 +341,10 @@ export default function DashaSelector({
                           <React.Fragment key={`${selectedSystem}-${adKey}`}>
                             <TableRow
                               className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? `${periodBg(ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/10'}`}
-                              onClick={(e) => { e.stopPropagation(); hasADChildren && setExpandedAD(isAdExpanded ? null : adKey); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (hasADChildren) setExpandedAD(isAdExpanded ? null : adKey);
+                              }}
                             >
                               <TableCell className="p-1.5 text-center pl-4">
                                 {hasADChildren ? (
