@@ -76,15 +76,7 @@ def ai_interpret(
         moon_sign = chart_data.get("ascendant", {}).get("sign")
     sign = str(moon_sign or "Aries").strip().lower()
 
-    generated = generate_ai_horoscope(
-        sign=sign,
-        period=period,
-        birth_data={
-            "birth_date": row.get("birth_date"),
-            "birth_time": row.get("birth_time"),
-            "birth_place": row.get("birth_place"),
-        },
-    )
+    generated = generate_ai_horoscope(sign=sign, period=period)
     sections = generated.get("sections", {}) if isinstance(generated, dict) else {}
     interpretation = _compose_interpretation(sections if isinstance(sections, dict) else {})
 

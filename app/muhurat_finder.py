@@ -108,9 +108,10 @@ def _check_dosha_cancellations(
     special = panchang.get("special_yogas", {}) or {}
 
     is_pushya = (nak_name == "Pushya")
-    # Abhijit muhurat: midday window — check if current time is near solar noon.
-    # We check structurally: panchang may expose abhijit_muhurat key.
-    abhijit_active = bool((special.get("abhijit_muhurat") or {}).get("active"))
+    # Abhijit muhurat is available every day except Wednesday (weekday index 2).
+    # The panchang key 'active_now' is wall-clock-based; use weekday for date-level check.
+    _abh = panchang.get("abhijit_muhurat") or {}
+    abhijit_active = not bool(_abh.get("skipped")) and bool(_abh.get("start"))
     guru_pushya = is_pushya and bool(special.get("guru_pushya_yoga", {}).get("active"))
     guru_hora_active = False
     for h in (panchang.get("hora_table") or []):
@@ -428,17 +429,19 @@ def find_muhurat_dates(
                 result["reasons_bad"].append("Simha Surya — Sun in Leo, marriage inauspicious")
                 skip = True
 
-            # WS-F: Guru/Shukra rashi filters (hard filters)
+            # WS-F: Guru/Shukra rashi scoring (soft — score penalty, not hard block)
+            # A hard block here would eliminate all dates for the entire Jupiter transit
+            # (~1 year). Converted to soft penalty pending classical citation.
             guru_rashi = _planet("Jupiter").get("rashi_index")
             shukra_rashi = _planet("Venus").get("rashi_index")
-            # Allowed Guru rashi: Taurus, Cancer, Virgo, Sagittarius, Pisces
+            # Favorable Guru rashi: Taurus(1), Cancer(3), Virgo(5), Sagittarius(8), Pisces(11)
             if guru_rashi is None or guru_rashi not in {1, 3, 5, 8, 11}:
-                result["reasons_bad"].append("Guru rashi not favorable for marriage (filter)")
-                skip = True
-            # Disallowed Shukra rashi: Aries, Cancer, Virgo, Scorpio
+                result["reasons_bad"].append("Guru rashi not favorable for marriage")
+                result["score"] = max(0, result["score"] - 15)
+            # Unfavorable Shukra rashi: Aries(0), Cancer(3), Virgo(5), Scorpio(7)
             if shukra_rashi is not None and shukra_rashi in {0, 3, 5, 7}:
-                result["reasons_bad"].append("Shukra rashi unfavorable for marriage (filter)")
-                skip = True
+                result["reasons_bad"].append("Shukra rashi unfavorable for marriage")
+                result["score"] = max(0, result["score"] - 10)
 
         # ════════════════════════════════════════════════════════════
         # Vastu / Griha Pravesh (WS-G) — preferences (soft scoring)

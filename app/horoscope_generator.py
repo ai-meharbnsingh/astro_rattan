@@ -188,7 +188,7 @@ def _generate_template_horoscope(sign: str, transits: Optional[Dict[str, str]] =
 
 
 
-def generate_daily_horoscopes(db_path: str = None):
+def generate_daily_horoscopes():
     """Generate daily horoscopes for all 12 signs for today. Skips if already exist."""
     conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = False
@@ -230,7 +230,7 @@ def generate_daily_horoscopes(db_path: str = None):
     logger.info("[horoscope] Generated daily horoscopes for %s", today)
 
 
-def seed_weekly_horoscopes(db_path: str = None):
+def seed_weekly_horoscopes():
     """Seed 12 weekly horoscopes as initial content."""
     conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = False
@@ -251,6 +251,8 @@ def seed_weekly_horoscopes(db_path: str = None):
         conn.close()
         return
 
+    transits = _get_current_transits()
+
     for sign in SIGNS:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
@@ -261,16 +263,7 @@ def seed_weekly_horoscopes(db_path: str = None):
         if row:
             continue
 
-        ruler = _RULERS[sign]
-        element = _ELEMENTS[sign]
-        content = (
-            f"This week, {sign.title()} natives benefit from {ruler}'s strengthening influence. "
-            f"As a {element} sign, your natural qualities are amplified. "
-            f"{random.choice(_CAREER)} {random.choice(_LOVE)} "
-            f"{random.choice(_SPIRITUAL)} "
-            f"The week ahead holds potential for growth in all areas of life. "
-            f"Stay grounded and trust the cosmic timing."
-        )
+        content = _generate_template_horoscope(sign, transits)
 
         with conn.cursor() as cur:
             cur.execute(
@@ -415,23 +408,19 @@ def _template_fallback_sections(sign: str, period: str = "daily") -> Dict[str, s
 def generate_ai_horoscope(
     sign: str,
     period: str = "daily",
-    birth_data: Optional[Dict] = None,
+    native_lagna: Optional[str] = None,
 ) -> Dict:
     """
-    Generate an AI-personalized horoscope with sectioned content.
-
-    Uses the AI engine for personalized horoscope generation based on
-    current planetary transits, the sign's ruling planet and element.
-    Falls back to template-based generation if AI is unavailable.
+    Generate a horoscope with sectioned content using the transit engine.
 
     Args:
         sign: Zodiac sign (lowercase, e.g. "aries").
         period: One of "daily", "weekly", "monthly", "yearly".
-        birth_data: Optional dict with keys birth_date, birth_time, birth_place.
+        native_lagna: Optional pre-computed Janma Lagna sign (lowercase).
+            When provided, houses are counted from Janma Lagna instead of Moon sign.
 
     Returns:
-        Dict with keys: sign, period, sections (dict of 5 sections),
-        source ("ai" or "template"), and personalized (bool).
+        Dict with keys: sign, period, sections, scores, mood, lucky, dos, donts, source.
     """
     sign = sign.lower()
     if sign not in SIGNS:
@@ -439,20 +428,18 @@ def generate_ai_horoscope(
     if period not in ("daily", "weekly", "monthly", "yearly"):
         raise ValueError(f"Invalid period: {period}")
 
-    ruler = _RULERS[sign]
-    element = _ELEMENTS[sign]
-
     # Try transit engine first
     try:
         from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period=period, target_date=None)
+        result = generate_transit_horoscope(sign=sign, period=period, target_date=None, native_lagna=native_lagna)
         if result and result.get("sections"):
-            # Keep bilingual {en, hi} section values — frontend txt() helper handles them
             return result
     except Exception:
         pass
 
     # Fallback to templates
+    ruler = _RULERS[sign]
+    element = _ELEMENTS[sign]
     sections = _template_fallback_sections(sign, period)
 
     return {

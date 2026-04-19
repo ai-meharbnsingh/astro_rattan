@@ -1,11 +1,11 @@
 # Graph Report - .  (2026-04-19)
 
 ## Corpus Check
-- 539 files · ~5,370,316 words
+- 539 files · ~5,360,975 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8398 nodes · 14669 edges · 281 communities detected
+- 8398 nodes · 14673 edges · 281 communities detected
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 908 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
@@ -48,12 +48,12 @@ Cohesion: 0.02
 Nodes (176): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+168 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.01
-Nodes (57): bs(), Qe(), D(), N(), O(), R(), w(), x() (+49 more)
-
-### Community 4 - "Community 4"
 Cohesion: 0.05
 Nodes (172): birth_rectification(), _build_kundli_pdf(), _chart_data(), check_doshas(), _compute_dasha(), create_download_token(), d108_analysis(), delete_all_my_kundlis() (+164 more)
+
+### Community 4 - "Community 4"
+Cohesion: 0.01
+Nodes (54): bs(), Qe(), D(), N(), O(), R(), w(), x() (+46 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.05
@@ -184,16 +184,16 @@ Cohesion: 0.05
 Nodes (29): _pos(), tests/test_lalkitab_andhe_grah.py  Unit tests for app/lalkitab_andhe_grah.py — d, Jupiter is NOT in Saturn's enemy list (_LK_ENEMIES_LOCAL["Saturn"] = {Sun, Moon,, Sun's enemies = {Saturn, Rahu, Ketu}. Saturn in H12 with Sun → Sun also blind., Jupiter's debilitation sign = Capricorn.  H8 is dusthana.         Rule 4 fires →, One rule trigger alone → severity 'medium' (not 'high').         Jupiter debilit, Jupiter in Sagittarius (own sign, not debilitated) in H8 should NOT trigger rule, Mercury in H5.         Saturn (enemy of Mercury? No — check: _LK_ENEMIES_LOCAL[" (+21 more)
 
 ### Community 37 - "Community 37"
+Cohesion: 0.04
+Nodes (16): Ar(), Er(), fa(), Fr(), hl(), Hr(), is(), Nn() (+8 more)
+
+### Community 38 - "Community 38"
 Cohesion: 0.08
 Nodes (51): analyze_diseases(), _aspects_house(), _aspects_planet(), _detect_accidents_wounds(), _detect_blindness(), _detect_cancer_tumor(), _detect_diabetes(), _detect_epilepsy() (+43 more)
 
-### Community 38 - "Community 38"
+### Community 39 - "Community 39"
 Cohesion: 0.04
 Nodes (8): Tests for app.panchang_misc -- Miscellaneous Panchang Calculations =============, Year not in SAMVAT_RAJA should still return 10 roles., Planets should follow GRAHA_ORDER starting from the Raja planet., TestAstronomicalData, TestCalculateAllMisc, TestHelpers, TestMantriMandala, TestPanchakaRahita
-
-### Community 39 - "Community 39"
-Cohesion: 0.05
-Nodes (13): ba(), fa(), Ht(), Ia(), ja(), Ke(), Mt(), Oa() (+5 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.04
@@ -544,7 +544,7 @@ Cohesion: 0.17
 Nodes (15): calculate_mudda_dasha(), calculate_muntha(), calculate_varshphal(), calculate_year_lord(), find_solar_return_jd(), _jd_to_datetime(), varshphal_engine.py — Vedic Varshphal (Solar Return / Tajaka) Engine ===========, Muntha advances one sign per year from natal ascendant.     Returns: {sign, sign (+7 more)
 
 ### Community 127 - "Community 127"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (15): generate_ai_horoscope(), generate_daily_horoscopes(), _generate_template_horoscope(), _get_current_transits(), _get_current_transits_full(), H-09: Horoscope Content Generation Pipeline — seeds daily & weekly horoscopes., Calculate today's planetary positions (signs) for horoscope weighting., Get full planetary data for transit calculations (not just sign names). (+7 more)
 
 ### Community 128 - "Community 128"
@@ -1308,7 +1308,7 @@ Nodes (0):
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `js()` connect `Community 3` to `Community 13`, `Community 6`, `Community 39`?**
+- **Why does `js()` connect `Community 4` to `Community 37`, `Community 13`, `Community 6`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Why does `KPHoraryRequest` connect `Community 8` to `Community 2`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._

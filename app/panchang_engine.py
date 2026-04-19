@@ -889,12 +889,20 @@ def _compute_karana_end(jd_sunrise: float, tz_offset: float) -> str:
     return _jd_to_local_time_str(jd, tz_offset)
 
 
-def _compute_second_karana_end(jd_sunrise: float, tz_offset: float, tithi_end_str: str) -> str:
+def _compute_second_karana_end(jd_sunrise: float, tz_offset: float) -> str:
+    """Find the end time of the karana immediately following the current one.
+
+    Searches for the first karana boundary from sunrise, then finds the next
+    boundary after that to get the upcoming karana's end time.
     """
-    The second karana ends at the tithi boundary (same as tithi_end_str).
-    Reuse the already-computed value to avoid a redundant binary search.
-    """
-    return tithi_end_str
+    first_jd = _find_boundary_time(jd_sunrise, _get_elongation, 0.0, 6.0)
+    if first_jd is None:
+        return "--:--"
+    # Start the second search 1 minute past the first boundary
+    second_jd = _find_boundary_time(first_jd + 1.0 / 1440.0, _get_elongation, 0.0, 6.0)
+    if second_jd is None:
+        return "--:--"
+    return _jd_to_local_time_str(second_jd, tz_offset)
 
 
 NAKSHATRA_SPAN = 360.0 / 27.0  # 13.3333 degrees
@@ -1415,15 +1423,15 @@ def _compute_panchanga_shuddhi(
     if paksha.lower() == "krishna" and norm_t in _BAD_TITHIS:
         tithi_score = max(0, tithi_score - 5)
 
-    # 2. Vara score (0-20)
-    if weekday in {3, 4}:  # Wed, Thu
+    # 2. Vara score (0-20) — Python weekday: 0=Mon,1=Tue,2=Wed,3=Thu,4=Fri,5=Sat,6=Sun
+    if weekday in {0, 2, 3, 4}:  # Mon (Moon), Wed (Mercury), Thu (Jupiter), Fri (Venus)
         vara_score = 20
-    elif weekday in {0, 1, 5}:  # Sun, Mon, Fri
+    elif weekday == 6:  # Sun (Sun) — medium
         vara_score = 15
-    elif weekday == 6:  # Sat
+    elif weekday == 1:  # Tue (Mars) — moderate
+        vara_score = 10
+    else:  # Sat (Saturn) — least favorable; weekday == 5
         vara_score = 5
-    else:  # Tue
-        vara_score = 0
 
     # 3. Nakshatra score (0-20)
     if nakshatra_name in _GOOD_NAKSHATRAS:
@@ -1614,8 +1622,8 @@ def calculate_panchang(
     if second_karana_idx >= 60:
         second_karana_idx = 0
     second_karana_name = _get_karana_name(second_karana_idx)
-    # Calculate second karana end time (approximately halfway between first karana end and tithi end)
-    second_karana_end = _compute_second_karana_end(jd_sunrise, tz_offset, tithi_end)
+    # Calculate second karana end time (next boundary after the current karana ends)
+    second_karana_end = _compute_second_karana_end(jd_sunrise, tz_offset)
 
     # 17. Sun sign + Moon sign
     sun_sign = get_sign_from_longitude(sun_sid)
@@ -1644,9 +1652,19 @@ def calculate_panchang(
     nishita = {"start": _minutes_to_time(midnight_mins - 24), "end": _minutes_to_time(midnight_mins + 24)}
     # Pratah Sandhya: sunrise-48min to sunrise
     pratah = {"start": _minutes_to_time(sunrise_mins - 48), "end": sunrise_str}
-    # Ravi Yoga: sunrise to sunrise + 1/5 of day (first 1/5 of daytime on Sunday)
+    # Ravi Yoga: Sunday + Sun-ruled nakshatra (Krittika / Uttara Phalguni / Uttara Ashadha)
+    # Only active when BOTH conditions are met; otherwise return empty window with active=False.
+    try:
+        from app.panchang_yogas import RAVI_NAKSHATRAS as _RAVI_NAKS
+    except Exception:
+        _RAVI_NAKS = {"Krittika", "Uttara Phalguni", "Uttara Ashadha"}
+    _ravi_active = (weekday == 6 and nakshatra.get("name", "") in _RAVI_NAKS)
     ravi_yoga_end = sunrise_mins + day_duration_mins * 3 / 15
-    ravi_yoga = {"start": sunrise_str, "end": _minutes_to_time(ravi_yoga_end)}
+    ravi_yoga = {
+        "start": sunrise_str if _ravi_active else "",
+        "end": _minutes_to_time(ravi_yoga_end) if _ravi_active else "",
+        "active": _ravi_active,
+    }
     # Vijaya Muhurta: 7th muhurta of the day
     vijaya_start = sunrise_mins + muhurta_duration * 6
     vijaya = {"start": _minutes_to_time(vijaya_start), "end": _minutes_to_time(vijaya_start + muhurta_duration)}
@@ -1962,8 +1980,9 @@ def calculate_panchang(
         pass
 
     # 29. Panchanga Shuddhi — composite day-quality score (0-100)
+    # Pass tithi["number"] (1-based) so the good/bad sets align correctly.
     panchanga_shuddhi = _compute_panchanga_shuddhi(
-        tithi_index, tithi["paksha"], weekday, yoga_index + 1, karana_name, nakshatra.get("name", "")
+        tithi["number"], tithi["paksha"], weekday, yoga_index + 1, karana_name, nakshatra.get("name", "")
     )
 
     return {
