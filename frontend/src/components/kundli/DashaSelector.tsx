@@ -98,6 +98,13 @@ function natureBadge(planet: string, hi: boolean): React.ReactNode {
   );
 }
 
+function cloneResponse<T>(value: T): T {
+  // Defensive copy: ensures each dasha system keeps an isolated snapshot
+  // even if a downstream consumer mutates the response object/arrays.
+  if (typeof structuredClone === 'function') return structuredClone(value);
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -139,7 +146,10 @@ export default function DashaSelector({
       const meta = DASHA_SYSTEMS.find((s) => s.key === system)!;
       const url = meta.endpoint.replace('{id}', kundliId);
       const res = await api.get(url);
-      setData((prev) => ({ ...prev, [system]: res }));
+      const normalized = (res && typeof res === 'object')
+        ? ({ ...(res as any), system } as DashaResponse)
+        : ({ system } as DashaResponse);
+      setData((prev) => ({ ...prev, [system]: cloneResponse(normalized) }));
     } catch (err: any) {
       fetchedRef.current.delete(system); // allow retry on error
       setError(err?.message || 'Failed to load dasha data');
@@ -288,7 +298,7 @@ export default function DashaSelector({
                   const mdYears = md.years ?? md.span ?? (md.duration_years ? parseFloat(String(md.duration_years)).toFixed(1) : '');
 
                   return (
-                    <React.Fragment key={mdKey}>
+                    <React.Fragment key={`${selectedSystem}-${mdKey}`}>
                       {/* Mahadasha row */}
                       <TableRow
                         className={`cursor-pointer transition-colors ${md.is_current ? `${periodBg(md.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/5'}`}
@@ -328,7 +338,7 @@ export default function DashaSelector({
                         const adYears = ad.years ?? ad.span ?? (ad.duration_years ? parseFloat(String(ad.duration_years)).toFixed(2) : '');
 
                         return (
-                          <React.Fragment key={adKey}>
+                          <React.Fragment key={`${selectedSystem}-${adKey}`}>
                             <TableRow
                               className={`cursor-pointer transition-colors bg-white/30 ${ad.is_current ? `${periodBg(ad.planet, true)} border-l-2 border-l-primary` : 'hover:bg-muted/10'}`}
                               onClick={(e) => { e.stopPropagation(); hasADChildren && setExpandedAD(isAdExpanded ? null : adKey); }}
@@ -361,9 +371,10 @@ export default function DashaSelector({
                               const ptLabel = pt.yogini
                                 ? translateName(pt.yogini, language)
                                 : translatePlanet(pt.planet, language);
+                              const ptKey = `${selectedSystem}-${adKey}-${pt.yogini || pt.planet}-${pt.start}-${pt.end}-${idx}`;
                               return (
                                 <TableRow
-                                  key={idx}
+                                  key={ptKey}
                                   className={`bg-white/60 transition-colors ${pt.is_current ? periodBg(pt.planet, true) : 'hover:bg-muted/5'}`}
                                 >
                                   <TableCell className="p-1"></TableCell>
