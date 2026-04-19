@@ -342,6 +342,7 @@ def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: st
         combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
         vargottama = _is_vargottama(sid_lon)
         sandhi = sign_deg < 1.0 or sign_deg > 29.0
+        gandanta = _is_gandanta(sid_lon)
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -355,8 +356,20 @@ def _calculate_swe_locked(dt_utc: datetime, lat: float, lon: float, ayanamsa: st
             "is_combust": combust,
             "is_vargottama": vargottama,
             "is_sandhi": sandhi,
-            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
+            "is_gandanta": gandanta,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi, gandanta),
         }
+
+    # Post-pass: retrograde dispositor — flag planets whose sign lord is retrograde
+    _SIGN_LORD = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+        "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+        "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+    }
+    for pdata in planets_result.values():
+        lord = _SIGN_LORD.get(pdata["sign"])
+        lord_info = planets_result.get(lord, {}) if lord else {}
+        pdata["retro_dispositor"] = bool(lord_info.get("retrograde", False))
 
     return {
         "planets": planets_result,
@@ -565,6 +578,7 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
         combust = _is_combust(pname, sid_lon, sun_lon, is_retrograde)
         vargottama = _is_vargottama(sid_lon)
         sandhi = sign_deg < 1.0 or sign_deg > 29.0
+        gandanta = _is_gandanta(sid_lon)
 
         planets_result[pname] = {
             "longitude": round(sid_lon, 4),
@@ -578,8 +592,19 @@ def _calculate_fallback(dt_utc: datetime, lat: float, lon: float) -> Dict[str, A
             "is_combust": combust,
             "is_vargottama": vargottama,
             "is_sandhi": sandhi,
-            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi),
+            "is_gandanta": gandanta,
+            "status": _build_status(pname, sign, is_retrograde, combust, vargottama, sandhi, gandanta),
         }
+
+    _SIGN_LORD2 = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+        "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+        "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter",
+    }
+    for pdata in planets_result.values():
+        lord = _SIGN_LORD2.get(pdata["sign"])
+        lord_info = planets_result.get(lord, {}) if lord else {}
+        pdata["retro_dispositor"] = bool(lord_info.get("retrograde", False))
 
     return {
         "planets": planets_result,
@@ -652,6 +677,22 @@ def _is_combust(planet: str, planet_lon: float, sun_lon: float, is_retrograde: b
     return diff <= orb
 
 
+_WATER_SIGN_IDX = {3, 7, 11}   # Cancer, Scorpio, Pisces
+_FIRE_SIGN_IDX  = {0, 4, 8}    # Aries, Leo, Sagittarius
+_GANDANTA_ORB   = 10.0 / 3.0   # 3°20' = nakshatra-junction orb
+
+
+def _is_gandanta(planet_lon: float) -> bool:
+    """Planet at water→fire nakshatra junction (Gandanta) — classically weakened."""
+    lon = planet_lon % 360.0
+    sign_idx = int(lon // 30)
+    sign_deg = lon % 30.0
+    return (
+        (sign_idx in _WATER_SIGN_IDX and sign_deg >= 30.0 - _GANDANTA_ORB)
+        or (sign_idx in _FIRE_SIGN_IDX and sign_deg <= _GANDANTA_ORB)
+    )
+
+
 def _is_vargottama(planet_lon: float) -> bool:
     """Check if a planet is vargottama (same sign in D1 and D9 Navamsha)."""
     d1_sign_index = int((planet_lon % 360.0) / 30.0)
@@ -660,7 +701,7 @@ def _is_vargottama(planet_lon: float) -> bool:
     return d1_sign_index == d9_sign_index
 
 
-def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool = False, is_vargottama: bool = False, is_sandhi: bool = False) -> str:
+def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool = False, is_vargottama: bool = False, is_sandhi: bool = False, is_gandanta: bool = False) -> str:
     """
     Build a human-readable status string combining dignity, retrograde, combust, vargottama.
 
@@ -692,6 +733,10 @@ def _build_status(planet: str, sign: str, is_retrograde: bool, is_combust: bool 
     # Sandhi flag (planet at sign boundary)
     if is_sandhi:
         parts.append("Sandhi")
+
+    # Gandanta flag (water→fire nakshatra junction)
+    if is_gandanta:
+        parts.append("Gandanta")
 
     return ", ".join(parts)
 
