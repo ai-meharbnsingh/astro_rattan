@@ -125,8 +125,8 @@ function getPlanetColor(planet: string): string {
   return PLANET_COLORS[planet] || '#3D2B1F';
 }
 
-// Build planet label with status symbols (AstroSage style)
-// * Retrograde  ^ Combust  □ Vargottama  ↑ Exalted  ↓ Debilitated
+// Build planet label with status symbols (Home kundli style)
+// * Retrograde  ^ Combust  v Vargottama  + Exalted  - Debilitated
 function getPlanetLabel(p: PlanetData, lang?: string, hideCombust: boolean = false): string {
   const abbrMap = lang === 'hi' ? PLANET_ABBREVIATIONS_HI : PLANET_ABBREVIATIONS;
   const abbr = abbrMap[p.planet] || PLANET_ABBREVIATIONS[p.planet] || p.planet.slice(0, 2);
@@ -137,9 +137,9 @@ function getPlanetLabel(p: PlanetData, lang?: string, hideCombust: boolean = fal
   if (p.is_retrograde || s.includes('retrograde')) suffix += '*';
   // Lal Kitab does NOT use combustion — callers pass hideCombust=true to suppress.
   if (!hideCombust && (p.is_combust || s.includes('combust'))) suffix += '^';
-  if (p.is_vargottama || s.includes('vargottama')) suffix += '\u25A1';
-  if (s.includes('exalted')) suffix += '\u2191';
-  if (s.includes('debilitated')) suffix += '\u2193';
+  if (p.is_vargottama || s.includes('vargottama')) suffix += 'v';
+  if (s.includes('exalted')) suffix += '+';
+  if (s.includes('debilitated')) suffix += '-';
   return abbr + suffix;
 }
 
@@ -1291,9 +1291,17 @@ export function ChartLegend() {
     <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center text-sm mt-2 px-2" style={{ color: 'var(--aged-gold)', fontFamily: 'var(--, Inter, sans-serif)' }}>
       <span><strong>*</strong> {t('planet.retrograde')}</span>
       <span><strong>^</strong> {t('planet.combust')}</span>
-      <span><strong>{'\u25A1'}</strong> {t('planet.vargottama')}</span>
-      <span><strong>{'\u2191'}</strong> {t('planet.exalted')}</span>
-      <span><strong>{'\u2193'}</strong> {t('planet.debilitated')}</span>
+      <span><strong>v</strong> {t('planet.vargottama')}</span>
+      <span><strong>+</strong> {t('planet.exalted')}</span>
+      <span><strong>-</strong> {t('planet.debilitated')}</span>
+      <span className="flex items-center gap-1">
+        <span className="w-2 h-2 rounded-full inline-block" style={{ background: '#C4611F' }} />
+        {t('kundli.benefic')}
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="w-2 h-2 rounded-full inline-block" style={{ background: '#1a1a2e' }} />
+        {t('kundli.malefic')}
+      </span>
     </div>
   );
 }

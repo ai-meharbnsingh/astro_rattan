@@ -140,6 +140,7 @@ const SIGN_LORD: Record<string, string> = {
 
 function naturePlanetFor(system: DashaSystem, period?: DashaPeriod | null): string {
   if (!period) return '';
+  if (system === 'yogini') return String(period.lord ?? '');
   if (system === 'tara') return String(period.lord ?? '');
   if (system === 'moola') return SIGN_LORD[String(period.sign ?? period.planet ?? '')] || '';
   // vimshottari / ashtottari
@@ -152,7 +153,10 @@ function normalizeResponse(system: DashaSystem, raw: any): DashaResponse {
   if (system === 'yogini') {
     const periods = (src.periods || src.dashas || []) as any[];
     const mahadasha = periods.map((p: any) => ({
-      planet: String(p?.planet ?? p?.yogini ?? ''),
+      // Prefer `yogini` (dasha name). If backend only provides `planet`, treat it as the dasha name.
+      planet: String(p?.yogini ?? p?.planet ?? ''),
+      // If backend provides both `yogini` and `planet`, treat `planet` as the ruling graha.
+      lord: p?.yogini ? String(p?.planet ?? '') : undefined,
       start: String(p?.start ?? ''),
       end: String(p?.end ?? ''),
       years: p?.years,
@@ -437,7 +441,13 @@ export default function DashaSelector({
                 <TableRow>
                   <TableHead className="w-8"></TableHead>
                   <TableHead className="text-left p-1.5 text-primary font-medium">
-                    {l('Dasha Lord', 'दशा स्वामी')}
+                    {selectedSystem === 'yogini'
+                      ? l('Yogini', 'योगिनी')
+                      : selectedSystem === 'moola'
+                        ? l('Sign', 'राशि')
+                        : selectedSystem === 'tara'
+                          ? l('Tara', 'तारा')
+                          : l('Dasha Lord', 'दशा स्वामी')}
                   </TableHead>
                   <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.start')}</TableHead>
                   <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.end')}</TableHead>
