@@ -657,14 +657,41 @@ def list_festivals(
     lang: str = Query(default="en"),
     db: Any = Depends(get_db),
 ):
-    """List festivals for a given year and optionally month, filtered by category.
+    """List festivals for a given year and optionally month, filtered by category."""
+    from datetime import datetime as _dt
+    target_year = year or _dt.now().year
 
-    Note: Festivals are calculated dynamically per-date in panchang responses.
-    This endpoint returns an empty list as festivals database is not currently populated.
-    Use the main /api/panchang endpoint for daily festivals.
-    """
-    # Return empty list - festivals are included in panchang responses via detect_festivals()
-    return {"festivals": []}
+    conditions = ["year = %s"]
+    params: list = [target_year]
+
+    if month:
+        # date column is stored as YYYY-MM-DD text
+        conditions.append("date LIKE %s")
+        params.append(f"{target_year}-{month:02d}-%")
+
+    if category:
+        conditions.append("category = %s")
+        params.append(category)
+
+    where = " AND ".join(conditions)
+    rows = db.execute(
+        f"SELECT name, name_hindi, date, description, category, year FROM festivals WHERE {where} ORDER BY date",
+        tuple(params),
+    ).fetchall()
+
+    festivals = []
+    for r in (rows or []):
+        festivals.append({
+            "name": r["name"] if lang != "hi" else (r["name_hindi"] or r["name"]),
+            "name_en": r["name"],
+            "name_hi": r["name_hindi"] or "",
+            "date": r["date"],
+            "description": r["description"] or "",
+            "category": r["category"],
+            "year": r["year"],
+        })
+
+    return {"festivals": festivals, "total": len(festivals), "year": target_year}
 
 
 # ============================================================

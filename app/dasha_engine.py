@@ -242,7 +242,7 @@ def calculate_dasha(birth_nakshatra: str, birth_date: str, moon_longitude: float
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
@@ -358,7 +358,7 @@ def calculate_extended_dasha(birth_nakshatra: str, birth_date: str, moon_longitu
     starting_lord = NAKSHATRA_LORD[birth_nakshatra]
     sequence = _get_dasha_sequence(starting_lord)
     birth_dt = _parse_date(birth_date)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     # Calculate balance of first dasha at birth
     balance = _calculate_dasha_balance(birth_nakshatra, moon_longitude)
@@ -1510,7 +1510,7 @@ def get_current_dasha_phala(
 
     if moon_nakshatra not in NAKSHATRA_LORD:
         return {
-            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "as_of": as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "error": f"Unknown nakshatra: {moon_nakshatra}",
             "mahadasha": None,
             "antardasha": None,
@@ -1522,7 +1522,7 @@ def get_current_dasha_phala(
         birth_dt = _parse_date(birth_date)
     except (ValueError, TypeError):
         return {
-            "as_of": as_of_date or datetime.utcnow().strftime("%Y-%m-%d"),
+            "as_of": as_of_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "error": f"Invalid birth_date: {birth_date}",
             "mahadasha": None,
             "antardasha": None,
@@ -1532,9 +1532,9 @@ def get_current_dasha_phala(
         try:
             now = _parse_date(as_of_date)
         except ValueError:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc).replace(tzinfo=None)
     else:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     balance = _calculate_dasha_balance(moon_nakshatra, moon_longitude)
 
