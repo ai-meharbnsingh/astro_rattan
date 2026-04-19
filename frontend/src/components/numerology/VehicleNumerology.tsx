@@ -309,6 +309,27 @@ export default function VehicleNumerology({ birthDate }: Props) {
             </Card>
           </div>
 
+          {/* Recommended Vehicle Colors */}
+          {!!result.prediction.vehicle_color?.length && (
+            <Card className="bg-card border-0 shadow-soft">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Palette className="w-4 h-4 text-sacred-gold" />
+                  <p className="text-sm font-medium text-foreground">
+                    {isHi ? 'अनुशंसित वाहन रंग' : 'Recommended Vehicle Colors'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(isHi ? (result.prediction.vehicle_color_hi ?? result.prediction.vehicle_color) : result.prediction.vehicle_color).map((color, i) => (
+                    <Badge key={i} className="bg-purple-100 text-purple-800 border-purple-300">
+                      {color}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Digit Analysis */}
           {result.digit_analysis.length > 0 && (
             <Card className="bg-card border-0 shadow-soft">

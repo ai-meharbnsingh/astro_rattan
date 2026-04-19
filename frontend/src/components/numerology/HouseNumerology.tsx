@@ -56,6 +56,7 @@ interface HouseNumerologyResult {
   };
   remedies: string[];
   enhancement_tips: string[];
+  enhancement_tips_hi?: string[];
 }
 
 interface Props {
@@ -350,7 +351,7 @@ export default function HouseNumerology({ birthDate }: Props) {
               <CardContent className="p-4">
                 <p className="text-sm font-medium text-foreground mb-3">{t('numerology.enhancementTips')}</p>
                 <ul className="space-y-2">
-                  {result.enhancement_tips.map((tip, i) => (
+                  {(isHi ? (result.enhancement_tips_hi ?? result.enhancement_tips) : result.enhancement_tips).map((tip, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <Compass className="w-4 h-4 text-sacred-gold shrink-0 mt-0.5" />
                       {tip}

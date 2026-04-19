@@ -158,6 +158,23 @@ LIFE_PATH_PREDICTIONS = {
     },
 }
 
+def _normalize_focus_areas(data):
+    """Recursively convert any focus_areas / focus_areas_hi string values to lists."""
+    if isinstance(data, dict):
+        out = {}
+        for k, v in data.items():
+            if k in ("focus_areas", "focus_areas_hi") and isinstance(v, str):
+                out[k] = [s.strip() for s in v.split(",") if s.strip()]
+            elif isinstance(v, dict):
+                out[k] = _normalize_focus_areas(v)
+            elif isinstance(v, list):
+                out[k] = [_normalize_focus_areas(i) if isinstance(i, dict) else i for i in v]
+            else:
+                out[k] = v
+        return out
+    return data
+
+
 # Destiny number predictions (derived from full name)
 DESTINY_PREDICTIONS = {
     1: {
@@ -3139,6 +3156,18 @@ def analyze_name_numerology(
         except (ValueError, IndexError):
             pass
     
+    # Lo Shu planes from DOB if birth_date provided
+    loshu_analysis = None
+    if birth_date and '-' in birth_date:
+        try:
+            dob_digits_name = [int(c) for c in birth_date.replace("-", "") if c.isdigit() and c != "0"]
+            loshu_analysis = {
+                "planes": analyze_loshu_planes(dob_digits_name),
+                "arrows": analyze_loshu_arrows(dob_digits_name),
+            }
+        except Exception:
+            pass
+
     result = {
         "name": name_clean,
         "name_type": name_type,
@@ -3175,6 +3204,7 @@ def analyze_name_numerology(
             "number": last_name_number,
             "meaning": "Family karma and inherited traits"
         } if last_name else None,
+        "loshu_analysis": loshu_analysis,
         "predictions": {
             "primary": pythagorean_prediction,
             "soul_urge": soul_urge_prediction,
@@ -3183,8 +3213,8 @@ def analyze_name_numerology(
         "letter_breakdown": letter_breakdown,
         "life_path_compatibility": life_path_compat
     }
-    
-    return result
+
+    return _normalize_focus_areas(result)
 
 
 def _get_name_life_path_compatibility(name_num: int, life_path: int) -> str:
@@ -3460,7 +3490,8 @@ def calculate_house_numerology(address: str, birth_date: str = "") -> dict:
         "digit_analysis": house_digit_analysis,
         "resident_compatibility": resident_compat,
         "remedies": prediction.get("remedies", []),
-        "enhancement_tips": _get_house_enhancement_tips(house_vibration)
+        "enhancement_tips": _get_house_enhancement_tips(house_vibration),
+        "enhancement_tips_hi": _get_house_enhancement_tips_hi(house_vibration)
     }
     
     return result
@@ -3521,6 +3552,22 @@ def _get_house_enhancement_tips(house_num: int) -> list:
         9: ["Place red accents in South", "Welcome guests warmly", "Create space for gatherings"],
     }
     return tips.get(house_num, ["Keep home clean and organized", "Balance the 5 elements"])
+
+
+def _get_house_enhancement_tips_hi(house_num: int) -> list:
+    """Hindi enhancement tips to enhance house energy."""
+    tips = {
+        1: ["लाल डोरमैट रखें", "पूर्व दिशा खुली रखें", "पुरस्कार और उपलब्धियां प्रदर्शित करें"],
+        2: ["सजावटी वस्तुओं की जोड़ियां उपयोग करें", "उत्तर-पश्चिम में सफेद फूल रखें", "आरामदायक कोने बनाएं"],
+        3: ["कलाकृतियां और रचनात्मक वस्तुएं प्रदर्शित करें", "पीले रंग के उच्चारण उपयोग करें", "सामाजिक स्थान बनाएं"],
+        4: ["व्यवस्थित और अव्यवस्था दूर करें", "वर्गाकार फर्नीचर उपयोग करें", "संरचित स्थान बनाएं"],
+        5: ["घर का केंद्र हल्का या खाली रखें", "हरे पौधे उपयोग करें", "लचीलेपन की अनुमति दें"],
+        6: ["सुंदर प्रवेश द्वार बनाएं", "गुलाबी या सफेद फूल उपयोग करें", "पारिवारिक स्थानों पर ध्यान दें"],
+        7: ["ध्यान कोना बनाएं", "बैंगनी या हरे रंग के उच्चारण उपयोग करें", "पुस्तकालय या अध्ययन कक्ष रखें"],
+        8: ["दक्षिण-पश्चिम में भारी फर्नीचर रखें", "गहरे रंगों का कम उपयोग करें", "कार्यालय स्थान बनाएं"],
+        9: ["दक्षिण में लाल उच्चारण रखें", "अतिथियों का गर्मजोशी से स्वागत करें", "समारोहों के लिए जगह बनाएं"],
+    }
+    return tips.get(house_num, ["घर साफ और व्यवस्थित रखें", "5 तत्वों का संतुलन बनाएं"])
 
 
 # ============================================================
@@ -3896,7 +3943,7 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         base = {11: 2, 22: 4, 33: 6}.get(n, n)
         return _PERSONAL_YEAR_PREDICTIONS.get(base, _PERSONAL_YEAR_PREDICTIONS[9])
 
-    return {
+    result = {
         "life_path": life_path,
         "destiny": destiny,
         "soul_urge": soul_urge,
@@ -3929,3 +3976,4 @@ def calculate_numerology(name: str, birth_date: str) -> dict:
         "next_personal_year": next_year_personal,
         "next_personal_year_prediction": _py_pred(next_year_personal),
     }
+    return _normalize_focus_areas(result)
