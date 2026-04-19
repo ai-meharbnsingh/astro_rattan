@@ -167,7 +167,7 @@ def _extract_transit_claims(text: str, transits: Dict, lagna: str) -> List[Dict]
                        for p, info in transits.items()}
     pattern = re.compile(
         r"(moon|sun|mercury|venus|mars|jupiter|saturn|rahu|ketu)"
-        r"\s+(?:transiting\s+)?(?:in\s+)?(?:the\s+)?(\d+)[a-z]*\s+house",
+        r"\s+(?:transiting\s+)?(?:(?:in|your|the)\s+)*(\d+)[a-z]*\s+house",
         re.IGNORECASE,
     )
     seen: set = set()
@@ -452,9 +452,15 @@ class ReportBuilder:
             self.w()
             if total_claims > 0:
                 self.w(f"**Overall transit accuracy: {total_matched}/{total_claims} ({total_matched/total_claims*100:.0f}%)**  ")
-            self.w(f"**Coverage: only `general` section explicitly names planet+house. "
-                   f"Other sections describe implications without naming the transit. "
-                   f"Verdict: PARTIAL — not full-section transit coverage.**")
+            sections_with_claims = [a for a in ["general","love","career","finance","health"] if per_sec.get(a)]
+            sections_without_claims = [a for a in ["general","love","career","finance","health"] if not per_sec.get(a)]
+            if sections_without_claims:
+                self.w(f"**Sections WITH explicit transit claims:** `{sections_with_claims}`  ")
+                self.w(f"**Sections WITHOUT explicit transit claims:** `{sections_without_claims}`  ")
+                self.w(f"**Verdict: PARTIAL — {len(sections_without_claims)}/5 sections have no verifiable planet+house claim.**")
+            else:
+                self.w(f"**✅ ALL sections have explicit transit claims:** `{sections_with_claims}`  ")
+                self.w(f"**Verdict: FULL transit coverage — every section names planet+house.**")
             self.w()
 
             # FIX: overlap thresholds, not just identical/different
@@ -909,6 +915,22 @@ class ReportBuilder:
                "this is a known limitation that reduces perceived freshness.")
         self.w()
         self.w("### Is it competitive vs Astrosage / Clickastro?")
+        # Daily freshness verdict — computed from actual test results
+        if avg_ov_yst < 40:
+            freshness_verdict = "✅ GOOD"
+        elif avg_ov_yst < 60:
+            freshness_verdict = f"🔶 MODERATE ({avg_ov_yst:.0f}% overlap yesterday)"
+        else:
+            freshness_verdict = f"⚠️ LOW ({avg_ov_yst:.0f}% overlap yesterday)"
+        # Transit coverage verdict — computed from actual per-section claim detection
+        _secs_with = [a for a in ["general","love","career","finance","health"]
+                      if _per_section_transit_map(_sections_map(self.daily), self.transits_raw, lagna_for_check).get(a)]
+        if len(_secs_with) == 5:
+            transit_named_verdict = f"✅ ALL sections ({len(_secs_with)}/5)"
+        elif len(_secs_with) >= 3:
+            transit_named_verdict = f"🔶 PARTIAL ({len(_secs_with)}/5 sections: {_secs_with})"
+        else:
+            transit_named_verdict = f"⚠️ PARTIAL ({len(_secs_with)}/5 sections: {_secs_with})"
         self._table(
             ["Capability","Astrorattan","Market Leader"],
             [
@@ -916,8 +938,8 @@ class ReportBuilder:
                 ["Janma Lagna personalization",    "✅", "✅"],
                 ["Dasha-aware readings",           "✅" if dasha_live else "⚠️ needs restart", "✅"],
                 ["Moon sign auto-detection (API)", "✅ /natal-sign endpoint", "✅"],
-                ["Daily freshness (day-to-day)",   "⚠️ LOW when Moon stationary", "✅"],
-                ["Transit explicitly named",       "⚠️ PARTIAL (general only)", "✅"],
+                ["Daily freshness (day-to-day)",   freshness_verdict, "✅"],
+                ["Transit explicitly named",       transit_named_verdict, "✅"],
                 ["Bilingual EN + HI",              "✅", "Partial"],
                 ["Tomorrow tab",                   "✅", "Rare"],
             ],
