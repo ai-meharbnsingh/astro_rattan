@@ -40,6 +40,48 @@ OWN_SIGNS = {
     "Saturn": {"Capricorn", "Aquarius"},
 }
 
+# Full exaltation/debilitation/own-sign tables for strength computation
+_YOGA_EXALT = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
+    "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra",
+}
+_YOGA_DEBIL = {
+    "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
+    "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries",
+}
+_YOGA_OWN = {
+    "Sun": {"Leo"}, "Moon": {"Cancer"},
+    "Mars": {"Aries", "Scorpio"}, "Mercury": {"Gemini", "Virgo"},
+    "Jupiter": {"Sagittarius", "Pisces"}, "Venus": {"Taurus", "Libra"},
+    "Saturn": {"Capricorn", "Aquarius"},
+}
+
+
+def _compute_yoga_strength(yoga: dict, planets: dict) -> str:
+    """Compute yoga strength from dignity of its involved planets."""
+    involved = yoga.get("planets_involved") or []
+    if not involved:
+        return "moderate"
+    strong = sum(
+        1 for p in involved
+        if planets.get(p, {}).get("sign") == _YOGA_EXALT.get(p)
+    )
+    own = sum(
+        1 for p in involved
+        if planets.get(p, {}).get("sign") in _YOGA_OWN.get(p, set())
+    )
+    weak = sum(
+        1 for p in involved
+        if planets.get(p, {}).get("sign") == _YOGA_DEBIL.get(p)
+    )
+    if strong >= 1:
+        return "strong"
+    if own >= 1 and weak == 0:
+        return "moderate"
+    if weak >= 1 and strong == 0:
+        return "weak"
+    return "moderate"
+
 # Malefic planets
 MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
 
@@ -2041,6 +2083,14 @@ def analyze_yogas_and_doshas(planets: dict, asc_sign: str = "") -> dict:
         yoga_name = yoga.get("name")
         if isinstance(yoga_name, str) and yoga_name and "name_key" not in yoga:
             yoga["name_key"] = to_translation_key("YOGA", yoga_name)
+        if not yoga.get("strength"):
+            yoga["strength"] = _compute_yoga_strength(yoga, planets)
+        if yoga.get("trigger_houses") is None:
+            yoga["trigger_houses"] = sorted({
+                planets.get(p, {}).get("house", 0)
+                for p in (yoga.get("planets_involved") or [])
+                if planets.get(p, {}).get("house", 0)
+            })
 
     for dosha in doshas:
         dosha_name = dosha.get("name")

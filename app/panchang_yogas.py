@@ -59,7 +59,7 @@ AMRIT_SIDDHI: Dict[int, str] = {
 # ============================================================
 # DWIPUSHKAR YOGA — Tithi + Nakshatra + Weekday
 # ============================================================
-DWIPUSHKAR_TITHIS: List[int] = [2, 7, 12]  # Dwitiya, Saptami, Dwadashi
+DWIPUSHKAR_TITHIS: List[int] = [3, 8, 13]  # Tritiya, Ashtami, Trayodashi
 DWIPUSHKAR_WEEKDAYS: List[int] = [0, 2, 6]  # Sunday, Tuesday, Saturday
 DWIPUSHKAR_NAKSHATRAS: List[str] = [
     "Chitra", "Mrigashira", "Dhanishta",
@@ -70,7 +70,7 @@ DWIPUSHKAR_NAKSHATRAS: List[str] = [
 # ============================================================
 # TRIPUSHKAR YOGA — Tithi + Nakshatra + Weekday
 # ============================================================
-TRIPUSHKAR_TITHIS: List[int] = [3, 8, 13]  # Tritiya, Ashtami, Trayodashi
+TRIPUSHKAR_TITHIS: List[int] = [2, 7, 12]  # Dwitiya, Saptami, Dwadashi
 TRIPUSHKAR_WEEKDAYS: List[int] = [0, 2, 6]  # Sunday, Tuesday, Saturday
 TRIPUSHKAR_NAKSHATRAS: List[str] = [
     "Krittika", "Punarvasu", "Uttara Phalguni",

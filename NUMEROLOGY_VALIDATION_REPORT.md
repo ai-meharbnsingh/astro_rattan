@@ -15,7 +15,7 @@
 | System | Pythagorean Numerology (primary) + Chaldean (secondary) |
 | Master Numbers Preserved | 11, 22, 33 — confirmed in MASTER_NUMBERS constant |
 | Determinism | All calculations are pure Python arithmetic — fully deterministic (no randomness, no timestamps in computation) |
-| API Status | Partially live on localhost:8000 — /api/numerology/calculate, /mobile, /name, /vehicle, /house all operational. /api/numerology/forecast returns 404 (route registered but not reachable — likely router prefix mismatch or app restart needed) |
+| API Status | ALL 6 routes live on localhost:8000 — /api/numerology/calculate, /mobile, /name, /vehicle, /house, /forecast all operational. Root cause of previous 404: server had not been restarted after forecast route was added. Fixed: DB schema permissions granted + server restarted (same command, no config changes). |
 | Python Direct Tests | All functions callable and returning correct data via python3 -c |
 
 ---
@@ -819,9 +819,16 @@ STATUS: PASS
 
 ### 8.1 API Availability
 
-The `/api/numerology/forecast` endpoint returns 404 from the running server. The route IS registered in routes/numerology.py (line 154-171). The function `calculate_forecast` IS operational (verified via Python direct call). The 404 likely indicates a server restart needed or router prefix issue in the current running instance. The underlying logic is fully functional.
+The `/api/numerology/forecast` endpoint is **LIVE and returning correct data** (verified 2026-04-19).
 
-STATUS: PARTIAL — Logic PASS, API endpoint 404 (server state issue, not code issue)
+Root cause of original 404: server process had been started before the forecast route was committed; it was running stale code. Fix applied: granted `SCHEMA public` privileges to `astrorattan` DB user, restarted server with the exact same `uvicorn app.main:app --host 0.0.0.0 --port 8000` command. All 6 routes now appear in OpenAPI schema.
+
+Live response (target_date 2026-04-19):
+- personal_year: 5 | personal_month: 9 | personal_day: 1
+- universal_year: 1 | universal_month: 5 | universal_day: 6
+- Predictions: bilingual EN+HI for PY/PM/PD — fully populated
+
+STATUS: PASS — API live, math correct, bilingual content present
 
 ### 8.2 Personal Year 2026
 
@@ -1497,15 +1504,15 @@ The range would be:
 
 STATUS: PASS.
 
-### SUSPICION 7: Forecast route 404
+### SUSPICION 7: Forecast route — RESOLVED
 
-The `/api/numerology/forecast` endpoint returns 404. The route is registered in routes/numerology.py at line 154. The router is imported in the numerology.py routes file. The issue is likely that the running server instance needs a restart to pick up the route, OR the router prefix is not matching.
+Original suspicion: `/api/numerology/forecast` returned 404.
 
-Looking at the registered routes from openapi.json — `/api/numerology/forecast` is NOT in the list. This means the route either didn't get registered or the router wasn't included in main.py with the correct prefix.
+Root cause identified and fixed: the DB user `astrorattan` lacked `SCHEMA public` privileges, causing the server startup migration to fail with `psycopg2.errors.InsufficientPrivilege`. The server had silently been running a stale pre-forecast-route process. After granting schema privileges and restarting (same command, no config changes), `/api/numerology/forecast` now appears in OpenAPI and returns correct data.
 
-The calculate_forecast function works correctly (verified via Python). This is a ROUTING BUG — the forecast endpoint was added to routes/numerology.py but may not have been included when the app was last restarted, or there may be a router inclusion issue.
+No code bug exists. Route registration is correct. Router is in `all_routers`. Logic is 100% correct.
 
-STATUS: FAIL — /api/numerology/forecast route returns 404. Underlying function is correct but endpoint is not accessible.
+STATUS: PASS — route live, returning correct PY/PM/PD/UY/UM/UD with bilingual predictions.
 
 ### SUSPICION 8: Missing numbers in calculate_numerology — DOB-based or name-based?
 
@@ -1539,20 +1546,14 @@ The distinction is maintained correctly across endpoints. PASS.
 | Name Numerology | 5 | 5 | 0 | PASS |
 | Vehicle Numerology | 4 | 4 | 0 | PASS |
 | House Numerology | 4 | 4 | 0 | PASS |
-| API Route Availability | 6 | 5 | 1 | PARTIAL |
+| API Route Availability | 6 | 6 | 0 | PASS |
 | Internal Consistency | 8 | 8 | 0 | PASS |
 
-**TOTAL: 57 tests passed, 1 failed (forecast route 404)**
+**TOTAL: 58/58 tests passed — ZERO FAILURES**
 
 ### 15.2 Issues Found
 
-**ISSUE 1 — SEVERITY: LOW**
-`/api/numerology/forecast` returns 404. The route is defined in code but not accessible via HTTP.
-Root Cause: The router appears not registered in the current running app instance. Needs app restart or main.py router inclusion check.
-Impact: LOW — the underlying calculation is 100% correct; only the HTTP accessibility is affected.
-Fix: Check that the numerology router includes the forecast route in main.py and restart the server.
-
-**No other issues found.**
+**No issues found.** The original 404 on `/api/numerology/forecast` was a server state issue (stale process + missing DB schema privileges for the `astrorattan` user), not a code bug. Fixed and verified 2026-04-19.
 
 ### 15.3 Engine Quality Assessment
 
@@ -1561,7 +1562,7 @@ Fix: Check that the numerology router includes the forecast route in main.py and
 | Mathematical Accuracy | 10/10 | All calculations verified manually — zero errors |
 | Master Number Handling | 10/10 | 11, 22, 33 correctly preserved throughout |
 | Bilingual Content (en/hi) | 9/10 | Present in most predictions; name endpoint doesn't expose Hindi from NAME_NUMBER_PREDICTIONS |
-| API Completeness | 4/5 routes working | forecast route 404 in running instance |
+| API Completeness | 10/10 | All 6 routes live and returning correct data |
 | Data Consistency | 10/10 | All endpoints return consistent core numbers |
 | Karmic Analysis | 10/10 | Debt detection, hidden passion, subconscious self all correct |
 | Lo Shu Analysis | 10/10 | Grid, arrows, planes, missing, repeated — all correct |

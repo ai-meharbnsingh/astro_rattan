@@ -56,12 +56,18 @@ def test_return_structure():
     assert "soul_urge" in result
     assert "personality" in result
     assert "predictions" in result
-    # predictions is now a dict with per-category prediction text
+    # predictions is a dict where each value is either a str or a rich dict
     assert isinstance(result["predictions"], dict)
     for key in ("life_path", "destiny", "soul_urge", "personality"):
         assert key in result["predictions"], f"predictions missing key: {key}"
-        assert isinstance(result["predictions"][key], str)
-        assert len(result["predictions"][key]) > 10
+        val = result["predictions"][key]
+        if isinstance(val, dict):
+            # rich prediction dict — must have at least a description or theme
+            assert "description" in val or "theme" in val, f"{key} dict missing description/theme"
+            text = val.get("description") or val.get("theme") or ""
+            assert len(text) > 10
+        else:
+            assert isinstance(val, str) and len(val) > 10
 
 
 def test_reduce_master_numbers_preserved():

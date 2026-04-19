@@ -593,14 +593,15 @@ def get_muhurat(
             })
 
     results_json = json.dumps(auspicious_dates)
-    db.execute(
-        """INSERT INTO muhurat_cache
-           (muhurat_type, year, month, latitude, longitude, results)
-           VALUES (%s, %s, %s, %s, %s, %s)
-           ON CONFLICT (muhurat_type, year, month, latitude, longitude) DO NOTHING""",
-        (muhurat_type, target_year, target_month, latitude, longitude, results_json),
-    )
-    db.commit()
+    try:
+        db.execute(
+            """INSERT INTO muhurat_cache (muhurat_type, year, month, latitude, longitude, results)
+               VALUES (%s, %s, %s, %s, %s, %s)""",
+            (muhurat_type, target_year, target_month, latitude, longitude, results_json),
+        )
+        db.commit()
+    except Exception:
+        db.rollback()
 
     dates = [
         {

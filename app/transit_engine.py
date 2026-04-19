@@ -930,7 +930,15 @@ def _nakshatra_name_to_index(name: str) -> int:
 
 
 def _lookup_fragment(planet: str, house: int, area: str, language: str) -> str:
-    """Look up a text fragment from the interpretation matrix, returning empty string if missing."""
+    """Look up a text fragment, preferring a random variant if available, else base fragment."""
+    try:
+        from app.transit_variants import TRANSIT_VARIANTS
+        variants = TRANSIT_VARIANTS.get(planet, {}).get(house, {}).get(area)
+        if variants:
+            import random
+            return random.choice(variants)[language]
+    except (ImportError, KeyError, TypeError, IndexError):
+        pass
     try:
         return TRANSIT_FRAGMENTS[planet][house][area][language]
     except (KeyError, TypeError):
@@ -1098,7 +1106,12 @@ def _sign_change_meaning_hi(planet: str) -> str:
 
 
 def _fallback_planet_data() -> Dict[str, Dict]:
-    """Return a minimal fallback planet data dict when calculation fails."""
+    """Return hardcoded planet positions used only when Swiss Ephemeris is completely unavailable.
+    CALLER MUST LOG THIS — content generated from these positions is not astronomically accurate."""
+    logger.error(
+        "[transit_engine] CRITICAL: Swiss Ephemeris unavailable — using hardcoded fallback planet positions. "
+        "Horoscope content will NOT reflect actual transits. Fix EPHE_PATH or swisseph installation."
+    )
     default_signs = {
         "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
         "Mercury": "Gemini", "Jupiter": "Sagittarius", "Venus": "Taurus",
@@ -1114,7 +1127,7 @@ def _fallback_planet_data() -> Dict[str, Dict]:
             "house": 1,
             "retrograde": False,
             "is_combust": False,
-            "status": "",
+            "status": "fallback",
         }
     return result
 
@@ -1144,7 +1157,7 @@ def _fallback_horoscope(sign: str, period: str) -> Dict[str, Any]:
         },
         "dos": [{"en": "Stay positive and focused.", "hi": "\u0938\u0915\u093e\u0930\u093e\u0924\u094d\u092e\u0915 \u0914\u0930 \u0915\u0947\u0902\u0926\u094d\u0930\u093f\u0924 \u0930\u0939\u0947\u0902\u0964"}],
         "donts": [{"en": "Avoid impulsive decisions.", "hi": "\u0906\u0935\u0947\u0917\u092a\u0942\u0930\u094d\u0923 \u0928\u093f\u0930\u094d\u0923\u092f\u094b\u0902 \u0938\u0947 \u092c\u091a\u0947\u0902\u0964"}],
-        "source": "transit_engine",
+        "source": "fallback",
     }
 
 

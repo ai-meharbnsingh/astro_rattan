@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.database import get_db
 from app.horoscope_generator import (
     SIGNS,
-    generate_ai_horoscope,
+    generate_horoscope,
     _get_current_transits,
     _RULERS,
     _ELEMENTS,
@@ -164,7 +164,7 @@ def get_daily_horoscope(
             }
 
     # Generate on-the-fly via template engine
-    generated = generate_ai_horoscope(sign=sign, period="daily")
+    generated = generate_horoscope(sign=sign, period="daily")
     return {
         **_sign_meta(sign),
         "period": "daily",
@@ -219,7 +219,7 @@ def get_tomorrow_horoscope(
     except Exception:
         logger.exception("Transit engine failed for tomorrow %s", sign)
 
-    generated = generate_ai_horoscope(sign=sign, period="daily")
+    generated = generate_horoscope(sign=sign, period="daily")
     return {
         **_sign_meta(sign),
         "period": "tomorrow",
@@ -298,7 +298,7 @@ def get_weekly_horoscope(
                 "source": "database",
             }
 
-    generated = generate_ai_horoscope(sign=sign, period="weekly")
+    generated = generate_horoscope(sign=sign, period="weekly")
     return {
         **_sign_meta(sign),
         "period": "weekly",
@@ -386,7 +386,7 @@ def get_monthly_horoscope(
                 "source": "database",
             }
 
-    generated = generate_ai_horoscope(sign=sign, period="monthly")
+    generated = generate_horoscope(sign=sign, period="monthly")
     return {
         **_sign_meta(sign),
         "period": "monthly",
@@ -499,7 +499,7 @@ def get_yearly_horoscope(
                 "source": "database",
             }
 
-    generated = generate_ai_horoscope(sign=sign, period="yearly")
+    generated = generate_horoscope(sign=sign, period="yearly")
     return {
         **_sign_meta(sign),
         "period": "yearly",
@@ -535,14 +535,24 @@ def get_all_signs_horoscope(
 
     results = []
     for sign in SIGNS:
-        content = db_map.get(sign)
-        if content:
-            sections = _parse_content_to_sections(content)
-            source = "database"
-        else:
-            generated = generate_ai_horoscope(sign=sign, period=period)
-            sections = generated.get("sections", {})
-            source = generated.get("source", "template")
+        # Always try transit engine first — DB cache only used if engine fails
+        try:
+            from app.transit_engine import generate_transit_horoscope
+            result = generate_transit_horoscope(sign=sign, period=period, target_date=target_date)
+            if result and result.get("sections"):
+                sections = result["sections"]
+                source = result.get("source", "transit_engine")
+            else:
+                raise ValueError("empty result")
+        except Exception:
+            content = db_map.get(sign)
+            if content:
+                sections = _parse_content_to_sections(content)
+                source = "database"
+            else:
+                generated = generate_horoscope(sign=sign, period=period)
+                sections = generated.get("sections", {})
+                source = generated.get("source", "template")
 
         # Build a compact summary from the general section
         general = sections.get("general", "")

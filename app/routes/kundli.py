@@ -63,6 +63,7 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
     planet_signs = {}
     planet_houses = {}
     planet_longitudes = {}
+    planet_speeds = {}
     retrograde_planets = set()
     for pn, pi in planets.items():
         if not isinstance(pi, dict):
@@ -71,6 +72,8 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
         planet_houses[pn] = pi.get("house", 1)
         if "longitude" in pi:
             planet_longitudes[pn] = pi["longitude"]
+        if "speed" in pi:
+            planet_speeds[pn] = pi["speed"]
         if pi.get("retrograde") or "Retrograde" in pi.get("status", "") or "retrograde" in pi.get("status", ""):
             retrograde_planets.add(pn)
 
@@ -98,6 +101,7 @@ def _prepare_shadbala_params(planets: dict, row: dict) -> dict:
         "is_daytime": 6.0 <= birth_hour < 18.0,
         "retrograde_planets": retrograde_planets,
         "planet_longitudes": planet_longitudes,
+        "planet_speeds": planet_speeds if planet_speeds else None,
         "birth_hour": birth_hour,
         "moon_sun_elongation": (moon_lon - sun_lon) % 360.0,
         "weekday": weekday,
@@ -1006,6 +1010,18 @@ def get_yogas_and_doshas(
         result["yogas"] = existing_yogas
     except Exception:
         logger.exception("Rule-engine yoga merge failed for kundli %s", kundli_id)
+
+    # Post-process any yogas still missing strength/trigger_houses (e.g. from rule_engine)
+    from app.dosha_engine import _compute_yoga_strength
+    for yoga in result.get("yogas", []):
+        if not yoga.get("strength"):
+            yoga["strength"] = _compute_yoga_strength(yoga, planets)
+        if yoga.get("trigger_houses") is None:
+            yoga["trigger_houses"] = sorted({
+                planets.get(p, {}).get("house", 0)
+                for p in (yoga.get("planets_involved") or [])
+                if planets.get(p, {}).get("house", 0)
+            })
 
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
@@ -2637,7 +2653,7 @@ def free_kundli_preview(
                 "nakshatra": p.get("nakshatra", ""),
                 "nakshatra_pada": p.get("nakshatra_pada", ""),
                 "status": p.get("status", ""),
-                "retrograde": p.get("is_retrograde", False),
+                "retrograde": p.get("retrograde", p.get("is_retrograde", False)),
             })
 
     # 4. Current Dasha

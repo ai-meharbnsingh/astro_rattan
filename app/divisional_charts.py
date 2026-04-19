@@ -1315,6 +1315,7 @@ def calculate_d108_analysis(
         "spiritual_indicators": spiritual_indicators,
         "moksha_potential": {
             "score": moksha_score,
+            "max": 100,
             "factors": moksha_factors,
         },
         "past_life_karma": past_life_karma,

@@ -405,39 +405,18 @@ def _template_fallback_sections(sign: str, period: str = "daily") -> Dict[str, s
     }
 
 
-def generate_ai_horoscope(
+def generate_horoscope(
     sign: str,
     period: str = "daily",
     native_lagna: Optional[str] = None,
 ) -> Dict:
-    """
-    Generate a horoscope with sectioned content using the transit engine.
-
-    Args:
-        sign: Zodiac sign (lowercase, e.g. "aries").
-        period: One of "daily", "weekly", "monthly", "yearly".
-        native_lagna: Optional pre-computed Janma Lagna sign (lowercase).
-            When provided, houses are counted from Janma Lagna instead of Moon sign.
-
-    Returns:
-        Dict with keys: sign, period, sections, scores, mood, lucky, dos, donts, source.
-    """
+    """Generate a horoscope with sectioned content from planetary templates."""
     sign = sign.lower()
     if sign not in SIGNS:
         raise ValueError(f"Invalid zodiac sign: {sign}")
     if period not in ("daily", "weekly", "monthly", "yearly"):
         raise ValueError(f"Invalid period: {period}")
 
-    # Try transit engine first
-    try:
-        from app.transit_engine import generate_transit_horoscope
-        result = generate_transit_horoscope(sign=sign, period=period, target_date=None, native_lagna=native_lagna)
-        if result and result.get("sections"):
-            return result
-    except Exception:
-        pass
-
-    # Fallback to templates
     ruler = _RULERS[sign]
     element = _ELEMENTS[sign]
     sections = _template_fallback_sections(sign, period)
@@ -448,6 +427,8 @@ def generate_ai_horoscope(
         "ruling_planet": ruler,
         "element": element,
         "sections": sections,
-        "source": "template",
-        "personalized": False,
     }
+
+
+# Keep old name as alias so any surviving caller doesn't break at import time
+generate_ai_horoscope = generate_horoscope

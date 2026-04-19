@@ -23,7 +23,7 @@ from app.database import init_db
 from app.migrations import run_migrations
 from app.rate_limit import request_rate_limit_key
 from app.seed_data import seed_all
-from app.horoscope_generator import generate_daily_horoscopes, seed_weekly_horoscopes
+from app.horoscope_generator import generate_daily_horoscopes, seed_weekly_horoscopes  # noqa: F401
 from app.routes import all_routers
 
 _start_time = time.time()
@@ -133,8 +133,6 @@ _db_check_cache = {"ok": False, "ts": 0.0}
 def health():
     """Health check endpoint with cached DB verification (30s TTL)."""
     from app.astro_engine import _HAS_SWE
-    from app.config import AI_PROVIDER, GEMINI_API_KEY, OPENAI_API_KEY
-    ai_status = "configured" if (GEMINI_API_KEY or OPENAI_API_KEY) else "not_configured"
     now = time.time()
     if now - _db_check_cache["ts"] > 30:
         try:
@@ -155,7 +153,6 @@ def health():
         "version": APP_VERSION,
         "uptime": round(time.time() - _start_time, 2),
         "database": "connected" if db_ok else "unreachable",
-        "ai": {"provider": AI_PROVIDER, "status": ai_status},
         "swisseph": _HAS_SWE,
     }
 

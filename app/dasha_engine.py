@@ -84,6 +84,13 @@ NAKSHATRA_ORDER = [
 VIMSHOTTARI_TOTAL = 120  # years
 NAKSHATRA_SPAN = 13 + 20.0 / 60.0  # 13°20' = 13.3333°
 
+# Maps dasha quality tag to a normalized strength label
+_QUALITY_TAG_TO_STRENGTH = {
+    "Auspicious": "strong",
+    "Challenging": "weak",
+    "Neutral": "neutral",
+}
+
 
 def _get_dasha_sequence(starting_lord: str) -> list:
     """Return the 9-planet dasha sequence starting from a given lord."""
@@ -801,10 +808,17 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     entry = (data.get("mahadasha_effects") or {}).get(planet, {})
 
     if not entry:
+        _fallback_assessment = _assess_planet_strength(planet, chart_data or {})
+        _fallback_quality = _dasha_quality_tag(planet, chart_data or {}, _fallback_assessment["factors"])
+        _fb_strength = _QUALITY_TAG_TO_STRENGTH.get(
+            _fallback_quality["tag"], _fallback_assessment["strength"]
+        )
         return {
             "planet": planet,
-            "strength": "neutral",
-            "factors": [],
+            "strength": _fb_strength,
+            "factors": _fallback_assessment["factors"],
+            "factors_detail": _fallback_quality.get("reasons") or [],
+            "dasha_quality": _fallback_quality,
             "effect_en": "",
             "effect_hi": "",
             "sloka_ref": "",
@@ -814,6 +828,11 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     assessment = _assess_planet_strength(planet, chart_data or {})
     strength = assessment["strength"]
     quality_tag = _dasha_quality_tag(planet, chart_data or {}, assessment["factors"])
+
+    # Sync strength with dasha_quality to prevent neutral/Auspicious conflicts
+    quality_strength = _QUALITY_TAG_TO_STRENGTH.get(quality_tag["tag"], "neutral")
+    if strength == "neutral" and quality_strength != "neutral":
+        strength = quality_strength
 
     if strength == "strong":
         effect_en = entry.get("when_strong_en", entry.get("general_en", ""))
@@ -936,7 +955,7 @@ def analyze_mahadasha_phala(planet: str, chart_data: dict) -> Dict[str, Any]:
     return {
         "planet": planet,
         "strength": strength,
-        "factors": assessment["factors"],
+        "factors": quality_tag.get("reasons") or assessment["factors"],
         "effect_en": effect_en,
         "effect_hi": effect_hi,
         "general_en": entry.get("general_en", ""),

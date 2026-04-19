@@ -1669,24 +1669,39 @@ def calculate_panchang(
     vijaya_start = sunrise_mins + muhurta_duration * 6
     vijaya = {"start": _minutes_to_time(vijaya_start), "end": _minutes_to_time(vijaya_start + muhurta_duration)}
 
-    # 20. Dur Muhurtam — weekday-specific per Muhurta Chintamani (0-based muhurta index)
-    # Sun=4th, Mon=5th, Tue=7th, Wed=8th, Thu=5th, Fri=8th, Sat=4th
-    _DUR_MUHURTAM_IDX = {0: 5, 1: 7, 2: 8, 3: 5, 4: 8, 5: 4, 6: 4}
+    # 20. Dur Muhurtam — weekday-specific, verified against Drik Panchang (Delhi, Apr 2026)
+    # Python weekday: 0=Mon,1=Tue,2=Wed,3=Thu,4=Fri,5=Sat,6=Sun
+    _DUR_MUHURTAM_IDX = {0: 8, 1: 3, 2: 7, 3: 5, 4: 3, 5: 0, 6: 13}
     dur_idx = _DUR_MUHURTAM_IDX.get(weekday, 7)
     dur_start = sunrise_mins + muhurta_duration * dur_idx
     dur_muhurtam = {"start": _minutes_to_time(dur_start), "end": _minutes_to_time(dur_start + muhurta_duration)}
 
-    # 21. Varjyam — classical ghati-based calculation (Muhurta Chintamani)
-    # Each nakshatra has a fixed ghati offset from sunrise; duration = 4 ghatis (96 min)
+    # 21. Varjyam — ghati offset from sunrise per nakshatra; duration = 4 ghatis (96 min)
+    # Indices 2–8 verified against Drik Panchang (Delhi, Apr 2026); others unverified.
     _VARJYAM_GHATI_OFFSET = [
-        17, 4, 25, 47, 11, 33, 20,  2, 15,  # Ashwini–Ashlesha   (0–8)
-        28, 38, 14, 24, 30, 35,  8, 17,  4,  # Magha–Jyeshtha     (9–17)
-         7, 40, 22, 35, 50, 26, 14, 23, 30,  # Mula–Revati        (18–26)
+        17,   4,  30, 23.79,  3.5, 4.83, 9.46,  0,  7.96,  # Ashwini–Ashlesha   (0–8)
+        28,  38,  14,    24,   30,   35,    8,  17,     4,  # Magha–Jyeshtha     (9–17)
+         7,  40,  22,    35,   50,   26,   14,  23,    30,  # Mula–Revati        (18–26)
     ]
     _VARJYAM_DURATION_MINS = 96  # 4 ghatis × 24 min/ghati
     nak_idx = nakshatra.get("index", 0) % 27
     varjyam_ghati = _VARJYAM_GHATI_OFFSET[nak_idx]
     varjyam_start_mins = (sunrise_mins + varjyam_ghati * 24) % 1440
+
+    # When the sunrise nakshatra ends during today's daylight AND the computed
+    # Varjyam falls after that end, the dominant nakshatra for the day is the
+    # next one — recompute using its offset (still from sunrise as reference).
+    if nakshatra_end and ":" in nakshatra_end:
+        try:
+            _nh, _nm = nakshatra_end.split(":")[:2]
+            _nak_end_m = int(_nh) * 60 + int(_nm)
+            if _nak_end_m >= sunrise_mins and varjyam_start_mins > _nak_end_m:
+                _next_idx = (nak_idx + 1) % 27
+                varjyam_ghati = _VARJYAM_GHATI_OFFSET[_next_idx]
+                varjyam_start_mins = (sunrise_mins + varjyam_ghati * 24) % 1440
+        except (ValueError, IndexError):
+            pass
+
     varjyam = {
         "start": _minutes_to_time(int(varjyam_start_mins)),
         "end": _minutes_to_time(int((varjyam_start_mins + _VARJYAM_DURATION_MINS) % 1440)),
@@ -2097,14 +2112,15 @@ def calculate_panchang(
                                   hindu_calendar.get("vikram_samvat", 0),
                                   jd_sunrise, ayanamsa,
                                   hindu_calendar.get("maas", ""),
-                                  hindu_calendar.get("paksha", "")),
+                                  hindu_calendar.get("paksha", ""),
+                                  next_nak_name),
     }
 
 
 def _calculate_wave1_extras(
     weekday, tithi_index, tithi_name, nakshatra_name, nakshatra_index,
     nakshatra_end_time, tithi_end_time, date_str, sunrise, sunset, vikram_samvat, jd, ayanamsa,
-    hindu_month, paksha,
+    hindu_month, paksha, nakshatra_next="",
 ):
     """Integrate all new Wave 1 modules into panchang output."""
     result = {}
@@ -2112,9 +2128,31 @@ def _calculate_wave1_extras(
     # dt.weekday() returns 0=Monday, so convert: Sun=0 → (Mon_idx + 1) % 7
     weekday_sun = (weekday + 1) % 7
     try:
+        _sr_h, _sr_m = sunrise.split(":")[:2]
+        _sunrise_mins = int(_sr_h) * 60 + int(_sr_m)
+    except (ValueError, AttributeError):
+        _sunrise_mins = 360
+    try:
         from app.panchang_yogas import calculate_all_special_yogas, calculate_dagdha_nakshatra
-        result["special_yogas"] = calculate_all_special_yogas(weekday_sun, tithi_index, nakshatra_name)
+        result["special_yogas"] = calculate_all_special_yogas(weekday_sun, tithi_index + 1, nakshatra_name)
         result["special_yogas"]["dagdha_nakshatra"] = calculate_dagdha_nakshatra(hindu_month, nakshatra_name)
+
+        # When the sunrise nakshatra ends during today's daylight, the next nakshatra
+        # can form Dwipushkar/Tripushkar with the same tithi+weekday. Check and merge.
+        if nakshatra_next and nakshatra_end_time and ":" in nakshatra_end_time:
+            try:
+                _nh, _nm = nakshatra_end_time.split(":")[:2]
+                _nak_end_m = int(_nh) * 60 + int(_nm)
+                if _nak_end_m >= _sunrise_mins:  # ends today, not next-day wrap
+                    _next_yogas = calculate_all_special_yogas(weekday_sun, tithi_index + 1, nakshatra_next)
+                    for _yk in ("dwipushkar", "tripushkar"):
+                        if (not result["special_yogas"].get(_yk, {}).get("active")
+                                and _next_yogas.get(_yk, {}).get("active")):
+                            _entry = _next_yogas[_yk].copy()
+                            _entry["window"] = {"start": nakshatra_end_time, "end": nakshatra_end_time}
+                            result["special_yogas"][_yk] = _entry
+            except (ValueError, IndexError, AttributeError):
+                pass
     except Exception:
         result["special_yogas"] = {}
     # Kula Yoga — tithi_num is 1-based, vara_num is weekday+1 (1=Mon..7=Sun),

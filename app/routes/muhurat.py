@@ -17,30 +17,64 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["muhurat"])
 
 
-def _is_auspicious_day(panchang: dict[str, Any]) -> bool:
-    tithi = panchang.get("tithi", {}) or {}
-    name = str(tithi.get("name", ""))
-    paksha = str(tithi.get("paksha", ""))
-    return paksha == "Shukla" and name not in {"Ashtami", "Navami", "Chaturdashi"}
-
-
-def _monthly_days(year: int, month: int, latitude: float, longitude: float) -> list[dict[str, Any]]:
-    total_days = calendar.monthrange(year, month)[1]
-    days: list[dict[str, Any]] = []
-    for day in range(1, total_days + 1):
-        d = date(year, month, day).isoformat()
-        panchang = calculate_panchang(d, latitude, longitude)
-        ok = _is_auspicious_day(panchang)
-        days.append(
-            {
-                "date": d,
+def _monthly_days(year: int, month: int, latitude: float, longitude: float, event_type: str = "marriage") -> list[dict[str, Any]]:
+    full_result = find_muhurat_dates(
+        activity_key=event_type,
+        month=month,
+        year=year,
+        latitude=latitude,
+        longitude=longitude,
+        limit=31,
+    )
+    if "error" in full_result:
+        # Unknown activity — fall back to simple paksha+tithi check
+        total_days = calendar.monthrange(year, month)[1]
+        days: list[dict[str, Any]] = []
+        for day in range(1, total_days + 1):
+            d_str = date(year, month, day).isoformat()
+            panchang = calculate_panchang(d_str, latitude, longitude)
+            tithi = panchang.get("tithi", {}) or {}
+            ok = (tithi.get("paksha") == "Shukla"
+                  and tithi.get("name") not in {"Ashtami", "Navami", "Chaturdashi"})
+            days.append({
+                "date": d_str,
                 "has_muhurat": ok,
                 "quality": "good" if ok else "poor",
                 "windows_count": 1 if ok else 0,
-                "tithi": (panchang.get("tithi", {}) or {}).get("name", ""),
+                "tithi": tithi.get("name", ""),
                 "nakshatra": (panchang.get("nakshatra", {}) or {}).get("name", ""),
-            }
-        )
+            })
+        return days
+
+    dates_map: dict[str, dict[str, Any]] = {e["date"]: e for e in full_result.get("dates", [])}
+    total_days = calendar.monthrange(year, month)[1]
+    days = []
+    for day in range(1, total_days + 1):
+        d_str = date(year, month, day).isoformat()
+        entry = dates_map.get(d_str)
+        if entry:
+            score = entry.get("score", 0)
+            ok = score >= 50
+            days.append({
+                "date": d_str,
+                "has_muhurat": ok,
+                "quality": entry.get("quality", "good" if ok else "poor"),
+                "windows_count": 1 if ok else 0,
+                "tithi": entry.get("tithi", ""),
+                "nakshatra": entry.get("nakshatra", ""),
+                "score": score,
+            })
+        else:
+            # Hard-blocked (Chaturmasa, Sankranti window, etc.)
+            days.append({
+                "date": d_str,
+                "has_muhurat": False,
+                "quality": "poor",
+                "windows_count": 0,
+                "tithi": "",
+                "nakshatra": "",
+                "score": 0,
+            })
     return days
 
 
@@ -78,7 +112,7 @@ def muhurat_monthly(
         "event_type": event_type,
         "year": target_year,
         "month": target_month,
-        "days": _monthly_days(target_year, target_month, latitude, longitude),
+        "days": _monthly_days(target_year, target_month, latitude, longitude, event_type),
     }
 
 
@@ -106,20 +140,29 @@ def muhurat_find(
         "Use /api/muhurat/finder with ?activity= parameter instead for activity-specific rules."
     )
 
-    panchang = calculate_panchang(date_str, latitude, longitude)
-    tithi = (panchang.get("tithi", {}) or {}).get("name", "")
-    nak = (panchang.get("nakshatra", {}) or {}).get("name", "")
-    ok = _is_auspicious_day(panchang)
+    try:
+        d = date.fromisoformat(date_str)
+    except ValueError:
+        return {"event_type": event_type, "date": date_str, "windows": []}
+
+    full_result = find_muhurat_dates(
+        activity_key=event_type,
+        month=d.month,
+        year=d.year,
+        latitude=latitude,
+        longitude=longitude,
+        limit=31,
+    )
+    entry = next((e for e in full_result.get("dates", []) if e["date"] == date_str), None)
+
     windows = []
-    if ok:
-        windows.append(
-            {
-                "start_time": panchang.get("sunrise", "--:--"),
-                "end_time": panchang.get("sunset", "--:--"),
-                "quality": "good",
-                "factors": [f"{tithi} {nak}".strip()],
-            }
-        )
+    if entry and entry.get("score", 0) >= 50:
+        windows.append({
+            "start_time": entry.get("sunrise", "--:--"),
+            "end_time": entry.get("sunset", "--:--"),
+            "quality": entry.get("quality", "good"),
+            "factors": (entry.get("reasons_good") or [])[:3],
+        })
     return {"event_type": event_type, "date": date_str, "windows": windows}
 
 
