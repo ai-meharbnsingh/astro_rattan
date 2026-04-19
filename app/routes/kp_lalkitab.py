@@ -8,7 +8,7 @@ from typing import Any, Optional
 
 import httpx
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.auth import get_current_user
 from app.astro_engine import calculate_planet_positions
@@ -431,35 +431,254 @@ def add_chandra_journal(payload: dict, user: dict = Depends(get_current_user), d
 # Lal Kitab Gochar (Live Transit Positions)
 # ─────────────────────────────────────────────────────────────
 
+_PAKKA_GHAR_GOCHAR: dict[str, set] = {
+    "Sun": {1}, "Moon": {4}, "Mars": {3, 8}, "Mercury": {3, 6},
+    "Jupiter": {2, 9, 12}, "Venus": {7}, "Saturn": {7, 10},
+    "Rahu": {6, 11, 12}, "Ketu": {3, 6, 12},
+}
+
+_GOCHAR_PLANET_RULES: dict[str, dict[int, dict]] = {
+    "Sun": {
+        1:  {"en": "Sun transiting H1 (Pakka Ghar) — vitality and authority peak. Bold self-expression and health focus. Ideal for leadership decisions.", "hi": "सूर्य गोचर भाव 1 (पक्का घर) — जीवनशक्ति और प्रभुत्व का शिखर। साहसी आत्म-अभिव्यक्ति और स्वास्थ्य पर ध्यान।", "positive": True},
+        2:  {"en": "Sun transiting H2 — family wealth and speech gain authority. Financial confidence rises. Ego in family matters needs balance.", "hi": "सूर्य गोचर भाव 2 — पारिवारिक धन और वाणी में अधिकार। आर्थिक आत्मविश्वास बढ़ता है। परिवार में अहंकार पर संतुलन जरूरी।", "positive": True},
+        3:  {"en": "Sun transiting H3 — courage and communication peak. Sibling bonds active. Short journeys and new initiatives succeed.", "hi": "सूर्य गोचर भाव 3 — साहस और संचार चरम पर। भाई-बहन संबंध सक्रिय। छोटी यात्राएँ और नई पहल सफल।", "positive": True},
+        4:  {"en": "Sun transiting H4 — home and mother in focus. Real estate matters active. Father may be away or absorbed in career.", "hi": "सूर्य गोचर भाव 4 — घर और माता पर ध्यान। संपत्ति के मामले सक्रिय। पिता व्यस्त या दूर हो सकते हैं।", "positive": True},
+        5:  {"en": "Sun transiting H5 — intelligence and creative expression peak. Pride in children. Speculation may be ego-driven — exercise caution.", "hi": "सूर्य गोचर भाव 5 — बुद्धि और रचनात्मक अभिव्यक्ति उच्च। संतान पर गर्व। सट्टे में अहंकार — सावधानी बरतें।", "positive": True},
+        6:  {"en": "Sun transiting H6 — enemies are defeated. Government service or authority work excels. Health concerns need attention.", "hi": "सूर्य गोचर भाव 6 — शत्रुओं पर विजय। सरकारी सेवा या अधिकार-कार्य उत्कृष्ट। स्वास्थ्य पर ध्यान दें।", "positive": True},
+        7:  {"en": "Sun transiting H7 — partnerships under spotlight. Ego vs. partner dynamic active. Marriage matters or legal negotiations are highlighted.", "hi": "सूर्य गोचर भाव 7 — साझेदारी में अहंकार बनाम साझेदार का द्वंद्व। विवाह और कानूनी वार्ता प्रमुख।", "positive": False},
+        8:  {"en": "Sun transiting H8 — hidden matters surface. In-law tensions possible. Transformation through authority or government sources.", "hi": "सूर्य गोचर भाव 8 — छुपे मामले सामने आते हैं। ससुराल में तनाव संभव। सरकारी या अधिकार-स्रोत से परिवर्तन।", "positive": False},
+        9:  {"en": "Sun transiting H9 — dharma and luck blessed. Father's guidance active. Long journeys and religious activities are favorable.", "hi": "सूर्य गोचर भाव 9 — धर्म और भाग्य का आशीर्वाद। पिता का मार्गदर्शन सक्रिय। लंबी यात्राएँ और धार्मिक कार्य शुभ।", "positive": True},
+        10: {"en": "Sun transiting H10 — career peak. Recognition, authority, and leadership opportunities arise. Government favor is possible.", "hi": "सूर्य गोचर भाव 10 — करियर का शिखर। मान-सम्मान, अधिकार और नेतृत्व के अवसर। सरकारी कृपा संभव।", "positive": True},
+        11: {"en": "Sun transiting H11 — gains through influential connections. Father's network or authority figures help fulfill desires.", "hi": "सूर्य गोचर भाव 11 — प्रभावशाली संपर्कों से लाभ। पिता का नेटवर्क या अधिकारी वर्ग से इच्छापूर्ति।", "positive": True},
+        12: {"en": "Sun transiting H12 — expenditures on status. Possible ego battles in secret. Foreign isolation or spiritual retreat.", "hi": "सूर्य गोचर भाव 12 — प्रतिष्ठा पर खर्च। गुप्त अहंकार की लड़ाई। विदेश में एकांत या आध्यात्मिक साधना।", "positive": False},
+    },
+    "Moon": {
+        1:  {"en": "Moon transiting H1 — emotional sensitivity peaks. Intuition-led new beginnings. Health and mind are deeply linked — rest is important.", "hi": "चंद्र गोचर भाव 1 — भावनात्मक संवेदनशीलता चरम। अंतर्ज्ञान से नई शुरुआत। स्वास्थ्य और मन जुड़े हैं — आराम जरूरी।", "positive": True},
+        2:  {"en": "Moon transiting H2 — emotional attachment to family and wealth. Mother's financial matters active. Speech becomes nurturing.", "hi": "चंद्र गोचर भाव 2 — परिवार और धन से भावनात्मक लगाव। माता के आर्थिक मामले सक्रिय। वाणी में पोषण।", "positive": True},
+        3:  {"en": "Moon transiting H3 — emotional communication. Sibling bonds emotionally active. Short travel based on feelings or family needs.", "hi": "चंद्र गोचर भाव 3 — भावनात्मक संवाद। भाई-बहन संबंध भावनात्मक रूप से सक्रिय। भावनात्मक या पारिवारिक जरूरत से यात्रा।", "positive": True},
+        4:  {"en": "Moon transiting H4 (Pakka Ghar) — Moon at peak strength. Emotional contentment, home peace, and mother's wellbeing are highlighted.", "hi": "चंद्र गोचर भाव 4 (पक्का घर) — चंद्र की उच्च शक्ति। भावनात्मक संतोष, घर की शांति और माता का स्वास्थ्य।", "positive": True},
+        5:  {"en": "Moon transiting H5 — creative and emotional intelligence rises. Children and love life active. Intuitive speculation possible.", "hi": "चंद्र गोचर भाव 5 — रचनात्मक और भावनात्मक बुद्धि उच्च। संतान और प्रेम जीवन सक्रिय। अंतर्ज्ञान से सट्टा संभव।", "positive": True},
+        6:  {"en": "Moon transiting H6 — emotional health challenges. Nurturing others drains energy. Enemies may exploit emotions — stay grounded.", "hi": "चंद्र गोचर भाव 6 — भावनात्मक स्वास्थ्य चुनौतियाँ। दूसरों की देखभाल से ऊर्जा खर्च। शत्रु भावनाओं का दोहन कर सकते हैं।", "positive": False},
+        7:  {"en": "Moon transiting H7 — emotional availability in partnerships. Romantic phase active. Relationships need emotional depth and expression.", "hi": "चंद्र गोचर भाव 7 — साझेदारी में भावनात्मक उपलब्धता। रोमांटिक काल। संबंधों में भावनात्मक गहराई जरूरी।", "positive": True},
+        8:  {"en": "Moon transiting H8 — emotional transformation. Hidden fears or intuitions surface. In-law emotional dynamics need sensitivity.", "hi": "चंद्र गोचर भाव 8 — भावनात्मक परिवर्तन। छुपे भय या अंतर्ज्ञान सामने आते हैं। ससुराल की भावनात्मक गतिशीलता।", "positive": False},
+        9:  {"en": "Moon transiting H9 — intuitive dharma. Emotional journeys to sacred places. Spiritual feelings and mother's guidance peak.", "hi": "चंद्र गोचर भाव 9 — अंतर्ज्ञानी धर्म। पवित्र स्थलों की भावनात्मक यात्राएँ। आध्यात्मिक भावनाएँ और माता का मार्गदर्शन।", "positive": True},
+        10: {"en": "Moon transiting H10 — career through emotional intelligence. Public emotional presence. Nurturing leadership style is effective.", "hi": "चंद्र गोचर भाव 10 — भावनात्मक बुद्धि से करियर। सार्वजनिक भावनात्मक उपस्थिति। पोषण देने वाली नेतृत्व शैली प्रभावी।", "positive": True},
+        11: {"en": "Moon transiting H11 — emotional gains and wishes fulfilled through social bonds. Mother's wishes or friends bring happiness.", "hi": "चंद्र गोचर भाव 11 — भावनात्मक लाभ और सामाजिक बंधनों से इच्छापूर्ति। माता की इच्छाएँ या मित्र खुशी लाते हैं।", "positive": True},
+        12: {"en": "Moon transiting H12 — emotional withdrawal or isolation. Spiritual emotions peak. Foreign emotional connections or past-life feelings surface.", "hi": "चंद्र गोचर भाव 12 — भावनात्मक वापसी या एकांत। आध्यात्मिक भावनाएँ चरम। विदेशी भावनात्मक संपर्क या पूर्वजन्म की भावनाएँ।", "positive": False},
+    },
+    "Mercury": {
+        1:  {"en": "Mercury transiting H1 — communication and intellect peak. Quick thinking and sharp wit. Excellent for business deals and negotiations.", "hi": "बुध गोचर भाव 1 — संवाद और बुद्धि चरम पर। त्वरित सोच और तीखी बुद्धि। व्यापार सौदों और वार्ता के लिए उत्कृष्ट।", "positive": True},
+        2:  {"en": "Mercury transiting H2 — financial communication and family business discussions active. Speech brings wealth. Good for writing or teaching.", "hi": "बुध गोचर भाव 2 — आर्थिक संवाद और पारिवारिक व्यापार चर्चा सक्रिय। वाणी से धन। लेखन या अध्यापन के लिए अच्छा।", "positive": True},
+        3:  {"en": "Mercury transiting H3 (Pakka Ghar) — Mercury at peak power. Ideal for contracts, writing, sibling connections, and productive short journeys.", "hi": "बुध गोचर भाव 3 (पक्का घर) — बुध की उच्चतम शक्ति। अनुबंध, लेखन, भाई-बहन संपर्क और उत्पादक यात्राओं के लिए आदर्श।", "positive": True},
+        4:  {"en": "Mercury transiting H4 — home-based work and real estate communication active. Mother's educational or analytical matters highlighted.", "hi": "बुध गोचर भाव 4 — घर-आधारित कार्य और संपत्ति संवाद सक्रिय। माता के शैक्षिक या विश्लेषणात्मक मामले प्रमुख।", "positive": True},
+        5:  {"en": "Mercury transiting H5 — intelligence and analytical speculation rise. Writing, teaching, and children's education matters are active.", "hi": "बुध गोचर भाव 5 — बुद्धि और विश्लेषणात्मक सट्टा उच्च। लेखन, अध्यापन और संतान की शिक्षा के मामले सक्रिय।", "positive": True},
+        6:  {"en": "Mercury transiting H6 (Pakka Ghar) — analytical intelligence for defeating enemies. Health research and service excellence peak.", "hi": "बुध गोचर भाव 6 (पक्का घर) — शत्रुओं पर विजय के लिए विश्लेषणात्मक बुद्धि। स्वास्थ्य शोध और सेवा उत्कृष्टता।", "positive": True},
+        7:  {"en": "Mercury transiting H7 — business partnerships and contracts highlighted. Marriage communication improves. Legal documents favorable.", "hi": "बुध गोचर भाव 7 — व्यापार साझेदारी और अनुबंध प्रमुख। वैवाहिक संवाद बेहतर। कानूनी दस्तावेज अनुकूल।", "positive": True},
+        8:  {"en": "Mercury transiting H8 — research, occult communication, and tax matters active. Hidden information surfaces through analysis.", "hi": "बुध गोचर भाव 8 — शोध, गुप्त संवाद और कर मामले सक्रिय। विश्लेषण से छुपी जानकारी सामने आती है।", "positive": False},
+        9:  {"en": "Mercury transiting H9 — dharma through writing and teaching. Religious texts and long-distance communication are highlighted.", "hi": "बुध गोचर भाव 9 — लेखन और अध्यापन से धर्म। धार्मिक ग्रंथ और दूरस्थ संवाद प्रमुख।", "positive": True},
+        10: {"en": "Mercury transiting H10 — career through communication, media, and intelligence. Business proposals and writing bring professional gains.", "hi": "बुध गोचर भाव 10 — संचार, मीडिया और बुद्धि से करियर। व्यापार प्रस्ताव और लेखन से पेशेवर लाभ।", "positive": True},
+        11: {"en": "Mercury transiting H11 — gains through networking and communication. Social media and business contacts are highly productive.", "hi": "बुध गोचर भाव 11 — नेटवर्किंग और संवाद से लाभ। सोशल मीडिया और व्यापारिक संपर्क अत्यंत उत्पादक।", "positive": True},
+        12: {"en": "Mercury transiting H12 — spiritual or foreign writing active. Hidden intellectual work pays off. Communication with foreign or distant people.", "hi": "बुध गोचर भाव 12 — आध्यात्मिक या विदेशी लेखन सक्रिय। छुपा बौद्धिक कार्य फल देता है। विदेशी या दूर के लोगों से संवाद।", "positive": False},
+    },
+    "Jupiter": {
+        1:  {"en": "Jupiter transiting H1 — wisdom, optimism, and health are elevated. New beginnings carry Jupiter's blessings. Weight gain possible.", "hi": "गुरु गोचर भाव 1 — ज्ञान, आशावाद और स्वास्थ्य ऊँचा। नई शुरुआत पर गुरु का आशीर्वाद। वजन बढ़ने की संभावना।", "positive": True},
+        2:  {"en": "Jupiter transiting H2 — wealth, family, and speech are blessed. Good time for savings and family investments.", "hi": "गुरु गोचर भाव 2 — धन, परिवार और वाणी को शुभ फल। बचत और पारिवारिक निवेश का उत्तम समय।", "positive": True},
+        3:  {"en": "Jupiter transiting H3 — courage and communication get Jupiter's wisdom. Sibling bonds are enriched. Writing and teaching produce results.", "hi": "गुरु गोचर भाव 3 — साहस और संचार में गुरु का ज्ञान। भाई-बहन संबंध समृद्ध। लेखन और अध्यापन फलदायक।", "positive": True},
+        4:  {"en": "Jupiter transiting H4 — home, mother, and real estate blessed. Emotional peace and property gains are favored.", "hi": "गुरु गोचर भाव 4 — घर, माता और संपत्ति को शुभ फल। भावनात्मक शांति और संपत्ति लाभ।", "positive": True},
+        5:  {"en": "Jupiter transiting H5 — intelligence, children, and speculation favored. Creativity and wisdom peak together.", "hi": "गुरु गोचर भाव 5 — बुद्धि, संतान और सट्टे में लाभ। रचनात्मकता और ज्ञान एक साथ उच्च।", "positive": True},
+        6:  {"en": "Jupiter transiting H6 — enemies are neutralized by wisdom. Health improves through good habits. Service yields reward.", "hi": "गुरु गोचर भाव 6 — शत्रु ज्ञान से निष्क्रिय होते हैं। अच्छी आदतों से स्वास्थ्य सुधरता है। सेवा का फल मिलता है।", "positive": True},
+        7:  {"en": "Jupiter transiting H7 — partnerships and marriage prospects brighten. Legal matters resolve favorably with wisdom.", "hi": "गुरु गोचर भाव 7 — साझेदारी और विवाह संभावनाएँ उज्ज्वल। ज्ञान से कानूनी मामले अनुकूल।", "positive": True},
+        8:  {"en": "Jupiter transiting H8 — transformational wisdom. Research, occult knowledge, and in-law relations need careful handling.", "hi": "गुरु गोचर भाव 8 — परिवर्तनकारी ज्ञान। शोध, गुप्त विद्या और ससुराल संबंधों में सावधानी।", "positive": False},
+        9:  {"en": "Jupiter transiting H9 — peak luck, dharma, and long journeys. Father's blessings and religious pursuits are highly auspicious.", "hi": "गुरु गोचर भाव 9 — भाग्य, धर्म और लंबी यात्राएँ चरम। पिता का आशीर्वाद और धार्मिक कार्य अत्यंत शुभ।", "positive": True},
+        10: {"en": "Jupiter transiting H10 — career expansion and recognition. Authority and leadership roles come through wisdom and merit.", "hi": "गुरु गोचर भाव 10 — करियर विस्तार और मान्यता। ज्ञान और योग्यता से अधिकार और नेतृत्व।", "positive": True},
+        11: {"en": "Jupiter transiting H11 — significant financial gains and fulfillment of desires. Elder siblings and wise friends bring support.", "hi": "गुरु गोचर भाव 11 — उल्लेखनीय आर्थिक लाभ और इच्छापूर्ति। बड़े भाई-बहन और बुद्धिमान मित्र सहयोग करते हैं।", "positive": True},
+        12: {"en": "Jupiter transiting H12 — spiritual gains but material losses possible. Excellent for foreign travel, philanthropy, and moksha-seeking.", "hi": "गुरु गोचर भाव 12 — आध्यात्मिक लाभ पर भौतिक हानि संभव। विदेश यात्रा, दान और मोक्ष-साधना के लिए उत्कृष्ट।", "positive": False},
+    },
+    "Venus": {
+        1:  {"en": "Venus transiting H1 — beauty, charm, and physical attraction increase. Artistic expression peaks. Health glows and social life brightens.", "hi": "शुक्र गोचर भाव 1 — सौंदर्य, आकर्षण और शारीरिक सुंदरता बढ़ती है। कलात्मक अभिव्यक्ति उच्च। स्वास्थ्य और सामाजिक जीवन उज्ज्वल।", "positive": True},
+        2:  {"en": "Venus transiting H2 — family wealth and luxuries increase. Speech becomes charming and persuasive. Family harmony improves.", "hi": "शुक्र गोचर भाव 2 — पारिवारिक धन और विलासिता बढ़ती है। वाणी आकर्षक और प्रेरक। पारिवारिक सामंजस्य सुधरता है।", "positive": True},
+        3:  {"en": "Venus transiting H3 — artistic communication and creative short journeys. Sibling bonds become harmonious. Writing, music, and arts flourish.", "hi": "शुक्र गोचर भाव 3 — कलात्मक संवाद और रचनात्मक यात्राएँ। भाई-बहन संबंध सामंजस्यपूर्ण। लेखन, संगीत और कला फलती है।", "positive": True},
+        4:  {"en": "Venus transiting H4 — home is beautified. Real estate gains possible. Mother's comfort and domestic happiness increase.", "hi": "शुक्र गोचर भाव 4 — घर सुंदर होता है। संपत्ति लाभ संभव। माता का आराम और घरेलू सुख बढ़ता है।", "positive": True},
+        5:  {"en": "Venus transiting H5 — creative arts, romance, and intelligent speculation all peak. Children bring joy. Love life is vibrant.", "hi": "शुक्र गोचर भाव 5 — रचनात्मक कला, प्रेम और बुद्धिमान सट्टा सभी उच्च। संतान आनंद लाती है। प्रेम जीवन जीवंत।", "positive": True},
+        6:  {"en": "Venus transiting H6 — enemies dissolve through charm and grace. Health matters resolve gently. Service work brings appreciation.", "hi": "शुक्र गोचर भाव 6 — आकर्षण और शालीनता से शत्रु घुलते हैं। स्वास्थ्य मामले सहजता से सुलझते हैं। सेवा कार्य सराहा जाता है।", "positive": True},
+        7:  {"en": "Venus transiting H7 (Pakka Ghar) — peak placement for Venus. Best period for marriage, romantic partnerships, and harmonious legal agreements.", "hi": "शुक्र गोचर भाव 7 (पक्का घर) — शुक्र की उच्चतम स्थिति। विवाह, रोमांटिक साझेदारी और सामंजस्यपूर्ण कानूनी समझौतों का सर्वोत्तम काल।", "positive": True},
+        8:  {"en": "Venus transiting H8 — hidden pleasures and in-law harmony. Financial inheritance or legacy matters surface. Occult arts and sensuality blend.", "hi": "शुक्र गोचर भाव 8 — छुपे सुख और ससुराल सामंजस्य। वित्तीय विरासत के मामले सामने आते हैं। गुप्त कला और कामुकता का मेल।", "positive": False},
+        9:  {"en": "Venus transiting H9 — luck through beauty, art, and pleasure. Travel for pleasure and cultural enrichment. Religious tolerance expands.", "hi": "शुक्र गोचर भाव 9 — सौंदर्य, कला और आनंद से भाग्य। सुख के लिए यात्रा और सांस्कृतिक समृद्धि। धार्मिक सहिष्णुता बढ़ती है।", "positive": True},
+        10: {"en": "Venus transiting H10 — career in arts, beauty, luxury, or entertainment. Public charm and grace bring professional success.", "hi": "शुक्र गोचर भाव 10 — कला, सौंदर्य, विलासिता या मनोरंजन में करियर। सार्वजनिक आकर्षण और शालीनता से पेशेवर सफलता।", "positive": True},
+        11: {"en": "Venus transiting H11 — gains through beauty, relationships, and charm. Elder siblings or beautiful friends bring wealth and fulfillment.", "hi": "शुक्र गोचर भाव 11 — सौंदर्य, संबंधों और आकर्षण से लाभ। बड़े भाई-बहन या सुंदर मित्र धन और संतुष्टि लाते हैं।", "positive": True},
+        12: {"en": "Venus transiting H12 — secret pleasures and foreign romances. Spiritual devotion through beauty. Hidden artistic work may emerge.", "hi": "शुक्र गोचर भाव 12 — गुप्त सुख और विदेशी रोमांस। सौंदर्य के माध्यम से आध्यात्मिक भक्ति। छुपा कलात्मक कार्य उभर सकता है।", "positive": False},
+    },
+    "Saturn": {
+        1:  {"en": "Saturn transiting H1 — significant life pressure on health and identity. Discipline and patience are essential. Sadesati may apply.", "hi": "शनि गोचर भाव 1 — स्वास्थ्य और व्यक्तित्व पर भारी दबाव। अनुशासन और धैर्य अनिवार्य। साढ़ेसाती संभव।", "positive": False},
+        2:  {"en": "Saturn transiting H2 — family wealth comes slowly. Careful, disciplined speech is needed. Save rather than spend — lean months possible.", "hi": "शनि गोचर भाव 2 — पारिवारिक धन धीमे आता है। सावधान और अनुशासित वाणी जरूरी। बचत करें — कठिन महीने संभव।", "positive": False},
+        3:  {"en": "Saturn transiting H3 — sibling relationships are tested. Hard work in communications yields delayed results. Discipline in efforts pays eventually.", "hi": "शनि गोचर भाव 3 — भाई-बहन संबंध परखे जाते हैं। संचार में कठिन परिश्रम से देर से फल। प्रयासों में अनुशासन अंततः फलता है।", "positive": False},
+        4:  {"en": "Saturn transiting H4 — domestic difficulties and mother's health need attention. Property disputes or delayed home repairs possible.", "hi": "शनि गोचर भाव 4 — घरेलू कठिनाइयाँ और माता के स्वास्थ्य पर ध्यान। संपत्ति विवाद या घर की मरम्मत में देरी संभव।", "positive": False},
+        5:  {"en": "Saturn transiting H5 — children matters require patience. Speculation is unfavorable. Study and creative work with discipline bear long-term fruit.", "hi": "शनि गोचर भाव 5 — संतान के मामलों में धैर्य जरूरी। सट्टा प्रतिकूल। अनुशासन से पढ़ाई और रचनात्मक कार्य दीर्घकालिक फल देते हैं।", "positive": False},
+        6:  {"en": "Saturn transiting H6 — excellent for overcoming enemies through persistence. Health needs disciplined management. Service to others is highly rewarded.", "hi": "शनि गोचर भाव 6 — दृढ़ता से शत्रुओं पर विजय के लिए उत्कृष्ट। स्वास्थ्य का अनुशासित प्रबंधन जरूरी। सेवा कार्य अत्यधिक पुरस्कृत।", "positive": True},
+        7:  {"en": "Saturn transiting H7 (Pakka Ghar) — relationships stabilize through effort and commitment. Contractual and legal matters resolve with patience.", "hi": "शनि गोचर भाव 7 (पक्का घर) — प्रयास और प्रतिबद्धता से संबंध स्थिर। अनुबंध और कानूनी मामले धैर्य से सुलझते हैं।", "positive": True},
+        8:  {"en": "Saturn transiting H8 — karmic debts surface. Hidden obstacles and chronic health concerns. Spiritual discipline and patience help navigate this phase.", "hi": "शनि गोचर भाव 8 — कर्म ऋण उभरते हैं। छुपी बाधाएँ और दीर्घकालीन स्वास्थ्य चिंताएँ। आध्यात्मिक अनुशासन और धैर्य सहायक।", "positive": False},
+        9:  {"en": "Saturn transiting H9 — dharma and luck come through hard work and perseverance. Travel is possible but with delays. Father's health needs attention.", "hi": "शनि गोचर भाव 9 — धर्म और भाग्य कठिन परिश्रम से आते हैं। यात्रा में देरी संभव। पिता के स्वास्थ्य पर ध्यान।", "positive": False},
+        10: {"en": "Saturn transiting H10 (Pakka Ghar) — career sees steady hard-won progress. Authority and recognition come through consistent discipline.", "hi": "शनि गोचर भाव 10 (पक्का घर) — कठिन परिश्रम से करियर में स्थिर प्रगति। लगातार अनुशासन से अधिकार और मान-सम्मान।", "positive": True},
+        11: {"en": "Saturn transiting H11 — slow but sure financial gains. Elder siblings may face burdens. Long-term wishes fulfill gradually through persistence.", "hi": "शनि गोचर भाव 11 — धीमे पर पक्के आर्थिक लाभ। बड़े भाई-बहन बोझ से दब सकते हैं। दीर्घकालिक इच्छाएँ धीरे-धीरे पूरी होती हैं।", "positive": True},
+        12: {"en": "Saturn transiting H12 — expenditures rise and isolation increases. Spiritual retreat or long-term foreign stay is indicated. Past karma requires closure.", "hi": "शनि गोचर भाव 12 — खर्च बढ़ता है और एकांत में वृद्धि। आध्यात्मिक साधना या विदेश में दीर्घकालीन प्रवास। पुराने कर्म का समाधान जरूरी।", "positive": False},
+    },
+    "Mars": {
+        1:  {"en": "Mars transiting H1 — high energy, ambition, and bold action. Excellent for new ventures and physical activities. Control temper to avoid conflicts.", "hi": "मंगल गोचर भाव 1 — उच्च ऊर्जा, महत्वाकांक्षा और साहसिक कार्य। नई परियोजनाओं और शारीरिक गतिविधियों के लिए उत्कृष्ट। क्रोध नियंत्रित करें।", "positive": True},
+        2:  {"en": "Mars transiting H2 — family tensions and financial impulsiveness. Avoid hasty spending or harsh speech. Energy directed to earning is productive.", "hi": "मंगल गोचर भाव 2 — पारिवारिक तनाव और आर्थिक आवेग। जल्दबाजी में खर्च या कटु वाणी से बचें। कमाई की ओर ऊर्जा उत्पादक।", "positive": False},
+        3:  {"en": "Mars transiting H3 (Pakka Ghar) — courage, energy, and sibling relations strengthened. Bold decisions and physical challenges succeed.", "hi": "मंगल गोचर भाव 3 (पक्का घर) — साहस, ऊर्जा और भाई-बहन संबंध मजबूत। साहसिक निर्णय और शारीरिक चुनौतियाँ सफल।", "positive": True},
+        4:  {"en": "Mars transiting H4 — domestic disputes and property conflicts possible. Mother's health needs attention. Avoid renovation that triggers conflicts.", "hi": "मंगल गोचर भाव 4 — घरेलू झगड़े और संपत्ति विवाद संभव। माता के स्वास्थ्य पर ध्यान। झगड़े भड़काने वाले नवीनीकरण से बचें।", "positive": False},
+        5:  {"en": "Mars transiting H5 — speculation is risky. Children may be energetic or troublesome. Creative energy is high — channel it into sports or arts.", "hi": "मंगल गोचर भाव 5 — सट्टा जोखिमपूर्ण। संतान उत्साही या परेशानीपूर्ण। रचनात्मक ऊर्जा उच्च — खेल या कला में लगाएँ।", "positive": False},
+        6:  {"en": "Mars transiting H6 — excellent for defeating enemies and competition. Warrior energy works for you. Health improves through physical discipline.", "hi": "मंगल गोचर भाव 6 — शत्रुओं और प्रतिस्पर्धा पर विजय के लिए उत्कृष्ट। योद्धा ऊर्जा आपके पक्ष में। शारीरिक अनुशासन से स्वास्थ्य।", "positive": True},
+        7:  {"en": "Mars transiting H7 — conflict in partnerships. Aggression in relationships needs control. Legal disputes possible. Passion is high but temper it.", "hi": "मंगल गोचर भाव 7 — साझेदारी में संघर्ष। संबंधों में आक्रामकता नियंत्रित करें। कानूनी विवाद संभव। जोश उच्च पर संयम रखें।", "positive": False},
+        8:  {"en": "Mars transiting H8 (Pakka Ghar) — intense transformation. Sudden events, surgeries, or occult research may be active. Energy toward research succeeds.", "hi": "मंगल गोचर भाव 8 (पक्का घर) — तीव्र परिवर्तन। अचानक घटनाएँ, शल्य चिकित्सा या गुप्त अनुसंधान सक्रिय। शोध में ऊर्जा सफल।", "positive": False},
+        9:  {"en": "Mars transiting H9 — aggressive pursuit of luck and dharma. Adventure travel and bold religious actions succeed. Father's dynamic energy is active.", "hi": "मंगल गोचर भाव 9 — भाग्य और धर्म की आक्रामक खोज। साहसिक यात्रा और साहसिक धार्मिक कार्य सफल। पिता की गतिशील ऊर्जा सक्रिय।", "positive": True},
+        10: {"en": "Mars transiting H10 — career energy peaks. Ambition drives promotion and recognition. Leadership by action and assertion is effective.", "hi": "मंगल गोचर भाव 10 — करियर ऊर्जा चरम। महत्वाकांक्षा से पदोन्नति और मान्यता। कार्य और दृढ़ता से नेतृत्व प्रभावी।", "positive": True},
+        11: {"en": "Mars transiting H11 — gains through bold action and aggression in networking. Elder sibling tensions possible. Impulsive purchases should be avoided.", "hi": "मंगल गोचर भाव 11 — नेटवर्किंग में साहसिक कार्य और आक्रामकता से लाभ। बड़े भाई-बहन में तनाव संभव। आवेगी खरीद से बचें।", "positive": True},
+        12: {"en": "Mars transiting H12 — hidden aggression drains energy. Spiritual battles and secret struggles. Watch for injuries or unexpected expenditures.", "hi": "मंगल गोचर भाव 12 — छुपी आक्रामकता ऊर्जा खींचती है। आध्यात्मिक संघर्ष और गुप्त लड़ाइयाँ। चोट या अप्रत्याशित खर्च से सावधान।", "positive": False},
+    },
+    "Rahu": {
+        1:  {"en": "Rahu transiting H1 — identity confusion and unusual experiences. Unconventional opportunities or foreign travel arise. Ambition intensifies unusually.", "hi": "राहु गोचर भाव 1 — पहचान में भ्रम और असामान्य अनुभव। अपरंपरागत अवसर या विदेश यात्रा। महत्वाकांक्षा असामान्य रूप से तीव्र।", "positive": False},
+        2:  {"en": "Rahu transiting H2 — family speech becomes unusual or deceptive. Financial speculation with foreign elements. Unusual items or food enter the home.", "hi": "राहु गोचर भाव 2 — पारिवारिक वाणी असामान्य या भ्रामक। विदेशी तत्वों के साथ आर्थिक सट्टा। असामान्य वस्तुएँ या भोजन घर में आते हैं।", "positive": False},
+        3:  {"en": "Rahu transiting H3 — unusual courage emerges. Digital communications, foreign sibling connections, or unconventional short journeys are active.", "hi": "राहु गोचर भाव 3 — असामान्य साहस उभरता है। डिजिटल संवाद, विदेशी भाई-बहन संपर्क, या अपरंपरागत यात्राएँ सक्रिय।", "positive": False},
+        4:  {"en": "Rahu transiting H4 — domestic disruption or renovation. Mother's health may take an unusual turn. Foreign property or unconventional home matters.", "hi": "राहु गोचर भाव 4 — घरेलू व्यवधान या नवीनीकरण। माता का स्वास्थ्य असामान्य मोड़ ले सकता है। विदेशी संपत्ति या अपरंपरागत घर के मामले।", "positive": False},
+        5:  {"en": "Rahu transiting H5 — speculative gains possible but highly risky. Unconventional children or creative ideas. Past karma in intelligence surfaces.", "hi": "राहु गोचर भाव 5 — सट्टे में लाभ संभव पर अत्यधिक जोखिम। अपरंपरागत संतान या रचनात्मक विचार। बुद्धि में पूर्वकर्म सामने आता है।", "positive": False},
+        6:  {"en": "Rahu transiting H6 (Pakka Ghar) — enemies are confused and weakened. Unconventional solutions defeat opponents. Healing through non-traditional methods.", "hi": "राहु गोचर भाव 6 (पक्का घर) — शत्रु भ्रमित और कमजोर होते हैं। अपरंपरागत उपायों से विजय। गैर-पारंपरिक तरीकों से उपचार।", "positive": True},
+        7:  {"en": "Rahu transiting H7 — unconventional relationships or business partnerships. Foreign spouse connection possible. Deception in partnerships needs vigilance.", "hi": "राहु गोचर भाव 7 — अपरंपरागत संबंध या व्यापार साझेदारी। विदेशी जीवनसाथी संबंध संभव। साझेदारी में धोखे पर सतर्कता।", "positive": False},
+        8:  {"en": "Rahu transiting H8 — occult and research intensified. Sudden inheritance or legacy matters from foreign sources. Hidden transformations are rapid.", "hi": "राहु गोचर भाव 8 — गुप्त विद्या और शोध तीव्र। विदेशी स्रोत से अचानक विरासत या संपत्ति। छुपे परिवर्तन तीव्र गति से।", "positive": False},
+        9:  {"en": "Rahu transiting H9 — unconventional beliefs and foreign guru or teacher. Luck comes through strange channels. Long-distance travel with unusual experiences.", "hi": "राहु गोचर भाव 9 — अपरंपरागत विश्वास और विदेशी गुरु। भाग्य अजीब रास्तों से। असामान्य अनुभवों के साथ दूर यात्रा।", "positive": False},
+        10: {"en": "Rahu transiting H10 — ambitious career gains through unconventional means. Foreign, government, or tech-based career opportunities appear suddenly.", "hi": "राहु गोचर भाव 10 — अपरंपरागत तरीकों से महत्वाकांक्षी करियर लाभ। विदेशी, सरकारी या टेक-आधारित अवसर अचानक आते हैं।", "positive": True},
+        11: {"en": "Rahu transiting H11 (Pakka Ghar) — unexpected financial gains and foreign connections bring wealth. Ambitions are fulfilled through unusual or indirect routes.", "hi": "राहु गोचर भाव 11 (पक्का घर) — अप्रत्याशित आर्थिक लाभ और विदेशी संपर्क धन लाते हैं। इच्छाएँ असामान्य या अप्रत्यक्ष मार्गों से पूरी होती हैं।", "positive": True},
+        12: {"en": "Rahu transiting H12 (Pakka Ghar) — deep foreign connections and hidden spending. Spiritual obsession possible. Past karma from foreign lands surfaces.", "hi": "राहु गोचर भाव 12 (पक्का घर) — गहरे विदेशी संपर्क और छुपा खर्च। आध्यात्मिक जुनून संभव। विदेशी भूमि से पूर्वकर्म सामने।", "positive": False},
+    },
+    "Ketu": {
+        1:  {"en": "Ketu transiting H1 — detachment from ego. Past-life identity active. Spiritual experiences and mysterious health fluctuations. Focus on inner truth.", "hi": "केतु गोचर भाव 1 — अहंकार से वैराग्य। पूर्वजन्म की पहचान सक्रिय। आध्यात्मिक अनुभव और रहस्यमय स्वास्थ्य उतार-चढ़ाव। आंतरिक सत्य पर ध्यान।", "positive": False},
+        2:  {"en": "Ketu transiting H2 — family detachment. Speech becomes spiritual or unclear. Wealth has a past-life karmic flavor — unexpected gains or losses.", "hi": "केतु गोचर भाव 2 — परिवार से वैराग्य। वाणी आध्यात्मिक या अस्पष्ट। धन में पूर्वजन्म का कर्म — अप्रत्याशित लाभ या हानि।", "positive": False},
+        3:  {"en": "Ketu transiting H3 (Pakka Ghar) — intuitive courage and past-life sibling connections. Spiritual journeys and inner communication are powerful.", "hi": "केतु गोचर भाव 3 (पक्का घर) — अंतर्ज्ञानी साहस और पूर्वजन्म के भाई-बहन संबंध। आध्यात्मिक यात्राएँ और आंतरिक संवाद शक्तिशाली।", "positive": True},
+        4:  {"en": "Ketu transiting H4 — home detachment. Ancestral property karma resolves. Mother's spiritual matters are highlighted. Need for inner home-peace.", "hi": "केतु गोचर भाव 4 — घर से वैराग्य। पैतृक संपत्ति कर्म सुलझता है। माता के आध्यात्मिक मामले प्रमुख। आंतरिक घरेलू शांति की जरूरत।", "positive": False},
+        5:  {"en": "Ketu transiting H5 — past-life intelligence surfaces. Children have a karmic connection. Speculation has a spiritual or intuitive dimension.", "hi": "केतु गोचर भाव 5 — पूर्वजन्म की बुद्धि सामने आती है। संतान से कर्म संबंध। सट्टे में आध्यात्मिक या अंतर्ज्ञानी आयाम।", "positive": False},
+        6:  {"en": "Ketu transiting H6 (Pakka Ghar) — enemies dissolve through past karma. Disease karma from previous lives resolves. Detached service brings spiritual protection.", "hi": "केतु गोचर भाव 6 (पक्का घर) — पूर्वजन्म के कर्म से शत्रु घुलते हैं। पूर्वजन्म के रोग कर्म सुलझते हैं। वैराग्यपूर्ण सेवा से आध्यात्मिक सुरक्षा।", "positive": True},
+        7:  {"en": "Ketu transiting H7 — partnership detachment. Spouse connection feels karmically destined from a past life. Marriage may feel spiritually driven.", "hi": "केतु गोचर भाव 7 — साझेदारी से वैराग्य। जीवनसाथी संबंध पूर्वजन्म से कर्मपूर्वक नियत। विवाह आध्यात्मिक रूप से संचालित।", "positive": False},
+        8:  {"en": "Ketu transiting H8 — deep spiritual transformation. Past-life occult knowledge surfaces. Liberation through crisis — this period reshapes the soul.", "hi": "केतु गोचर भाव 8 — गहरी आध्यात्मिक परिवर्तन। पूर्वजन्म का गुप्त ज्ञान सामने। संकट से मुक्ति — यह काल आत्मा को पुनर्आकार देता है।", "positive": False},
+        9:  {"en": "Ketu transiting H9 — spiritual dharma from past lives activates. Guru connection deepens. Religious detachment leads to genuine wisdom.", "hi": "केतु गोचर भाव 9 — पूर्वजन्म से आध्यात्मिक धर्म सक्रिय। गुरु संबंध गहरा होता है। धार्मिक वैराग्य वास्तविक ज्ञान की ओर।", "positive": True},
+        10: {"en": "Ketu transiting H10 — career detachment. Work feels karmically driven. Past-life authority patterns surface — detach from outcomes for best results.", "hi": "केतु गोचर भाव 10 — करियर से वैराग्य। कार्य कर्मपूर्वक संचालित। पूर्वजन्म के अधिकार पैटर्न सामने — फल से वैराग्य से सर्वोत्तम परिणाम।", "positive": False},
+        11: {"en": "Ketu transiting H11 — gains detachment. Elder sibling has a past-life connection. Spiritual desires are fulfilled while material wishes feel hollow.", "hi": "केतु गोचर भाव 11 — लाभ से वैराग्य। बड़े भाई-बहन से पूर्वजन्म का संबंध। आध्यात्मिक इच्छाएँ पूरी होती हैं, भौतिक इच्छाएँ खोखी लगती हैं।", "positive": False},
+        12: {"en": "Ketu transiting H12 (Pakka Ghar) — Ketu at peak spiritual power. Deep moksha energy, foreign past-life connections, and liberation are strongly active.", "hi": "केतु गोचर भाव 12 (पक्का घर) — केतु की उच्चतम आध्यात्मिक शक्ति। गहरी मोक्ष ऊर्जा, विदेशी पूर्वजन्म संबंध और मुक्ति प्रबल रूप से सक्रिय।", "positive": True},
+    },
+}
+
+
 @router.get("/api/lalkitab/gochar")
-def get_gochar_transits(user: dict = Depends(get_current_user)):
-    """Return today's live planetary positions mapped to LK houses (sidereal/Lahiri)."""
-    import logging
+def get_gochar_transits(
+    kundli_id: Optional[str] = Query(default=None, description="Natal chart ID for personalized comparison"),
+    user: dict = Depends(get_current_user),
+    db: Any = Depends(get_db),
+):
+    """Return today's live planetary positions mapped to LK houses with optional natal chart comparison."""
     from app.mundane_engine import _get_current_planet_positions
 
-    logger = logging.getLogger(__name__)
     try:
-        planets = _get_current_planet_positions()
+        transit_planets = _get_current_planet_positions()
     except Exception as exc:
         logger.error("gochar: failed to compute planet positions: %s", exc, exc_info=True)
         raise HTTPException(status_code=500, detail="Could not compute planetary positions")
 
+    # Load natal chart for personalized comparison if kundli_id provided
+    natal_houses: dict[str, int] = {}
+    if kundli_id:
+        row = db.execute(
+            "SELECT chart_data FROM kundlis WHERE id = %s AND user_id = %s",
+            (kundli_id, user["sub"]),
+        ).fetchone()
+        if row:
+            chart_data = json.loads(row["chart_data"])
+            for pname, info in chart_data.get("planets", {}).items():
+                if pname in _KNOWN_PLANETS:
+                    natal_houses[pname] = _derive_lk_house(info)
+
     transits = []
-    for pname, pdata in planets.items():
+    # Build transit-house → planets map for compound detection
+    transit_house_map: dict[int, list] = {}
+    for pname, pdata in transit_planets.items():
         if pname not in _KNOWN_PLANETS:
             continue
         sign = pdata.get("sign", "Aries")
-        transits.append({
+        lk_house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+        transit_house_map.setdefault(lk_house, []).append(pname)
+
+    for pname, pdata in transit_planets.items():
+        if pname not in _KNOWN_PLANETS:
+            continue
+        sign = pdata.get("sign", "Aries")
+        lk_house = _SIGN_TO_LK_HOUSE.get(sign, 0)
+
+        entry: dict = {
             "planet": pname,
             "sign": sign,
             "sign_degree": round(pdata.get("sign_degree") or 0.0, 2),
             "nakshatra": pdata.get("nakshatra"),
             "retrograde": bool(pdata.get("retrograde", False)),
-            "lk_house": _SIGN_TO_LK_HOUSE.get(sign, 0),
+            "lk_house": lk_house,
             "speed_note": _PLANET_SPEED.get(pname, "medium"),
-        })
+        }
 
-    return {"transits": transits, "as_of": _date.today().isoformat()}
+        # Personalized natal comparison
+        if natal_houses:
+            natal_house = natal_houses.get(pname, 0)
+            entry["natal_house"] = natal_house
+            entry["on_natal_position"] = (lk_house == natal_house and natal_house != 0)
+
+            # Pakka Ghar check
+            pakka = _PAKKA_GHAR_GOCHAR.get(pname, set())
+            entry["in_pakka_ghar"] = lk_house in pakka
+
+            # LK gochar canonical note for this planet's transit house
+            planet_rules = _GOCHAR_PLANET_RULES.get(pname, {})
+            rule = planet_rules.get(lk_house)
+            if rule:
+                entry["lk_gochar_note_en"] = rule["en"]
+                entry["lk_gochar_note_hi"] = rule["hi"]
+                entry["transit_positive"] = rule["positive"]
+
+            # Natal hit: transit planet conjunct a natal planet in the same house
+            natal_cohabitants = [
+                p for p, nh in natal_houses.items()
+                if nh == lk_house and p != pname
+            ]
+            if natal_cohabitants:
+                entry["natal_hit_planets"] = natal_cohabitants
+                entry["natal_hit_note_en"] = (
+                    f"Transit {pname} is now in H{lk_house}, the natal house of "
+                    f"{', '.join(natal_cohabitants)}. This intensifies the significations of both planets."
+                )
+                entry["natal_hit_note_hi"] = (
+                    f"गोचर {pname} अब भाव {lk_house} में है — यही {', '.join(natal_cohabitants)} का जन्म भाव है। "
+                    "दोनों ग्रहों के कारकत्व तीव्र होते हैं।"
+                )
+
+        transits.append(entry)
+
+    # Compound transit alerts (Angarak, Shrapit, Guru-Chandal in LK houses)
+    alerts = []
+    for house, planets_in_house in transit_house_map.items():
+        planet_set = set(p.lower() for p in planets_in_house)
+        if "mars" in planet_set and "rahu" in planet_set:
+            alerts.append({"type": "Angarak_Yoga", "house": house, "planets": ["Mars", "Rahu"],
+                           "note_en": f"Mars and Rahu both transiting LK H{house} — Angarak Yoga active. Impulsive decisions and accidents risk elevated.",
+                           "note_hi": f"मंगल और राहु दोनों गोचर भाव {house} में — अंगारक योग सक्रिय। आवेगपूर्ण निर्णयों और दुर्घटना का जोखिम बढ़ा।"})
+        if "saturn" in planet_set and "rahu" in planet_set:
+            alerts.append({"type": "Shrapit_Yoga", "house": house, "planets": ["Saturn", "Rahu"],
+                           "note_en": f"Saturn and Rahu both transiting LK H{house} — Shrapit Yoga in transit. Karmic obstacles in H{house} matters.",
+                           "note_hi": f"शनि और राहु दोनों गोचर भाव {house} में — श्रापित योग। भाव {house} के मामलों में कर्म बाधाएँ।"})
+        if "jupiter" in planet_set and ("rahu" in planet_set or "ketu" in planet_set):
+            malefic = "Rahu" if "rahu" in planet_set else "Ketu"
+            alerts.append({"type": "Guru_Chandal", "house": house, "planets": ["Jupiter", malefic],
+                           "note_en": f"Jupiter and {malefic} both transiting LK H{house} — Guru Chandal Yoga. Wisdom may be clouded; decisions need extra scrutiny.",
+                           "note_hi": f"गुरु और {malefic} दोनों गोचर भाव {house} में — गुरु चांडाल योग। निर्णय सावधानी से लें।"})
+
+    result = {"transits": transits, "as_of": _date.today().isoformat(), "alerts": alerts}
+    if natal_houses:
+        result["natal_chart_used"] = True
+    return result
 
 
 # ─────────────────────────────────────────────────────────────

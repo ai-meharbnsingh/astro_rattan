@@ -873,6 +873,39 @@ def _compute_nakshatra_end(jd_sunrise: float, tz_offset: float) -> str:
     return _jd_to_local_time_str(jd, tz_offset)
 
 
+def _compute_nakshatra_end_jd(jd_sunrise: float) -> Optional[float]:
+    """Find the JD when the current nakshatra ends after sunrise."""
+    return _find_boundary_time(jd_sunrise, _get_moon_longitude_sidereal, 0.0, NAKSHATRA_SPAN)
+
+
+def _compute_nakshatra_start_jd(jd_sunrise: float, nak_idx: int) -> float:
+    """Find the JD when Moon entered nakshatra nak_idx, searching up to 36h before sunrise."""
+    step = 1.0 / 24.0
+    jd_limit = jd_sunrise - 36.0 / 24.0
+
+    prev_t = jd_sunrise
+    t = jd_sunrise - step
+    while t >= jd_limit:
+        cur_nak = int(_get_moon_longitude_sidereal(t) / NAKSHATRA_SPAN) % 27
+        if cur_nak != nak_idx:
+            # Boundary found between [t, prev_t]
+            t_lo, t_hi = t, prev_t
+            tol = 0.5 / (24.0 * 60.0)
+            for _ in range(50):
+                if t_hi - t_lo < tol:
+                    break
+                t_mid = (t_lo + t_hi) / 2.0
+                nak_mid = int(_get_moon_longitude_sidereal(t_mid) / NAKSHATRA_SPAN) % 27
+                if nak_mid == nak_idx:
+                    t_hi = t_mid
+                else:
+                    t_lo = t_mid
+            return t_hi
+        prev_t = t
+        t -= step
+    return jd_limit
+
+
 def _compute_yoga_end(jd_sunrise: float, tz_offset: float) -> str:
     """Find the end time of the current yoga after sunrise."""
     jd = _find_boundary_time(jd_sunrise, _get_yoga_angle, 0.0, YOGA_SPAN)
@@ -1747,41 +1780,65 @@ def calculate_panchang(
 
     # 20. Dur Muhurtam — weekday-specific, verified against Drik Panchang (Delhi, Apr 2026)
     # Python weekday: 0=Mon,1=Tue,2=Wed,3=Thu,4=Fri,5=Sat,6=Sun
+    # First slot indices (0-based muhurta from sunrise):
     _DUR_MUHURTAM_IDX = {0: 8, 1: 3, 2: 7, 3: 5, 4: 3, 5: 0, 6: 13}
+    # Second slot indices (Mon, Thu, Fri, Sat each have a second daytime slot):
+    _DUR_MUHURTAM_IDX_2 = {0: 11, 3: 11, 4: 8, 5: 1}
     dur_idx = _DUR_MUHURTAM_IDX.get(weekday, 7)
     dur_start = sunrise_mins + muhurta_duration * dur_idx
     dur_muhurtam = {"start": _minutes_to_time(dur_start), "end": _minutes_to_time(dur_start + muhurta_duration)}
+    dur_idx_2 = _DUR_MUHURTAM_IDX_2.get(weekday)
+    if dur_idx_2 is not None:
+        dur_start_2 = sunrise_mins + muhurta_duration * dur_idx_2
+        dur_muhurtam["start_2"] = _minutes_to_time(dur_start_2)
+        dur_muhurtam["end_2"] = _minutes_to_time(dur_start_2 + muhurta_duration)
 
-    # 21. Varjyam — ghati offset from sunrise per nakshatra; duration = 4 ghatis (96 min)
-    # Indices 2–8 verified against Drik Panchang (Delhi, Apr 2026); others unverified.
-    _VARJYAM_GHATI_OFFSET = [
-        17,   4,  30, 23.79,  3.5, 4.83, 9.46,  0,  7.96,  # Ashwini–Ashlesha   (0–8)
-        28,  38,  14,    24,   30,   35,    8,  17,     4,  # Magha–Jyeshtha     (9–17)
-         7,  40,  22,    35,   50,   26,   14,  23,    30,  # Mula–Revati        (18–26)
+    # 21. Varjyam — tyajya ghati formula: varjyam_start = nak_start + ((ghati-1)/60) × nak_duration
+    # Tyajya ghati start (1-indexed out of 60) per nakshatra — Drik Panchang verified.
+    # The "-1" correction converts from 1-indexed ghati position to 0-based fractional offset.
+    _TYAJYA_GHATI = [
+        51, 25, 31, 41, 15, 22, 31, 21, 33,  # Ashwini–Ashlesha  (0–8)
+        31, 21, 19, 22, 21, 15, 15, 11, 15,  # Magha–Jyeshtha    (9–17)
+        57, 25, 21, 11, 11, 19, 17, 25, 31,  # Mula–Revati       (18–26)
     ]
-    _VARJYAM_DURATION_MINS = 96  # 4 ghatis × 24 min/ghati
     nak_idx = nakshatra.get("index", 0) % 27
-    varjyam_ghati = _VARJYAM_GHATI_OFFSET[nak_idx]
-    varjyam_start_mins = (sunrise_mins + varjyam_ghati * 24) % 1440
+    try:
+        _nak_start_jd = _compute_nakshatra_start_jd(jd_sunrise, nak_idx)
+        _nak_end_jd = _compute_nakshatra_end_jd(jd_sunrise)
+        if _nak_end_jd is None:
+            _nak_end_jd = jd_sunrise + 1.0
+        _tyajya = _TYAJYA_GHATI[nak_idx]
+        _varjyam_start_jd = _nak_start_jd + ((_tyajya - 1) / 60.0) * (_nak_end_jd - _nak_start_jd)
+        _varjyam_end_jd = _varjyam_start_jd + (4.0 / 60.0) * (_nak_end_jd - _nak_start_jd)
 
-    # When the sunrise nakshatra ends during today's daylight AND the computed
-    # Varjyam falls after that end, the dominant nakshatra for the day is the
-    # next one — recompute using its offset (still from sunrise as reference).
-    if nakshatra_end and ":" in nakshatra_end:
-        try:
-            _nh, _nm = nakshatra_end.split(":")[:2]
-            _nak_end_m = int(_nh) * 60 + int(_nm)
-            if _nak_end_m >= sunrise_mins and varjyam_start_mins > _nak_end_m:
-                _next_idx = (nak_idx + 1) % 27
-                varjyam_ghati = _VARJYAM_GHATI_OFFSET[_next_idx]
-                varjyam_start_mins = (sunrise_mins + varjyam_ghati * 24) % 1440
-        except (ValueError, IndexError):
-            pass
+        # When sunrise nakshatra ends during the day AND computed Varjyam falls after
+        # that transition, the dominant nakshatra is the next one — recompute for it.
+        _varjyam_start_str = _jd_to_local_time_str(_varjyam_start_jd, tz_offset)
+        if nakshatra_end and ":" in nakshatra_end and _varjyam_start_str and ":" in _varjyam_start_str:
+            try:
+                _neh, _nem = nakshatra_end.split(":")[:2]
+                _nak_end_today_m = int(_neh) * 60 + int(_nem)
+                _vh, _vm = _varjyam_start_str.split(":")[:2]
+                _varjyam_m = int(_vh) * 60 + int(_vm)
+                if (_nak_end_today_m >= sunrise_mins   # nakshatra ends during daytime
+                        and _varjyam_m > _nak_end_today_m):  # varjyam falls after transition
+                    _next_idx = (nak_idx + 1) % 27
+                    _next_tyajya = _TYAJYA_GHATI[_next_idx]
+                    # Krittika/next starts at Bharani's end; find when next nakshatra ends
+                    _next_start_jd = _nak_end_jd
+                    _next_end_jd = _compute_nakshatra_end_jd(_next_start_jd + 1.0 / 1440.0)
+                    if _next_end_jd is not None and _next_end_jd > _next_start_jd:
+                        _varjyam_start_jd = _next_start_jd + ((_next_tyajya - 1) / 60.0) * (_next_end_jd - _next_start_jd)
+                        _varjyam_end_jd = _varjyam_start_jd + (4.0 / 60.0) * (_next_end_jd - _next_start_jd)
+            except (ValueError, IndexError):
+                pass
 
-    varjyam = {
-        "start": _minutes_to_time(int(varjyam_start_mins)),
-        "end": _minutes_to_time(int((varjyam_start_mins + _VARJYAM_DURATION_MINS) % 1440)),
-    }
+        varjyam = {
+            "start": _jd_to_local_time_str(_varjyam_start_jd, tz_offset),
+            "end": _jd_to_local_time_str(_varjyam_end_jd, tz_offset),
+        }
+    except Exception:
+        varjyam = {"start": "--:--", "end": "--:--"}
 
     # 22. Hora Table (planetary hours — 24 horas, day + night)
     hora_sequence_day = ["Sun", "Venus", "Mercury", "Moon", "Saturn", "Jupiter", "Mars"]

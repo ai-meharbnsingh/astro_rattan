@@ -24,7 +24,7 @@ VARIANTS_PER_SLOT = 4
 MAX_RETRIES   = 3
 PROGRESS_FILE = Path(".claude/debug/transit_variants_progress.json")
 OUTPUT_FILE   = Path("app/transit_variants.py")
-WORKERS       = 2
+WORKERS       = 1
 
 PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 AREAS   = ["general", "love", "career", "finance", "health"]
@@ -134,7 +134,7 @@ def _call_ollama(prompt: str, attempt: int = 0) -> dict | None:
         "stream": False,
         "think": False,
         "options": {
-            "num_predict": 2500,
+            "num_predict": 4500,
             "temperature": 0.75 + attempt * 0.05,  # slight increase on retry
             "top_p": 0.9,
         },
