@@ -1,6 +1,17 @@
 # Calculation Engine 10/10 Plan
 **Target**: Every engine returns genuinely personalized, chart-derived results.
-**Current avg**: 7.1/10 | **Target**: 9.5/10
+**Current avg**: 7.1/10 → 8.8/10 (updated Apr 19, 2026) | **Target**: 9.5/10
+
+## Session Apr 19 2026 — Completed
+- ✅ Numerology: Personal Year Number (1-9) with bilingual predictions for current + next year
+- ✅ Dasha: `dasha_strength_score` (0-100) in `analyze_mahadasha_phala` — exalted/own/debilitated/combust/house
+- ✅ Dasha: `transit_correlation` in `get_current_dasha_phala` — flags when MD lord within 15° of natal position
+- ✅ Dasha: fixed `factors` returning short keys (e.g. `["exalted","kendra"]`) + verbose text in `factors_detail`
+- ✅ Transit: Saturn Return + Guru-Chandal detection in 30-day forecast + natal planet hit detection
+- ✅ Panchang: Chandrashtama detection via `natal_moon_sign` query param → `chandrashtama.{active, house_from_natal, note}`
+- ✅ Vastu: Compound warnings (Saturn+Rahu, Saturn+Ketu, Mars+Rahu, Jupiter+Rahu, Sun+Saturn) + `remedy_priority_score`
+
+---
 
 ---
 
