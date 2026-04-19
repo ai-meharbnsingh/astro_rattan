@@ -46,7 +46,6 @@ import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra'
 import PravrajyaTab from '@/components/kundli/PravrajyaTab';
 import ApatyaTab from '@/components/kundli/ApatyaTab';
 import StriJatakaTab from '@/components/kundli/StriJatakaTab';
-import LifespanTab from '@/components/kundli/LifespanTab';
 import ConjunctionsTab from '@/components/kundli/ConjunctionsTab';
 import RogaTab from '@/components/kundli/RogaTab';
 import BhavaPhalaTab from '@/components/kundli/BhavaPhalaTab';
@@ -112,7 +111,6 @@ const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   { value: 'pravrajya',     labelEn: 'Pravrajya Yogas', labelHi: 'प्रव्रज्या योग',   primary: false, category: 'analysis' },
   { value: 'apatya',        labelEn: 'Progeny (Apatya)',labelHi: 'संतान',             primary: false, category: 'analysis' },
   { value: 'stri-jataka',   labelEn: 'Stri Jataka',     labelHi: 'स्त्री जातक',       primary: false, category: 'analysis' },
-  { value: 'lifespan',      labelEn: 'Lifespan',        labelHi: 'आयुर्दाय',         primary: false, category: 'analysis' },
   { value: 'conjunctions',  labelEn: 'Conjunctions',    labelHi: 'ग्रह युतियाँ',      primary: false, category: 'analysis' },
   { value: 'roga',          labelEn: 'Disease Analysis', labelHi: 'रोग विश्लेषण',     primary: false, category: 'analysis' },
   { value: 'bhava-phala',   labelEn: 'Bhava Phala',    labelHi: 'भाव फल',           primary: false, category: 'analysis' },
@@ -678,9 +676,6 @@ export default function KundliGenerator() {
             <StriJatakaTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
-          <TabsContent value="lifespan" className="min-h-[300px]">
-            <LifespanTab kundliId={result?.id || ''} language={language} t={t} />
-          </TabsContent>
 
           <TabsContent value="conjunctions" className="min-h-[300px]">
             <ConjunctionsTab kundliId={result?.id || ''} language={language} t={t} />
