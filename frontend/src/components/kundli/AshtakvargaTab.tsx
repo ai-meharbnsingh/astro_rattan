@@ -92,7 +92,7 @@ function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; lan
   const assessment = language === 'hi'
     ? (data.overall_assessment_hi || data.overall_assessment_en)
     : data.overall_assessment_en;
-  const triggeredRules = (data.special_rules || []).filter((r: any) => r.triggered);
+  const triggeredRules = (Array.isArray(data.special_rules) ? data.special_rules : Object.values(data.special_rules || {})).filter((r: any) => r.triggered);
   const planetReadings = data.planet_bav_readings || [];
 
   return (
