@@ -1096,6 +1096,8 @@ def get_kalachakra_dasha(
     )
     result["kundli_id"] = kundli_id
     result["person_name"] = row["person_name"]
+    result["deha_sign"] = result.get("deha_rashi", "")
+    result["jeeva_sign"] = result.get("jeeva_rashi", "")
     return result
 
 
