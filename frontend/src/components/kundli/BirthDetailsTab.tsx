@@ -118,5 +118,6 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
         </table>
       </div>
     </div>
+    </div>
   );
 }
