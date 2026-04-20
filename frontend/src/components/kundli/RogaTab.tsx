@@ -118,7 +118,7 @@ function extractDateRange(text: string): { raw: string; label: string } | null {
   const single = text.match(/\b(20\d\d)\b/);
   if (single) return { raw: single[0], label: single[1] };
   // dasha period like "Sun–Moon dasha" or "Saturn dasha"
-  const dasha = text.match(/\b(\w+[\s–\-]+(?:\w+\s+)?dasha)\b/i);
+  const dasha = text.match(/\b(\w+[\s–-]+(?:\w+\s+)?dasha)\b/i);
   if (dasha) return { raw: dasha[0], label: dasha[1] };
   return null;
 }
@@ -184,7 +184,8 @@ export default function RogaTab({ kundliId, language, t }: Props) {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <HeartPulse className="w-6 h-6" />
           {isHi ? 'रोग विश्लेषण' : 'Disease Analysis'}
         </Heading>
         <p className="text-sm text-muted-foreground">

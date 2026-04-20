@@ -9,6 +9,7 @@ import { translatePlanet, translateSign, translateLabel, translateName, translat
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
+import GeneralRemedies from '@/components/kundli/GeneralRemedies';
 
 interface ReportTabProps {
   result: any;
@@ -139,11 +140,11 @@ export default function ReportTab({
                             rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
-                            onHouseClick={(house) => {
-                              // Rotate view so the clicked house becomes Lagna (house 1).
-                              // shift is the current sign-rotation offset applied to the base ascendant.
-                              setReportLagnaShift((prev) => (prev + (house - 1)) % 12);
-                            }}
+	                            onHouseClick={(house) => {
+	                              // Rotate view so the clicked house becomes Lagna (house 1).
+	                              // shift is the current sign-rotation offset applied to the base ascendant.
+	                              setReportLagnaShift((prev) => (prev + (house - 1)) % 12);
+	                            }}
                           />
                         </div>
                       );
@@ -180,11 +181,11 @@ export default function ReportTab({
                             rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
-                            onHouseClick={(house) => {
-                              // Same rule: clicked house becomes Lagna, but Moon chart has a fixed baseShift.
-                              // reportMoonShift is the additional rotation on top of baseShift.
-                              setReportMoonShift((prev) => (prev + (house - 1)) % 12);
-                            }}
+	                            onHouseClick={(house) => {
+	                              // Same rule: clicked house becomes Lagna, but Moon chart has a fixed baseShift.
+	                              // reportMoonShift is the additional rotation on top of baseShift.
+	                              setReportMoonShift((prev) => (prev + (house - 1)) % 12);
+	                            }}
                           />
                         </div>
                       );
@@ -226,10 +227,10 @@ export default function ReportTab({
                             rashiNumberPlacement="corner"
                             showAscendantMarker={false}
                             onPlanetClick={(pl) => handlePlanetClick(pl as any)}
-                            onHouseClick={(house) => {
-                              // Rotate view so the clicked house becomes Lagna (house 1).
-                              setReportGocharShift((prev) => (prev + (house - 1)) % 12);
-                            }}
+	                            onHouseClick={(house) => {
+	                              // Rotate view so the clicked house becomes Lagna (house 1).
+	                              setReportGocharShift((prev) => (prev + (house - 1)) % 12);
+	                            }}
                           />
                         </div>
                       );
@@ -911,6 +912,16 @@ export default function ReportTab({
                   )}
                   </div>
                 </div>
+
+                {/* Remedies (quick access) */}
+                {result?.id && (
+                  <GeneralRemedies
+                    language={language}
+                    t={t}
+                    kundliId={result.id}
+                    title={language === 'hi' ? 'उपाय (सामान्य)' : 'Remedies (General)'}
+                  />
+                )}
 
               </div>
             </div>

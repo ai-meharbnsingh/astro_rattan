@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Loader2, AlertTriangle, ChevronDown, ChevronRight, Layers } from 'lucide-react';
 import { translateSign, translateNakshatra } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
 
@@ -41,7 +41,8 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
 
   const toggle = (name: string) => setExpanded(prev => {
     const next = new Set(prev);
-    next.has(name) ? next.delete(name) : next.add(name);
+    if (next.has(name)) next.delete(name);
+    else next.add(name);
     return next;
   });
 
@@ -73,7 +74,8 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
     <div className="space-y-4">
       {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Layers className="w-6 h-6" />
           {isHi ? 'उपग्रह' : 'Upagrahas'}
         </Heading>
         <p className="text-sm text-muted-foreground">

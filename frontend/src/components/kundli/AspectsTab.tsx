@@ -1,6 +1,7 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface AspectsTabProps {
   aspectsData: any;
@@ -13,22 +14,46 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
   const BENEFICS = ['Jupiter', 'Venus', 'Moon', 'Mercury'];
   const spl = t('auto.Spl');
   const housePrefix = t('auto.h');
+  const hi = language === 'hi';
+
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Eye className="w-6 h-6" />
+        {hi ? 'दृष्टि' : 'Aspects (Drishti)'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {hi
+          ? 'कौन-सा ग्रह किन ग्रहों/भावों पर दृष्टि डाल रहा है — शुभ/अशुभ प्रभाव सहित — यहाँ दिखता है।'
+          : 'See which planets aspect other planets and houses, including benefic/malefic influence.'}
+      </p>
+    </div>
+  );
 
   if (loadingAspects) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('kundli.loadingAspects')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('kundli.loadingAspects')}</span>
+        </div>
       </div>
     );
   }
 
   if (!aspectsData) {
-    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('common.noData')}</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
+      {header}
       <div className="space-y-6">
 
         {/* Aspects on Planets */}

@@ -24,11 +24,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { GitCompareArrows } from 'lucide-react';
-import InteractiveKundli, { type ChartData, type PlanetData } from '@/components/InteractiveKundli';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
 import { toLkPlanetList } from './lalkitab-core';
 import { classifyPlanetStates, legendEntries, LK_PLANETS, type PlanetStateTag } from './planet-state';
+import { Heading } from '@/components/ui/heading';
 
 interface Props {
   apiResult?: any;
@@ -39,35 +40,20 @@ const PLANET_HI: Record<string, string> = {
   Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
 
-const ZODIAC_SIGNS = [
-  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
-];
-
-/** Build a ChartData from raw apiResult-like payload ({ chart_data: { planets, ascendant } }). */
-function buildChartData(source: any): ChartData | null {
+/** Build a PlanetEntry list from raw apiResult-like payload. */
+function buildPlanets(source: any): PlanetEntry[] {
   const planetsRaw = source?.chart_data?.planets;
-  if (!planetsRaw) return null;
-  const planets: PlanetData[] = toLkPlanetList(planetsRaw);
-  const asc = source?.chart_data?.ascendant;
-  const ascSign = asc?.sign || 'Aries';
-  const ascIdx = Math.max(0, ZODIAC_SIGNS.indexOf(ascSign));
-  const houses = Array.from({ length: 12 }, (_, i) => ({
-    number: i + 1,
-    sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+  if (!planetsRaw) return [];
+  return toLkPlanetList(planetsRaw).map(p => ({
+    ...p,
+    house: p.house,
   }));
-  return {
-    planets,
-    houses,
-    ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined,
-  };
 }
 
-/** Extract a planet→house map from a ChartData (or null). */
-function houseMap(chart: ChartData | null): Record<string, number> {
+/** Extract a planet→house map from planets. */
+function houseMap(planets: PlanetEntry[]): Record<string, number> {
   const out: Record<string, number> = {};
-  if (!chart) return out;
-  for (const p of chart.planets) {
+  for (const p of planets) {
     if (p?.planet && typeof p.house === 'number' && p.house > 0) {
       out[p.planet] = p.house;
     }
@@ -149,9 +135,9 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kundliId, currentYear]);
 
-  // ─── Build the two ChartData objects ───
-  const natalChart = useMemo(() => buildChartData(natalSource), [natalSource]);
-  const varshphalChart = useMemo(() => buildChartData(varshphal), [varshphal]);
+  // ─── Build the two Planet lists ───
+  const natalPlanets = useMemo(() => buildPlanets(natalSource), [natalSource]);
+  const varshphalPlanets = useMemo(() => buildPlanets(varshphal), [varshphal]);
 
   // ─── Planet-state classification for colour coding (P1.1) ───
   // Applied to BOTH charts. Natal states come from /advanced. Varshphal does
@@ -175,18 +161,18 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
   }, [planetStates]);
 
   // ─── Strength-Shift delta rows ───
-  const natalHouses = useMemo(() => houseMap(natalChart), [natalChart]);
-  const varshphalHouses = useMemo(() => houseMap(varshphalChart), [varshphalChart]);
+  const natalHousesMap = useMemo(() => houseMap(natalPlanets), [natalPlanets]);
+  const varshphalHousesMap = useMemo(() => houseMap(varshphalPlanets), [varshphalPlanets]);
 
   const deltaRows = useMemo(() => {
     return LK_PLANETS.map((planet) => {
-      const nh = natalHouses[planet] ?? 0;
-      const vh = varshphalHouses[planet] ?? 0;
+      const nh = natalHousesMap[planet] ?? 0;
+      const vh = varshphalHousesMap[planet] ?? 0;
       const d = circularDelta(nh, vh);
       const state = planetStateTags[planet]?.state ?? 'normal';
       return { planet, natalHouse: nh, varshphalHouse: vh, delta: d, state };
     });
-  }, [natalHouses, varshphalHouses, planetStateTags]);
+  }, [natalHousesMap, varshphalHousesMap, planetStateTags]);
 
   // ─── Compare-hover: shared state lets the delta table highlight rows on both charts ───
   const [hoveredPlanet, setHoveredPlanet] = useState<string | null>(null);
@@ -198,10 +184,10 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
     <div className="space-y-6">
       {/* ─── Header ─── */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
-          <GitCompareArrows className="w-5 h-5" />
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <GitCompareArrows className="w-6 h-6" />
           {isHi ? 'तुलनात्मक दृश्य: तेवा एवं वर्षफल' : 'Comparative View: Tewa & Varshphal'}
-        </h2>
+        </Heading>
         <p className="text-sm text-gray-500">
           {isHi
             ? 'मूल (जन्म) तेवा कुंडली और वर्तमान वर्षफल को साथ-साथ देखें। नीचे दी गई तालिका में प्रत्येक ग्रह का भाव-परिवर्तन (natal → varshphal) दर्शाया गया है।'
@@ -254,14 +240,17 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
               {isHi ? 'जन्म' : 'Birth'}
             </span>
           </div>
-          {natalChart ? (
+          {natalPlanets.length > 0 ? (
             <div className="flex justify-center">
               <div className="w-full max-w-[340px] aspect-square">
-                <InteractiveKundli
-                  chartData={natalChart}
-                  compact
-                  hideCombust
-                  planetStates={planetStates}
+                <KundliChartSVG
+                  planets={natalPlanets}
+                  ascendantSign="Aries" // Lal Kitab is ALWAYS fixed to Aries Lagna
+                  language={language}
+                  showRashiNumbers={true}
+                  showHouseNumbers={false}
+                  rashiNumberPlacement="center"
+                  showAscendantMarker={false}
                 />
               </div>
             </div>
@@ -282,14 +271,17 @@ export default function LalKitabDualViewTab({ apiResult }: Props) {
               {isHi ? 'वार्षिक' : 'Annual'}
             </span>
           </div>
-          {varshphalChart ? (
+          {varshphalPlanets.length > 0 ? (
             <div className="flex justify-center">
               <div className="w-full max-w-[340px] aspect-square">
-                <InteractiveKundli
-                  chartData={varshphalChart}
-                  compact
-                  hideCombust
-                  planetStates={planetStates}
+                <KundliChartSVG
+                  planets={varshphalPlanets}
+                  ascendantSign="Aries" // Lal Kitab is ALWAYS fixed to Aries Lagna
+                  language={language}
+                  showRashiNumbers={true}
+                  showHouseNumbers={false}
+                  rashiNumberPlacement="center"
+                  showAscendantMarker={false}
                 />
               </div>
             </div>

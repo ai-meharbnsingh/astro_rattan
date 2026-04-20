@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, Clock3 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateName, translateSign } from '@/lib/backend-translations';
 import { PLANET_NATURE } from '@/components/kundli/kundli-utils';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -325,6 +326,19 @@ export default function DashaSelector({
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Clock3 className="w-6 h-6" />
+          {hi ? 'दशा' : 'Dasha'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi
+            ? 'यहाँ विभिन्न दशा-पद्धतियों के महादशा/अन्तरदशा की अवधि और वर्तमान चल रही अवधि दिखती है।'
+            : 'View major and sub-periods across dasha systems and see what is currently running.'}
+        </p>
+      </div>
+
       {/* System selector */}
       <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm font-medium text-foreground">

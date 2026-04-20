@@ -2,6 +2,7 @@ import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { SIGN_LORD } from './kundli-utils';
 import { Heading } from '@/components/ui/heading';
+import { Crown } from 'lucide-react';
 
 interface LordshipsTabProps {
   planets: any[];
@@ -51,7 +52,8 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   return (
     <div className="space-y-4">
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Crown className="w-6 h-6" />
           {isHi ? 'भाव स्वामित्व' : 'House Lordships'}
         </Heading>
         <p className="text-sm text-muted-foreground">

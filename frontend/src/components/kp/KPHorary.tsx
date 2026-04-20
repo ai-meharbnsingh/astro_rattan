@@ -3,6 +3,7 @@ import { Loader2, HelpCircle, CheckCircle, XCircle, AlertTriangle } from 'lucide
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
 import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
 
 interface HoraryChartResult {
   horary_number: number;
@@ -72,6 +73,20 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
   const hi = language === 'hi';
   const l  = (en: string, hn: string) => (hi ? hn : en);
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <HelpCircle className="w-6 h-6" />
+        {hi ? 'केपी प्रश्न' : 'KP Horary'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {hi
+          ? '1–249 संख्या के आधार पर प्रश्न का उत्तर (KP होररी पद्धति)'
+          : 'Answer a specific question using the KP horary (1–249) method.'}
+      </p>
+    </div>
+  );
+
   const [horaryNumber, setHoraryNumber] = useState('');
   const [questionType, setQuestionType] = useState('marriage');
   const [questionText, setQuestionText] = useState('');
@@ -111,6 +126,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
 
   return (
     <div className="space-y-6">
+      {header}
 
       {/* Input */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

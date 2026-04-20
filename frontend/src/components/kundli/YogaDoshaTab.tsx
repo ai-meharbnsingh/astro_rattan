@@ -3,6 +3,7 @@ import { Loader2, CheckCircle, Shield, AlertTriangle, Gem, Star, Sparkles, Crown
 import { translateName, translateLabel, translateRemedy, translateBackend, translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface YogaDoshaTabProps {
   yogaDoshaData: any;
@@ -82,6 +83,20 @@ const NABHASA_CATEGORY_STYLE: Record<string, string> = {
 export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDisplay, doshaData, loadingDosha, language, t, kundliId }: YogaDoshaTabProps) {
   const hi = language === 'hi';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Sparkles className="w-6 h-6" />
+        {hi ? 'योग/दोष' : 'Yogas & Doshas'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {hi
+          ? 'चार्ट के प्रमुख योग और दोष, उनकी प्रकृति/शक्ति और उपलब्ध होने पर उपाय यहाँ दिखते हैं।'
+          : 'See key yogas and doshas in your chart, their nature/strength, and remedies where available.'}
+      </p>
+    </div>
+  );
+
   const [mahaData, setMahaData] = useState<any>(null);
   const [loadingMaha, setLoadingMaha] = useState(false);
   const [rajaData, setRajaData] = useState<any>(null);
@@ -107,21 +122,27 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
 
   if (loadingYogaDosha) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('kundli.analyzingYogasAndDoshas')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('kundli.analyzingYogasAndDoshas')}</span>
+        </div>
       </div>
     );
   }
 
   if (!yogaDoshaData) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <p className="text-foreground mb-3 text-sm">{t('kundli.clickYogasTab')}</p>
-        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/10 border border-border text-primary text-sm font-medium cursor-default">
-          <CheckCircle className="w-4 h-4" />
-          {t('kundli.clickYogasTab')}
-        </span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="text-foreground mb-3 text-sm">{t('kundli.clickYogasTab')}</p>
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/10 border border-border text-primary text-sm font-medium cursor-default">
+            <CheckCircle className="w-4 h-4" />
+            {t('kundli.clickYogasTab')}
+          </span>
+        </div>
       </div>
     );
   }
@@ -142,6 +163,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
 
   return (
     <div className="space-y-6">
+      {header}
       {/* Yogas — grouped by category */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">

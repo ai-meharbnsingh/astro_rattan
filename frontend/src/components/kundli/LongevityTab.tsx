@@ -98,7 +98,6 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           {t('auto.longevity')}
         </Heading>
         <p className="text-sm text-muted-foreground">{t('auto.longevityDesc')}</p>
-        {data.person_name && <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>}
       </div>
 
       {/* Disclaimer */}

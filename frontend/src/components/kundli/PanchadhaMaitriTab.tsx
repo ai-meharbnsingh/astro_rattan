@@ -135,9 +135,6 @@ export default function PanchadhaMaitriTab({ kundliId, language }: Props) {
             ? 'नैसर्गिक, तात्कालिक एवं पंचधा सम्मिश्रित मित्रता-विश्लेषण'
             : 'Natural, temporary & five-fold combined planetary friendship analysis'}
         </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
-        )}
       </div>
 
       {/* Summary */}

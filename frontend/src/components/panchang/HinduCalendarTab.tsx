@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Sun, Moon, Star, Flame, Calendar, X } from '
 import { api } from '@/lib/api';
 import { translateBackend } from '@/lib/backend-translations';
 import type { FullPanchangData } from '@/sections/Panchang';
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   language: string;
@@ -336,7 +337,15 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
   const p = selectedDayFull.panchang as any;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Calendar}
+        title={language === 'hi' ? 'हिन्दू कैलेंडर' : 'Hindu Calendar'}
+        description={language === 'hi'
+          ? 'मासिक पंचांग देखें — किसी दिन पर क्लिक करके तिथि, नक्षत्र, सूर्य/चन्द्र समय और त्योहार देखें।'
+          : 'Browse the month view and click any day to see tithi, nakshatra, sun/moon timings, and festivals.'}
+      />
+
       {/* Main Layout: Left Panel + Calendar Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-2">
 

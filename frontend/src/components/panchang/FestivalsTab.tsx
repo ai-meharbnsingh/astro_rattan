@@ -2,14 +2,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, Info, Flame, Leaf, Moon, Sparkles } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: FullPanchangData;
   language: string;
   t: (key: string) => string;
+  selectedDate?: string;
 }
 
-export default function FestivalsTab({ panchang, language, t }: Props) {
+export default function FestivalsTab({ panchang, language, t, selectedDate }: Props) {
   const todayFestivals = panchang.festivals || [];
 
   const getFestivalIcon = (type: string) => {
@@ -28,7 +30,15 @@ export default function FestivalsTab({ panchang, language, t }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Sparkles}
+        title={language === 'hi' ? 'त्योहार और व्रत' : 'Festivals & Vrats'}
+        description={language === 'hi'
+          ? `चुनी हुई तिथि के त्योहार/व्रत और संबंधित संकेत।${selectedDate ? ` (${selectedDate})` : ''}`
+          : `Festivals and vrats for the selected date.${selectedDate ? ` (${selectedDate})` : ''}`}
+      />
+
       {/* Today's Festivals */}
       <Card className="card-sacred border-sacred-gold/30">
         <CardContent className="p-4">

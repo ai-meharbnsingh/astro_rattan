@@ -4,6 +4,7 @@ import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import PanchangTabHeader from './PanchangTabHeader';
 
 const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
@@ -93,7 +94,15 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Clock}
+        title={hi ? 'होरा' : 'Hora (Planetary Hours)'}
+        description={hi
+          ? 'दिन/रात की 24 होरा — किस समय कौन-सा ग्रह सक्रिय है और क्या शुभ/अशुभ है।'
+          : '24 planetary hours for day and night—see the ruling planet and whether the period is favorable.'}
+      />
+
       {/* Current Hora */}
       {currentHora && (
         <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
@@ -116,21 +125,21 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
         </div>
       )}
 
-      {/* Day + Night tables side-by-side */}
-      <div className="rounded-lg border overflow-hidden">
-        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border">
-          <div className="flex-1 p-2">
-            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-              <Sun className="h-4 w-4 text-orange-500" />
-              {t('auto.dayHora')}
-            </h3>
+      {/* Day + Night tables */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <Sun className="w-4 h-4" />
+            <span>{t('auto.dayHora')}</span>
+          </div>
+          <div className="overflow-x-auto">
             <Table className="w-full table-fixed text-xs sm:text-sm">
               <TableHeader>
-                <TableRow className="bg-sacred-gold/15">
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{t('auto.hora')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{t('auto.lord')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.time')}</TableHead>
-                  <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.result')}</TableHead>
+                <TableRow>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('auto.hora')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[23%]">{t('auto.lord')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[30%]">{t('auto.time')}</TableHead>
+                  <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{t('auto.result')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,8 +147,8 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                   const isCurrent = currentHora?.start === hora.start && currentHora?.end === hora.end;
                   const LordIcon = getLordIcon(hora.lord);
                   return (
-                    <TableRow key={`day-${index}`} className={`border-b border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
-                      <TableCell className="px-2 py-1">
+                    <TableRow key={`day-${index}`} className={`border-t border-border hover:bg-muted/5 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
+                      <TableCell className="p-2">
                         <div className="flex items-center gap-1">
                           <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
                           <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
@@ -147,7 +156,7 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 py-1 whitespace-normal break-words">
+                      <TableCell className="p-2 whitespace-normal break-words">
                         <span className="text-muted-foreground">{hi ? hiPlanet(hora.lord) : hora.lord}</span>
                         {HORA_BEST_FOR[hora.lord] && (
                           <p className="text-[10px] text-muted-foreground/70 leading-tight mt-0.5">
@@ -155,8 +164,8 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                           </p>
                         )}
                       </TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
-                      <TableCell className="px-2 py-1 text-center">
+                      <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
+                      <TableCell className="p-2 text-center">
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
                           {hi ? hiType(hora.type) : hora.type}
                         </span>
@@ -167,19 +176,21 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
               </TableBody>
             </Table>
           </div>
+        </div>
 
-          <div className="flex-1 p-2">
-            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-              <Moon className="h-4 w-4 text-indigo-400" />
-              {t('auto.nightHora')}
-            </h3>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <Moon className="w-4 h-4" />
+            <span>{t('auto.nightHora')}</span>
+          </div>
+          <div className="overflow-x-auto">
             <Table className="w-full table-fixed text-xs sm:text-sm">
               <TableHeader>
-                <TableRow className="bg-sacred-gold/15">
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[25%]">{t('auto.hora')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[23%]">{t('auto.lord')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.time')}</TableHead>
-                  <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold w-[22%]">{t('auto.result')}</TableHead>
+                <TableRow>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('auto.hora')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[23%]">{t('auto.lord')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[30%]">{t('auto.time')}</TableHead>
+                  <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{t('auto.result')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -187,8 +198,8 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                   const isCurrent = currentHora?.start === hora.start && currentHora?.end === hora.end;
                   const LordIcon = getLordIcon(hora.lord);
                   return (
-                    <TableRow key={`night-${index}`} className={`border-b border/50 last:border-0 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
-                      <TableCell className="px-2 py-1">
+                    <TableRow key={`night-${index}`} className={`border-t border-border hover:bg-muted/5 ${isCurrent ? 'bg-sacred-gold/10' : ''}`}>
+                      <TableCell className="p-2">
                         <div className="flex items-center gap-1">
                           <LordIcon className={`h-3 w-3 ${hora.type.toLowerCase().includes('good') ? 'text-yellow-500' : 'text-slate-400'}`} />
                           <span className={`font-medium whitespace-normal break-words ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
@@ -196,9 +207,9 @@ export default function HoraTab({ panchang, language, t, timezoneOffset, minuteT
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hi ? hiPlanet(hora.lord) : hora.lord}</TableCell>
-                      <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
-                      <TableCell className="px-2 py-1 text-center">
+                      <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">{hi ? hiPlanet(hora.lord) : hora.lord}</TableCell>
+                      <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">{hora.start} - {hora.end}</TableCell>
+                      <TableCell className="p-2 text-center">
                         <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${getQualityColor(hora.type)}`}>
                           {hi ? hiType(hora.type) : hora.type}
                         </span>

@@ -105,9 +105,6 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
             ? 'नाड़ी ग्रह-युति के आधार पर शास्त्रीय योग-फल का विश्लेषण'
             : 'Classical Nadi Yoga analysis based on planetary conjunctions'}
         </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
-        )}
       </div>
 
       {insights.length === 0 ? (

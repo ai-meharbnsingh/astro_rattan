@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { api } from '@/lib/api';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import type { PlanetData } from '@/components/InteractiveKundli';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { PLANET_ASPECTS, toDMS } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateLabel, translateNakshatra } from '@/lib/backend-translations';
 import type { SidePanelState } from '@/hooks/useKundliData';
@@ -263,11 +264,9 @@ function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; lang
   };
 
   return (
-    <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
-      <div className="px-4 py-2 bg-muted border-b border-border">
-        <span className="text-xs font-semibold text-primary uppercase tracking-wide">
-          {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
-        </span>
+    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+      <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+        {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
       </div>
       <table className="table-sacred w-full text-xs">
         <thead className="bg-muted/50">
@@ -325,34 +324,88 @@ export default function PlanetsTab({
   handlePlanetClick, handleHouseClick,
   language, t, HOUSE_SIGNIFICANCE,
 }: PlanetsTabProps) {
+  const SIGNS_ORDER = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+
+  const toPlanetEntry = (p: any): PlanetEntry => ({
+    planet: p.planet,
+    sign: p.sign || p.current_sign || '',
+    sign_degree: Number(p.sign_degree ?? p.degree ?? 0) || 0,
+    status: typeof p.status === 'string' ? p.status : '',
+    is_retrograde: !!p.is_retrograde,
+    is_combust: !!p.is_combust,
+    is_vargottama: !!p.is_vargottama,
+    is_exalted: !!p.is_exalted,
+    is_debilitated: !!p.is_debilitated,
+  } as any);
+
+  const ascSign =
+    String(result?.chart_data?.ascendant?.sign || '').trim()
+    || String(planets.find((p: any) => p.planet === 'Lagna' || p.planet === 'Ascendant')?.sign || '').trim()
+    || SIGNS_ORDER[0];
+
   return (
-    <div className="flex flex-col xl:flex-row gap-8">
-      {/* Interactive Chart */}
-      <div className="w-full xl:w-[600px] xl:flex-shrink-0 flex justify-center">
-        <InteractiveKundli
-          chartData={{ planets, houses: result.chart_data?.houses, ascendant: result.chart_data?.ascendant } as ChartData}
-          onPlanetClick={handlePlanetClick}
-          onHouseClick={handleHouseClick}
-        />
+    <div className="space-y-4">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Sparkles className="w-6 h-6" />
+          {language === 'hi' ? 'ग्रह' : 'Planets'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {language === 'hi'
+            ? 'यहाँ ग्रहों की स्थिति, राशि/भाव, नक्षत्र और दृष्टि दिखती है। चार्ट/तालिका में किसी ग्रह या भाव पर क्लिक करके तुरंत विवरण देखें।'
+            : 'See planetary placements with sign/house, nakshatra, and aspects. Click any planet or house in the chart/table for instant details.'}
+        </p>
       </div>
 
-      {/* Side Panel */}
-      <div className="flex-1 min-w-0">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      {/* Kundli Chart (Report-style SVG) */}
+      <div className="xl:col-span-1">
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {t('auto.chart')}
+          </div>
+          <div className="p-3 flex justify-center">
+            <div className="w-full max-w-[460px] xl:max-w-[380px] aspect-square">
+              <KundliChartSVG
+                planets={planets.map(toPlanetEntry)}
+                ascendantSign={ascSign}
+                language={language}
+                className="w-full h-full"
+                showHouseNumbers={false}
+                showRashiNumbers
+                rashiNumberPlacement="corner"
+                showAscendantMarker={false}
+                onPlanetClick={(pl) => handlePlanetClick(pl as any)}
+                onHouseClick={(house, sign, housePlanets) => handleHouseClick(house, sign, housePlanets as any)}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground text-center pb-3">
+            {t('kundli.clickInfo')}
+          </p>
+        </div>
+      </div>
+
+      {/* Side Panel + Table */}
+      <div className="xl:col-span-2 min-w-0 space-y-6">
         {sidePanel ? (
-          <div className="bg-muted rounded-xl border border-border p-5 animate-in fade-in slide-in-from-right-4 duration-300">
-            <div className="flex items-center justify-between mb-4">
-              <Heading as={4} variant={4}>
-                {sidePanel.type === 'planet'
-                  ? `${translatePlanet(sidePanel.planet?.planet || '', language)}${(sidePanel.planet?.status || '').toLowerCase().includes('retrograde') ? ' (R)' : ''} — ${t('kundli.details')}`
-                  : t('kundli.houseDetails')}
-              </Heading>
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
+            <span>
+              {sidePanel.type === 'planet'
+                ? `${translatePlanet(sidePanel.planet?.planet || '', language)}${(sidePanel.planet?.status || '').toLowerCase().includes('retrograde') ? ' (R)' : ''} — ${t('kundli.details')}`
+                : t('kundli.houseDetails')}
+            </span>
               <button
                 onClick={() => setSidePanel(null)}
-                className="text-foreground hover:text-foreground transition-colors"
+                className="text-white/90 hover:text-white transition-colors"
+                aria-label={t('common.close')}
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
+            <div className="p-4 max-h-[420px] overflow-auto">
 
             {sidePanel.type === 'planet' && sidePanel.planet && (() => {
               const p = sidePanel.planet;
@@ -380,29 +433,34 @@ export default function PlanetsTab({
 
               return (
                 <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    {language === 'hi'
+                      ? 'यह ग्रह किस राशि में है, किस भाव में बैठा है, और कौन-कौन से भावों पर दृष्टि डाल रहा है — उससे फल तय होता है।'
+                      : 'Results depend on the planet’s sign, house placement, and the houses it aspects.'}
+                  </p>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-card rounded-lg p-3">
-                      <p className="text-sm text-foreground">{t('kundli.sign')}</p>
+                    <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                      <p className="text-xs text-muted-foreground">{t('kundli.sign')}</p>
                       <p className="font-semibold text-foreground">{translateSign(p.sign, language)}</p>
                     </div>
-                    <div className="bg-card rounded-lg p-3">
-                      <p className="text-sm text-foreground">{t('kundli.degree')}</p>
+                    <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                      <p className="text-xs text-muted-foreground">{t('kundli.degree')}</p>
                       <p className="font-semibold text-foreground">{p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'}</p>
                     </div>
-                    <div className="bg-card rounded-lg p-3">
-                      <p className="text-sm text-foreground">{t('kundli.house')}</p>
+                    <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                      <p className="text-xs text-muted-foreground">{t('kundli.house')}</p>
                       <p className="font-semibold text-foreground">{p.house}</p>
                     </div>
-                    <div className="bg-card rounded-lg p-3">
-                      <p className="text-sm text-foreground">{t('kundli.nakshatra')}</p>
+                    <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                      <p className="text-xs text-muted-foreground">{t('kundli.nakshatra')}</p>
                       <p className="font-semibold text-foreground">
                         {translateNakshatra(p.nakshatra, language) || t('common.noData')}
                         {p.nakshatra_pada ? ` (${t('auto.pada')} ${p.nakshatra_pada})` : ''}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-card rounded-lg p-3">
-                    <p className="text-sm text-foreground">{t('kundli.strength')}</p>
+                  <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.strength')}</p>
                     <p className={`font-semibold ${strengthColor}`}>{translateLabel(strengthLabel, language)}</p>
                     {isParamochha && (
                       <p className="text-[10px] text-yellow-600 italic mt-0.5">
@@ -410,13 +468,13 @@ export default function PlanetsTab({
                       </p>
                     )}
                   </div>
-                  <div className="bg-card rounded-lg p-3">
-                    <p className="text-sm text-foreground">{t('kundli.aspects')}</p>
+                  <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.aspects')}</p>
                     <p className="font-semibold text-foreground text-sm">{aspects.join(', ')}</p>
                   </div>
                   {moonAspectors.length > 0 && (
-                    <div className="bg-card rounded-lg p-3 col-span-2">
-                      <p className="text-sm text-foreground mb-2">
+                    <div className="bg-card rounded-lg p-3 border border-sacred-gold/20 col-span-2">
+                      <p className="text-xs text-muted-foreground mb-2">
                         {language === 'hi' ? 'चन्द्र पर ग्रह-दृष्टि (फलदीपिका अ. 18)' : 'Planets aspecting Moon (Phaladeepika Adh. 18)'}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -431,9 +489,9 @@ export default function PlanetsTab({
                       </div>
                     </div>
                   )}
-                  <div className="bg-card rounded-lg p-3">
-                    <p className="text-sm text-foreground">{t('kundli.housePlacement')}</p>
-                    <p className="text-sm text-foreground">
+                  <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.housePlacement')}</p>
+                    <p className="text-sm text-foreground/90">
                       {translatePlanet(p.planet, language)} — {t('kundli.house')} {p.house} ({HOUSE_SIGNIFICANCE[p.house] || t('common.noData')})
                     </p>
                   </div>
@@ -442,35 +500,36 @@ export default function PlanetsTab({
             })()}
 
             {sidePanel.type === 'house' && (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-card rounded-lg p-3">
-                    <p className="text-sm text-foreground">{t('kundli.houseNumber')}</p>
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-card rounded-lg p-2.5 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.houseNumber')}</p>
                     <p className="font-semibold text-foreground">{sidePanel.house}</p>
                   </div>
-                  <div className="bg-card rounded-lg p-3">
-                    <p className="text-sm text-foreground">{t('kundli.sign')}</p>
+                  <div className="bg-card rounded-lg p-2.5 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.sign')}</p>
                     <p className="font-semibold text-foreground">{translateSign(sidePanel.sign || '', language)}</p>
                   </div>
+                  <div className="bg-card rounded-lg p-2.5 border border-sacred-gold/20">
+                    <p className="text-xs text-muted-foreground">{t('kundli.significance')}</p>
+                    <p className="text-sm font-semibold text-foreground leading-snug">
+                      {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || t('common.noData')}
+                    </p>
+                  </div>
                 </div>
-                <div className="bg-card rounded-lg p-3">
-                  <p className="text-sm text-foreground">{t('kundli.significance')}</p>
-                  <p className="font-semibold text-foreground">
-                    {HOUSE_SIGNIFICANCE[sidePanel.house || 0] || t('common.noData')}
+                <div className="bg-card rounded-lg p-2.5 border border-sacred-gold/20">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t('kundli.planetsInHouse')} <span className="font-semibold text-foreground/70">({(sidePanel.planets || []).length})</span>
                   </p>
-                </div>
-                <div className="bg-card rounded-lg p-3">
-                  <p className="text-sm text-foreground mb-2">{t('kundli.planetsInHouse')}</p>
                   {(sidePanel.planets || []).length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="flex flex-wrap gap-1.5">
                       {(sidePanel.planets || []).map((p) => (
                         <button
                           key={p.planet}
-                          className="w-full text-left text-sm text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                          className="px-2 py-1 rounded-full border border-border bg-muted/20 hover:bg-muted/40 text-xs text-foreground transition-colors"
                           onClick={() => setSidePanel({ type: 'planet', planet: p })}
                         >
-                          <span className="w-2 h-2 rounded-full bg-muted" />
-                          {translatePlanet(p.planet, language)}{(p.status || '').toLowerCase().includes('retrograde') ? '*' : ''} ({translateSign(p.sign, language)} {p.sign_degree != null ? toDMS(p.sign_degree) : '\u2014'})
+                          {translatePlanet(p.planet, language)}{(p.status || '').toLowerCase().includes('retrograde') ? '*' : ''}
                         </button>
                       ))}
                     </div>
@@ -480,20 +539,29 @@ export default function PlanetsTab({
                 </div>
               </div>
             )}
+            </div>
           </div>
         ) : (
-          <div className="bg-muted rounded-xl border border-dashed border-border p-8 flex flex-col items-center justify-center h-full min-h-[200px]">
-            <Sparkles className="w-8 h-8 text-primary mb-3" />
-            <p className="text-foreground text-sm text-center">
-              {t('kundli.clickInfo')}
-            </p>
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+            <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+              {t('kundli.details')}
+            </div>
+            <div className="p-8 flex flex-col items-center justify-center min-h-[200px]">
+              <Sparkles className="w-8 h-8 text-primary mb-3" />
+              <p className="text-foreground text-sm text-center">
+                {t('kundli.clickInfo')}
+              </p>
+            </div>
           </div>
         )}
 
         {/* Planet table */}
-        <div className="mt-6 overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
+            {t('section.detailedPlanetPositions')}
+          </div>
           <Table className="w-full text-xs">
-            <TableHeader className="bg-muted">
+            <TableHeader className="bg-muted/40">
               <TableRow>
                 <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.planet')}</TableHead>
                 <TableHead className="text-left p-1.5 text-primary font-medium">{t('table.sign')}</TableHead>
@@ -508,8 +576,8 @@ export default function PlanetsTab({
                   key={index}
                   className={`border-t border-border cursor-pointer transition-colors ${
                     sidePanel?.type === 'planet' && sidePanel.planet?.planet === planet.planet
-                      ? 'bg-muted'
-                      : 'hover:bg-muted/5'
+                      ? 'bg-sacred-gold/10'
+                      : 'hover:bg-sacred-gold/[0.04]'
                   }`}
                   onClick={() => handlePlanetClick(planet)}
                 >
@@ -537,6 +605,7 @@ export default function PlanetsTab({
         {/* Planet Properties & Panchadha Maitri */}
         {kundliId && <PlanetPropertiesSection kundliId={kundliId} language={language} />}
         {kundliId && <PanchadhaMaitriSection kundliId={kundliId} language={language} />}
+      </div>
       </div>
     </div>
   );

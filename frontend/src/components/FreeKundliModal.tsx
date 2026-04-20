@@ -159,18 +159,20 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
                       </p>
                       <div className="w-full aspect-square max-w-[260px] mx-auto">
                         <InteractiveKundli
-                          chartData={{
-                            ...chartData,
-                            houses: (() => {
-                              const moonData = (chartData.planets || []).find((p: any) => p.planet === 'Moon');
-                              const moonHouse = moonData?.house || 1;
-                              const offset = moonHouse - 1;
-                              return (chartData.houses || []).map((h: any) => ({
+                          chartData={(() => {
+                            const moonData = (chartData.planets || []).find((p: any) => p.planet === 'Moon');
+                            const offset = (moonData?.house || 1) - 1;
+                            return {
+                              planets: (chartData.planets || []).map((p: any) => ({
+                                ...p,
+                                house: ((p.house - 1 - offset + 12) % 12) + 1,
+                              })),
+                              houses: (chartData.houses || []).map((h: any) => ({
                                 ...h,
                                 number: ((h.number - 1 - offset + 12) % 12) + 1,
-                              }));
-                            })(),
-                          }}
+                              })),
+                            };
+                          })()}
                           compact
                         />
                       </div>

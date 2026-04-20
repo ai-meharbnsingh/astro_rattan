@@ -34,6 +34,18 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
   const [error, setError] = useState<string>('');
   const isHi = language === 'hi';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Flame className="w-6 h-6" />
+        {isHi ? 'प्रव्रज्या योग' : 'Pravrajya Yogas'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi ? 'त्याग, अध्यात्म और संन्यास जीवन के योग' : 'Yogas for renunciation, spirituality & monastic life'}
+      </p>
+    </div>
+  );
+
   useEffect(() => {
     if (!kundliId) return;
     let cancelled = false;
@@ -54,33 +66,38 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
+      <div className="space-y-4">
+        {header}
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          {error}
+        </div>
       </div>
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('common.noData')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {isHi ? 'प्रव्रज्या योग' : 'Pravrajya Yogas'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi ? 'त्याग, अध्यात्म और संन्यास जीवन के योग' : 'Yogas for renunciation, spirituality & monastic life'}
-        </p>
-      </div>
+      {header}
       {/* Header container */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">

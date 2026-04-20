@@ -4,6 +4,7 @@ import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: FullPanchangData;
@@ -123,9 +124,9 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
     return (
       <TableRow
         key={`${period.type}-${index}`}
-        className={`border-b border/50 last:border-0 ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
+        className={`border-t border-border hover:bg-muted/5 ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
       >
-        <TableCell className="px-2 py-1">
+        <TableCell className="p-2">
           <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
             {language === 'hi' ? period.name_hindi || period.name : period.name}
           </span>
@@ -135,57 +136,57 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
             </span>
           )}
         </TableCell>
-        <TableCell className="px-2 py-1">
+        <TableCell className="p-2">
           <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${style.bg} ${style.color}`}>
             {language === 'hi' ? style.labelHi : style.label}
           </span>
         </TableCell>
-        <TableCell className="px-2 py-1 text-muted-foreground">
+        <TableCell className="p-2 text-muted-foreground">
           {period.start} - {period.end}
         </TableCell>
-        <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">
+        <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">
           {getPeriodDetail(period.name)}
         </TableCell>
       </TableRow>
     );
   };
 
-  const renderTable = (periods: GowriPeriod[], icon: typeof Sun, title: string) => (
-    <div className="flex-1 min-w-0">
-      <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-        {icon === Sun
-          ? <Sun className="h-4 w-4 text-orange-500" />
-          : <Moon className="h-4 w-4 text-indigo-400" />}
-        {title}
-      </h3>
-      <div className="overflow-x-auto">
-        <Table className="w-full text-sm">
-          <TableHeader>
-            <TableRow className="bg-sacred-gold/15">
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.name')}
-              </TableHead>
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.type')}
-              </TableHead>
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.time')}
-              </TableHead>
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.details')}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {periods.map((period, index) => renderRow(period, index))}
-          </TableBody>
-        </Table>
+  const renderTable = (periods: GowriPeriod[], icon: typeof Sun, title: string) => {
+    const Icon = icon === Sun ? Sun : Moon;
+    return (
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Icon className="w-4 h-4" />
+          <span>{title}</span>
+        </div>
+        <div className="overflow-x-auto">
+          <Table className="w-full text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.name')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.type')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.time')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.details')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {periods.map((period, index) => renderRow(period, index))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Moon}
+        title={language === 'hi' ? 'गौरी पंचांग' : 'Gowri Panchang'}
+        description={language === 'hi'
+          ? 'दिन और रात्रि के गौरी काल — शुभ/अशुभ अवधि और उपयोगिता के साथ।'
+          : 'Day and night Gowri periods with auspiciousness and a quick “best use” hint.'}
+      />
       {/* Current Gowri compact banner */}
       {currentGowri && (
         <div className="flex items-center gap-3 p-2 rounded-lg border border-sacred-gold/30 bg-sacred-gold/10">
@@ -208,20 +209,10 @@ export default function GowriTab({ panchang, language, t, timezoneOffset, minute
         </div>
       )}
 
-      {/* Day + Night side by side (stack on mobile) */}
-      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
-        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border">
-          {dayGowri.length > 0 && (
-            <div className="p-2">
-              {renderTable(dayGowri, Sun, t('auto.dayGowriPanchang'))}
-            </div>
-          )}
-          {nightGowri.length > 0 && (
-            <div className="p-2">
-              {renderTable(nightGowri, Moon, t('auto.nightGowriPanchang'))}
-            </div>
-          )}
-        </div>
+      {/* Day + Night (stack on mobile) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {dayGowri.length > 0 && renderTable(dayGowri, Sun, t('auto.dayGowriPanchang'))}
+        {nightGowri.length > 0 && renderTable(nightGowri, Moon, t('auto.nightGowriPanchang'))}
       </div>
 
       {/* Compact Legend */}

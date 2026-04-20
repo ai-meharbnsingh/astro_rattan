@@ -4,6 +4,7 @@ import { calculateJaiminiKarakas } from './jhora-utils';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateLabel } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
+import { ClipboardList } from 'lucide-react';
 
 interface BirthDetailsTabProps {
   planets: any[];
@@ -27,7 +28,8 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   return (
     <div className="space-y-4">
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <ClipboardList className="w-6 h-6" />
           {isHi ? 'जन्म विवरण — ग्रह स्थिति' : 'Birth Details — Planetary Positions'}
         </Heading>
         <p className="text-sm text-muted-foreground">

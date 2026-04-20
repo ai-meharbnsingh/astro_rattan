@@ -95,9 +95,6 @@ export default function NavamshaCareerTab({ kundliId, language }: Props) {
         <p className="text-sm text-muted-foreground">
           {hi ? 'D9 चार्ट पर आधारित जीविका एवं व्यवसाय विश्लेषण' : 'Vocation analysis based on D9 (Navamsha) chart'}
         </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
-        )}
       </div>
 
       {/* 1 — Profession Type */}

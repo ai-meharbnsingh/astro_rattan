@@ -4,6 +4,7 @@ import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: FullPanchangData;
@@ -63,7 +64,15 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
   const hasGandaSandhi = lagnaTable.some((l: any) => l.ganda_sandhi);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Sunrise}
+        title={language === 'hi' ? 'लग्न' : 'Lagna (Ascendant)'}
+        description={language === 'hi'
+          ? 'दिन भर में लग्न-परिवर्तन और वर्तमान लग्न — मुहूर्त/कार्य-निर्णय में उपयोगी।'
+          : 'Ascendant changes throughout the day—useful for muhurta and timing decisions.'}
+      />
+
       {/* Ganda/Sandhi Warning Banner */}
       {hasGandaSandhi && (
         <div className="rounded-lg border border-purple-200 bg-purple-50/60 p-3">
@@ -124,28 +133,20 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
       )}
 
       {/* Lagna Table */}
-      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
-        <h3 className="font-bold text-foreground p-2 flex items-center gap-1 bg-card/30">
-          <Sunrise className="h-4 w-4 text-sacred-gold" />
-          {language === 'hi' ? 'दिन के लग्न (उदय लग्न)' : "Today's Uday Lagna (Rising Sign)"}
-        </h3>
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Sunrise className="w-4 h-4" />
+          <span>{language === 'hi' ? 'दिन के लग्न (उदय लग्न)' : "Today's Uday Lagna (Rising Sign)"}</span>
+        </div>
 
         <div className="overflow-x-auto">
-          <Table className="w-full text-sm">
+          <Table className="w-full text-xs table-fixed">
             <TableHeader>
-              <TableRow className="bg-sacred-gold/15">
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.lagna')}
-                </TableHead>
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.start')}
-                </TableHead>
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.end')}
-                </TableHead>
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'अंश' : 'Degree'}
-                </TableHead>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[40%]">{t('auto.lagna')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{t('auto.start')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{t('auto.end')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{language === 'hi' ? 'अंश' : 'Degree'}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -156,12 +157,12 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                   <TableRow
                     key={index}
                     className={`
-                      border-b border/50 last:border-0
+                      border-t border-border hover:bg-muted/5
                       ${isCurrent ? 'bg-sacred-gold/10' : index % 2 === 0 ? 'bg-card/30' : ''}
                       ${(lagna as any).ganda_sandhi ? 'opacity-75' : ''}
                     `}
                   >
-                    <TableCell className="px-2 py-1">
+                    <TableCell className="p-2">
                       <div className="flex items-center gap-1.5">
                         <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
                           {language === 'hi'
@@ -194,13 +195,13 @@ export default function LagnaTab({ panchang, language, t, timezoneOffset, minute
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="px-2 py-1 text-muted-foreground">
+                    <TableCell className="p-2 text-muted-foreground">
                       {lagna.start}
                     </TableCell>
-                    <TableCell className="px-2 py-1 text-muted-foreground">
+                    <TableCell className="p-2 text-muted-foreground">
                       {lagna.end}
                     </TableCell>
-                    <TableCell className="px-2 py-1 text-muted-foreground">
+                    <TableCell className="p-2 text-muted-foreground">
                       {(lagna as any).degree ? `${(lagna as any).degree}°` : '—'}
                     </TableCell>
                   </TableRow>

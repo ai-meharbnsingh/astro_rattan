@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Target } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -170,7 +170,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
         <div className="space-y-6">
           {/* Page heading */}
           <div>
-            <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+            <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+              <Target className="w-6 h-6" />
               {language === 'hi' ? 'अष्टकवर्ग' : 'Ashtakvarga'}
             </Heading>
             <p className="text-sm text-muted-foreground">

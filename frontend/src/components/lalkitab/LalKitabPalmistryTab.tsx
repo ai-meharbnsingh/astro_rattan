@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 import { pickLang } from './safe-render';
 import { Loader2, Hand, Sparkles, X, RotateCcw } from 'lucide-react';
 import PalmSVG from './PalmSVG';
+import { Heading } from '@/components/ui/heading';
 
 interface PalmZone {
   zone_id: string; name: string; planet: string;
@@ -117,11 +118,11 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
         </div>
       )}
       {/* Header */}
-      <div className="text-center">
-        <div className="text-3xl mb-1">🖐️</div>
-        <h3 className="font-bold text-foreground">
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Hand className="w-6 h-6" />
           {hi ? 'समुद्रिक शास्त्र — हस्तरेखा' : 'Samudrik Shastra — Palmistry'}
-        </h3>
+        </Heading>
         <p className="text-sm text-muted-foreground mt-1">
           {hi ? 'हस्तरेखा पर निशान चुनकर ग्रह प्रभाव जानें' : 'Select marks on your palm to correlate with planetary energies'}
         </p>

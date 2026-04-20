@@ -19,6 +19,7 @@ import NotesWidget from '@/components/NotesWidget';
 import JaiminiTab from '@/components/kundli/JaiminiTab';
 import ReportTab from '@/components/kundli/ReportTab';
 import PlanetsTab from '@/components/kundli/PlanetsTab';
+import RemediesTab from '@/components/kundli/RemediesTab';
 import IogitaTab from '@/components/kundli/IogitaTab';
 import DashaTab from '@/components/kundli/DashaTab';
 import DivisionalTab from '@/components/kundli/DivisionalTab';
@@ -81,6 +82,7 @@ interface TabDef {
 const TAB_DEFS: Omit<TabDef, 'onActivate'>[] = [
   // Primary tabs
   { value: 'report',        labelEn: 'Report',         labelHi: 'रिपोर्ट',          primary: true, icon: ScrollText },
+  { value: 'remedies',      labelEn: 'Remedies',       labelHi: 'उपाय',             primary: true, icon: BookOpen },
   { value: 'planets',       labelEn: 'Planets',        labelHi: 'ग्रह',             primary: true, icon: Star },
   { value: 'dasha',         labelEn: 'Dasha',          labelHi: 'दशा',             primary: true, icon: Clock3 },
   { value: 'yoga-dosha',    labelEn: 'Yogas/Dosha',    labelHi: 'योग/दोष',          primary: true, icon: Sparkles },
@@ -386,11 +388,13 @@ export default function KundliGenerator() {
         {/* Tabs — controlled mode */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full kundli-tabs">
           <div className="mb-4">
-            <TabsList className="bg-sacred-gold/5 border border-sacred-gold/20 w-full h-auto p-2 gap-1 grid grid-cols-6
-              [&>button]:min-w-0 [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
+            <TabsList
+              className="bg-sacred-gold/5 border border-sacred-gold/20 w-full h-auto p-2 gap-1 grid grid-flow-col auto-cols-[minmax(92px,1fr)] overflow-x-auto
+              [&>button]:w-full [&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[11px] md:[&>button]:text-xs
               [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-1 [&>button]:leading-tight
               [&>button]:text-sacred-gold-dark/70 [&>button:hover]:bg-sacred-gold/10 [&>button:hover]:text-sacred-gold-dark
-              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
+              [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md"
+            >
               {primaryTabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
@@ -485,6 +489,10 @@ export default function KundliGenerator() {
               changeDivision={changeDivision}
               handlePlanetClick={handlePlanetClick} handleHouseClick={handleHouseClick}
             />
+          </TabsContent>
+
+          <TabsContent value="remedies" className="min-h-[300px]">
+            <RemediesTab kundliId={result?.id || ''} language={language} t={t} />
           </TabsContent>
 
           <TabsContent value="planets" className="min-h-[300px]">
@@ -748,25 +756,39 @@ export default function KundliGenerator() {
           </TabsContent>
 
           <TabsContent value="sarvatobhadra" className="min-h-[300px]">
-            {loadingSbc ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                <span className="ml-2 text-foreground">{language === 'hi' ? 'सर्वतोभद्र चक्र लोड हो रहा है...' : 'Loading Sarvatobhadra Chakra...'}</span>
+            <div className="space-y-4">
+              <div>
+                <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+                  <Grid3X3 className="w-6 h-6" />
+                  {language === 'hi' ? 'सर्वतोभद्र चक्र' : 'Sarvatobhadra Chakra'}
+                </Heading>
+                <p className="text-sm text-muted-foreground">
+                  {language === 'hi'
+                    ? 'मूहूर्त, गोचर और शुभ-अशुभ संकेतों के लिए उपयोग होने वाला पारंपरिक चक्र-ग्रिड।'
+                    : 'An auspicious chakra grid used for muhurta, transits, and timing indicators.'}
+                </p>
               </div>
-            ) : sbcGrid ? (
-              <div className="max-w-2xl mx-auto">
-                <SarvatobhadraChakra
-                  grid={sbcGrid}
-                  vedhas={sbcVedhas}
-                  showVedhaLines={true}
-                  className="w-full"
-                />
-              </div>
-            ) : (
-              <p className="text-center text-foreground py-8">
-                {language === 'hi' ? 'सर्वतोभद्र चक्र डेटा उपलब्ध नहीं है' : 'No Sarvatobhadra Chakra data available'}
-              </p>
-            )}
+
+              {loadingSbc ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-foreground">{language === 'hi' ? 'सर्वतोभद्र चक्र लोड हो रहा है...' : 'Loading Sarvatobhadra Chakra...'}</span>
+                </div>
+              ) : sbcGrid ? (
+                <div className="max-w-2xl mx-auto">
+                  <SarvatobhadraChakra
+                    grid={sbcGrid}
+                    vedhas={sbcVedhas}
+                    showVedhaLines={true}
+                    className="w-full"
+                  />
+                </div>
+              ) : (
+                <p className="text-center text-foreground py-8">
+                  {language === 'hi' ? 'सर्वतोभद्र चक्र डेटा उपलब्ध नहीं है' : 'No Sarvatobhadra Chakra data available'}
+                </p>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 

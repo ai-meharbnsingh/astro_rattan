@@ -57,6 +57,18 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <BookOpen className="w-6 h-6" />
+        {isHi ? 'कुंडली व्याख्या' : 'Interpretations'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi ? 'सभी जीवन क्षेत्रों के लिए व्यापक कुंडली व्याख्याएं' : 'Comprehensive chart interpretations for all life areas'}
+      </p>
+    </div>
+  );
+
   useEffect(() => {
     if (!kundliId) return;
     setLoading(true);
@@ -67,13 +79,28 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
   }, [kundliId]);
 
   if (loading) return (
-    <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
-      <span className="text-sm text-muted-foreground">{isHi ? 'व्याख्या लोड हो रही है...' : 'Loading interpretations...'}</span>
+    <div className="space-y-4">
+      {header}
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
+        <span className="text-sm text-muted-foreground">{isHi ? 'व्याख्या लोड हो रही है...' : 'Loading interpretations...'}</span>
+      </div>
     </div>
   );
-  if (error) return <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">{error}</div>;
-  if (!data) return null;
+  if (error) return (
+    <div className="space-y-4">
+      {header}
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">{error}</div>
+    </div>
+  );
+  if (!data) return (
+    <div className="space-y-4">
+      {header}
+      <div className="rounded-xl border border-border p-6 text-center text-muted-foreground text-sm">
+        {isHi ? 'डेटा उपलब्ध नहीं है' : 'No data available'}
+      </div>
+    </div>
+  );
 
   const asc         = data.ascendant || {};
   const lagnaNature = asc.lagna_nature || {};
@@ -94,18 +121,7 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
   return (
     <div className="space-y-4">
 
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {isHi ? 'कुंडली व्याख्या' : 'Interpretations'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi ? 'सभी जीवन क्षेत्रों के लिए व्यापक कुंडली व्याख्याएं' : 'Comprehensive chart interpretations for all life areas'}
-        </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}{asc.sign ? ` · ${asc.sign}` : ''}</p>
-        )}
-      </div>
+      {header}
 
       {/* 1 — Ascendant Personality */}
       {(lagnaNature.nature || lagnaNature.biggest_talent) && (

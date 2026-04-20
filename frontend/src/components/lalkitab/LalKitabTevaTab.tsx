@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18n';
-import { Info } from 'lucide-react';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import { Info, FileSearch } from 'lucide-react';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { api } from '@/lib/api';
 import { pickLang } from './safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { toLkPlanetList } from './lalkitab-core';
 // P1.1 — Modified Analytical Tewa planet-state classifier
 import { classifyPlanetStates, legendEntries, type PlanetStateTag } from './planet-state';
+import { Heading } from '@/components/ui/heading';
 
 interface Props {
   apiResult?: any;
@@ -19,11 +20,6 @@ const PLANET_HI: Record<string, string> = {
   Sun: 'सूर्य', Moon: 'चंद्र', Mars: 'मंगल', Mercury: 'बुध',
   Jupiter: 'गुरु', Venus: 'शुक्र', Saturn: 'शनि', Rahu: 'राहु', Ketu: 'केतु',
 };
-
-const ZODIAC_SIGNS = [
-  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
-];
 
 const TEVA_CONFIG: Record<TevaType, { color: string; bgColor: string; borderColor: string }> = {
   andha:    { color: 'text-red-700',         bgColor: 'bg-red-500/8',          borderColor: 'border-red-300/40' },
@@ -83,26 +79,13 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
   };
   const tevaLabel = primary ? t(labelKeyByType[primary] || 'lk.teva.type') : (isHi ? 'अज्ञात' : 'Unknown');
 
-  const interactiveChartData: ChartData | null = useMemo(() => {
+  const planets: PlanetEntry[] = useMemo(() => {
     const planetsRaw = apiResult?.chart_data?.planets;
-    if (!planetsRaw) return null;
-
-    // LK context — uses central toLkPlanetList helper
-    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
-
-    const asc = apiResult.chart_data?.ascendant;
-    const ascSign = asc?.sign || 'Aries';
-    const ascIdx = ZODIAC_SIGNS.indexOf(ascSign);
-    const houses = Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    if (!planetsRaw) return [];
+    return toLkPlanetList(planetsRaw).map(p => ({
+      ...p,
+      house: p.house,
     }));
-
-    return {
-      planets,
-      houses,
-      ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined,
-    };
   }, [apiResult]);
 
   // P1.1 — classify each planet into a dominant LK state so the chart
@@ -112,32 +95,28 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
     () => classifyPlanetStates(advanced),
     [advanced],
   );
-  // Shape required by InteractiveKundli's planetStates prop.
-  const planetStates = useMemo(() => {
-    const out: Record<string, PlanetStateTag> = {};
-    for (const [name, tag] of Object.entries(planetStateTags)) {
-      if (tag.state !== 'normal') out[name] = tag;
-    }
-    return out;
-  }, [planetStateTags]);
-  const hasAnyState = Object.keys(planetStates).length > 0;
+  // Note: KundliChartSVG does not yet support per-planet state tag objects like InteractiveKundli,
+  // but it does color malefic/benefic/exalted/debilitated correctly.
+  const hasAnyState = Object.values(planetStateTags).some(t => t.state !== 'normal');
   // Counts per state for the legend ("Blind · 2" etc.)
   const statesInChart = useMemo(() => {
     const counts: Record<string, number> = {};
-    for (const tag of Object.values(planetStates)) {
-      counts[tag.state] = (counts[tag.state] ?? 0) + 1;
+    for (const tag of Object.values(planetStateTags)) {
+      if (tag.state !== 'normal') {
+        counts[tag.state] = (counts[tag.state] ?? 0) + 1;
+      }
     }
     return counts;
-  }, [planetStates]);
+  }, [planetStateTags]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
-          <Info className="w-5 h-5" />
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <FileSearch className="w-6 h-6" />
           {t('lk.teva.title')}
-        </h2>
+        </Heading>
         <p className="text-sm text-gray-500">{t('lk.teva.desc')}</p>
       </div>
 
@@ -230,18 +209,21 @@ export default function LalKitabTevaTab({ apiResult }: Props) {
       {/* Kundli chart — P1.1 Modified Analytical Tewa with per-planet LK
           state colour coding (Andhe/Masnui/Soye/Kayam/Jage) driven by the
           backend /advanced endpoint. */}
-      {interactiveChartData ? (
+      {planets.length > 0 ? (
         <div className="card-sacred rounded-xl border border-sacred-gold/20 p-5">
           <h3 className="font-sans font-semibold text-sacred-gold mb-3 text-sm">
             {t('auto.lalKitabKundliTevaCh')}
           </h3>
           <div className="flex justify-center">
-            <div className="w-72 h-72">
-              <InteractiveKundli
-                chartData={interactiveChartData}
-                compact
-                hideCombust
-                planetStates={planetStates}
+            <div className="w-full max-w-[420px] aspect-square">
+              <KundliChartSVG
+                planets={planets}
+                ascendantSign="Aries" // Lal Kitab is ALWAYS fixed to Aries Lagna
+                language={language}
+                showRashiNumbers={true}
+                showHouseNumbers={false}
+                rashiNumberPlacement="center"
+                showAscendantMarker={false}
               />
             </div>
           </div>

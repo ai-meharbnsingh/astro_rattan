@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
@@ -254,7 +254,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Sparkles className="w-6 h-6" />
           {hi ? 'D108 अष्टोत्तरांश' : 'D108 Chart'}
         </Heading>
         <p className="text-sm text-muted-foreground">

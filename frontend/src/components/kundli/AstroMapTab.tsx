@@ -68,6 +68,9 @@ function ScoreBadge({ score }: { score: number }) {
 
 function CityRow({ city, isHi, defaultOpen }: { city: CityDetail; isHi: boolean; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen ?? false);
+  // Backend overall_score is 0..10; UI renders as percent (0..100).
+  const score10 = Number.isFinite(city.overall_score as any) ? Number(city.overall_score) : 0;
+  const pct = Math.max(0, Math.min(100, score10 * 10));
 
   return (
     <div className="border-b border-sacred-gold/10 last:border-0">
@@ -77,7 +80,7 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityDetail; isHi: boolean;
       >
         <span className="font-semibold text-foreground text-sm">{city.city}</span>
         <div className="flex items-center gap-2 shrink-0">
-          <ScoreBadge score={city.overall_score} />
+          <ScoreBadge score={pct} />
           {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
         </div>
       </button>
@@ -88,15 +91,15 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityDetail; isHi: boolean;
           <div>
             <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
               <span>{isHi ? 'स्कोर' : 'Score'}</span>
-              <span>{Math.round(city.overall_score)}/100</span>
+              <span>{score10.toFixed(1)}/10</span>
             </div>
             <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
               <div
                 className={`h-full transition-all ${
-                  city.overall_score >= 75 ? 'bg-emerald-500' :
-                  city.overall_score >= 50 ? 'bg-amber-400' : 'bg-red-400'
+                  pct >= 75 ? 'bg-emerald-500' :
+                  pct >= 50 ? 'bg-amber-400' : 'bg-red-400'
                 }`}
-                style={{ width: `${Math.min(city.overall_score, 100)}%` }}
+                style={{ width: `${pct}%` }}
               />
             </div>
           </div>

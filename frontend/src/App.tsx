@@ -1,4 +1,4 @@
-import { useEffect, useRef, lazy, Suspense, Component } from 'react';
+import { useEffect, useRef, lazy, Suspense, Component, useState } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 
@@ -210,6 +210,44 @@ function AppInner() {
       <Footer />
       </div>
       <WhatsAppWidget />
+      <LocationBadge />
+    </div>
+  );
+}
+
+function LocationBadge() {
+  const [label, setLabel] = useState<string>(() => localStorage.getItem('ar_location_label') || 'New Delhi, India');
+  const [lat, setLat] = useState<string>(() => localStorage.getItem('ar_location_lat') || '28.6139');
+  const [lon, setLon] = useState<string>(() => localStorage.getItem('ar_location_lon') || '77.2090');
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const tick = setInterval(() => {
+      setNow(new Date());
+      const l = localStorage.getItem('ar_location_label'); if (l) setLabel(l);
+      const la = localStorage.getItem('ar_location_lat'); if (la) setLat(la);
+      const lo = localStorage.getItem('ar_location_lon'); if (lo) setLon(lo);
+    }, 1000);
+    return () => clearInterval(tick);
+  }, []);
+
+  const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  const latN = parseFloat(lat), lonN = parseFloat(lon);
+  const latStr = `${Math.abs(latN).toFixed(4)}°${latN >= 0 ? 'N' : 'S'}`;
+  const lonStr = `${Math.abs(lonN).toFixed(4)}°${lonN >= 0 ? 'E' : 'W'}`;
+
+  return (
+    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 text-white shadow-lg backdrop-blur-sm rounded-xl cursor-default select-none px-3 py-2.5 flex flex-col gap-1 min-w-[180px]" style={{ background: 'linear-gradient(135deg, #FF9933 0%, #e07b1a 100%)' }}>
+      <div className="flex items-center gap-1.5 border-b border-white/20 pb-1.5 mb-0.5">
+        <span className="text-[10px] font-bold tracking-widest uppercase opacity-70">Current Location</span>
+      </div>
+      <span className="text-sm font-semibold leading-tight">{label}</span>
+      <span className="text-[11px] opacity-70">{latStr} &nbsp; {lonStr}</span>
+      <div className="border-t border-white/20 pt-1.5 mt-0.5 flex flex-col gap-0.5">
+        <span className="text-[11px] opacity-80">{dateStr}</span>
+        <span className="text-sm font-mono font-semibold">{timeStr}</span>
+      </div>
     </div>
   );
 }

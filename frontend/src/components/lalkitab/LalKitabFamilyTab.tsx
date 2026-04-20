@@ -3,8 +3,9 @@ import { api } from '@/lib/api';
 import { pickLang } from './safe-render';
 import {
   Loader2, Users, UserPlus, Trash2, Link2,
-  TrendingUp, TrendingDown, ChevronDown, ChevronUp, X,
+  TrendingUp, TrendingDown, ChevronDown, ChevronUp, X, Users2
 } from 'lucide-react';
+import { Heading } from '@/components/ui/heading';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -354,12 +355,10 @@ export default function LalKitabFamilyTab({ kundliId, language }: Props) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-2xl">👨‍👩‍👧‍👦</span>
-            <h3 className="font-bold text-foreground text-base">
-              {hi ? 'ग्रह-गस्ती — परिवार लिंकिंग' : 'Grah-Gasti — Family Linking'}
-            </h3>
-          </div>
+          <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+            <Users2 className="w-6 h-6" />
+            {hi ? 'ग्रह-गस्ती — परिवार लिंकिंग' : 'Grah-Gasti — Family Linking'}
+          </Heading>
           <p className="text-xs text-muted-foreground">
             {hi
               ? 'परिवार की कुंडलियाँ जोड़कर ग्रह प्रभाव देखें'

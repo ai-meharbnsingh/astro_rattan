@@ -471,6 +471,9 @@ export default function Features() {
   const selectLocation = (result: { name: string; lat: number; lon: number }) => {
     const shortName = result.name.split(',').slice(0, 2).join(',').trim();
     setLocationLabel(shortName);
+    localStorage.setItem('ar_location_label', shortName);
+    localStorage.setItem('ar_location_lat', String(result.lat));
+    localStorage.setItem('ar_location_lon', String(result.lon));
     setLatitude(result.lat);
     setLongitude(result.lon);
     setLocSearchOpen(false);
@@ -577,6 +580,8 @@ export default function Features() {
         const lon = Number(pos.coords.longitude.toFixed(4));
         setLatitude(lat);
         setLongitude(lon);
+        localStorage.setItem('ar_location_lat', String(lat));
+        localStorage.setItem('ar_location_lon', String(lon));
         try {
           const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`, {
             headers: { Accept: 'application/json' },
@@ -588,9 +593,15 @@ export default function Features() {
           const state = a.state || '';
           const country = a.country || '';
           const parts = [city, state, country].filter(Boolean);
-          if (parts.length > 0) setLocationLabel(parts.join(', '));
+          if (parts.length > 0) {
+            const label = parts.join(', ');
+            setLocationLabel(label);
+            localStorage.setItem('ar_location_label', label);
+          }
         } catch {
-          setLocationLabel(`${lat.toFixed(2)}, ${lon.toFixed(2)}`);
+          const fallback = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+          setLocationLabel(fallback);
+          localStorage.setItem('ar_location_label', fallback);
         }
       },
       () => {},
@@ -810,25 +821,25 @@ export default function Features() {
       image: '/images/features/feature-kundli.jpg',
       imagePosition: 'center top',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
-      title: l('Kundli — 29 Analysis Modules', 'कुंडली — 29 विश्लेषण मॉड्यूल'),
-      subtitle: l('29 Tabs, 3 Systems', '29 टैब, 3 सिस्टम'),
+      title: l('Kundli — 35+ Analysis Modules', 'कुंडली — 35+ विश्लेषण मॉड्यूल'),
+      subtitle: l('35 Tabs, 3 Systems', '35 टैब, 3 सिस्टम'),
       desc: l(
-        'Parashari, Jaimini & KP System in one place. 6 Dasha systems (Vimshottari, Ashtottari, Yogini, Moola, Tara, Kalachakra), 17 Divisional Charts (D1 to D108), KP Horary 1-249, Sarvatobhadra Chakra, Birth Time Rectification, Chart Animation, Ashtakvarga, Shadbala, Sodashvarga, 27 Yogas, 11 Doshas, Kundli Milan — the deepest Vedic analysis available online.',
-        'पाराशरी, जैमिनी और केपी एक जगह। 6 दशा पद्धतियाँ (विंशोत्तरी, अष्टोत्तरी, योगिनी, मूल, तारा, कालचक्र), 17 वर्ग कुंडलियाँ (D1 से D108), केपी प्रश्न 1-249, सर्वतोभद्र चक्र, जन्म समय शोधन, चार्ट एनिमेशन, अष्टकवर्ग, षड्बल, 27 योग, 11 दोष — ऑनलाइन सबसे गहन वैदिक विश्लेषण।'
+        'Parashari, Jaimini & KP System in one place. 6 Dasha systems (Vimshottari, Ashtottari, Yogini, Kalachakra, Chara, Sthira), 16 Divisional Charts (D1–D60) + D108 Ashtottaramsa, Shadbala with 8 strength components, Ashtakvarga, Sodashvarga grading, KP Horary 1-249, Sarvatobhadra Chakra, Kundli Milan (36-point), Birth Rectification, Transits with 30-day heatmap, Longevity, Roga, Mundane — the deepest Vedic analysis available online.',
+        'पाराशरी, जैमिनी और केपी एक जगह। 6 दशा पद्धतियाँ, 16 वर्ग कुंडलियाँ (D1–D60) + D108, 8-घटक षड्बल, अष्टकवर्ग, केपी प्रश्न 1-249, सर्वतोभद्र चक्र, कुंडली मिलान 36 गुण, जन्म समय शोधन, 30-दिवसीय गोचर हीटमैप, आयुर्दाय, रोग, मुंडेन — ऑनलाइन सबसे गहन वैदिक विश्लेषण।'
       ),
-      badge: l('29 MODULES', '29 मॉड्यूल'),
+      badge: l('35+ MODULES', '35+ मॉड्यूल'),
     },
     {
       image: '/images/features/feature-horoscope.jpg',
       imagePosition: 'center center',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
-      title: l('Horoscope — Daily + Predictive', 'राशिफल — दैनिक + प्रेडिक्टिव'),
-      subtitle: l('AI Powered', 'एआई समर्थित'),
+      title: l('Horoscope — 7 Time Windows', 'राशिफल — 7 समय खिड़कियाँ'),
+      subtitle: l('Swiss Ephemeris Powered', 'स्विस एफेमेरिस आधारित'),
       desc: l(
-        'Daily, weekly, monthly & yearly horoscope for all 12 signs. Sign-based forecasts enriched with real planetary transit context, ruling planet dignity, and seasonal timing — helping you plan each day with cosmic awareness.',
-        'सभी 12 राशियों के लिए दैनिक, साप्ताहिक, मासिक और वार्षिक राशिफल। वास्तविक ग्रह गोचर संदर्भ, शासक ग्रह गरिमा और मौसमी समय से समृद्ध — ब्रह्मांडीय जागरूकता के साथ हर दिन की योजना बनाएं।'
+        'Daily, Tomorrow, Weekly, Monthly, Yearly & All-Signs views for all 12 rashis. Each reading scores 5 life areas (Love, Career, Finance, Health, General), gives Lucky Number/Color/Gemstone/Mantra, Dos & Don\'ts, and Transit Insights tab showing live planet positions with dignity ratings — all driven by real Swiss Ephemeris transits.',
+        'सभी 12 राशियों के लिए दैनिक, कल, साप्ताहिक, मासिक, वार्षिक और सभी राशियाँ दृश्य। प्रत्येक पठन 5 जीवन क्षेत्र (प्रेम, करियर, वित्त, स्वास्थ्य) स्कोर करता है, भाग्यशाली अंक/रंग/रत्न/मंत्र, क्या करें/क्या न करें, और लाइव ग्रह स्थिति के साथ गोचर अंतर्दृष्टि टैब — स्विस एफेमेरिस द्वारा संचालित।'
       ),
-      badge: l('SIGN-BASED', 'राशि-आधारित'),
+      badge: l('7 TABS', '7 टैब'),
     },
     {
       image: '/images/features/feature-panchang.jpg',
@@ -851,13 +862,13 @@ export default function Features() {
       image: '/images/features/feature-numerology.jpg',
       imagePosition: 'center center',
       imageFilter: 'sepia(0.15) brightness(0.95) contrast(1.05)',
-      title: l('Numerology — 7 Analysis Types', 'अंकशास्त्र — 7 विश्लेषण प्रकार'),
-      subtitle: l('Complete System', 'पूर्ण प्रणाली'),
+      title: l('Numerology — 5 Complete Calculators', 'अंकशास्त्र — 5 पूर्ण कैलकुलेटर'),
+      subtitle: l('Pythagorean + Vedic + Chaldean', 'पायथागोरियन + वैदिक + कल्डियन'),
       desc: l(
-        'Life Path, Expression, Soul Urge, Personality, Birthday, Maturity & Karmic Debt numbers. Pinnacles, Challenges, Personal Year/Month/Day forecast. Lo Shu Grid with Arrows & Planes analysis. Mobile, Vehicle, House & Name numerology — plus daily universal and personal day forecasts.',
-        'जीवन पथ, भाग्यांक, आत्मांक, व्यक्तित्व, जन्मदिन, परिपक्वता और कर्मिक ऋण अंक। शिखर, चुनौतियां, व्यक्तिगत वर्ष/माह/दिन पूर्वानुमान। लो शू ग्रिड एरो और प्लेन विश्लेषण। मोबाइल, वाहन, घर और नाम अंकशास्त्र — साथ ही दैनिक सार्वभौमिक और व्यक्तिगत दिन पूर्वानुमान।'
+        '5 calculators: Life Path, Name, Mobile, Vehicle & House numerology. Pythagorean + Chaldean + Vedic (Lo Shu) systems. 6 core numbers (Life Path, Expression, Soul Urge, Personality, Birthday, Maturity), Karmic Debt & Hidden Passion, Pinnacles & Challenges, Lo Shu Grid with Arrows & Planes, Personal Year/Month/Day + Universal Day forecast.',
+        '5 कैलकुलेटर: जीवन पथ, नाम, मोबाइल, वाहन और घर अंकशास्त्र। पायथागोरियन + कल्डियन + वैदिक (लो शू) प्रणाली। 6 मूल अंक, कर्मिक ऋण, पिनेकल और चुनौतियाँ, लो शू ग्रिड, व्यक्तिगत वर्ष/माह/दिन + सार्वभौमिक दिन पूर्वानुमान।'
       ),
-      badge: l('7 TYPES', '7 प्रकार'),
+      badge: l('5 CALCULATORS', '5 कैलकुलेटर'),
     },
     {
       image: '/images/features/feature-vastu.jpg',
@@ -866,10 +877,10 @@ export default function Features() {
       title: l('Vastu Shastra Analyzer', 'वास्तु शास्त्र विश्लेषक'),
       subtitle: l('Mandala + Remedies', 'मंडल + उपाय'),
       desc: l(
-        '45-Devta Vastu Purusha Mandala scoring with zone-wise energy mapping. 32-entrance Pada analysis, direction optimization for every room, metal remedies (copper, iron, silver, gold), color therapy — for homes and offices.',
-        '45-देवता वास्तु पुरुष मंडल स्कोरिंग। 32-प्रवेश पद विश्लेषण, हर कमरे के लिए दिशा अनुकूलन, धातु उपाय (तांबा, लोहा, चांदी, सोना), रंग चिकित्सा — घरों और कार्यालयों के लिए।'
+        '45-Devta Vastu Purusha Mandala (interactive SVG) with zone-wise energy mapping. 32-entrance Pada quality ratings, direction optimization for 10+ room types, metal remedies (copper, iron, silver, gold), color therapy, mantra activation. 3 modes: Form Analysis · My Home 3×3 Grid · Floor Plan Upload — for homes and offices.',
+        '45-देवता वास्तु पुरुष मंडल (इंटरैक्टिव SVG) ज़ोन-वार ऊर्जा मानचित्रण के साथ। 32-प्रवेश पद गुणवत्ता, 10+ कमरों के लिए दिशा अनुकूलन, धातु उपाय, मंत्र सक्रियण। 3 मोड: फॉर्म विश्लेषण · माय होम ग्रिड · फ्लोर प्लान अपलोड — घरों और कार्यालयों के लिए।'
       ),
-      badge: l('AI + MANDALA', 'एआई + मंडल'),
+      badge: l('3 MODES', '3 मोड'),
     },
   ];
 
@@ -1021,7 +1032,8 @@ export default function Features() {
                     ascendantSign={currentSky.lagna_sign || ''}
                     ascendantDegree={currentSky.lagna_longitude || currentSky.chart_data?.ascendant?.longitude}
                     language={language}
-                    showRashiNumbers={false}
+                    showRashiNumbers={true}
+                    showHouseNumbers={false}
                   />
                 </div>
               </div>
@@ -1390,77 +1402,126 @@ export default function Features() {
             <p><strong className="text-sacred-gold-dark">{l('Astro Rattan computes Tithi, Nakshatra, Yoga, Karana end times using Swiss Ephemeris for YOUR exact coordinates', 'Astro Rattan आपके सटीक निर्देशांकों के लिए स्विस एफेमेरिस का उपयोग करके तिथि, नक्षत्र, योग, करण के अंत समय की गणना करता है')}</strong>{l(' — with 12+ Muhurat windows, Hora table, Choghadiya, and Hindu calendar.', ' — 12+ मुहूर्त, होरा तालिका, चौघड़िया और हिंदू कैलेंडर के साथ।')}</p>
           </div>
 
-          {/* Compact Daily Snapshot — best time, avoid time, tip + planetary influence */}
+          {/* Daily Snapshot */}
           {(panchangData || currentSky) && (() => {
             const bestTime = panchangData?.abhijit_muhurat || panchangData?.brahma_muhurat;
             const rahuKaal = panchangData?.rahu_kaal;
             const tithi = (panchangData?.tithi?.name || '').toLowerCase();
-            const tip = tithi.includes('ekadashi')
-              ? l('Fasting Day', 'व्रत का दिन')
-              : tithi.includes('chaturthi')
-              ? l('Ganesha Worship', 'गणेश पूजा')
-              : tithi.includes('purnima') || tithi.includes('amavasya')
-              ? l('Ancestor Worship', 'पितृ पूजन')
-              : tithi.includes('pradosh')
-              ? l('Shiva Worship', 'शिव पूजा')
+            const tip = tithi.includes('ekadashi') ? l('Fasting Day', 'व्रत का दिन')
+              : tithi.includes('chaturthi') ? l('Ganesha Worship', 'गणेश पूजा')
+              : tithi.includes('purnima') || tithi.includes('amavasya') ? l('Ancestor Worship', 'पितृ पूजन')
+              : tithi.includes('pradosh') ? l('Shiva Worship', 'शिव पूजा')
               : l('Good for Regular Work', 'सामान्य कार्यों के लिए अच्छा');
             const insights = computeDailyInsights(currentSky?.planets || [], language);
             if (!bestTime && !rahuKaal && insights.length === 0) return null;
-            const energy = computeDayEnergy(insights);
-            const todayLabel = new Date().toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+            // Panchang metadata
             const tithiLabel = panchangData?.tithi?.name;
-            const nakshatraLabel = panchangData?.nakshatra?.name;
+            const snapPaksha = panchangData?.tithi?.paksha;
+            const snapMaas = panchangData?.hindu_calendar?.maas;
+            const moonChar = snapPaksha === 'Shukla' ? '🌔' : snapPaksha === 'Krishna' ? '🌘' : '🌙';
+            const TITHI_SEQ = ['Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi'];
+            const tithiBase = tithiLabel === 'Purnima' ? 15 : tithiLabel === 'Amavasya' ? 30 : (TITHI_SEQ.indexOf(tithiLabel || '') + 1) || 0;
+            const tithiNum = tithiBase > 0 && snapPaksha === 'Krishna' && tithiBase < 15 ? tithiBase + 15 : tithiBase || '';
+            const snapSamvat = vikram ? samvatsaraName(vikram, 9, language) : '';
+            const gregDay = new Date().getDate();
+            const gregMonthYear = new Date().toLocaleDateString(hi ? 'hi-IN' : 'en-IN', { month: 'long', year: 'numeric' });
+            // Current hora & choghadiya
+            const toMins = (t: string) => { const [h, m] = (t || '').split(':').map(Number); return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m); };
+            const nowMins = now.getHours() * 60 + now.getMinutes();
+            const inRange = (s: string, e: string) => { const sm = toMins(s), em = toMins(e); return sm <= em ? nowMins >= sm && nowMins < em : nowMins >= sm || nowMins < em; };
+            const currentHora = panchangData?.hora_table?.find(h => inRange(h.start, h.end));
+            const allChog = [...(panchangData?.choghadiya || []), ...(panchangData?.night_choghadiya || [])];
+            const currentChog = allChog.find(c => inRange(c.start, c.end));
+            const chogColor = (q: string) => q === 'Best' ? { bg: 'bg-emerald-50', border: 'border-emerald-200', icon: 'text-emerald-600', text: 'text-emerald-800', sub: 'text-emerald-500' }
+              : q === 'Good' ? { bg: 'bg-sky-50', border: 'border-sky-200', icon: 'text-sky-500', text: 'text-sky-800', sub: 'text-sky-500' }
+              : q === 'Neutral' ? { bg: 'bg-slate-50', border: 'border-slate-200', icon: 'text-slate-400', text: 'text-slate-700', sub: 'text-slate-400' }
+              : { bg: 'bg-rose-50', border: 'border-rose-200', icon: 'text-rose-500', text: 'text-rose-700', sub: 'text-rose-400' };
             return (
               <div className="mb-6 rounded-xl border border-sacred-gold/20 bg-sacred-gold/[0.02] p-4">
-                {/* Context header */}
-                <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-sacred-gold/15">
-                  <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4 text-sacred-gold-dark shrink-0" />
-                    <span className="font-medium text-foreground">{hi ? 'आज का सारांश' : "Today's Snapshot"}</span>
-                    <span>·</span>
-                    <span>{todayLabel}</span>
-                    {tithiLabel && <><span>·</span><span>{tithiLabel}</span></>}
-                    {nakshatraLabel && <><span>·</span><span>{nakshatraLabel}</span></>}
+                {/* Reference-style date header */}
+                <div className="flex items-stretch rounded-lg overflow-hidden bg-sacred-gold-dark text-white mb-4">
+                  <div className="flex flex-col items-center justify-center gap-1 px-4 py-3 min-w-[76px]">
+                    <span className="text-3xl leading-none">{moonChar}</span>
+                    {tithiNum !== '' && <span className="text-2xl font-bold leading-tight">{tithiNum}</span>}
+                    <span className="text-[11px] opacity-70 text-center">{snapMaas ? (hi ? (MONTHS_HI[snapMaas] || snapMaas) : snapMaas) : '--'}</span>
                   </div>
-                  <span className="shrink-0 text-sm font-medium px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark">
-                    {hi ? energy.hi : energy.en}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {bestTime && (bestTime.start !== '--:--') && (
-                    <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 text-sm">
-                      <span className="text-green-600 font-bold text-base leading-none">✓</span>
-                      <span className="text-green-800 font-medium">{l('Best Time', 'सर्वश्रेष्ठ')}: {bestTime.start}–{bestTime.end}</span>
-                    </div>
-                  )}
-                  {rahuKaal && (rahuKaal.start !== '--:--') && (
-                    <div className="flex items-center gap-1.5 bg-orange-50 border border-orange-200 rounded-lg px-3 py-1.5 text-sm">
-                      <span className="text-orange-500 font-bold text-base leading-none">⚠</span>
-                      <span className="text-orange-800 font-medium">{l('Avoid', 'बचें')} (Rahu Kaal): {rahuKaal.start}–{rahuKaal.end}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1.5 text-sm">
-                    <span className="text-blue-600 font-bold text-base leading-none">→</span>
-                    <span className="text-blue-800 font-medium">{tip}</span>
+                  <div className="w-px bg-white/20 my-3" />
+                  <div className="flex-1 flex flex-col justify-center gap-1 px-4 py-3">
+                    <span className="text-sm font-semibold">{snapPaksha ? `${hi ? (PAKSHA_HI[snapPaksha] || snapPaksha) : snapPaksha} ${hi ? 'पक्ष' : 'Paksha'}` : '--'}, {tithiLabel || '--'}</span>
+                    <span className="text-xs opacity-70">{vikram || '--'}{snapSamvat ? ` ${snapSamvat}` : ''}, {hi ? 'विक्रम संवत' : 'Vikrama Samvata'}{snapPaksha ? ` · ${hi ? (PAKSHA_HI[snapPaksha] || snapPaksha) : snapPaksha} ${hi ? 'पक्ष' : 'Paksha'}` : ''}</span>
+                    <span className="text-xs opacity-50">{locationLabel}</span>
+                  </div>
+                  <div className="w-px bg-white/20 my-3" />
+                  <div className="flex flex-col items-center justify-center gap-0.5 px-4 py-3 min-w-[60px]">
+                    <span className="text-3xl font-bold leading-none">{gregDay}</span>
+                    <span className="text-[11px] opacity-70 text-center">{gregMonthYear}</span>
+                    <span className="text-[11px] opacity-50">{weekdayDisplay}</span>
                   </div>
                 </div>
+
+                {/* All chips — one row, each a different colour, fills full width */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {currentHora && (
+                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                      <span className="text-amber-500 text-lg shrink-0">☀</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-amber-800 font-semibold text-xs">{l('Hora', 'होरा')}: {hi ? (PLANET_HI[currentHora.lord] || currentHora.lord) : currentHora.lord}</span>
+                        <span className="text-amber-500 text-[11px]">{currentHora.start}–{currentHora.end}</span>
+                      </div>
+                    </div>
+                  )}
+                  {currentChog && (() => { const cc = chogColor(currentChog.quality); return (
+                    <div className={`flex-1 min-w-[140px] flex items-center gap-2 ${cc.bg} border ${cc.border} rounded-lg px-3 py-2`}>
+                      <span className={`text-lg shrink-0 ${cc.icon}`}>◈</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className={`font-semibold text-xs ${cc.text}`}>{l('Choghadiya', 'चौघड़िया')}: {hi ? (CHOGHADIYA_HI[currentChog.name] || currentChog.name) : currentChog.name}</span>
+                        <span className={`text-[11px] ${cc.sub}`}>{currentChog.start}–{currentChog.end}</span>
+                      </div>
+                    </div>
+                  ); })()}
+                  {bestTime && bestTime.start !== '--:--' && (
+                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                      <span className="text-green-600 text-lg shrink-0 font-bold">✓</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-green-800 font-semibold text-xs">{l('Best Time', 'सर्वश्रेष्ठ')}</span>
+                        <span className="text-green-500 text-[11px]">{bestTime.start}–{bestTime.end}</span>
+                      </div>
+                    </div>
+                  )}
+                  {rahuKaal && rahuKaal.start !== '--:--' && (
+                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">
+                      <span className="text-orange-500 text-lg shrink-0">⚠</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-orange-800 font-semibold text-xs">{l('Avoid (Rahu Kaal)', 'बचें (राहु काल)')}</span>
+                        <span className="text-orange-500 text-[11px]">{rahuKaal.start}–{rahuKaal.end}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-violet-50 border border-violet-200 rounded-lg px-3 py-2">
+                    <span className="text-violet-500 text-lg shrink-0 font-bold">→</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-violet-800 font-semibold text-xs">{l('Today\'s Tip', 'आज की सलाह')}</span>
+                      <span className="text-violet-600 text-[11px] leading-tight">{tip}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Planetary Influence — single bordered table */}
                 {insights.length > 0 && (
-                  <>
-                    <div className="flex items-center gap-1.5 mb-2">
+                  <div className="rounded-lg border border-sacred-gold/20 overflow-hidden">
+                    <div className="flex items-center gap-1.5 px-3 py-2 bg-sacred-gold/8 border-b border-sacred-gold/15">
                       <Sparkles className="w-3.5 h-3.5 text-sacred-gold-dark shrink-0" />
                       <span className="text-xs font-semibold text-sacred-gold-dark uppercase tracking-wide">
                         {l("Today's Planetary Influence", 'आज का ग्रह प्रभाव')}
                       </span>
                     </div>
-                    <ul className="flex flex-wrap gap-x-5 gap-y-1">
-                      {insights.map((insight, idx) => (
-                        <li key={idx} className="flex items-start gap-1.5 text-xs text-foreground">
-                          <span className="text-sacred-gold-dark shrink-0 mt-0.5">•</span>
-                          <span>{insight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </>
+                    {insights.map((insight, idx) => (
+                      <div key={idx} className={`flex items-start gap-2.5 px-3 py-2.5${idx < insights.length - 1 ? ' border-b border-sacred-gold/10' : ''}`}>
+                        <span className="text-sacred-gold-dark shrink-0 font-bold mt-0.5">•</span>
+                        <span className="text-sm text-foreground leading-snug">{insight}</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             );
@@ -1645,9 +1706,8 @@ export default function Features() {
           </div>
         </div>
 
-        {/* Hora & Choghadiya Tables */}
-        <div id="hora-section" />
-        {panchangData && (
+        {/* Hora & Choghadiya Tables — removed from home screen */}
+        {false && panchangData && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-12">
             {/* Hora Table */}
             {panchangData.hora_table && panchangData.hora_table.length > 0 && (
@@ -2035,7 +2095,7 @@ export default function Features() {
             <div className="w-20 h-1 bg-sacred-gold mx-auto rounded-full" />
           </div>
 
-          <div className="max-w-7xl mx-auto space-y-8">
+          <div className="max-w-7xl mx-auto space-y-6">
             {[
               {
                 category: l('BASICS', 'बुनियादी बातें'),
@@ -2233,7 +2293,7 @@ export default function Features() {
                       {section.category}
                     </span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {section.faqs.map((faq, fIdx) => {
                       const globalIdx = baseIdx + fIdx;
                       return (
@@ -2243,21 +2303,21 @@ export default function Features() {
                         >
                           <button
                             onClick={() => setOpenFaq(openFaq === globalIdx ? null : globalIdx)}
-                            className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-sacred-gold/5 transition-colors"
+                            className="w-full flex items-center justify-between px-5 py-3 text-left hover:bg-sacred-gold/5 transition-colors"
                           >
-                            <span className="text-base font-medium text-foreground pr-4">{faq.q}</span>
+                            <span className="text-sm font-medium text-foreground pr-4">{faq.q}</span>
                             {openFaq === globalIdx ? (
-                              <ChevronUp className="w-5 h-5 text-sacred-gold-dark shrink-0" />
+                              <ChevronUp className="w-4 h-4 text-sacred-gold-dark shrink-0" />
                             ) : (
-                              <ChevronDown className="w-5 h-5 text-sacred-gold-dark shrink-0" />
+                              <ChevronDown className="w-4 h-4 text-sacred-gold-dark shrink-0" />
                             )}
                           </button>
                           <div
                             className={`overflow-hidden transition-all duration-300 ${
-                              openFaq === globalIdx ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                              openFaq === globalIdx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
                             }`}
                           >
-                            <p className="px-5 pb-4 text-sm leading-relaxed text-foreground/80">
+                            <p className="px-5 pb-3 text-sm leading-relaxed text-foreground/80">
                               {faq.a}
                             </p>
                           </div>

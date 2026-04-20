@@ -126,6 +126,19 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isHi = language === 'hi';
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <BookOpen className="w-6 h-6" />
+        {isHi ? 'गोचर व्याख्या' : 'Transit Interpretations'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi
+          ? 'प्रत्येक गोचर ग्रह के सामान्य फल और क्षेत्र-वार (प्रेम/करियर/धन/स्वास्थ्य) संकेत।'
+          : 'General and area-wise (love/career/finance/health) results for each transiting planet.'}
+      </p>
+    </div>
+  );
 
   useEffect(() => {
     if (!kundliId) return;
@@ -141,40 +154,40 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
+      <div className="space-y-4">
+        {header}
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
+      </div>
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="space-y-4">
+        {header}
+        <div className="p-8 rounded-xl border border-sacred-gold/20 text-center text-sm text-muted-foreground">
+          {isHi ? 'कोई गोचर व्याख्या उपलब्ध नहीं' : 'No transit interpretations available'}
+        </div>
+      </div>
+    );
+  }
 
   const interpretations = data.interpretations ?? [];
 
   return (
     <div className="space-y-4">
-
-      {/* Header */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <BookOpen className="w-6 h-6" />
-          {isHi ? 'गोचर व्याख्या' : 'Transit Interpretations'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi
-            ? 'प्रत्येक गोचर ग्रह का प्रेम, करियर, धन व स्वास्थ्य पर प्रभाव'
-            : 'Effect of each transiting planet on love, career, finance & health'}
-        </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
-        )}
-      </div>
+      {header}
 
       {interpretations.length === 0 ? (
         <div className="p-8 rounded-xl border border-sacred-gold/20 text-center text-sm text-muted-foreground">

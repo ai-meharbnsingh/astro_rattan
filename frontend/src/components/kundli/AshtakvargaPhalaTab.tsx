@@ -104,6 +104,18 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
   const [error, setError] = useState('');
   const isHi = language === 'hi';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Gauge className="w-6 h-6" />
+        {isHi ? 'अष्टकवर्ग फल' : 'Ashtakvarga Effects'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi ? 'अष्टकवर्ग स्कोर से प्राप्त व्याख्यात्मक परिणाम' : 'Interpretive results derived from Ashtakvarga scores'}
+      </p>
+    </div>
+  );
+
   useEffect(() => {
     if (!kundliId) return;
     let cancelled = false;
@@ -124,21 +136,34 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-        {error}
+      <div className="space-y-4">
+        {header}
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          {error}
+        </div>
       </div>
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('common.noData')}</p>
+      </div>
+    );
+  }
 
   const statusLabel = (s: HouseStrength['status']): string => {
     if (s === 'strong') return t('auto.strengthStrong');
@@ -152,15 +177,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {isHi ? 'अष्टकवर्ग फल' : 'Ashtakvarga Effects'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi ? 'अष्टकवर्ग स्कोर से प्राप्त व्याख्यात्मक परिणाम' : 'Interpretive results derived from Ashtakvarga scores'}
-        </p>
-      </div>
+      {header}
       {/* Header */}
       <div>
         <p className="text-[18px] font-bold text-sacred-gold-dark mb-1 flex items-center gap-2">

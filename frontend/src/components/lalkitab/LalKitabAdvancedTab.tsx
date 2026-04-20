@@ -19,11 +19,13 @@ import {
   CheckCircle2,
   XCircle,
   Heart,
-  BookOpen
+  BookOpen,
+  Settings2
 } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import SourceBadge from './SourceBadge';
 import LalKitabDiagnosticChart from './LalKitabDiagnosticChart';
+import { Heading } from '@/components/ui/heading';
 
 interface Props {
   kundliId: string;
@@ -170,9 +172,10 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
 
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-sans font-bold text-sacred-gold mb-2">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Settings2 className="w-6 h-6" />
           {t('lk.advanced.title')}
-        </h2>
+        </Heading>
         <p className="text-foreground/70">{t('lk.advanced.desc')}</p>
       </div>
 

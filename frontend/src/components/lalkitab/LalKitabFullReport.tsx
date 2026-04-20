@@ -54,7 +54,9 @@ function buildChartFromTewa(tewa: any): ChartData | null {
   const ascIdx = Math.max(0, ZODIAC_SIGNS.indexOf(ascSign));
   const houses = Array.from({ length: 12 }, (_, i) => ({
     number: i + 1,
-    sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    // Teva (Lal Kitab Kundli) is ALWAYS Mesha Lagna (Aries in H1).
+    // Sign labels (1..12) match house numbers (1..12).
+    sign: ZODIAC_SIGNS[i],
   }));
   return {
     planets,

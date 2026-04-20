@@ -28,28 +28,42 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
   const isHi = language === 'hi';
   const [expandedDasha, setExpandedDasha] = useState<number | null>(null);
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Sparkles className="w-6 h-6" />
+        {isHi ? 'जैमिनी' : 'Jaimini'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi ? 'जैमिनी ज्योतिष — चर कारक, विशेष दशाएं और राजयोग' : 'Jaimini astrology — chara karaka, special dashas & rajayogas'}
+      </p>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('common.loading')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('common.loading')}</span>
+        </div>
       </div>
     );
   }
 
-  if (!data) return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
+  if (!data) {
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('common.noData')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {isHi ? 'जैमिनी' : 'Jaimini'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi ? 'जैमिनी ज्योतिष — चर कारक, विशेष दशाएं और राजयोग' : 'Jaimini astrology — chara karaka, special dashas & rajayogas'}
-        </p>
-      </div>
+      {header}
 
       {/* Chara Karakas */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

@@ -2,16 +2,11 @@ import { useMemo } from 'react';
 import { LayoutGrid, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useLalKitab } from './LalKitabContext';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { toLkPlanetList } from './lalkitab-core';
 
-const ZODIAC_SIGNS = [
-  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
-];
-
 export default function LalKitabKundliTab() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { apiResult, fullData } = useLalKitab();
 
   const emptyHouses = useMemo(() => {
@@ -24,23 +19,14 @@ export default function LalKitabKundliTab() {
     return Object.values(byHouse).filter((n) => n === 0).length;
   }, [fullData]);
 
-  const interactiveChartData: ChartData | null = useMemo(() => {
+  const planets: PlanetEntry[] = useMemo(() => {
     const planetsRaw = apiResult?.chart_data?.planets;
-    if (!planetsRaw) return null;
-
-    // LK context — single source of truth in lalkitab-core.toLkPlanetList
-    // strips Combust/Sandhi tokens and forces is_combust=false.
-    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
-
-    const asc = apiResult?.chart_data?.ascendant;
-    const ascSign = asc?.sign || 'Aries';
-    const ascIdx = ZODIAC_SIGNS.indexOf(ascSign);
-    const houses = Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: ZODIAC_SIGNS[(ascIdx >= 0 ? ascIdx : 0 + i) % 12],
+    if (!planetsRaw) return [];
+    return toLkPlanetList(planetsRaw).map(p => ({
+      ...p,
+      // Ensure house is used for placement since we force Aries Lagna
+      house: p.house, 
     }));
-
-    return { planets, houses, ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined };
   }, [apiResult]);
 
   return (
@@ -64,9 +50,17 @@ export default function LalKitabKundliTab() {
         <div className="text-xs text-muted-foreground mb-3">
           {t('lk.kundli.empty')}: {emptyHouses}
         </div>
-        {interactiveChartData ? (
-          <div className="max-w-[520px] mx-auto">
-            <InteractiveKundli chartData={interactiveChartData} compact hideCombust />
+        {planets.length > 0 ? (
+          <div className="max-w-[420px] mx-auto aspect-square">
+            <KundliChartSVG
+              planets={planets}
+              ascendantSign="Aries" // Lal Kitab is ALWAYS fixed to Aries Lagna
+              language={language}
+              showRashiNumbers={true}
+              showHouseNumbers={false}
+              rashiNumberPlacement="center"
+              showAscendantMarker={false}
+            />
           </div>
         ) : (
           <div className="text-center text-sm text-muted-foreground py-10">
@@ -77,4 +71,3 @@ export default function LalKitabKundliTab() {
     </div>
   );
 }
-

@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { Sun, Moon, Clock } from 'lucide-react';
+import { Sun, Moon, Clock, Sparkles } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Heading } from "@/components/ui/heading";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: FullPanchangData;
@@ -64,9 +65,9 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
     return (
       <TableRow
         key={key}
-        className={`border-b border/50 last:border-0 ${hasVelaFlag ? 'bg-red-50/50' : ''} ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
+        className={`border-t border-border hover:bg-muted/5 ${hasVelaFlag ? 'bg-red-50/50' : ''} ${isCurrent ? 'bg-amber-500/15 border-l-2 border-l-amber-500' : ''}`}
       >
-        <TableCell className="px-2 py-1">
+        <TableCell className="p-2">
           <div className="flex flex-wrap items-center gap-1">
             <span className={`font-medium ${isCurrent ? 'text-sacred-gold' : 'text-foreground'}`}>
               {language === 'hi' ? period.name_hindi || CHOGHADIYA_HINDI[period.name] || period.name : period.name}
@@ -93,51 +94,53 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
             )}
           </div>
         </TableCell>
-        <TableCell className="px-2 py-1">
+        <TableCell className="p-2">
           <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${q.bg} ${q.color}`}>
             {language === 'hi' ? q.labelHi : q.label}
           </span>
         </TableCell>
-        <TableCell className="px-2 py-1 text-muted-foreground">
+        <TableCell className="p-2 text-muted-foreground">
           {period.start} - {period.end}
         </TableCell>
       </TableRow>
     );
   };
 
-  const renderTable = (periods: ChoghadiyaPeriod[], icon: typeof Sun, title: string) => (
-    <div className="flex-1 min-w-0">
-      <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-        {icon === Sun
-          ? <Sun className="h-4 w-4 text-orange-500" />
-          : <Moon className="h-4 w-4 text-indigo-400" />}
-        {title}
-      </h3>
-      <div className="overflow-x-auto">
-        <Table className="w-full table-fixed text-xs sm:text-sm">
-          <TableHeader>
-            <TableRow className="bg-sacred-gold/15">
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.name')}
-              </TableHead>
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.type')}
-              </TableHead>
-              <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                {t('auto.time')}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {periods.map(renderRow)}
-          </TableBody>
-        </Table>
+  const renderTable = (periods: ChoghadiyaPeriod[], icon: typeof Sun, title: string) => {
+    const Icon = icon === Sun ? Sun : Moon;
+    return (
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Icon className="w-4 h-4" />
+          <span>{title}</span>
+        </div>
+        <div className="overflow-x-auto">
+          <Table className="w-full table-fixed text-xs sm:text-sm">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.name')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.type')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{t('auto.time')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {periods.map(renderRow)}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Sparkles}
+        title={language === 'hi' ? 'चौघड़िया' : 'Choghadiya'}
+        description={language === 'hi'
+          ? 'दिन और रात्रि के चौघड़िया मुहूर्त — शुभ/अशुभ काल पहचानने के लिए।'
+          : 'Day and night Choghadiya periods to quickly identify auspicious and inauspicious time windows.'}
+      />
       {/* Current Choghadiya compact banner */}
       {currentPeriodKey && (() => {
         const allPeriods = [...dayChoghadiya, ...nightChoghadiya];
@@ -166,20 +169,10 @@ export default function ChoghadiyaTab({ panchang, language, t, timezoneOffset, m
         );
       })()}
 
-      {/* Day + Night side by side (stack on mobile) */}
-      <div className="rounded-lg border border-sacred-gold/20 overflow-hidden bg-transparent">
-        <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border">
-          {dayChoghadiya.length > 0 && (
-            <div className="flex-1 p-2">
-              {renderTable(dayChoghadiya, Sun, t('auto.dayChoghadiya'))}
-            </div>
-          )}
-          {nightChoghadiya.length > 0 && (
-            <div className="flex-1 p-2">
-              {renderTable(nightChoghadiya, Moon, t('auto.nightChoghadiya'))}
-            </div>
-          )}
-        </div>
+      {/* Day + Night (stack on mobile) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {dayChoghadiya.length > 0 && renderTable(dayChoghadiya, Sun, t('auto.dayChoghadiya'))}
+        {nightChoghadiya.length > 0 && renderTable(nightChoghadiya, Moon, t('auto.nightChoghadiya'))}
       </div>
 
       {/* Compact Legend */}

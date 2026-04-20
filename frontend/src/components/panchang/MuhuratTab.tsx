@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle2, Sparkles, Sunrise, Compass, Clover, CircleAlert, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Sparkles, Sunrise, Compass, Clover, CircleAlert, Clock, Timer } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import MuhuratSummary from './MuhuratSummary';
+import PanchangTabHeader from './PanchangTabHeader';
 
 /* ------------------------------------------------------------------ */
 /*  Extended API types (new fields not yet in FullPanchangData)        */
@@ -273,7 +274,15 @@ export default function MuhuratTab({ panchang: _panchang, language, t, currentTi
     });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Timer}
+        title={language === 'hi' ? 'मुहूर्त' : 'Muhurat'}
+        description={language === 'hi'
+          ? 'आज के शुभ मुहूर्त, वर्जित काल, विशेष योग और संध्या समय का सार।'
+          : 'A summary of today’s auspicious muhurats, inauspicious windows, special yogas, and sandhya timings.'}
+      />
+
       {/* ── MUHURAT SUMMARY (Today's highlights) ── */}
       <MuhuratSummary panchang={panchang} language={language} t={t} currentTime={currentTime} />
 
@@ -328,146 +337,154 @@ export default function MuhuratTab({ panchang: _panchang, language, t, currentTi
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-        <div className="rounded-lg border border-green-500/30 p-2">
-          <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-            <CheckCircle2 className="h-4 w-4" />
-            {t('auto.auspiciousMuhuratsGo')}
-          </h3>
-          <Table className="w-full table-fixed text-xs sm:text-sm">
-            <TableHeader>
-              <TableRow className="bg-green-500/15">
-                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[28%]">{t('auto.muhurta')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.start')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[18%]">{t('auto.end')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-green-700 font-semibold w-[36%]">{t('auto.notes')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {auspiciousPeriods.map((period) => (
-                <TableRow key={period.key} className="border-b border/50 last:border-0 align-top">
-                  <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
-                  <TableCell className="px-2 py-1 text-foreground">{period.period?.start || '--'}</TableCell>
-                  <TableCell className="px-2 py-1 text-foreground">{period.period?.end || '--'}</TableCell>
-                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{period.desc}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        <div className="rounded-lg border border-red-500/30 p-2">
-          <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-            <AlertTriangle className="h-4 w-4" />
-            {t('auto.inauspiciousTimesAvo')}
-          </h3>
-          <Table className="w-full table-fixed text-xs sm:text-sm">
-            <TableHeader>
-              <TableRow className="bg-red-500/15">
-                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[28%]">{t('auto.period')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.start')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[18%]">{t('auto.end')}</TableHead>
-                <TableHead className="text-left px-2 py-1 text-red-700 font-semibold w-[36%]">{t('auto.notes')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {inauspiciousPeriods.map((period) => (
-                <TableRow key={period.key} className="border-b border/50 last:border-0 align-top">
-                  <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
-                  <TableCell className="px-2 py-1 text-foreground">{period.period?.start || '--'}</TableCell>
-                  <TableCell className="px-2 py-1 text-foreground">{period.period?.end || '--'}</TableCell>
-                  <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">
-                    {period.desc}
-                    {period.key === 'rahu_kaal' && (
-                      <>
-                        {isRahuActive && (
-                          <span className="ml-1 inline-flex items-center gap-1 text-red-600 font-semibold">
-                            <span className="relative flex h-2 w-2 flex-shrink-0">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600" />
-                            </span>
-                            {language === 'hi' ? 'अभी सक्रिय' : 'Active now'}
-                            {minsRemaining > 0 && (
-                              <span className="font-normal text-red-500">
-                                ({minsRemaining}{language === 'hi' ? 'मि' : 'm'})
-                              </span>
-                            )}
-                          </span>
-                        )}
-                        {!isRahuActive && minsToRahu > 0 && minsToRahu <= 60 && (
-                          <span className="ml-1 inline-flex items-center gap-1 text-orange-600 font-semibold">
-                            {language === 'hi'
-                              ? `${minsToRahu}मिनट में`
-                              : `in ${minsToRahu}m`}
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-        {specialYogas.length > 0 && (
-          <div className="rounded-lg border border-sacred-gold/30 p-2">
-            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-              <Sparkles className="h-4 w-4" />
-              {t('auto.specialYogas')}
-            </h3>
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{t('auto.auspiciousMuhuratsGo')}</span>
+          </div>
+          <div className="overflow-x-auto">
             <Table className="w-full table-fixed text-xs sm:text-sm">
               <TableHeader>
-                <TableRow className="bg-sacred-gold/15">
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.yoga')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.start')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[20%]">{t('auto.end')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[30%]">{t('auto.status')}</TableHead>
+                <TableRow>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[28%]">{t('auto.muhurta')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.start')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.end')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[36%]">{t('auto.notes')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {specialYogas.map((yoga) => (
-                  <TableRow key={yoga.key} className="border-b border/50 last:border-0 align-top">
-                    <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{yoga.name}</TableCell>
-                    <TableCell className="px-2 py-1 text-foreground">{yoga.data?.start || '--'}</TableCell>
-                    <TableCell className="px-2 py-1 text-foreground">{yoga.data?.end || '--'}</TableCell>
-                    <TableCell className="px-2 py-1 text-green-600 whitespace-normal break-words">
-                      {t('auto.activeToday')}
+                {auspiciousPeriods.map((period) => (
+                  <TableRow key={period.key} className="border-t border-border hover:bg-muted/5 align-top">
+                    <TableCell className="p-2 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
+                    <TableCell className="p-2 text-foreground">{period.period?.start || '--'}</TableCell>
+                    <TableCell className="p-2 text-foreground">{period.period?.end || '--'}</TableCell>
+                    <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">{period.desc}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+          <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>{t('auto.inauspiciousTimesAvo')}</span>
+          </div>
+          <div className="overflow-x-auto">
+            <Table className="w-full table-fixed text-xs sm:text-sm">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[28%]">{t('auto.period')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.start')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.end')}</TableHead>
+                  <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[36%]">{t('auto.notes')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inauspiciousPeriods.map((period) => (
+                  <TableRow key={period.key} className="border-t border-border hover:bg-muted/5 align-top">
+                    <TableCell className="p-2 font-medium text-foreground whitespace-normal break-words">{period.name}</TableCell>
+                    <TableCell className="p-2 text-foreground">{period.period?.start || '--'}</TableCell>
+                    <TableCell className="p-2 text-foreground">{period.period?.end || '--'}</TableCell>
+                    <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">
+                      {period.desc}
+                      {period.key === 'rahu_kaal' && (
+                        <>
+                          {isRahuActive && (
+                            <span className="ml-1 inline-flex items-center gap-1 text-red-600 font-semibold">
+                              <span className="relative flex h-2 w-2 flex-shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-red-600" />
+                              </span>
+                              {language === 'hi' ? 'अभी सक्रिय' : 'Active now'}
+                              {minsRemaining > 0 && (
+                                <span className="font-normal text-red-500">
+                                  ({minsRemaining}{language === 'hi' ? 'मि' : 'm'})
+                                </span>
+                              )}
+                            </span>
+                          )}
+                          {!isRahuActive && minsToRahu > 0 && minsToRahu <= 60 && (
+                            <span className="ml-1 inline-flex items-center gap-1 text-orange-600 font-semibold">
+                              {language === 'hi'
+                                ? `${minsToRahu}मिनट में`
+                                : `in ${minsToRahu}m`}
+                            </span>
+                          )}
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+        {specialYogas.length > 0 && (
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+            <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              <span>{t('auto.specialYogas')}</span>
+            </div>
+            <div className="overflow-x-auto">
+              <Table className="w-full table-fixed text-xs sm:text-sm">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[30%]">{t('auto.yoga')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{t('auto.start')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{t('auto.end')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[30%]">{t('auto.status')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {specialYogas.map((yoga) => (
+                    <TableRow key={yoga.key} className="border-t border-border hover:bg-muted/5 align-top">
+                      <TableCell className="p-2 font-medium text-foreground whitespace-normal break-words">{yoga.name}</TableCell>
+                      <TableCell className="p-2 text-foreground">{yoga.data?.start || '--'}</TableCell>
+                      <TableCell className="p-2 text-foreground">{yoga.data?.end || '--'}</TableCell>
+                      <TableCell className="p-2 text-green-600 whitespace-normal break-words">
+                        {t('auto.activeToday')}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         )}
 
         {sandhyaRows.length > 0 && (
-          <div className="rounded-lg border p-2">
-            <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-              <Sunrise className="h-4 w-4 text-orange-500" />
-              {t('auto.sandhyaTimes')}
-            </h3>
-            <Table className="w-full table-fixed text-xs sm:text-sm">
-              <TableHeader>
-                <TableRow className="bg-sacred-gold/15">
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[28%]">{t('auto.period')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.start')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[18%]">{t('auto.end')}</TableHead>
-                  <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold w-[36%]">{t('auto.notes')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sandhyaRows.map((row) => (
-                  <TableRow key={row.key} className="border-b border/50 last:border-0 align-top">
-                    <TableCell className="px-2 py-1 font-medium text-foreground whitespace-normal break-words">{row.name}</TableCell>
-                    <TableCell className="px-2 py-1 text-foreground">{row.period?.start || '--'}</TableCell>
-                    <TableCell className="px-2 py-1 text-foreground">{row.period?.end || '--'}</TableCell>
-                    <TableCell className="px-2 py-1 text-muted-foreground whitespace-normal break-words">{row.desc}</TableCell>
+          <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+            <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+              <Sunrise className="w-4 h-4" />
+              <span>{t('auto.sandhyaTimes')}</span>
+            </div>
+            <div className="overflow-x-auto">
+              <Table className="w-full table-fixed text-xs sm:text-sm">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[28%]">{t('auto.period')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.start')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.end')}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[36%]">{t('auto.notes')}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {sandhyaRows.map((row) => (
+                    <TableRow key={row.key} className="border-t border-border hover:bg-muted/5 align-top">
+                      <TableCell className="p-2 font-medium text-foreground whitespace-normal break-words">{row.name}</TableCell>
+                      <TableCell className="p-2 text-foreground">{row.period?.start || '--'}</TableCell>
+                      <TableCell className="p-2 text-foreground">{row.period?.end || '--'}</TableCell>
+                      <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">{row.desc}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         )}
       </div>

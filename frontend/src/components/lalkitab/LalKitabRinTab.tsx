@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
-import { Scale, AlertCircle, CheckCircle2, Loader2, ArrowUpCircle, Ban, Layers } from 'lucide-react';
+import { Scale, AlertCircle, CheckCircle2, Loader2, ArrowUpCircle, Ban, Layers, Banknote } from 'lucide-react';
 import { pickLang } from './safe-render';
 import SourceBadge from './SourceBadge';
+import { Heading } from '@/components/ui/heading';
 
 interface Props {
   kundliId: string;
@@ -146,10 +147,10 @@ export default function LalKitabRinTab({ kundliId }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-sans font-semibold text-sacred-gold flex items-center gap-2 mb-1">
-          <Scale className="w-5 h-5" />
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Banknote className="w-6 h-6" />
           {t('auto.lalKitabRinKarmicDeb')}
-        </h2>
+        </Heading>
         <p className="text-sm text-gray-500">
           {t('auto.pastLifeKarmicDebtsT')}
         </p>

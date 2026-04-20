@@ -224,7 +224,7 @@ export default function LiveTransitWheel() {
   for (let i = 0; i < 12; i++) bySign[i] = [];
   for (const p of planets) bySign[signIdx(p.sign)].push(p);
 
-  let dotPos: Array<{ planet: TransitPlanet; angle: number; radius: number; baseRadius: number }> = [];
+  const dotPos: Array<{ planet: TransitPlanet; angle: number; radius: number; baseRadius: number }> = [];
   const SIGN_SPREAD_DEG = 3.2; // angular spacing between planets within the same sign sector
   const SIGN_LANES = [-12, 0, 12]; // radial lanes for dense signs
 

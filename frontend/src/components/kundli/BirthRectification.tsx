@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Loader2, Plus, Trash2, Clock, Star, ChevronDown, ChevronUp, AlertCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Plus, Trash2, Clock, Star, ChevronDown, ChevronUp, AlertCircle, CheckCircle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -130,6 +131,16 @@ export default function BirthRectification({
 
   return (
     <div className="space-y-4">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <History className="w-6 h-6" />
+          {hi ? 'जन्म समय शोधन (बी.टी.आर)' : 'Birth Time Rectification (BTR)'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'महत्वपूर्ण जीवन घटनाओं के माध्यम से अपने सटीक जन्म समय का निर्धारण करें' : 'Determine your precise birth time using major life events'}
+        </p>
+      </div>
 
       {/* ── Header ── */}
       <div className={ohContainer}>

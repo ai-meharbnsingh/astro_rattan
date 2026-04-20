@@ -77,7 +77,8 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <AlertTriangle className="w-6 h-6" />
           {isHi ? 'गोचर वेध' : 'Gochara Vedha'}
         </Heading>
         <p className="text-sm text-muted-foreground">

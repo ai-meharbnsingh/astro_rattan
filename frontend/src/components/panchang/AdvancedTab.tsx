@@ -2,6 +2,7 @@ import { Shield, Microscope, Clock, BadgeCheck, Sparkles } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: any; // Using any because of highly nested misc fields
@@ -17,7 +18,15 @@ export default function AdvancedTab({ panchang, language, t }: Props) {
   const doGhati = panchang.do_ghati_muhurta || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Microscope}
+        title={language === 'hi' ? 'विशेष' : 'Advanced'}
+        description={language === 'hi'
+          ? 'गहरे स्तर के पंचांग विवरण — मन्त्रि मण्डल, खगोलीय डेटा और दो-घटी मुहूर्त।'
+          : 'Deeper Panchang details like Mantri Mandala, astronomical epoch data, and do-ghati muhurtas.'}
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Mantri Mandala / Planetary Cabinet */}

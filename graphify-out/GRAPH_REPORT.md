@@ -1,21 +1,21 @@
 # Graph Report - .  (2026-04-19)
 
 ## Corpus Check
-- 555 files · ~5,446,593 words
+- 560 files · ~5,643,280 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8737 nodes · 15326 edges · 295 communities detected
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 905 edges (avg confidence: 0.5)
+- 8774 nodes · 15395 edges · 299 communities detected
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 921 edges (avg confidence: 0.5)
 - Token cost: 0 input · 0 output
 
 ## God Nodes (most connected - your core abstractions)
-1. `KundliRequest` - 81 edges
-2. `KundliMatchRequest` - 81 edges
-3. `DivisionalChartRequest` - 81 edges
-4. `BirthRectificationRequest` - 81 edges
-5. `SarvatobhadraRequest` - 81 edges
-6. `D108AnalysisRequest` - 81 edges
+1. `KundliRequest` - 83 edges
+2. `KundliMatchRequest` - 83 edges
+3. `DivisionalChartRequest` - 83 edges
+4. `BirthRectificationRequest` - 83 edges
+5. `SarvatobhadraRequest` - 83 edges
+6. `D108AnalysisRequest` - 83 edges
 7. `KPHoraryRequest` - 74 edges
 8. `KPHoraryPredictRequest` - 74 edges
 9. `PrashnaQuickRequest` - 74 edges
@@ -37,7 +37,7 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.0
-Nodes (119): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), rotateByLagna(), SAVKundliChart(), handleOtpKeyDown(), handleResendOtp() (+111 more)
+Nodes (125): apiFetch(), fetchWithRetry(), friendlyError(), tryRefreshToken(), rotateByLagna(), SAVKundliChart(), handleOtpKeyDown(), handleResendOtp() (+117 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.01
@@ -45,15 +45,15 @@ Nodes (491): a(), aA(), Ab(), ac(), ad(), ag(), ah(), ai() (+483 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.02
-Nodes (176): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+168 more)
+Nodes (169): get_live_dashboard(), get_stats(), get_user_detail(), list_all_kundlis(), list_users(), Admin routes — user management, stats, kundli overview, live traffic panel., Change a user's role (user/astrologer/admin)., Activate or deactivate a user account. (+161 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.01
-Nodes (57): bs(), Qe(), D(), N(), O(), R(), w(), x() (+49 more)
+Cohesion: 0.05
+Nodes (180): ashtottari_dasha(), moola_dasha(), Dasha routes — Ashtottari, Moola, and Tara dasha systems., Calculate Tara Dasha periods from birth nakshatra.      Divides 27 nakshatras in, Calculate Ashtottari Dasha periods from birth nakshatra.      The Ashtottari sys, Calculate Moola (Jaimini) Dasha periods.      Sign-based dasha system. Starting, tara_dasha(), birth_rectification() (+172 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.05
-Nodes (166): birth_rectification(), _build_kundli_pdf(), _chart_data(), check_doshas(), _compute_dasha(), create_download_token(), delete_all_my_kundlis(), delete_kundli() (+158 more)
+Cohesion: 0.01
+Nodes (57): bs(), Qe(), D(), N(), O(), R(), w(), x() (+49 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.05
@@ -265,7 +265,7 @@ Nodes (18): Tests for Birth Time Rectification Engine.  Covers:   - Event signat
 
 ### Community 57 - "Community 57"
 Cohesion: 0.07
-Nodes (22): calcLifePath(), calcPersonalDay(), compactLine(), extractStr(), formatTime12(), formatTime24(), generateObservancesFromDay(), getLocalDateString() (+14 more)
+Nodes (23): calcLifePath(), calcPersonalDay(), compactLine(), extractStr(), formatTime12(), formatTime24(), generateObservancesFromDay(), getLocalDateString() (+15 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.05
@@ -273,7 +273,7 @@ Nodes (15): Tests for Pinnacle Numbers, Challenge Numbers, and Life Cycles in nu
 
 ### Community 59 - "Community 59"
 Cohesion: 0.05
-Nodes (11): Smoke tests for critical engine modules: varshphal, transit, astro_iogita, dasha, Smoke tests for transit_engine.py., Smoke tests for astro_iogita_engine.py., Smoke tests for dasha_engine.py., Design change: dasha now covers 2 full 120-year cycles = 240 years total., When moon_longitude is given, first dasha balance is partial.          Design ch, Smoke tests for varshphal_engine.py., TestAstroIogitaEngine (+3 more)
+Nodes (11): Smoke tests for critical engine modules: varshphal, transit, astro_iogita, dasha, Smoke tests for transit_engine.py., Smoke tests for astro_iogita_engine.py., Smoke tests for dasha_engine.py., One full 120-year cycle = exactly 120 years total., When moon_longitude is given, first dasha balance is partial.         One 120-ye, Smoke tests for varshphal_engine.py., TestAstroIogitaEngine (+3 more)
 
 ### Community 60 - "Community 60"
 Cohesion: 0.09
@@ -836,107 +836,107 @@ Cohesion: 0.4
 Nodes (5): calculate_sodashvarga(), _get_dignity(), sodashvarga_engine.py -- Sodashvarga (16 Divisional Charts) Summary & Vimshopak, Determine the dignity of a planet in a given sign., Calculate Sodashvarga for all planets.      Args:         planet_longitudes: {pl
 
 ### Community 200 - "Community 200"
-Cohesion: 0.33
-Nodes (5): get_vastu_diagnosis(), get_vastu_house_for_direction(), lalkitab_vastu.py — Makaan (Vastu) Directional Mapping =========================, Generate Vastu home layout diagnosis from Lal Kitab planet positions.      Retur, Reverse lookup: direction string → house number.
+Cohesion: 0.4
+Nodes (5): calculate_mook_prashna(), compute_mook_number(), numerology_mook_prashna_engine.py — Mook Prashna & Khoyi Vastu =================, Sum the 9 numbers written by the person and add 3.     Result is always in range, Given 9 numbers, compute the mook prashna result.      Returns:         dict wit
 
 ### Community 201 - "Community 201"
 Cohesion: 0.33
-Nodes (5): get_remedy_matrix(), list_supported_planets(), app/lalkitab_remedy_matrix.py  P2.11 — Direction + Colour + Material remedy matr, Return the frozen direction/colour/material matrix for a planet.      Args:, Convenience: enumerate planets with a full matrix entry.
+Nodes (5): get_vastu_diagnosis(), get_vastu_house_for_direction(), lalkitab_vastu.py — Makaan (Vastu) Directional Mapping =========================, Generate Vastu home layout diagnosis from Lal Kitab planet positions.      Retur, Reverse lookup: direction string → house number.
 
 ### Community 202 - "Community 202"
-Cohesion: 0.6
-Nodes (5): H(), main(), P(), pick(), FULL verbose Lal Kitab output for Meharban Singh Upneja — every engine's complet
+Cohesion: 0.33
+Nodes (5): get_remedy_matrix(), list_supported_planets(), app/lalkitab_remedy_matrix.py  P2.11 — Direction + Colour + Material remedy matr, Return the frozen direction/colour/material matrix for a planet.      Args:, Convenience: enumerate planets with a full matrix entry.
 
 ### Community 203 - "Community 203"
 Cohesion: 0.6
-Nodes (5): H(), main(), P(), pick(), FULL verbose Lal Kitab output for Jasmine Kaur Khurana — every engine's complete
+Nodes (5): H(), main(), P(), pick(), FULL verbose Lal Kitab output for Meharban Singh Upneja — every engine's complet
 
 ### Community 204 - "Community 204"
-Cohesion: 0.4
-Nodes (3): _env_first(), Application configuration — loaded from environment variables with defaults., Return the first non-empty environment variable from the given names.
+Cohesion: 0.6
+Nodes (5): H(), main(), P(), pick(), FULL verbose Lal Kitab output for Jasmine Kaur Khurana — every engine's complete
 
 ### Community 205 - "Community 205"
 Cohesion: 0.4
-Nodes (4): get_tithi_remedy_timing(), app/lalkitab_tithi_timing.py  P2.10 — Tithi-based remedy timing.  Lal Kitab 1952, # NOTE: for Jupiter we encode Amavasya as forbidden by returning, Return the tithi-timing bundle for a given planet's remedy.      Args:         p
+Nodes (3): _env_first(), Application configuration — loaded from environment variables with defaults., Return the first non-empty environment variable from the given names.
 
 ### Community 206 - "Community 206"
+Cohesion: 0.4
+Nodes (4): get_tithi_remedy_timing(), app/lalkitab_tithi_timing.py  P2.10 — Tithi-based remedy timing.  Lal Kitab 1952, # NOTE: for Jupiter we encode Amavasya as forbidden by returning, Return the tithi-timing bundle for a given planet's remedy.      Args:         p
+
+### Community 207 - "Community 207"
 Cohesion: 0.6
 Nodes (3): a(), b(), k()
 
-### Community 207 - "Community 207"
+### Community 208 - "Community 208"
 Cohesion: 0.5
 Nodes (3): detect_lalkitab_doshas(), Lal Kitab Dosha Detection Engine.  Detects classical Lal Kitab doshas from plane, Detect Lal Kitab doshas from planet positions.      Args:         planet_positio
 
-### Community 208 - "Community 208"
+### Community 209 - "Community 209"
 Cohesion: 0.5
 Nodes (3): calculate_nadi_insights(), nadi_engine.py -- Nadi Astrology Interpretive Engine ===========================, Generate Nadi astrology insights from planet placements.     Covers: same-house
 
-### Community 209 - "Community 209"
+### Community 210 - "Community 210"
 Cohesion: 0.5
 Nodes (3): analyze_sacrifice(), lalkitab_sacrifice.py — Bali Ka Bakra (Sacrificial Lamb Logic) =================, Analyzes the chart for Bali Ka Bakra (sacrificial lamb) patterns.      planet_po
 
-### Community 210 - "Community 210"
+### Community 211 - "Community 211"
 Cohesion: 0.5
 Nodes (3): get_remedy_precautions(), app/lalkitab_savdhaniyan.py  Savdhaniyan (सावधानियाँ) — mandatory precautions th, Return the full Savdhaniyan bundle for a given planet's remedy.      Args:
 
-### Community 211 - "Community 211"
+### Community 212 - "Community 212"
 Cohesion: 0.5
 Nodes (3): get_forbidden_remedies(), lalkitab_forbidden.py — Dynamic Forbidden Actions List =========================, Returns forbidden actions specific to this chart's planet placements.      plane
 
-### Community 212 - "Community 212"
+### Community 213 - "Community 213"
 Cohesion: 0.5
 Nodes (3): detect_festivals(), festival_engine.py -- Rule-Based Hindu Festival & Vrat Detection Engine ========, Detect festivals and vrats for given panchang elements.      Checks all three so
 
-### Community 213 - "Community 213"
-Cohesion: 0.67
-Nodes (3): calculate_yogini_dasha(), get_starting_yogini(), Calculate Yogini Dasha periods. Returns periods for up to 108 years (3 cycles).
-
 ### Community 214 - "Community 214"
-Cohesion: 0.5
-Nodes (3): analyze_marriage(), lalkitab_marriage.py — Lal Kitab Marriage & Relationship Analysis ==============, Analyze marriage prospects from Lal Kitab chart positions.      Args:         po
+Cohesion: 0.67
+Nodes (3): calculate_yogini_dasha(), get_starting_yogini(), Calculate Yogini Dasha periods covering 120 years (multiple 36-year cycles).
 
 ### Community 215 - "Community 215"
 Cohesion: 0.5
-Nodes (3): detect_andhe_grah(), app/lalkitab_andhe_grah.py  Andhe Grah (अंधे ग्रह) — Blind Planet detection.  So, Return per-planet blind-status plus a list of blind planets.      Args:
+Nodes (3): analyze_marriage(), lalkitab_marriage.py — Lal Kitab Marriage & Relationship Analysis ==============, Analyze marriage prospects from Lal Kitab chart positions.      Args:         po
 
 ### Community 216 - "Community 216"
 Cohesion: 0.5
-Nodes (3): app/lalkitab_source_tags.py  Single source of truth for the provenance tag on ev, Return the source tag for a given engine function name.      Unknown engines fal, source_of()
+Nodes (3): detect_andhe_grah(), app/lalkitab_andhe_grah.py  Andhe Grah (अंधे ग्रह) — Blind Planet detection.  So, Return per-planet blind-status plus a list of blind planets.      Args:
 
 ### Community 217 - "Community 217"
 Cohesion: 0.5
-Nodes (3): get_personalized_tasks(), Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked, Return the 43 Chandra Chalana tasks with milestone-day overrides for the given M
+Nodes (3): app/lalkitab_source_tags.py  Single source of truth for the provenance tag on ev, Return the source tag for a given engine function name.      Unknown engines fal, source_of()
 
 ### Community 218 - "Community 218"
 Cohesion: 0.5
-Nodes (3): Shared rate-limit helpers., Scope rate limits to the active test DB and client address., request_rate_limit_key()
+Nodes (3): get_personalized_tasks(), Chandra Chalana 43-day protocol tasks (backend).  The protocol itself is tracked, Return the 43 Chandra Chalana tasks with milestone-day overrides for the given M
 
 ### Community 219 - "Community 219"
-Cohesion: 0.67
-Nodes (3): _age_years(), get_age_activation(), Lal Kitab age activation (backend)  The UI shows age-bucket activation periods (
+Cohesion: 0.5
+Nodes (3): Shared rate-limit helpers., Scope rate limits to the active test DB and client address., request_rate_limit_key()
 
 ### Community 220 - "Community 220"
-Cohesion: 0.5
-Nodes (0): 
+Cohesion: 0.67
+Nodes (3): _age_years(), get_age_activation(), Lal Kitab age activation (backend)  The UI shows age-bucket activation periods (
 
 ### Community 221 - "Community 221"
 Cohesion: 0.5
 Nodes (0): 
 
 ### Community 222 - "Community 222"
+Cohesion: 0.5
+Nodes (0): 
+
+### Community 223 - "Community 223"
 Cohesion: 1.0
 Nodes (2): bulk_translate(), process_dict()
 
-### Community 223 - "Community 223"
+### Community 224 - "Community 224"
 Cohesion: 0.67
 Nodes (2): calculate_lifelong_sade_sati(), Calculate lifelong Sade Sati, Dhaiya (Ashtamesh/Kantak), and Panauti phases.
 
-### Community 224 - "Community 224"
-Cohesion: 0.67
-Nodes (0): 
-
 ### Community 225 - "Community 225"
-Cohesion: 1.0
+Cohesion: 0.67
 Nodes (0): 
 
 ### Community 226 - "Community 226"
@@ -945,19 +945,19 @@ Nodes (0):
 
 ### Community 227 - "Community 227"
 Cohesion: 1.0
-Nodes (1): Lal Kitab remedy context — Sun, Moon, Mars (36 entries)
+Nodes (0): 
 
 ### Community 228 - "Community 228"
 Cohesion: 1.0
-Nodes (1): Lal Kitab remedy context — Saturn, Rahu, Ketu (36 entries)
+Nodes (1): Lal Kitab remedy context — Sun, Moon, Mars (36 entries)
 
 ### Community 229 - "Community 229"
 Cohesion: 1.0
-Nodes (1): Lal Kitab remedy context — Mercury, Jupiter, Venus (36 entries)
+Nodes (1): Lal Kitab remedy context — Saturn, Rahu, Ketu (36 entries)
 
 ### Community 230 - "Community 230"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Lal Kitab remedy context — Mercury, Jupiter, Venus (36 entries)
 
 ### Community 231 - "Community 231"
 Cohesion: 1.0
@@ -965,31 +965,31 @@ Nodes (0):
 
 ### Community 232 - "Community 232"
 Cohesion: 1.0
-Nodes (1): Route registry — import all routers for inclusion in the FastAPI app.
+Nodes (0): 
 
 ### Community 233 - "Community 233"
 Cohesion: 1.0
-Nodes (1): lalkitab_translations.py — Lal Kitab bilingual constants =======================
+Nodes (1): Route registry — import all routers for inclusion in the FastAPI app.
 
 ### Community 234 - "Community 234"
 Cohesion: 1.0
-Nodes (1): Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo
+Nodes (1): Auto-generated transit interpretation variants.  Generated by scripts/generate_t
 
 ### Community 235 - "Community 235"
 Cohesion: 1.0
-Nodes (1): Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.
+Nodes (1): lalkitab_translations.py — Lal Kitab bilingual constants =======================
 
 ### Community 236 - "Community 236"
 Cohesion: 1.0
-Nodes (1): vastu/data.py — Complete Vastu Shastra Reference Data ==========================
+Nodes (1): Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo
 
 ### Community 237 - "Community 237"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.
 
 ### Community 238 - "Community 238"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): vastu/data.py — Complete Vastu Shastra Reference Data ==========================
 
 ### Community 239 - "Community 239"
 Cohesion: 1.0
@@ -1025,27 +1025,27 @@ Nodes (0):
 
 ### Community 247 - "Community 247"
 Cohesion: 1.0
-Nodes (1): Krishna Pratipada to Panchami (16-20) normalise to 1-5 → Full Life.
+Nodes (0): 
 
 ### Community 248 - "Community 248"
 Cohesion: 1.0
-Nodes (1): Krishna Shashthi to Dashami (21-25) normalise to 6-10 → Half Life.
+Nodes (0): 
 
 ### Community 249 - "Community 249"
 Cohesion: 1.0
-Nodes (1): Krishna Ekadashi to Chaturdashi (26-29) normalise to 11-14 → Weak Life.
+Nodes (0): 
 
 ### Community 250 - "Community 250"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Krishna Pratipada to Panchami (16-20) normalise to 1-5 → Full Life.
 
 ### Community 251 - "Community 251"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Krishna Shashthi to Dashami (21-25) normalise to 6-10 → Half Life.
 
 ### Community 252 - "Community 252"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Krishna Ekadashi to Chaturdashi (26-29) normalise to 11-14 → Weak Life.
 
 ### Community 253 - "Community 253"
 Cohesion: 1.0
@@ -1197,11 +1197,11 @@ Nodes (0):
 
 ### Community 290 - "Community 290"
 Cohesion: 1.0
-Nodes (1): Sample parts 0..107 for each sign and confirm all 12 target signs appear.
+Nodes (0): 
 
 ### Community 291 - "Community 291"
 Cohesion: 1.0
-Nodes (1): Each planet must be in the exact sign+house from the ref snapshot.
+Nodes (0): 
 
 ### Community 292 - "Community 292"
 Cohesion: 1.0
@@ -1209,170 +1209,192 @@ Nodes (0):
 
 ### Community 293 - "Community 293"
 Cohesion: 1.0
-Nodes (0): 
+Nodes (1): Sample parts 0..107 for each sign and confirm all 12 target signs appear.
 
 ### Community 294 - "Community 294"
+Cohesion: 1.0
+Nodes (1): Each planet must be in the exact sign+house from the ref snapshot.
+
+### Community 295 - "Community 295"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 296 - "Community 296"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 297 - "Community 297"
+Cohesion: 1.0
+Nodes (0): 
+
+### Community 298 - "Community 298"
 Cohesion: 1.0
 Nodes (0): 
 
 ## Knowledge Gaps
-- **2108 isolated node(s):** `Safely extract data from a key. Returns None if ok=False or missing.`, `Return error message for a failed key.`, `Return STATUS string for a key.`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.` (+2103 more)
+- **2112 isolated node(s):** `Safely extract data from a key. Returns None if ok=False or missing.`, `Return error message for a failed key.`, `Return STATUS string for a key.`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`, `Tests for enhanced Choghadiya — Vaar Vela, Kaal Vela, Kaal Ratri flags.` (+2107 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 225`** (2 nodes): `scratch_check_i18n.py`, `check_file()`
+- **Thin community `Community 226`** (2 nodes): `scratch_check_i18n.py`, `check_file()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 226`** (2 nodes): `scratch_check_backend.py`, `check_file()`
+- **Thin community `Community 227`** (2 nodes): `scratch_check_backend.py`, `check_file()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 227`** (2 nodes): `lk_ctx_a.py`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`
+- **Thin community `Community 228`** (2 nodes): `lk_ctx_a.py`, `Lal Kitab remedy context — Sun, Moon, Mars (36 entries)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 228`** (2 nodes): `lk_ctx_c.py`, `Lal Kitab remedy context — Saturn, Rahu, Ketu (36 entries)`
+- **Thin community `Community 229`** (2 nodes): `lk_ctx_c.py`, `Lal Kitab remedy context — Saturn, Rahu, Ketu (36 entries)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 229`** (2 nodes): `lk_ctx_b.py`, `Lal Kitab remedy context — Mercury, Jupiter, Venus (36 entries)`
+- **Thin community `Community 230`** (2 nodes): `lk_ctx_b.py`, `Lal Kitab remedy context — Mercury, Jupiter, Venus (36 entries)`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 230`** (2 nodes): `test_fest_engine.py`, `test_festivals()`
+- **Thin community `Community 231`** (2 nodes): `test_fest_engine.py`, `test_festivals()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 231`** (2 nodes): `test_flags.py`, `test_sunrise_flags()`
+- **Thin community `Community 232`** (2 nodes): `test_flags.py`, `test_sunrise_flags()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 232`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
+- **Thin community `Community 233`** (2 nodes): `__init__.py`, `Route registry — import all routers for inclusion in the FastAPI app.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 233`** (2 nodes): `lalkitab_translations.py`, `lalkitab_translations.py — Lal Kitab bilingual constants =======================`
+- **Thin community `Community 234`** (2 nodes): `transit_variants.py`, `Auto-generated transit interpretation variants.  Generated by scripts/generate_t`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 234`** (2 nodes): `lalkitab_remedy_context.py`, `Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo`
+- **Thin community `Community 235`** (2 nodes): `lalkitab_translations.py`, `lalkitab_translations.py — Lal Kitab bilingual constants =======================`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 235`** (2 nodes): `transit_interpretations.py`, `Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.`
+- **Thin community `Community 236`** (2 nodes): `lalkitab_remedy_context.py`, `Lal Kitab 1952 — Remedy Context: problem / reason / how_it_works Source: Pt. Roo`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 236`** (2 nodes): `data.py`, `vastu/data.py — Complete Vastu Shastra Reference Data ==========================`
+- **Thin community `Community 237`** (2 nodes): `transit_interpretations.py`, `Transit interpretation fragments — 9 planets x 12 houses x 5 areas, bilingual.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 237`** (2 nodes): `analyze-i18n.js`, `walk()`
+- **Thin community `Community 238`** (2 nodes): `data.py`, `vastu/data.py — Complete Vastu Shastra Reference Data ==========================`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 238`** (2 nodes): `test_transit_interpretations_completeness.py`, `test_transit_fragments_include_9_planets_and_full_matrix()`
+- **Thin community `Community 239`** (2 nodes): `analyze-i18n.js`, `walk()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 239`** (2 nodes): `test_panchang_sankranti_route.py`, `test_panchang_sankranti_route_returns_12()`
+- **Thin community `Community 240`** (2 nodes): `BeneficMaleficLegend.tsx`, `BeneficMaleficLegend()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 240`** (2 nodes): `connection.js`, `testConnection()`
+- **Thin community `Community 241`** (2 nodes): `test_transit_interpretations_completeness.py`, `test_transit_fragments_include_9_planets_and_full_matrix()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 241`** (2 nodes): `predictions.js`, `auth()`
+- **Thin community `Community 242`** (2 nodes): `test_panchang_sankranti_route.py`, `test_panchang_sankranti_route_returns_12()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 242`** (2 nodes): `remedies.js`, `auth()`
+- **Thin community `Community 243`** (2 nodes): `connection.js`, `testConnection()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 243`** (2 nodes): `KundliChart.jsx`, `KundliChart()`
+- **Thin community `Community 244`** (2 nodes): `predictions.js`, `auth()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 244`** (1 nodes): `check_swe_help.py`
+- **Thin community `Community 245`** (2 nodes): `remedies.js`, `auth()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 245`** (1 nodes): `test_gemini.py`
+- **Thin community `Community 246`** (2 nodes): `KundliChart.jsx`, `KundliChart()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 246`** (1 nodes): `stress_test.js`
+- **Thin community `Community 247`** (1 nodes): `check_swe_help.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 247`** (1 nodes): `Krishna Pratipada to Panchami (16-20) normalise to 1-5 → Full Life.`
+- **Thin community `Community 248`** (1 nodes): `test_gemini.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 248`** (1 nodes): `Krishna Shashthi to Dashami (21-25) normalise to 6-10 → Half Life.`
+- **Thin community `Community 249`** (1 nodes): `stress_test.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 249`** (1 nodes): `Krishna Ekadashi to Chaturdashi (26-29) normalise to 11-14 → Weak Life.`
+- **Thin community `Community 250`** (1 nodes): `Krishna Pratipada to Panchami (16-20) normalise to 1-5 → Full Life.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 250`** (1 nodes): `ui-test.spec.ts`
+- **Thin community `Community 251`** (1 nodes): `Krishna Shashthi to Dashami (21-25) normalise to 6-10 → Half Life.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 251`** (1 nodes): `tailwind.config.js`
+- **Thin community `Community 252`** (1 nodes): `Krishna Ekadashi to Chaturdashi (26-29) normalise to 11-14 → Weak Life.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 252`** (1 nodes): `playwright.config.ts`
+- **Thin community `Community 253`** (1 nodes): `ui-test.spec.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 253`** (1 nodes): `vite.config.ts`
+- **Thin community `Community 254`** (1 nodes): `tailwind.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 254`** (1 nodes): `postcss.config.js`
+- **Thin community `Community 255`** (1 nodes): `playwright.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 255`** (1 nodes): `palette-CXiXSgC5.js`
+- **Thin community `Community 256`** (1 nodes): `vite.config.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 256`** (1 nodes): `house-DtiC-4UK.js`
+- **Thin community `Community 257`** (1 nodes): `postcss.config.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 257`** (1 nodes): `hash-CicP2k4H.js`
+- **Thin community `Community 258`** (1 nodes): `palette-CXiXSgC5.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 258`** (1 nodes): `sun-BzBhZV-E.js`
+- **Thin community `Community 259`** (1 nodes): `house-DtiC-4UK.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 259`** (1 nodes): `zap-CAEtoi2h.js`
+- **Thin community `Community 260`** (1 nodes): `hash-CicP2k4H.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 260`** (1 nodes): `circle-alert-C7OzIryt.js`
+- **Thin community `Community 261`** (1 nodes): `sun-BzBhZV-E.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 261`** (1 nodes): `circle-check-big-C2G1rGUt.js`
+- **Thin community `Community 262`** (1 nodes): `zap-CAEtoi2h.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 262`** (1 nodes): `plus-0BNEFBy0.js`
+- **Thin community `Community 263`** (1 nodes): `circle-alert-C7OzIryt.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 263`** (1 nodes): `activity-X4r3g2MZ.js`
+- **Thin community `Community 264`** (1 nodes): `circle-check-big-C2G1rGUt.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 264`** (1 nodes): `info-CrU8AAHX.js`
+- **Thin community `Community 265`** (1 nodes): `plus-0BNEFBy0.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 265`** (1 nodes): `chevron-left-De_SGD7e.js`
+- **Thin community `Community 266`** (1 nodes): `activity-X4r3g2MZ.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 266`** (1 nodes): `search-B7V9CMzU.js`
+- **Thin community `Community 267`** (1 nodes): `info-CrU8AAHX.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 267`** (1 nodes): `chevron-up-oUmfnrAD.js`
+- **Thin community `Community 268`** (1 nodes): `chevron-left-De_SGD7e.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 268`** (1 nodes): `navigation-KikWBpYy.js`
+- **Thin community `Community 269`** (1 nodes): `search-B7V9CMzU.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 269`** (1 nodes): `arrow-left-B1R7J2oO.js`
+- **Thin community `Community 270`** (1 nodes): `chevron-up-oUmfnrAD.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 270`** (1 nodes): `save-CurQzcRD.js`
+- **Thin community `Community 271`** (1 nodes): `navigation-KikWBpYy.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 271`** (1 nodes): `circle-check-CgXHvHNa.js`
+- **Thin community `Community 272`** (1 nodes): `arrow-left-B1R7J2oO.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 272`** (1 nodes): `calendar-BAWu2H0T.js`
+- **Thin community `Community 273`** (1 nodes): `save-CurQzcRD.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 273`** (1 nodes): `eye-CP953dOK.js`
+- **Thin community `Community 274`** (1 nodes): `circle-check-CgXHvHNa.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 274`** (1 nodes): `map-pin-4ZjEbj4U.js`
+- **Thin community `Community 275`** (1 nodes): `calendar-BAWu2H0T.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 275`** (1 nodes): `orbit-BJqvfdpJ.js`
+- **Thin community `Community 276`** (1 nodes): `eye-CP953dOK.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 276`** (1 nodes): `briefcase-CKH9P3l8.js`
+- **Thin community `Community 277`** (1 nodes): `map-pin-4ZjEbj4U.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 277`** (1 nodes): `rotate-ccw-DKeW6YZS.js`
+- **Thin community `Community 278`** (1 nodes): `orbit-BJqvfdpJ.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 278`** (1 nodes): `clock-BmMvehyB.js`
+- **Thin community `Community 279`** (1 nodes): `briefcase-CKH9P3l8.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 279`** (1 nodes): `chevron-right-BX36YS4o.js`
+- **Thin community `Community 280`** (1 nodes): `rotate-ccw-DKeW6YZS.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 280`** (1 nodes): `send-DBV8maWO.js`
+- **Thin community `Community 281`** (1 nodes): `clock-BmMvehyB.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 281`** (1 nodes): `trending-up-D6lZAkWG.js`
+- **Thin community `Community 282`** (1 nodes): `chevron-right-BX36YS4o.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 282`** (1 nodes): `triangle-alert-Djnuq5R0.js`
+- **Thin community `Community 283`** (1 nodes): `send-DBV8maWO.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 283`** (1 nodes): `book-open-DsqoyRev.js`
+- **Thin community `Community 284`** (1 nodes): `trending-up-D6lZAkWG.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 284`** (1 nodes): `loader-circle-DHqOI4NW.js`
+- **Thin community `Community 285`** (1 nodes): `triangle-alert-Djnuq5R0.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 285`** (1 nodes): `wallet-Wc7AxNdH.js`
+- **Thin community `Community 286`** (1 nodes): `book-open-DsqoyRev.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 286`** (1 nodes): `shield-check-CeboXS6O.js`
+- **Thin community `Community 287`** (1 nodes): `loader-circle-DHqOI4NW.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 287`** (1 nodes): `sticky-note-Dh-n4DfT.js`
+- **Thin community `Community 288`** (1 nodes): `wallet-Wc7AxNdH.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 288`** (1 nodes): `arrow-right-Dg-Z4lpq.js`
+- **Thin community `Community 289`** (1 nodes): `shield-check-CeboXS6O.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 289`** (1 nodes): `index.ts`
+- **Thin community `Community 290`** (1 nodes): `sticky-note-Dh-n4DfT.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 290`** (1 nodes): `Sample parts 0..107 for each sign and confirm all 12 target signs appear.`
+- **Thin community `Community 291`** (1 nodes): `arrow-right-Dg-Z4lpq.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 291`** (1 nodes): `Each planet must be in the exact sign+house from the ref snapshot.`
+- **Thin community `Community 292`** (1 nodes): `index.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 292`** (1 nodes): `wxLogin.js`
+- **Thin community `Community 293`** (1 nodes): `Sample parts 0..107 for each sign and confirm all 12 target signs appear.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 293`** (1 nodes): `server.js`
+- **Thin community `Community 294`** (1 nodes): `Each planet must be in the exact sign+house from the ref snapshot.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 294`** (1 nodes): `aspect-ratio.tsx`
+- **Thin community `Community 295`** (1 nodes): `wxLogin.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 296`** (1 nodes): `server.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 297`** (1 nodes): `aspect-ratio.tsx`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 298`** (1 nodes): `test_fallback.py`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `js()` connect `Community 3` to `Community 41`, `Community 13`, `Community 7`?**
+- **Why does `js()` connect `Community 4` to `Community 41`, `Community 13`, `Community 7`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **Why does `KPHoraryRequest` connect `Community 6` to `Community 2`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **Why does `KPHoraryPredictRequest` connect `Community 6` to `Community 2`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
-- **Are the 79 inferred relationships involving `KundliRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
-  _`KundliRequest` has 79 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 79 inferred relationships involving `KundliMatchRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
-  _`KundliMatchRequest` has 79 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 79 inferred relationships involving `DivisionalChartRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
-  _`DivisionalChartRequest` has 79 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 79 inferred relationships involving `BirthRectificationRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
-  _`BirthRectificationRequest` has 79 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 81 inferred relationships involving `KundliRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
+  _`KundliRequest` has 81 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 81 inferred relationships involving `KundliMatchRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
+  _`KundliMatchRequest` has 81 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 81 inferred relationships involving `DivisionalChartRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
+  _`DivisionalChartRequest` has 81 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 81 inferred relationships involving `BirthRectificationRequest` (e.g. with `FreePreviewRequest` and `Kundli routes — generate, retrieve, list, iogita analysis, match, dosha, dasha,`) actually correct?**
+  _`BirthRectificationRequest` has 81 INFERRED edges - model-reasoned connections that need verification._

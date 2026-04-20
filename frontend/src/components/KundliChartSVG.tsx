@@ -104,39 +104,39 @@ const M = pct(50);
 const SI = pct(6);
 const EI = pct(94);
 
-// House position centers for North Indian chart (house 1 fixed at the top).
-// We rotate signs (not house positions) based on ascendantSign.
+// House position centers — North Indian chart goes COUNTER-CLOCKWISE:
+// H1=top, H2=top-left, H3=left-upper, H4=left-diamond, H5=left-lower,
+// H6=bottom-left, H7=bottom, H8=bottom-right, H9=right-lower,
+// H10=right-diamond, H11=right-upper, H12=top-right.
 const HOUSE_CENTERS: { x: number; y: number }[] = [
-  { x: pct(50),   y: pct(28) },    // 0  Aries       — top diamond
-  { x: pct(28),   y: pct(14) },    // 1  Taurus      — top-left corner
-  { x: pct(15),   y: pct(28) },    // 2  Gemini      — left-upper
-  { x: pct(28),   y: pct(50) },    // 3  Cancer      — left diamond
-  { x: pct(15),   y: pct(72) },    // 4  Leo         — left-lower
-  { x: pct(28),   y: pct(86) },    // 5  Virgo       — bottom-left corner
-  { x: pct(50),   y: pct(72) },    // 6  Libra       — bottom diamond
-  { x: pct(72),   y: pct(86) },    // 7  Scorpio     — bottom-right corner
-  { x: pct(87.5), y: pct(72) },    // 8  Sagittarius — right-lower
-  { x: pct(72),   y: pct(50) },    // 9  Capricorn   — right diamond
-  { x: pct(87.5), y: pct(28) },    // 10 Aquarius    — right-upper
-  { x: pct(72),   y: pct(14) },    // 11 Pisces      — top-right corner
+  { x: pct(50),   y: pct(28) },    // 0  House 1  — top diamond
+  { x: pct(28),   y: pct(14) },    // 1  House 2  — top-left corner
+  { x: pct(15),   y: pct(28) },    // 2  House 3  — left-upper
+  { x: pct(28),   y: pct(50) },    // 3  House 4  — left diamond
+  { x: pct(15),   y: pct(72) },    // 4  House 5  — left-lower
+  { x: pct(28),   y: pct(86) },    // 5  House 6  — bottom-left corner
+  { x: pct(50),   y: pct(72) },    // 6  House 7  — bottom diamond
+  { x: pct(72),   y: pct(86) },    // 7  House 8  — bottom-right corner
+  { x: pct(87.5), y: pct(72) },    // 8  House 9  — right-lower
+  { x: pct(72),   y: pct(50) },    // 9  House 10 — right diamond
+  { x: pct(87.5), y: pct(28) },    // 10 House 11 — right-upper
+  { x: pct(72),   y: pct(14) },    // 11 House 12 — top-right corner
 ];
 
-// Number label positions (indexed by house position 1..12 in the layout).
-// We render *rashi* numbers (Aries=1..Pisces=12) that rotate with Lagna,
-// matching the main Kundli (InteractiveKundli) North-Indian chart behavior.
+// Number label positions — original coordinates, counter-clockwise house order.
 const NUMBER_LABEL_POS: { x: number; y: number }[] = [
-  { x: pct(50),   y: pct(45) },    // Aries       pos
-  { x: pct(12),   y: pct(8) },     // Taurus      pos
-  { x: pct(8),    y: pct(12) },    // Gemini      pos
-  { x: pct(45),   y: pct(50) },    // Cancer      pos
-  { x: pct(8),    y: pct(88) },    // Leo         pos
-  { x: pct(12),   y: pct(92) },    // Virgo       pos
-  { x: pct(50),   y: pct(55) },    // Libra       pos
-  { x: pct(88),   y: pct(92) },    // Scorpio     pos
-  { x: pct(92),   y: pct(88) },    // Sagittarius pos
-  { x: pct(55),   y: pct(50) },    // Capricorn   pos
-  { x: pct(92),   y: pct(12) },    // Aquarius    pos
-  { x: pct(88),   y: pct(8) },     // Pisces      pos
+  { x: pct(50),   y: pct(45) },    // House 1  — top diamond
+  { x: pct(12),   y: pct(8)  },    // House 2  — top-left corner
+  { x: pct(8),    y: pct(12) },    // House 3  — left-upper
+  { x: pct(45),   y: pct(50) },    // House 4  — left diamond
+  { x: pct(8),    y: pct(88) },    // House 5  — left-lower
+  { x: pct(12),   y: pct(92) },    // House 6  — bottom-left corner
+  { x: pct(50),   y: pct(55) },    // House 7  — bottom diamond
+  { x: pct(88),   y: pct(92) },    // House 8  — bottom-right corner
+  { x: pct(92),   y: pct(88) },    // House 9  — right-lower
+  { x: pct(55),   y: pct(50) },    // House 10 — right diamond
+  { x: pct(92),   y: pct(12) },    // House 11 — right-upper
+  { x: pct(88),   y: pct(8)  },    // House 12 — top-right corner
 ];
 
 function ascMarkerPos(degInSign: number): { x: number; y: number } {
@@ -228,19 +228,22 @@ export default function KundliChartSVG({
   const P3 = { x: (M + E) / 2, y: (M + E) / 2 }; // 290,290
   const P4 = { x: (S + M) / 2, y: (M + E) / 2 }; // 110,290
 
+  // Counter-clockwise: H1=top, H2=top-left, H3=left-upper, H4=left-diamond,
+  // H5=left-lower, H6=bottom-left, H7=bottom, H8=bottom-right, H9=right-lower,
+  // H10=right-diamond, H11=right-upper, H12=top-right.
   const housePolys: { house: number; points: string }[] = [
-    { house: 1, points: `${P1.x},${P1.y} ${MT.x},${MT.y} ${P2.x},${P2.y} ${CC.x},${CC.y}` },
-    { house: 2, points: `${MT.x},${MT.y} ${TR.x},${TR.y} ${P2.x},${P2.y}` },
-    { house: 3, points: `${P2.x},${P2.y} ${TR.x},${TR.y} ${MR.x},${MR.y}` },
-    { house: 4, points: `${CC.x},${CC.y} ${P2.x},${P2.y} ${MR.x},${MR.y} ${P3.x},${P3.y}` },
-    { house: 5, points: `${MR.x},${MR.y} ${BR.x},${BR.y} ${P3.x},${P3.y}` },
-    { house: 6, points: `${P3.x},${P3.y} ${BR.x},${BR.y} ${MB.x},${MB.y}` },
-    { house: 7, points: `${CC.x},${CC.y} ${P4.x},${P4.y} ${MB.x},${MB.y} ${P3.x},${P3.y}` },
-    { house: 8, points: `${P4.x},${P4.y} ${MB.x},${MB.y} ${BL.x},${BL.y}` },
-    { house: 9, points: `${ML.x},${ML.y} ${BL.x},${BL.y} ${P4.x},${P4.y}` },
-    { house: 10, points: `${CC.x},${CC.y} ${P1.x},${P1.y} ${ML.x},${ML.y} ${P4.x},${P4.y}` },
-    { house: 11, points: `${TL.x},${TL.y} ${ML.x},${ML.y} ${P1.x},${P1.y}` },
-    { house: 12, points: `${TL.x},${TL.y} ${MT.x},${MT.y} ${P1.x},${P1.y}` },
+    { house: 1,  points: `${P1.x},${P1.y} ${MT.x},${MT.y} ${P2.x},${P2.y} ${CC.x},${CC.y}` }, // top diamond
+    { house: 12, points: `${MT.x},${MT.y} ${TR.x},${TR.y} ${P2.x},${P2.y}` },                  // top-right corner
+    { house: 11, points: `${P2.x},${P2.y} ${TR.x},${TR.y} ${MR.x},${MR.y}` },                  // right-upper
+    { house: 10, points: `${CC.x},${CC.y} ${P2.x},${P2.y} ${MR.x},${MR.y} ${P3.x},${P3.y}` }, // right diamond
+    { house: 9,  points: `${MR.x},${MR.y} ${BR.x},${BR.y} ${P3.x},${P3.y}` },                  // right-lower
+    { house: 8,  points: `${P3.x},${P3.y} ${BR.x},${BR.y} ${MB.x},${MB.y}` },                  // bottom-right corner
+    { house: 7,  points: `${CC.x},${CC.y} ${P4.x},${P4.y} ${MB.x},${MB.y} ${P3.x},${P3.y}` }, // bottom diamond
+    { house: 6,  points: `${P4.x},${P4.y} ${MB.x},${MB.y} ${BL.x},${BL.y}` },                  // bottom-left corner
+    { house: 5,  points: `${ML.x},${ML.y} ${BL.x},${BL.y} ${P4.x},${P4.y}` },                  // left-lower
+    { house: 4,  points: `${CC.x},${CC.y} ${P1.x},${P1.y} ${ML.x},${ML.y} ${P4.x},${P4.y}` }, // left diamond
+    { house: 3,  points: `${TL.x},${TL.y} ${ML.x},${ML.y} ${P1.x},${P1.y}` },                  // left-upper
+    { house: 2,  points: `${TL.x},${TL.y} ${MT.x},${MT.y} ${P1.x},${P1.y}` },                  // top-left corner
   ];
 
   return (
@@ -289,33 +292,20 @@ export default function KundliChartSVG({
         </text>
       )}
 
-      {/* House click overlays (only when handler present) */}
-      {onHouseClick && housePolys.map(({ house, points }) => (
-        <polygon
-          key={`house-hit-${house}`}
-          points={points}
-          fill="transparent"
-          stroke="none"
-          pointerEvents="all"
-          style={{ cursor: 'pointer' }}
-          onClick={() => onHouseClick(house, signForHouse(house), planetsByHousePos[house - 1] || [])}
-        />
-      ))}
-
-      {/* Zodiac sign images — orange, low opacity, at fixed sign positions */}
+      {/* Zodiac sign images — orange, low opacity, counter-clockwise house order */}
       {[
-        { x: pct(50),   y: pct(28) },   // Aries — top diamond
-        { x: pct(28),   y: pct(14) },   // Taurus — top-left corner
-        { x: pct(12.5), y: pct(28) },   // Gemini — left-upper
-        { x: pct(28),   y: pct(50) },   // Cancer — left diamond
-        { x: pct(12.5), y: pct(72) },   // Leo — left-lower
-        { x: pct(28),   y: pct(86) },   // Virgo — bottom-left corner
-        { x: pct(50),   y: pct(72) },   // Libra — bottom diamond
-        { x: pct(72),   y: pct(86) },   // Scorpio — bottom-right corner
-        { x: pct(87.5), y: pct(72) },   // Sagittarius — right-lower
-        { x: pct(72),   y: pct(50) },   // Capricorn — right diamond
-        { x: pct(87.5), y: pct(28) },   // Aquarius — right-upper
-        { x: pct(72),   y: pct(14) },   // Pisces — top-right corner
+        { x: pct(50),   y: pct(28) },   // House 1  — top diamond
+        { x: pct(28),   y: pct(14) },   // House 2  — top-left corner
+        { x: pct(12.5), y: pct(28) },   // House 3  — left-upper
+        { x: pct(28),   y: pct(50) },   // House 4  — left diamond
+        { x: pct(12.5), y: pct(72) },   // House 5  — left-lower
+        { x: pct(28),   y: pct(86) },   // House 6  — bottom-left corner
+        { x: pct(50),   y: pct(72) },   // House 7  — bottom diamond
+        { x: pct(72),   y: pct(86) },   // House 8  — bottom-right corner
+        { x: pct(87.5), y: pct(72) },   // House 9  — right-lower
+        { x: pct(72),   y: pct(50) },   // House 10 — right diamond
+        { x: pct(87.5), y: pct(28) },   // House 11 — right-upper
+        { x: pct(72),   y: pct(14) },   // House 12 — top-right corner
       ].map((pos, i) => {
         const imgSize = 40;
         // i is the house position (0..11). In a North-Indian house-fixed chart,
@@ -351,32 +341,33 @@ export default function KundliChartSVG({
         </text>
       ))}
 
-      {/* Rashi numbers (1..12) — rotate with Lagna; render in house center to avoid line intersections. */}
+      {/* Rashi numbers (1..12) — rotate with Lagna; inner-corner style like JHora/VedicMarga. */}
       {showRashiNumbers && Array.from({ length: 12 }, (_, i) => {
         const signIdx = lagnaSignIdx >= 0 ? (lagnaSignIdx + i) % 12 : i;
         const rashiNum = signIdx + 1;
+        const isLagna = i === 0;
         const c = rashiNumberPlacement === 'center' ? HOUSE_CENTERS[i] : NUMBER_LABEL_POS[i];
         const count = (planetsByHousePos[i] || []).length;
         const y = rashiNumberPlacement === 'center' ? (c.y - (count > 0 ? 18 : 0)) : c.y;
         return (
-          <text
-            key={`rashi-${i}`}
-            x={c.x}
-            y={y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize={rashiNumberPlacement === 'center' ? '16' : '12'}
-            fontWeight="800"
-            fill={rashiNumberPlacement === 'center' ? DARK : DARK}
-            opacity={rashiNumberPlacement === 'center' ? '0.72' : '0.65'}
-            fontFamily="'Inter',sans-serif"
-            stroke={rashiNumberPlacement === 'center' ? "rgba(253, 251, 247, 0.9)" : undefined}
-            strokeWidth={rashiNumberPlacement === 'center' ? '4' : undefined}
-            paintOrder={rashiNumberPlacement === 'center' ? 'stroke' : undefined}
-            pointerEvents="none"
-          >
-            {rashiNum}
-          </text>
+          <g key={`rashi-${i}`} pointerEvents="none">
+            <text
+              x={c.x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={rashiNumberPlacement === 'center' ? '16' : '13'}
+              fontWeight="800"
+              fill={isLagna ? GOLD_MED : DARK}
+              opacity={isLagna ? '0.9' : '0.65'}
+              fontFamily="'Inter',sans-serif"
+              stroke="rgba(253,251,247,0.85)"
+              strokeWidth="3"
+              paintOrder="stroke"
+            >
+              {rashiNum}
+            </text>
+          </g>
         );
       })}
 
@@ -426,6 +417,20 @@ export default function KundliChartSVG({
           );
         });
       })}
+
+      {/* House click overlays — moved to end to ensure they are on top */}
+      {onHouseClick && housePolys.map(({ house, points }) => (
+        <polygon
+          key={`house-hit-${house}`}
+          points={points}
+          fill="#fff"
+          fillOpacity={0.001}
+          stroke="none"
+          pointerEvents="all"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onHouseClick(house, signForHouse(house), planetsByHousePos[house - 1] || [])}
+        />
+      ))}
 
     </svg>
   );

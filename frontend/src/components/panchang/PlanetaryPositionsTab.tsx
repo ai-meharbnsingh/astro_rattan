@@ -1,6 +1,7 @@
 import { Orbit } from 'lucide-react';
 import type { FullPanchangData } from '@/sections/Panchang';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface Props {
   panchang: FullPanchangData;
@@ -51,89 +52,63 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
   const planets = panchang.planetary_positions || [];
 
   return (
-    <div className="space-y-3">
-      <div className="rounded-lg border border-sacred-gold/20 bg-transparent p-2">
-        <h3 className="font-bold text-foreground mb-1 flex items-center gap-1">
-          <Orbit className="h-4 w-4 text-sacred-gold" />
-          {t('auto.navgrahaPositionsPla')}
-        </h3>
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Orbit}
+        title={language === 'hi' ? 'ग्रह स्थिति' : 'Planetary Positions'}
+        description={language === 'hi'
+          ? 'नवग्रह की राशि, नक्षत्र, अंश और वक्री/अस्त स्थिति — दैनिक पंचांग के अनुसार।'
+          : 'Daily positions of the Navagraha with sign, nakshatra, degrees, and retrograde/combust status.'}
+      />
+
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+          <Orbit className="w-4 h-4" />
+          <span>{t('auto.navgrahaPositionsPla')}</span>
+        </div>
         <div className="overflow-x-auto">
-          <Table className="w-full min-w-[780px] text-sm">
+          <Table className="w-full min-w-[780px] text-xs table-fixed">
             <TableHeader>
-              <TableRow className="bg-sacred-gold/15">
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.planet')}
-                </TableHead>
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.sign')}
-                </TableHead>
-                <TableHead className="text-left px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}
-                </TableHead>
-                <TableHead className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.degree')}
-                </TableHead>
-                <TableHead className="text-right px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {t('auto.longitude')}
-                </TableHead>
-                <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'वक्री' : 'Retro'}
-                </TableHead>
-                <TableHead className="text-center px-2 py-1 text-sacred-gold-dark font-semibold">
-                  {language === 'hi' ? 'अस्त' : 'Combust'}
-                </TableHead>
+              <TableRow>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.planet')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[16%]">{t('auto.sign')}</TableHead>
+                <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{language === 'hi' ? 'नक्षत्र' : 'Nakshatra'}</TableHead>
+                <TableHead className="text-right p-2 text-primary font-semibold uppercase tracking-wide w-[12%]">{t('auto.degree')}</TableHead>
+                <TableHead className="text-right p-2 text-primary font-semibold uppercase tracking-wide w-[14%]">{t('auto.longitude')}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[9%]">{language === 'hi' ? 'वक्री' : 'Retro'}</TableHead>
+                <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[9%]">{language === 'hi' ? 'अस्त' : 'Combust'}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {planets.map((planet) => (
-                <TableRow
-                  key={planet.name}
-                  className={`border-b border/50 last:border-0 ${rowBg(planet)}`}
-                >
-                  {/* Planet name + colored dot */}
-                  <TableCell className="px-2 py-1 font-medium text-foreground">
-                    <span className={`inline-block w-2 h-2 rounded-full mr-1 ${PLANET_DOT_BG[planet.name] || 'bg-gray-400'}`} />
+                <TableRow key={planet.name} className={`border-t border-border hover:bg-muted/5 ${rowBg(planet)}`}>
+                  <TableCell className="p-2 font-medium text-foreground">
+                    <span className={`inline-block w-2 h-2 rounded-full mr-2 align-middle ${PLANET_DOT_BG[planet.name] || 'bg-gray-400'}`} />
                     {language === 'hi'
                       ? (planet.name_hindi || PLANET_HINDI[planet.name] || planet.name)
                       : planet.name}
                   </TableCell>
-
-                  {/* Rashi / Sign */}
-                  <TableCell className="px-2 py-1 text-muted-foreground">
+                  <TableCell className="p-2 text-muted-foreground">
                     {language === 'hi'
                       ? (planet.rashi_hindi || RASHI_HINDI[planet.rashi] || planet.rashi)
                       : planet.rashi}
                   </TableCell>
-
-                  {/* Nakshatra + Pada */}
-                  <TableCell className="px-2 py-1 text-muted-foreground">
+                  <TableCell className="p-2 text-muted-foreground whitespace-normal break-words">
                     {planet.nakshatra
                       ? `${language === 'hi' && planet.nakshatra_hindi ? planet.nakshatra_hindi : planet.nakshatra}${planet.nakshatra_pada ? ` (${planet.nakshatra_pada})` : ''}`
                       : '—'}
                   </TableCell>
-
-                  {/* Degree */}
-                  <TableCell className="px-2 py-1 text-right text-muted-foreground">
-                    {planet.degree}°
-                  </TableCell>
-
-                  {/* Longitude */}
-                  <TableCell className="px-2 py-1 text-right text-muted-foreground">
-                    {planet.longitude}°
-                  </TableCell>
-
-                  {/* Retrograde */}
-                  <TableCell className="px-2 py-1 text-center">
+                  <TableCell className="p-2 text-right text-muted-foreground">{planet.degree}°</TableCell>
+                  <TableCell className="p-2 text-right text-muted-foreground">{planet.longitude}°</TableCell>
+                  <TableCell className="p-2 text-center">
                     {planet.retrograde
                       ? <span className="text-red-600 font-bold" title={language === 'hi' ? 'वक्री' : 'Retrograde'}>&#8478;</span>
-                      : null}
+                      : <span className="text-muted-foreground/40">—</span>}
                   </TableCell>
-
-                  {/* Combust */}
-                  <TableCell className="px-2 py-1 text-center">
+                  <TableCell className="p-2 text-center">
                     {planet.combusted
                       ? <span title={language === 'hi' ? 'अस्त' : 'Combust'}>🔥</span>
-                      : null}
+                      : <span className="text-muted-foreground/40">—</span>}
                   </TableCell>
                 </TableRow>
               ))}

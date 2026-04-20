@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, AlertTriangle, Shield, Sparkles } from 'lucide-react';
+import { Calendar, AlertTriangle, Shield, Sparkles, Sun } from 'lucide-react';
 import { api } from '@/lib/api';
+import PanchangTabHeader from './PanchangTabHeader';
 
 interface SankrantiRow {
   rashi_index: number;
@@ -100,16 +101,18 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
   const rows = data?.sankrantis || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Sun}
+        title={language === 'hi' ? 'संक्रांति' : 'Sankranti'}
+        description={language === 'hi'
+          ? 'सूर्य के राशि-परिवर्तन (Ingression) और उसके आसपास का वर्जित काल/पुण्यकाल।'
+          : 'Sun ingress into each rashi with the restriction window and (heuristic) punyakaal details.'}
+      />
+
       <Card className="card-sacred border-sacred-gold/30">
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-sacred-gold" />
-              <h3 className="text-lg font-bold text-foreground">
-                {language === 'hi' ? 'संक्रांति (सूर्य-राशि प्रवेश)' : 'Sankranti (Sun Ingress)'}
-              </h3>
-            </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -154,14 +157,19 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
               {t('auto.noDataAvailable')}
             </div>
           ) : (
-            <div className="mt-4 rounded-xl border overflow-hidden">
-              <Table>
+            <div className="mt-4 rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+              <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{language === 'hi' ? 'संक्रांति सूची' : 'Sankranti List'}</span>
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="w-full text-xs sm:text-sm">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{language === 'hi' ? 'राशि' : 'Rashi'}</TableHead>
-                    <TableHead>{language === 'hi' ? 'प्रवेश (स्थानीय)' : 'Ingress (Local)'}</TableHead>
-                    <TableHead>{language === 'hi' ? 'वर्जित विंडो' : 'Restriction Window'}</TableHead>
-                    <TableHead className="hidden md:table-cell">{language === 'hi' ? 'पुण्यकाल' : 'Punyakaal'}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{language === 'hi' ? 'राशि' : 'Rashi'}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{language === 'hi' ? 'प्रवेश (स्थानीय)' : 'Ingress (Local)'}</TableHead>
+                    <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide">{language === 'hi' ? 'वर्जित विंडो' : 'Restriction Window'}</TableHead>
+                    <TableHead className="hidden md:table-cell text-left p-2 text-primary font-semibold uppercase tracking-wide">{language === 'hi' ? 'पुण्यकाल' : 'Punyakaal'}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -174,8 +182,8 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                     const makar = r.makar_special;
                     const fx = r.sign_effects;
                     return (
-                      <TableRow key={`${r.rashi_index}-${r.ingress_utc}`}>
-                        <TableCell className="font-semibold">
+                      <TableRow key={`${r.rashi_index}-${r.ingress_utc}`} className="border-t border-border hover:bg-muted/5">
+                        <TableCell className="p-2 font-semibold">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Sparkles className="h-4 w-4 text-sacred-gold shrink-0" />
                             {rashiName}
@@ -191,11 +199,11 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                             </div>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2">
                           <div className="text-sm">{r.ingress_local}</div>
                           <div className="text-[11px] text-muted-foreground">UTC: {r.ingress_utc}</div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2">
                           <div className="flex items-center gap-2">
                             <Shield className="h-4 w-4 text-red-600" />
                             <div className="text-sm">
@@ -208,7 +216,7 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                               : `${r.restriction_window.hours_before}+${r.restriction_window.hours_after} hours`}
                           </div>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
+                        <TableCell className="hidden md:table-cell p-2">
                           {puny ? (
                             <div className="text-sm">
                               <div>
@@ -254,7 +262,8 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
                     );
                   })}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </div>
           )}
         </CardContent>
@@ -262,4 +271,3 @@ export default function SankrantiTab({ language, t, latitude, longitude, selecte
     </div>
   );
 }
-

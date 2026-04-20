@@ -1,8 +1,9 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, Grid3X3 } from 'lucide-react';
 import { getDivisionalChartOptions } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
+import { Heading } from '@/components/ui/heading';
 
 // ── Lord Significance sub-components ──────────────────────────
 
@@ -122,6 +123,7 @@ export default function DivisionalTab({
   divisionalData, loadingDivisional, selectedDivision, changeDivision,
   handlePlanetClick, language, t,
 }: DivisionalTabProps) {
+  const hi = language === 'hi';
   const ascFromHouses = (houses: any): string => {
     const list = Array.isArray(houses) ? houses : [];
     const h1 = list.find((h: any) => Number(h?.number) === 1);
@@ -142,6 +144,19 @@ export default function DivisionalTab({
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Grid3X3 className="w-6 h-6" />
+          {hi ? 'विभाजन चार्ट' : 'Divisional Charts'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi
+            ? 'D1, D9, D10 जैसे वर्ग चार्ट चुनें और जीवन-क्षेत्र आधारित विश्लेषण करें।'
+            : 'Switch D-charts (D1, D9, D10, etc.) for life-area specific analysis.'}
+        </p>
+      </div>
+
       {/* Chart selector */}
       <div className="flex items-center gap-4 mb-4">
         <label className="text-sm font-medium text-foreground">{t('kundli.selectChart')}:</label>

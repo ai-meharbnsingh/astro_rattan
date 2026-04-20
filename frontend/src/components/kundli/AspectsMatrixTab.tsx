@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Grid3X3, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -38,32 +38,44 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
   const { t, language } = useTranslation();
   const PLANET_ABBR = language === 'hi' ? PLANET_ABBR_HI : PLANET_ABBR_EN;
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Grid3X3 className="w-6 h-6" />
+        {language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {language === 'hi' ? 'सभी ग्रहीय दृष्टियों का पूर्ण ग्रिड — वैदिक और पाश्चात्य दोनों' : 'Full grid of all planetary aspects — both Vedic & Western'}
+      </p>
+    </div>
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('common.loading')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('common.loading')}</span>
+        </div>
       </div>
     );
   }
 
   if (!data?.matrix) {
-    return <p className="text-center text-foreground py-8">{t('common.noData')}</p>;
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('common.noData')}</p>
+      </div>
+    );
   }
 
   const planets = data.planet_order || Object.keys(data.matrix);
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {language === 'hi' ? 'सभी ग्रहीय दृष्टियों का पूर्ण ग्रिड — वैदिक और पाश्चात्य दोनों' : 'Full grid of all planetary aspects — both Vedic & Western'}
-        </p>
-      </div>
+      {header}
 
       {/* Planet × Planet Matrix */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

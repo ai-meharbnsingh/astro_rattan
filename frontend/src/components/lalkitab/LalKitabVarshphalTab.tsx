@@ -3,8 +3,9 @@ import { useTranslation } from '@/lib/i18n';
 import { Calendar } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useLalKitab } from './LalKitabContext';
-import InteractiveKundli, { type PlanetData, type ChartData } from '@/components/InteractiveKundli';
+import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { toLkPlanetList } from './lalkitab-core';
+import { Heading } from '@/components/ui/heading';
 
 /** Build the current year and +/- 5 years range. */
 function getYearRange(): number[] {
@@ -52,40 +53,23 @@ export default function LalKitabVarshphalTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kundliId]);
 
-  const chartData: ChartData | null = useMemo(() => {
+  const planets: PlanetEntry[] = useMemo(() => {
     const planetsRaw = data?.chart_data?.planets;
-    const asc = data?.chart_data?.ascendant;
-    if (!planetsRaw) return null;
-    const planets: PlanetData[] = toLkPlanetList(planetsRaw);
-
-    // InteractiveKundli expects a list of houses with sign labels. For Varshphal, we can
-    // derive a simple sign progression from the ascendant sign.
-    const ZODIAC_SIGNS = [
-      'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
-      'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
-    ];
-    const ascSign = asc?.sign || 'Aries';
-    const ascIdx = Math.max(0, ZODIAC_SIGNS.indexOf(ascSign));
-    const houses = Array.from({ length: 12 }, (_, i) => ({
-      number: i + 1,
-      sign: ZODIAC_SIGNS[(ascIdx + i) % 12],
+    if (!planetsRaw) return [];
+    return toLkPlanetList(planetsRaw).map(p => ({
+      ...p,
+      house: p.house,
     }));
-
-    return {
-      planets,
-      houses,
-      ascendant: asc ? { longitude: asc.longitude || 0, sign: ascSign, sign_degree: asc.sign_degree } : undefined,
-    };
   }, [data]);
 
   return (
     <div className="space-y-8">
       {/* ─── Header ─── */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-sans font-bold text-sacred-gold flex items-center justify-center gap-2">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark flex items-center justify-center gap-2">
           <Calendar className="w-6 h-6" />
           {t('lk.varshphal.title')}
-        </h2>
+        </Heading>
         <p className="text-sm text-gray-600">{t('lk.varshphal.desc')}</p>
       </div>
 
@@ -151,14 +135,22 @@ export default function LalKitabVarshphalTab() {
             </div>
           </div>
 
-          {chartData && (
+          {planets.length > 0 && (
             <div className="rounded-xl border border-sacred-gold/20 bg-white p-4">
               <div className="text-sm font-semibold text-sacred-gold mb-3">
                 {t('lk.varshphal.annualChart')}
               </div>
               <div className="flex justify-center">
-                <div className="w-full max-w-[460px] aspect-square">
-                  <InteractiveKundli chartData={chartData} compact hideCombust />
+                <div className="w-full max-w-[420px] aspect-square">
+                  <KundliChartSVG
+                    planets={planets}
+                    ascendantSign="Aries" // Lal Kitab is ALWAYS fixed to Aries Lagna
+                    language={language}
+                    showRashiNumbers={true}
+                    showHouseNumbers={false}
+                    rashiNumberPlacement="center"
+                    showAscendantMarker={false}
+                  />
                 </div>
               </div>
             </div>

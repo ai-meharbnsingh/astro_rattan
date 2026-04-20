@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { Loader2, ChevronLeft, ChevronRight, ChevronDown, Search, CheckCircle2, AlertTriangle, AlertCircle, Navigation } from 'lucide-react';
+import PanchangTabHeader from './PanchangTabHeader';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -201,21 +202,19 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
 
   /* ================================================================ */
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <PanchangTabHeader
+        icon={Search}
+        title={language === 'hi' ? 'मुहूर्त खोजक' : 'Muhurat Finder'}
+        description={language === 'hi'
+          ? 'कार्य/दिशा चुनें, माह चुनें, और उपलब्ध शुभ तिथियाँ देखें।'
+          : 'Choose an activity or travel direction, pick a month, and view available auspicious dates.'}
+      />
 
       {/* ============================================================ */}
       {/* ACTIVITY MUHURAT                                             */}
       {/* ============================================================ */}
       <div className="space-y-4">
-        <div className="text-center">
-          <h3 className="text-lg font-bold text-foreground">
-            {language === 'hi' ? 'शुभ मुहूर्त खोजक' : 'Auspicious Muhurat Finder'}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {language === 'hi' ? 'कार्य चुनें, माह चुनें, शुभ तिथियाँ पाएँ' : 'Select an activity, pick a month, find auspicious dates'}
-          </p>
-        </div>
-
         {loadingActivities ? (
           <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-sacred-gold" /></div>
         ) : (

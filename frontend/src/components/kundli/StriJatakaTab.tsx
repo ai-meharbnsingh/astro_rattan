@@ -72,6 +72,18 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
   const [error, setError] = useState<string>('');
   const isHi = language === 'hi';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Heart className="w-6 h-6" />
+        {isHi ? 'स्त्री जातक' : 'Stri Jataka'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {isHi ? 'पारंपरिक स्त्री कुंडली — विवाह और स्त्री संकेतक' : 'Traditional female horoscopy — marriage & feminine signifiers'}
+      </p>
+    </div>
+  );
+
   useEffect(() => {
     if (!kundliId) return;
     let cancelled = false;
@@ -92,16 +104,22 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-sm text-foreground">{isHi ? 'लोड हो रहा है...' : 'Loading...'}</span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
+      <div className="space-y-4">
+        {header}
+        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
+      </div>
     );
   }
 
@@ -110,15 +128,7 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
   if (!data.applicable) {
     return (
       <div className="space-y-6">
-        {/* Page heading */}
-        <div>
-          <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-            {isHi ? 'स्त्री जातक' : 'Stri Jataka'}
-          </Heading>
-          <p className="text-sm text-muted-foreground">
-            {isHi ? 'पारंपरिक स्त्री कुंडली — विवाह और स्त्री संकेतक' : 'Traditional female horoscopy — marriage & feminine signifiers'}
-          </p>
-        </div>
+        {header}
         <div className={ohContainer}>
           <div className={ohHeader}>
             <Heart className="w-4 h-4" />
@@ -164,15 +174,7 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {isHi ? 'स्त्री जातक' : 'Stri Jataka'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {isHi ? 'पारंपरिक स्त्री कुंडली — विवाह और स्त्री संकेतक' : 'Traditional female horoscopy — marriage & feminine signifiers'}
-        </p>
-      </div>
+      {header}
 
       {/* Header */}
       <div className={ohContainer}>

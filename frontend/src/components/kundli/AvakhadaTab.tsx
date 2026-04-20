@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
 
@@ -99,7 +99,8 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
     <div className="space-y-4">
       {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Zap className="w-6 h-6" />
           {isHi ? 'अवखड़ा चक्र' : 'Avakhada Chakra'}
         </Heading>
         <p className="text-sm text-muted-foreground">

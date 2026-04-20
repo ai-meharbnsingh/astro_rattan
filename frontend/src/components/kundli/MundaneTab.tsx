@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Loader2, ChevronDown, ChevronLeft, ChevronRight, AlertTriangle, TrendingUp, TrendingDown, Minus, Shield, Globe2, Building2, Landmark, Moon, Sun } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import type { Language } from '@/lib/i18n';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
@@ -516,6 +516,16 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
 
   return (
     <div className="space-y-4">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Globe2 className="w-6 h-6" />
+          {lang === 'hi' ? 'मुंडेन ज्योतिष — विश्व प्रभाव' : 'Mundane Astrology — Global Impact'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {lang === 'hi' ? 'प्राकृतिक आपदाओं, राजनीतिक परिवर्तनों एवं आर्थिक प्रवृत्तियों का ज्योतिषीय विश्लेषण' : 'Analysis of natural events, political shifts and economic trends'}
+        </p>
+      </div>
 
       {/* Error Banner */}
       {error && (

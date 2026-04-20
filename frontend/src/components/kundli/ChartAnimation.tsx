@@ -94,7 +94,7 @@ function formatDate(d: Date): string {
 
 /** Linear interpolation of a longitude value, wrapping at 360 */
 function lerpLon(a: number, b: number, t: number): number {
-  let diff = ((b - a + 540) % 360) - 180; // shortest arc
+  const diff = ((b - a + 540) % 360) - 180; // shortest arc
   return ((a + diff * t) % 360 + 360) % 360;
 }
 
@@ -304,15 +304,16 @@ export default function ChartAnimation({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="bg-muted rounded-xl border border-border p-4">
-        <Heading as={4} variant={4} className="mb-1">
-          {l('Transit Animation', 'गोचर एनिमेशन')}
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Play className="w-6 h-6" />
+          {l('Chart Animation', 'चार्ट एनिमेशन')}
         </Heading>
-        <p className="text-xs text-foreground/70">
+        <p className="text-sm text-muted-foreground">
           {l(
             'Watch transit planets move over your birth chart. Aspects are highlighted in real-time.',
-            'अपनी जन्म कुंडली पर गोचर ग्रहों की चाल देखें। पहलू वास्तविक समय में हाइलाइट किए जाते हैं।'
+            'अपनी जन्म कुंडली पर गोचर ग्रहों की चाल देखें। ग्रह-दृष्टि वास्तविक समय में हाइलाइट होती है।'
           )}
         </p>
       </div>

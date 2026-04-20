@@ -120,9 +120,6 @@ export default function GrahaSambandhaTab({ kundliId, language }: Props) {
         <p className="text-sm text-muted-foreground">
           {hi ? 'ग्रहों के परस्पर सम्बन्ध एवं प्रभाव' : 'Planetary relationships and mutual influences'}
         </p>
-        {data.person_name && (
-          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}</p>
-        )}
       </div>
 
       {/* Summary */}

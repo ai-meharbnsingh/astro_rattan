@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Compass, Loader2 } from 'lucide-react';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
@@ -28,17 +28,37 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
   const planetShort = (name: string) => (translatePlanet(name || '', language) || name || '-').slice(0, 2);
   const planetList  = (items: any[]) => (items || []).map((x) => translatePlanet(String(x || ''), language)).join(', ') || '-';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Compass className="w-6 h-6" />
+        {hi ? 'केपी सिस्टम' : 'KP System'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {hi ? 'कृष्णमूर्ति पद्धति — उप-स्वामी और नाक्षत्रिक प्रणाली विश्लेषण' : 'Krishnamurti Paddhati — sub-lord & stellar system analysis'}
+      </p>
+    </div>
+  );
+
   if (loadingKp) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('kundli.loadingKP')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('kundli.loadingKP')}</span>
+        </div>
       </div>
     );
   }
 
   if (!kpData) {
-    return <p className="text-center text-foreground py-8">{t('kundli.clickKPTab')}</p>;
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('kundli.clickKPTab')}</p>
+      </div>
+    );
   }
 
   // ── Build chart data ──────────────────────────────────────────────────────
@@ -72,15 +92,7 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {hi ? 'केपी सिस्टम' : 'KP System'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {hi ? 'कृष्णमूर्ति पद्धति — उप-स्वामी और नाक्षत्रिक प्रणाली विश्लेषण' : 'Krishnamurti Paddhati — sub-lord & stellar system analysis'}
-        </p>
-      </div>
+      {header}
 
       {/* 1. KP Planet Table */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

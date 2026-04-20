@@ -182,7 +182,9 @@ test.describe('Lal Kitab E2E Audit — Create Client & Verify Tabs', () => {
           { key: 'object object', regex: /\[object object\]/i },
           { key: 'NaN',       regex: /\bNaN\b/ },
         ];
-        while (node = walker.nextNode()) {
+        while (true) {
+          node = walker.nextNode();
+          if (!node) break;
           const txt = node.textContent || '';
           for (const bad of badStrings) {
             if (bad.regex.test(txt)) {

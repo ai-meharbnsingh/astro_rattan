@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Gauge, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
 
@@ -38,6 +38,18 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
   const [expandedPlanets, setExpandedPlanets] = useState<Set<string>>(new Set());
   const hi = language === 'hi';
 
+  const header = (
+    <div>
+      <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+        <Gauge className="w-6 h-6" />
+        {hi ? 'षड्बल' : 'Shadbala'}
+      </Heading>
+      <p className="text-sm text-muted-foreground">
+        {hi ? 'छः गुना बल मापन — प्रत्येक ग्रह की संख्यात्मक शक्ति' : 'Six-fold strength measurement — numerical power of each planet'}
+      </p>
+    </div>
+  );
+
   const toggleExpand = (planet: string) => {
     setExpandedPlanets((prev) => {
       const next = new Set(prev);
@@ -49,28 +61,28 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
 
   if (loadingShadbala) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        <span className="ml-2 text-foreground">{t('kundli.calculatingShadbala')}</span>
+      <div className="space-y-4">
+        {header}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2 text-foreground">{t('kundli.calculatingShadbala')}</span>
+        </div>
       </div>
     );
   }
 
   if (!shadbalaData?.planets) {
-    return <p className="text-center text-foreground py-8">{t('kundli.clickShadbalaTab')}</p>;
+    return (
+      <div className="space-y-4">
+        {header}
+        <p className="text-center text-foreground py-8">{t('kundli.clickShadbalaTab')}</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
-          {hi ? 'षड्बल' : 'Shadbala'}
-        </Heading>
-        <p className="text-sm text-muted-foreground">
-          {hi ? 'छः गुना बल मापन — प्रत्येक ग्रह की संख्यात्मक शक्ति' : 'Six-fold strength measurement — numerical power of each planet'}
-        </p>
-      </div>
+      {header}
 
       {/* Shadbala Bar Chart */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
