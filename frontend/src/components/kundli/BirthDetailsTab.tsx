@@ -3,6 +3,7 @@ import { getDignity, SIGN_TYPE, SIGN_ELEMENT, PLANET_NATURE, toDMS } from './kun
 import { calculateJaiminiKarakas } from './jhora-utils';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateNakshatra, translateLabel } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface BirthDetailsTabProps {
   planets: any[];
@@ -24,9 +25,18 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
   }
 
   return (
-    <div className={ohContainer}>
+    <div className="space-y-4">
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'जन्म विवरण — ग्रह स्थिति' : 'Birth Details — Planetary Positions'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'राशि, नक्षत्र, दिशा, तत्व, स्वभाव एवं जैमिनी कारक' : 'Sign, nakshatra, dignity, element, nature and Jaimini karakas'}
+        </p>
+      </div>
+      <div className={ohContainer}>
       <div className={ohHeader}>
-        <span>{isHi ? 'जन्म विवरण — ग्रह स्थिति' : 'Birth Details — Planetary Positions'}</span>
+        <span>{isHi ? 'ग्रह स्थिति' : 'Planetary Positions'}</span>
       </div>
       <div className="overflow-x-auto">
         <table style={{ tableLayout: 'fixed', width: '100%', minWidth: '720px', borderCollapse: 'collapse' }} className="text-xs">

@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface AspectsMatrixTabProps {
   data: any;
@@ -54,6 +55,15 @@ export default function AspectsMatrixTab({ data, loading }: AspectsMatrixTabProp
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {language === 'hi' ? 'दृष्टि मैट्रिक्स' : 'Aspects Matrix'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {language === 'hi' ? 'सभी ग्रहीय दृष्टियों का पूर्ण ग्रिड — वैदिक और पाश्चात्य दोनों' : 'Full grid of all planetary aspects — both Vedic & Western'}
+        </p>
+      </div>
 
       {/* Planet × Planet Matrix */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

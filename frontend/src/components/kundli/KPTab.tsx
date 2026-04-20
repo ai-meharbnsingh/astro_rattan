@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { translatePlanet, translateSign, translateNakshatra, translateBackend } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface KPTabProps {
   kpData: any;
@@ -71,6 +72,15 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {hi ? 'केपी सिस्टम' : 'KP System'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'कृष्णमूर्ति पद्धति — उप-स्वामी और नाक्षत्रिक प्रणाली विश्लेषण' : 'Krishnamurti Paddhati — sub-lord & stellar system analysis'}
+        </p>
+      </div>
 
       {/* 1. KP Planet Table */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

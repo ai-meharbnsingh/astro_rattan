@@ -2,6 +2,7 @@ import { Loader2, Star, Crown, Eye, Clock, Wallet, ChevronDown, ChevronRight, Sp
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import { useState, Fragment } from 'react';
+import { Heading } from '@/components/ui/heading';
 
 interface JaiminiTabProps {
   data: any;
@@ -40,6 +41,15 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'जैमिनी' : 'Jaimini'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'जैमिनी ज्योतिष — चर कारक, विशेष दशाएं और राजयोग' : 'Jaimini astrology — chara karaka, special dashas & rajayogas'}
+        </p>
+      </div>
 
       {/* Chara Karakas */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

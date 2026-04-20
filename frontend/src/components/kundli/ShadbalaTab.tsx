@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 const STHANA_DETAIL_KEYS: Record<string, { en: string; hi: string }> = {
   uchcha:       { en: 'Exaltation', hi: 'उच्च' },
@@ -61,6 +62,15 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {hi ? 'षड्बल' : 'Shadbala'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'छः गुना बल मापन — प्रत्येक ग्रह की संख्यात्मक शक्ति' : 'Six-fold strength measurement — numerical power of each planet'}
+        </p>
+      </div>
 
       {/* Shadbala Bar Chart */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">

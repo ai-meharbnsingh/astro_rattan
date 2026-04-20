@@ -1,6 +1,7 @@
 import { Loader2, Shield } from 'lucide-react';
 import { translateSign, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface SadesatiTabProps {
   sadesatiData: any;
@@ -75,6 +76,15 @@ export default function SadesatiTab({ sadesatiData, loadingSadesati, language, t
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {hi ? 'साढ़े साती' : 'Sade Sati'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'जन्म चंद्र पर शनि का 7.5 वर्षीय चक्र — चरण और तीव्रता' : "Saturn's 7.5-year cycle over natal Moon — phase & intensity"}
+        </p>
+      </div>
       {/* Intro */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-3">

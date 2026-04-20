@@ -3,6 +3,7 @@ import { Heart, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import { Heading } from '@/components/ui/heading';
 
 interface KundliOption {
   id: string;
@@ -86,15 +87,13 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className={ohContainer}>
-        <div className={ohHeader}>
-          <Heart className="w-4 h-4" />
-          <span>{t('milan.title')}</span>
-        </div>
-        <div className="px-4 py-3">
-          <p className="text-sm text-muted-foreground">{t('milan.subtitle')}</p>
-        </div>
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Heart className="w-6 h-6" />
+          {t('milan.title')}
+        </Heading>
+        <p className="text-sm text-muted-foreground">{t('milan.subtitle')}</p>
       </div>
 
       {savedKundlis.length < 2 ? (

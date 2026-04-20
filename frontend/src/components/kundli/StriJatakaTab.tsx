@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Heart, AlertTriangle, BookOpen, Info, CheckCircle2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface StriYoga {
   key: string;
@@ -109,6 +110,15 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
   if (!data.applicable) {
     return (
       <div className="space-y-6">
+        {/* Page heading */}
+        <div>
+          <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+            {isHi ? 'स्त्री जातक' : 'Stri Jataka'}
+          </Heading>
+          <p className="text-sm text-muted-foreground">
+            {isHi ? 'पारंपरिक स्त्री कुंडली — विवाह और स्त्री संकेतक' : 'Traditional female horoscopy — marriage & feminine signifiers'}
+          </p>
+        </div>
         <div className={ohContainer}>
           <div className={ohHeader}>
             <Heart className="w-4 h-4" />
@@ -154,6 +164,15 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'स्त्री जातक' : 'Stri Jataka'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'पारंपरिक स्त्री कुंडली — विवाह और स्त्री संकेतक' : 'Traditional female horoscopy — marriage & feminine signifiers'}
+        </p>
+      </div>
 
       {/* Header */}
       <div className={ohContainer}>

@@ -94,16 +94,13 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
   return (
     <div className="space-y-4">
 
-      {/* Header */}
+      {/* Page heading */}
       <div>
-        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
-          <Sparkles className="w-6 h-6" />
-          {isHi ? 'कुंडली व्याख्या' : 'Kundli Interpretations'}
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'कुंडली व्याख्या' : 'Interpretations'}
         </Heading>
         <p className="text-sm text-muted-foreground">
-          {isHi
-            ? 'व्यक्तित्व · जीवन क्षेत्र · ग्रह फल · दशा'
-            : 'Personality · Life Areas · Planet Effects · Dasha'}
+          {isHi ? 'सभी जीवन क्षेत्रों के लिए व्यापक कुंडली व्याख्याएं' : 'Comprehensive chart interpretations for all life areas'}
         </p>
         {data.person_name && (
           <p className="text-xs text-muted-foreground mt-0.5 font-medium">{data.person_name}{asc.sign ? ` · ${asc.sign}` : ''}</p>

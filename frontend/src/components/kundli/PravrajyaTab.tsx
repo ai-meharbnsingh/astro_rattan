@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Flame, CheckCircle2, BookOpen, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface PravrajyaYoga {
   key: string;
@@ -71,6 +72,15 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'प्रव्रज्या योग' : 'Pravrajya Yogas'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'त्याग, अध्यात्म और संन्यास जीवन के योग' : 'Yogas for renunciation, spirituality & monastic life'}
+        </p>
+      </div>
       {/* Header container */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">

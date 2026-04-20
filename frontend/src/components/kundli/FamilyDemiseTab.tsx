@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Heart, BookOpen, Info, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface HealthIndicator {
   indicator_en: string;
@@ -88,19 +89,17 @@ export default function FamilyDemiseTab({ kundliId, language }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className={ohContainer}>
-        <div className={ohHeader}>
-          <Heart className="w-4 h-4" />
-          <span>{hi ? 'परिवार स्वास्थ्य एवं दीर्घायु विश्लेषण' : 'Family Member Health & Longevity Analysis'}</span>
-        </div>
-        <div className="px-4 py-3">
-          <p className="text-xs text-muted-foreground">
-            {hi
-              ? 'कुंडली में परिवार के सदस्यों के स्वास्थ्य एवं दीर्घायु से सम्बन्धित संकेत'
-              : "Astrological indicators related to family members' health and longevity in the chart"}
-          </p>
-        </div>
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Heart className="w-6 h-6" />
+          {hi ? 'परिवार स्वास्थ्य एवं दीर्घायु विश्लेषण' : 'Family Member Health & Longevity Analysis'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi
+            ? 'कुंडली में परिवार के सदस्यों के स्वास्थ्य एवं दीर्घायु से सम्बन्धित संकेत'
+            : "Astrological indicators related to family members' health and longevity in the chart"}
+        </p>
       </div>
 
       {/* Sensitivity disclaimer */}

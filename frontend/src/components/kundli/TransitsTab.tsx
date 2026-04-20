@@ -7,6 +7,7 @@ import ConcentricChart from '@/components/kundli/ConcentricChart';
 import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSection';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface TransitsTabProps {
   transitData: any;
@@ -210,6 +211,15 @@ export default function TransitsTab(props: TransitsTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {language === 'hi' ? 'गोचर' : 'Transits'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {language === 'hi' ? 'जन्म कुंडली पर वर्तमान ग्रहों की स्थिति' : 'Current planetary positions overlaid on natal chart'}
+        </p>
+      </div>
       {/* Date/Time Picker */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">

@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface VarshphalTabProps {
   varshphalData: any;
@@ -20,6 +21,15 @@ export default function VarshphalTab({
 }: VarshphalTabProps) {
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {language === 'hi' ? 'वर्षफल' : 'Varshphal'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {language === 'hi' ? 'चालू वर्ष के लिए वार्षिक सौर वापसी चार्ट विश्लेषण' : 'Annual solar return chart analysis for the current year'}
+        </p>
+      </div>
       {/* Year selector */}
       <div className="flex items-center gap-4">
         <label className="text-sm font-medium text-foreground">{t('varshphal.selectYear')}:</label>

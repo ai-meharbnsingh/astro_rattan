@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 interface SodashvargaTabProps {
   sodashvargaData: any;
@@ -75,6 +76,15 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {language === 'hi' ? 'षोडशवर्ग' : 'Sodashvarga'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {language === 'hi' ? 'जीवन-क्षेत्र विशिष्ट विश्लेषण के लिए 16 विभागीय चार्ट' : '16 divisional charts for life-area specific analysis'}
+        </p>
+      </div>
       {/* Varga Table */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">

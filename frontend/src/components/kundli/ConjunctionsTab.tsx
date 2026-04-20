@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Link2, Sparkles, TrendingUp, TrendingDown, BookOpen, Zap } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 const EFFECT_STRENGTH_BADGE: Record<string, string> = {
   full:     'bg-emerald-100 text-emerald-800',
@@ -111,6 +112,15 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'ग्रह युतियाँ' : 'Conjunctions'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'ग्रहों की युतियाँ और कुंडली में उनके संयुक्त प्रभाव' : 'Planetary conjunctions and their combined effects in chart'}
+        </p>
+      </div>
 
       {/* Header */}
       <div className={ohContainer}>

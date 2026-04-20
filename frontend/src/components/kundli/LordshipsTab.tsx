@@ -1,6 +1,7 @@
 import { useTranslation } from '@/lib/i18n';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { SIGN_LORD } from './kundli-utils';
+import { Heading } from '@/components/ui/heading';
 
 interface LordshipsTabProps {
   planets: any[];
@@ -48,7 +49,16 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
   const HOUSE_SIGNIFICANCE = isHi ? HOUSE_SIGNIFICANCE_HI : HOUSE_SIGNIFICANCE_EN;
 
   return (
-    <div className={ohContainer}>
+    <div className="space-y-4">
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'भाव स्वामित्व' : 'House Lordships'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'प्रत्येक भाव का राशि, स्वामी एवं स्थान' : 'Sign, lord and placement for each house'}
+        </p>
+      </div>
+      <div className={ohContainer}>
       <div className={ohHeader}>
         <span>{isHi ? 'भाव स्वामित्व' : 'House Lordships'}</span>
       </div>
@@ -92,6 +102,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

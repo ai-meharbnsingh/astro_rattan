@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -220,6 +221,15 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {hi ? 'दशा फल' : 'Dasha Effects'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'वर्तमान सक्रिय दशा अवधियों के लिए व्याख्यात्मक भविष्यवाणियाँ' : 'Interpretive predictions for currently active dasha periods'}
+        </p>
+      </div>
       {/* Intro */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">

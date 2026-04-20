@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, AlertTriangle, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface TransitRow {
   planet: string;
@@ -74,6 +75,15 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'गोचर वेध' : 'Gochara Vedha'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'अवरोध बिंदु जो लाभकारी गोचर को निष्प्रभावी करते हैं' : 'Obstruction points that neutralise a beneficial transit'}
+        </p>
+      </div>
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />

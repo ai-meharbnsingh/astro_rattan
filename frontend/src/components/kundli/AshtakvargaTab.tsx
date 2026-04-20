@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign, translateSignAbbr } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 const ALL_SIGNS  = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const ALL_ABBR   = ['Ari','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
@@ -167,6 +168,15 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
         </div>
       ) : ashtakvargaData ? (
         <div className="space-y-6">
+          {/* Page heading */}
+          <div>
+            <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+              {language === 'hi' ? 'अष्टकवर्ग' : 'Ashtakvarga'}
+            </Heading>
+            <p className="text-sm text-muted-foreground">
+              {language === 'hi' ? 'प्रति राशि 8 संवेदनशील बिंदुओं में ग्रहीय शक्ति स्कोर' : 'Planetary strength scores across 8 sensitive points per sign'}
+            </p>
+          </div>
 
           {/* SAV Kundli Chart + SAV Bar Chart — side by side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, Map, ChevronDown, ChevronUp, Briefcase, Heart, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 // Backend shape: city_analysis is a dict { cityName: { ascendant, planet_houses, strengths, cautions, overall_score } }
 // best_cities is { career: [[name,score,reason],...], relationships: [...], wealth: [...], health: [...], spiritual: [...] }
@@ -265,19 +266,17 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className={ohContainer}>
-        <div className={ohHeader}>
-          <Map className="w-4 h-4" />
-          <span>{isHi ? 'एस्ट्रो मैप — भौगोलिक ज्योतिष' : 'Astro Map — Geographic Astrology'}</span>
-        </div>
-        <div className="px-4 py-3">
-          <p className="text-xs text-muted-foreground">
-            {isHi
-              ? 'जन्म कुंडली के ग्रहों की स्थिति के आधार पर विश्व के सर्वश्रेष्ठ स्थानों का विश्लेषण'
-              : 'Best world locations based on planetary positions in your birth chart'}
-          </p>
-        </div>
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1 flex items-center gap-2">
+          <Map className="w-6 h-6" />
+          {isHi ? 'एस्ट्रो मैप — भौगोलिक ज्योतिष' : 'Astro Map — Geographic Astrology'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi
+            ? 'जन्म कुंडली के ग्रहों की स्थिति के आधार पर विश्व के सर्वश्रेष्ठ स्थानों का विश्लेषण'
+            : 'Best world locations based on planetary positions in your birth chart'}
+        </p>
       </div>
 
       {/* Best Cities by Life Area */}

@@ -240,8 +240,8 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="text-center text-xs text-muted-foreground italic pt-2 border-t border-border">
+      {/* Sloka footer */}
+      <div className="text-center text-xs text-muted-foreground italic pt-2 border-t border-sacred-gold/20">
         {data.sloka_ref}
       </div>
     </div>

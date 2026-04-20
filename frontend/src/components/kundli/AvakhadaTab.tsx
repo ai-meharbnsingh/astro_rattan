@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign, translateNakshatra } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface AvakhadaTabProps {
   avakhadaData: any;
@@ -96,6 +97,16 @@ export default function AvakhadaTab({ avakhadaData, loadingAvakhada, language, t
 
   return (
     <div className="space-y-4">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'अवखड़ा चक्र' : 'Avakhada Chakra'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'जन्म संस्कार सारांश — राशि, नक्षत्र, गण, नाड़ी एवं शुभ संकेतक' : 'Birth essence summary — rashi, nakshatra, gana, nadi and lucky indicators'}
+        </p>
+      </div>
+
       {/* Avakhada Chakra main grid */}
       <div className={ohContainer}>
         <div className={ohHeader}>

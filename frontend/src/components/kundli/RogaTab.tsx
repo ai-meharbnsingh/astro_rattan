@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Activity, AlertTriangle, Clock, MapPin, HeartPulse, Info, BookOpen, ShieldAlert, Home } from 'lucide-react';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 
 interface GeneralTendency {
   planet: string;
@@ -181,6 +182,15 @@ export default function RogaTab({ kundliId, language, t }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'रोग विश्लेषण' : 'Disease Analysis'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'कुंडली से स्वास्थ्य कमजोरियाँ और रोग प्रवृत्तियाँ' : 'Health vulnerabilities and disease tendencies from chart'}
+        </p>
+      </div>
 
       {/* Header */}
       <div className={ohContainer}>

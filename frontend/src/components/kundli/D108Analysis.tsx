@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Heading } from '@/components/ui/heading';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -251,6 +252,15 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
 
   return (
     <div className="space-y-6">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {hi ? 'D108 अष्टोत्तरांश' : 'D108 Chart'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {hi ? 'गहन आध्यात्मिक और कर्म अंतर्दृष्टि के लिए दुर्लभ D108 चार्ट' : 'Rare D108 chart for deep spiritual & karmic insights'}
+        </p>
+      </div>
       {/* Title bar */}
       <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-3">

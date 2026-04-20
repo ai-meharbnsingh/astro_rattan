@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Loader2, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { translateSign, translateNakshatra } from '@/lib/backend-translations';
+import { Heading } from '@/components/ui/heading';
 
 interface UpagrahasTabProps {
   upagrahasData: any;
@@ -70,6 +71,16 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
 
   return (
     <div className="space-y-4">
+      {/* Page heading */}
+      <div>
+        <Heading as={2} variant={2} className="text-sacred-gold-dark mb-1">
+          {isHi ? 'उपग्रह' : 'Upagrahas'}
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          {isHi ? 'गुलिक, मांडी एवं अन्य सूक्ष्म ग्रहों की स्थिति' : 'Positions of Gulika, Mandi and other sub-planets'}
+        </p>
+      </div>
+
       {/* Critical Gulika/Mandi in Lagna alert */}
       {lagnaAlerts.map(u => (
         <div key={u.name} className="rounded-xl border-2 border-red-400 bg-red-50 p-4 flex items-start gap-3">
