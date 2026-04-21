@@ -478,7 +478,7 @@ export default function AdminDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 max-w-7xl mx-auto">
+    <div className="min-h-screen pt-24 pb-16 px-4 max-w-screen-2xl mx-auto">
       {/* Page header */}
       <div className="flex items-center gap-3 mb-8">
         <Shield className="w-8 h-8 text-sacred-gold-dark" />

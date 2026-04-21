@@ -981,7 +981,7 @@ export default function Features() {
     <>
     <section ref={sectionRef} id="features" className="relative pt-4 pb-24 bg-background">
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Live Planetary Positions (Gochar) */}
         {currentSky && (
           <div id="present-kundli-section" className="features-title mb-12">
@@ -2095,7 +2095,7 @@ export default function Features() {
             <div className="w-20 h-1 bg-sacred-gold mx-auto rounded-full" />
           </div>
 
-          <div className="max-w-7xl mx-auto space-y-6">
+          <div className="max-w-screen-2xl mx-auto space-y-6">
             {[
               {
                 category: l('BASICS', 'बुनियादी बातें'),

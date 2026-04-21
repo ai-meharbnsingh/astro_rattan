@@ -37,13 +37,14 @@ export default class LalKitabErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      const hi = typeof document !== 'undefined' && document.documentElement.lang === 'hi';
       return (
         <div className="p-6 bg-red-50 border-2 border-red-300 rounded-xl">
-          <h2 className="text-xl font-bold text-red-700 mb-2">Something went wrong</h2>
+          <h2 className="text-xl font-bold text-red-700 mb-2">{hi ? 'कुछ गलत हुआ' : 'Something went wrong'}</h2>
           <p className="text-sm text-red-600 mb-3">{this.state.error?.message}</p>
           {this.state.errorInfo && (
             <details className="text-xs text-red-700 bg-white p-3 rounded border border-red-200">
-              <summary className="cursor-pointer font-mono font-bold">Error Details</summary>
+              <summary className="cursor-pointer font-mono font-bold">{hi ? 'त्रुटि विवरण' : 'Error Details'}</summary>
               <pre className="mt-2 overflow-x-auto whitespace-pre-wrap">
                 {this.state.errorInfo.componentStack}
               </pre>
@@ -53,7 +54,7 @@ export default class LalKitabErrorBoundary extends Component<Props, State> {
             onClick={() => window.location.reload()}
             className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
-            Reload Page
+            {hi ? 'पेज रीलोड करें' : 'Reload Page'}
           </button>
         </div>
       );

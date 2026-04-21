@@ -204,9 +204,13 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded-full bg-sacred-gold/10 text-sacred-gold-dark text-[10px] font-bold uppercase tracking-tight">
-                      {planetLabel} · H{n.house}
+                      {planetLabel} · {isHi ? `भाव ${n.house}` : `H${n.house}`}
                     </span>
-                    <span className="text-[10px] text-gray-400 font-medium uppercase">{n.category}</span>
+                    <span className="text-[10px] text-gray-400 font-medium uppercase">
+                      {isHi
+                        ? ({general:'सामान्य', health:'स्वास्थ्य', wealth:'धन', marriage:'विवाह', career:'करियर', family:'परिवार'}[n.category] || n.category)
+                        : n.category.charAt(0).toUpperCase() + n.category.slice(1)}
+                    </span>
                   </div>
                   <div className={`shrink-0 ${isConfirmed ? 'text-green-600' : 'text-gray-300 group-hover:text-sacred-gold/50'}`}>
                     {isConfirmed ? <CheckCircle2 className="w-5 h-5 fill-green-50" /> : <Circle className="w-5 h-5" />}

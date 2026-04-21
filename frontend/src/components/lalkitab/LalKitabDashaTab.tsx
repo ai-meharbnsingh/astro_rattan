@@ -152,8 +152,8 @@ export default function LalKitabDashaTab({ kundliId, language }: Props) {
           <div className="flex justify-between text-xs mb-1.5 opacity-70">
             <span>{isHi ? `जीवन चरण: ${life_phase?.label || '-'}` : `Life Phase: ${life_phase?.label || '-'}`}</span>
             <span>
-              {(Number.isFinite(Number(years_into_phase)) ? years_into_phase : 0)}y in /{' '}
-              {(Number.isFinite(Number(years_remaining_in_phase)) ? years_remaining_in_phase : 0)}y left
+              {(Number.isFinite(Number(years_into_phase)) ? years_into_phase : 0)}{isHi ? 'वर्ष पूरे / ' : 'y in / '}
+              {(Number.isFinite(Number(years_remaining_in_phase)) ? years_remaining_in_phase : 0)}{isHi ? 'वर्ष शेष' : 'y left'}
             </span>
           </div>
           <div className="h-1.5 rounded-full bg-current/20 overflow-hidden">

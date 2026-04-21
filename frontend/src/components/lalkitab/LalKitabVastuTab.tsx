@@ -148,7 +148,7 @@ function VastuCompass({ map, warnings, hi }: CompassProps) {
               {/* House number */}
               <text x={labelMid.x} y={labelMid.y + 4} textAnchor="middle" fontSize="9.5"
                 fontWeight="bold" fill={isCrit ? '#dc2626' : isWarn ? '#92400e' : '#374151'}>
-                H{entry.house}
+                {hi ? `भाव ${entry.house}` : `H${entry.house}`}
               </text>
 
               {/* Warning badge */}
@@ -203,7 +203,7 @@ function VastuCompass({ map, warnings, hi }: CompassProps) {
         return (
           <div className="absolute bottom-0 left-0 right-0 mx-4 bg-white border border-sacred-gold/30 rounded-xl p-3 shadow-lg text-xs pointer-events-none">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-bold text-sacred-gold">H{entry.house}</span>
+              <span className="font-bold text-sacred-gold">{hi ? `भाव ${entry.house}` : `H${entry.house}`}</span>
               <span className="text-muted-foreground">{pickLang(entry.direction, hi)}</span>
               <span className="text-muted-foreground">· {pickLang(entry.zone, hi)}</span>
             </div>
@@ -280,7 +280,7 @@ function HomeFloorPlan({ map, warnings, hi }: FloorPlanProps) {
             </div>
             <div>
               {!isCenter && houses.map(h => (
-                <span key={h} className="text-xs font-semibold text-muted-foreground/70 mr-1">H{h}</span>
+                <span key={h} className="text-xs font-semibold text-muted-foreground/70 mr-1">{hi ? `भाव ${h}` : `H${h}`}</span>
               ))}
               <div className="text-xs font-semibold text-foreground mt-0.5 leading-tight">
                 {hi ? dir_hi : (dir || "").split(' ').map(w => w.charAt(0) + w.slice(1)).join(' ')}
@@ -288,7 +288,9 @@ function HomeFloorPlan({ map, warnings, hi }: FloorPlanProps) {
               {!isCenter && planets.length > 0 && (
                 <div className="flex flex-wrap gap-0.5 mt-1">
                   {planets.slice(0, 3).map(p => (
-                    <span key={p} className={`text-[10px] font-bold ${PLANET_CSS[p] ?? 'text-foreground'}`}>{p.slice(0, 3)}</span>
+                    <span key={p} className={`text-[10px] font-bold ${PLANET_CSS[p] ?? 'text-foreground'}`}>
+                      {hi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[p] || p).slice(0, 3) : p.slice(0, 3)}
+                    </span>
                   ))}
                 </div>
               )}
@@ -507,7 +509,7 @@ export default function LalKitabVastuTab({ kundliId, language }: Props) {
               <div key={i} className={`rounded-xl p-4 border ${w.is_critical ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'}`}>
                 <div className="flex items-start gap-2 mb-2">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shrink-0 ${w.is_critical ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                    H{w.house}
+                    {hi ? `भाव ${w.house}` : `H${w.house}`}
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-1.5 mb-0.5">

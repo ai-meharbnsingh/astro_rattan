@@ -232,7 +232,7 @@ export default function LalKitabChandraKundaliTab({ language, kundliId: kundliId
                   <div className="font-semibold text-sm text-foreground">
                     {hi ? r.planet_hi : r.planet}
                     <span className="text-xs text-muted-foreground ml-2">
-                      H{r.natal_house} → H{r.chandra_house}
+                      {hi ? `भाव ${r.natal_house} → भाव ${r.chandra_house}` : `H${r.natal_house} → H${r.chandra_house}`}
                     </span>
                   </div>
                   <span
@@ -295,13 +295,13 @@ export default function LalKitabChandraKundaliTab({ language, kundliId: kundliId
                     {hi ? c.planet_hi : c.planet}
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                    {hi ? 'लग्न' : 'Lagna'} H{c.lagna_house}{' '}
+                    {hi ? 'लग्न' : 'Lagna'} {hi ? `भाव ${c.lagna_house}` : `H${c.lagna_house}`}{' '}
                     {c.lagna_is_favourable
                       ? (hi ? '• शुभ' : '• favourable')
                       : (hi ? '• प्रतिकूल' : '• unfavourable')}
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
-                    {hi ? 'चंद्र' : 'Chandra'} H{c.chandra_house}{' '}
+                    {hi ? 'चंद्र' : 'Chandra'} {hi ? `भाव ${c.chandra_house}` : `H${c.chandra_house}`}{' '}
                     {c.chandra_is_favourable
                       ? (hi ? '• शुभ' : '• favourable')
                       : (hi ? '• पीड़ित' : '• strained')}

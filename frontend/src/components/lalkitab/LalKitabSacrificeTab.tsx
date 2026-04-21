@@ -115,7 +115,9 @@ export default function LalKitabSacrificeTab({ kundliId, language }: Props) {
               </span>
             </div>
             <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-semibold ${severityPill(result.severity)}`}>
-              {result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
+              {hi
+                ? ({critical:'अत्यंत गंभीर', high:'उच्च', moderate:'मध्यम', low:'निम्न'}[result.severity] || result.severity)
+                : result.severity.charAt(0).toUpperCase() + result.severity.slice(1)}
             </span>
           </div>
 

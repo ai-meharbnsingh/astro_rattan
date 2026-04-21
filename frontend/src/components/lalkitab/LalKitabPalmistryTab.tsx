@@ -232,7 +232,9 @@ export default function LalKitabPalmistryTab({ kundliId, language }: Props) {
                 <span className="text-sm font-semibold text-foreground">{c.zone_name}</span>
                 <span className="text-xs text-muted-foreground">({c.planet})</span>
                 <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${NATURE_STYLE[c.nature]}`}>
-                  {c.nature}
+                  {hi
+                    ? ({benefic:'शुभ', malefic:'अशुभ', mixed:'मिश्रित'}[c.nature] || c.nature)
+                    : c.nature.charAt(0).toUpperCase() + c.nature.slice(1)}
                 </span>
               </div>
               <p className="text-xs text-foreground leading-relaxed">

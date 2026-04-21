@@ -93,17 +93,17 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
           <div className="flex items-center justify-center gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-red-700">{criticalRules.length}</div>
-              <div className="text-xs text-red-500">Critical</div>
+              <div className="text-xs text-red-500">{hi ? 'अत्यंत गंभीर' : 'Critical'}</div>
             </div>
             <div className="w-px h-8 bg-red-200" />
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">{highRules.length}</div>
-              <div className="text-xs text-orange-500">High</div>
+              <div className="text-xs text-orange-500">{hi ? 'उच्च' : 'High'}</div>
             </div>
             <div className="w-px h-8 bg-red-200" />
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">{moderateRules.length}</div>
-              <div className="text-xs text-yellow-500">Moderate</div>
+              <div className="text-xs text-yellow-500">{hi ? 'मध्यम' : 'Moderate'}</div>
             </div>
           </div>
         ) : (
@@ -137,13 +137,19 @@ export default function LalKitabForbiddenTab({ kundliId, language }: Props) {
               <span className={`w-3 h-3 rounded-full ${PLANET_DOT[typeof rule.planet === 'string' ? rule.planet : pickLang(rule.planet, false)] || 'bg-gray-400'}`} />
               <span className="font-bold text-foreground text-sm">{typeof rule.planet === 'string' ? rule.planet : pickLang(rule.planet, false)}</span>
               <span className="text-xs text-muted-foreground px-1.5 py-0.5 bg-white/60 rounded">
-                H{rule.house}
+                {hi ? `भाव ${rule.house}` : `H${rule.house}`}
               </span>
               <span className="text-sm">{CATEGORY_ICON[rule.category] || '⚠️'}</span>
-              <span className="text-xs text-muted-foreground capitalize">{rule.category}</span>
+              <span className="text-xs text-muted-foreground capitalize">
+                {hi
+                  ? ({construction:'निर्माण', charity:'दान', household:'घरेलू', spiritual:'आध्यात्मिक', property:'संपत्ति', remedies:'उपाय', behavior:'व्यवहार', timing:'समय', gifts:'उपहार'}[rule.category] || rule.category)
+                  : rule.category}
+              </span>
             </div>
             <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${severityPill(mapSeverity(rule.severity))}`}>
-              {rule.severity.toUpperCase()}
+              {hi
+                ? ({critical:'अत्यंत गंभीर', high:'उच्च', moderate:'मध्यम'}[rule.severity] || rule.severity)
+                : rule.severity.charAt(0).toUpperCase() + rule.severity.slice(1)}
             </span>
           </div>
 

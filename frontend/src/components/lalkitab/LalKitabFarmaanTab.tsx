@@ -154,7 +154,9 @@ export default function LalKitabFarmaanTab() {
           >
             <option value="">{isHi ? 'सभी ग्रह' : 'All planets'}</option>
             {['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'].map((p) => (
-              <option key={p} value={p}>{p}</option>
+              <option key={p} value={p}>
+                {isHi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[p] || p) : p}
+              </option>
             ))}
           </select>
           <select
@@ -164,7 +166,11 @@ export default function LalKitabFarmaanTab() {
           >
             <option value="">{isHi ? 'सभी ऋण' : 'All debts'}</option>
             {['Pitru Rin', 'Matru Rin', 'Deva Rin', 'Rishi Rin', 'Nri Rin', 'Bhoot Rin'].map((d) => (
-              <option key={d} value={d}>{d}</option>
+              <option key={d} value={d}>
+                {isHi
+                  ? ({'Pitru Rin':'पितृ ऋण', 'Matru Rin':'मातृ ऋण', 'Deva Rin':'देव ऋण', 'Rishi Rin':'ऋषि ऋण', 'Nri Rin':'नृ ऋण', 'Bhoot Rin':'भूत ऋण'}[d] || d)
+                  : d}
+              </option>
             ))}
           </select>
         </div>
@@ -224,7 +230,7 @@ export default function LalKitabFarmaanTab() {
                   ))}
                   {(f.house_tags ?? []).map((h) => (
                     <span key={`h-${h}`} className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
-                      H{h}
+                      {isHi ? `भाव ${h}` : `H${h}`}
                     </span>
                   ))}
                   {(f.debt_tags ?? []).map((d) => (

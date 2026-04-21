@@ -291,7 +291,7 @@ export default function HoroscopePage() {
 
   return (
     <section ref={sectionRef} id="horoscope" className="relative pt-32 pb-8 bg-transparent">
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Date + Time Header */}
         <div className="rounded-xl border border-border bg-card p-3 mb-4">

@@ -196,9 +196,11 @@ export default function LalKitabMilestonesTab({ kundliId, language }: Props) {
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className={`w-2 h-2 rounded-full ${PLANET_DOT[m.ruler] || 'bg-gray-400'}`} />
-                            <span className="text-xs text-muted-foreground">{m.ruler} H{m.ruler_house}</span>
+                            <span className="text-xs text-muted-foreground">{m.ruler} {hi ? `भाव ${m.ruler_house}` : `H${m.ruler_house}`}</span>
                             <span className={`text-xs px-1.5 py-0.5 rounded ${statusColor(m.ruler_status)}`}>
-                              {m.ruler_status}
+                              {hi
+                                ? ({strong:'बलवान', moderate:'मध्यम', weak:'कमजोर'}[m.ruler_status] || m.ruler_status)
+                                : m.ruler_status.charAt(0).toUpperCase() + m.ruler_status.slice(1)}
                             </span>
                           </div>
                         </div>

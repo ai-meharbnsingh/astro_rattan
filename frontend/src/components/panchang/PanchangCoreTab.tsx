@@ -304,7 +304,7 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
     {/* Kula Yoga */}
     {panchang.special_yogas?.kula_yoga?.active && (
       <div className="flex items-center gap-2 p-2 rounded-lg bg-purple-50 border border-purple-200">
-        <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-600 text-white">कुल योग</span>
+        <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-600 text-white">{isHi ? 'कुल योग' : 'Kula Yoga'}</span>
         <p className="text-xs text-purple-900">{isHi ? panchang.special_yogas.kula_yoga.hi : panchang.special_yogas.kula_yoga.en}</p>
       </div>
     )}

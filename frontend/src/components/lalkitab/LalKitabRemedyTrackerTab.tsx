@@ -124,7 +124,11 @@ function AddTrackerModal({ kundliId, language, onClose, onCreated }: AddModalPro
                 className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background focus:outline-none focus:border-sacred-gold"
               >
                 <option value="">{hi ? 'सभी' : 'Any'}</option>
-                {PLANETS.map(p => <option key={p} value={p}>{p}</option>)}
+                {PLANETS.map(p => (
+                  <option key={p} value={p}>
+                    {hi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[p] || p) : p}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -304,7 +308,7 @@ export default function LalKitabRemedyTrackerTab({ kundliId, language }: Props) 
             </p>
             {restartAlert.broken_reason && (
               <p className="text-[11px] text-red-700/70 mt-1.5 font-mono">
-                reason: {restartAlert.broken_reason}
+                {hi ? 'कारण:' : 'reason:'} {restartAlert.broken_reason}
               </p>
             )}
           </div>

@@ -673,7 +673,7 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                       </span>
                       {r.for_planet && (
                         <span className="px-2 py-0.5 rounded-full bg-sacred-gold/15 text-sacred-gold-dark text-xs font-semibold">
-                          {r.for_planet}
+                          {isHi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[r.for_planet] || r.for_planet) : r.for_planet}
                         </span>
                       )}
                       <span className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -723,11 +723,13 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                 <div key={idx} className="rounded-xl border border-border/40 bg-card p-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-semibold text-foreground">
-                      {r.planet} · {isHi ? `भाव ${r.house}` : `H${r.house}`}
+                      {isHi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[r.planet] || r.planet) : r.planet} · {isHi ? `भाव ${r.house}` : `H${r.house}`}
                     </span>
                     {r.remedy_type && (
                       <span className="text-[10px] px-2 py-0.5 rounded-full border border-border/40 text-muted-foreground">
-                        {r.remedy_type}
+                        {isHi
+                          ? ({action:'क्रिया', donation:'दान', feeding:'भोजन', household:'घरेलू', mantra:'मंत्र', gemstone:'रत्न', yantra:'यंत्र'}[r.remedy_type] || r.remedy_type)
+                          : r.remedy_type.charAt(0).toUpperCase() + r.remedy_type.slice(1)}
                       </span>
                     )}
                     {r.duration_days != null && !isNaN(Number(r.duration_days)) && (
@@ -771,7 +773,9 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                       </p>
                       {item.cost_tier && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded border border-border/50 text-muted-foreground shrink-0">
-                          {item.cost_tier}
+                          {isHi
+                            ? ({free:'मुफ़्त', low:'कम', medium:'मध्यम', high:'उच्च', premium:'प्रीमियम'}[item.cost_tier] || item.cost_tier)
+                            : item.cost_tier.charAt(0).toUpperCase() + item.cost_tier.slice(1)}
                         </span>
                       )}
                     </div>
@@ -780,7 +784,9 @@ export default function LalKitabRemediesTab({ kundliId }: Props) {
                       <p className="text-xs text-foreground/70">{isHi ? 'धारण विधि' : 'Wear'}: {item.wear_method}</p>
                     )}
                     {item.planet_association && (
-                      <p className="text-xs text-foreground/70">{isHi ? 'ग्रह' : 'Planet'}: {item.planet_association}</p>
+                      <p className="text-xs text-foreground/70">
+                        {isHi ? 'ग्रह' : 'Planet'}: {isHi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[item.planet_association] || item.planet_association) : item.planet_association}
+                      </p>
                     )}
                     {item.ritual_required && (
                       <p className="text-xs text-amber-700 font-medium">{isHi ? '⚑ अभिमंत्रण आवश्यक' : '⚑ Ritual required'}</p>

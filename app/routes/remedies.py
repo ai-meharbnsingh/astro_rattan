@@ -36,9 +36,10 @@ def get_astrological_remedies(payload: Dict[str, Any], user: dict = Depends(get_
 
     chart_data = json.loads(row["chart_data"])
     year = payload.get("year")
+    language = payload.get("language", "en")
     
     try:
-        remedy_data = generate_astrological_remedies(chart_data, year=year)
+        remedy_data = generate_astrological_remedies(chart_data, year=year, language=language)
         return remedy_data
     except Exception as e:
         logger.exception(f"Error in remedy engine: {e}")

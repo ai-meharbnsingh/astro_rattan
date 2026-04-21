@@ -258,7 +258,9 @@ export default function LalKitabPredictionTab() {
                     {pickLang(lbl, isHi)}
                   </span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${cfg.badge}`}>
-                    {a.confidence.toUpperCase()}
+                    {isHi
+                      ? ({high:'उच्च', moderate:'मध्यम', low:'निम्न', speculative:'अनिश्चित'}[a.confidence] || a.confidence)
+                      : a.confidence.charAt(0).toUpperCase() + a.confidence.slice(1)}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {t('lk.studio.score')}: {isNaN(a.score) ? 0 : a.score}/100
@@ -297,7 +299,7 @@ export default function LalKitabPredictionTab() {
                         title={isHi ? 'सबसे कमज़ोर ग्रह — प्राथमिक कारण का स्रोत' : 'Weakest planet — drives the primary cause'}
                       >
                         <AlertTriangle className="w-3 h-3" />
-                        {isHi ? 'कमज़ोर:' : 'Weakest:'} {a.weakest_planet} H{a.weakest_house}
+                        {isHi ? 'कमज़ोर:' : 'Weakest:'} {a.weakest_planet} {isHi ? `भाव ${a.weakest_house}` : `H${a.weakest_house}`}
                         {a.weakest_dignity ? ` (${dignityLabel(a.weakest_dignity)})` : ''}
                       </span>
                     )}
@@ -307,7 +309,7 @@ export default function LalKitabPredictionTab() {
                         title={isHi ? 'सबसे मज़बूत ग्रह — सहायक कारक का स्रोत' : 'Strongest planet — drives the supporting factor'}
                       >
                         <TrendingUp className="w-3 h-3" />
-                        {isHi ? 'मज़बूत:' : 'Strongest:'} {a.strongest_planet} H{a.strongest_house}
+                        {isHi ? 'मज़बूत:' : 'Strongest:'} {a.strongest_planet} {isHi ? `भाव ${a.strongest_house}` : `H${a.strongest_house}`}
                         {a.strongest_dignity ? ` (${dignityLabel(a.strongest_dignity)})` : ''}
                       </span>
                     )}

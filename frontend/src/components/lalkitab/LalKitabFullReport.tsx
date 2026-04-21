@@ -313,7 +313,10 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
                       </p>
                       {d.severity && (
                         <p className="text-[11px] mt-1">
-                          <span className="font-semibold">{isHi ? 'गंभीरता' : 'Severity'}:</span> {d.severity}
+                          <span className="font-semibold">{isHi ? 'गंभीरता' : 'Severity'}:</span>{' '}
+                          {isHi
+                            ? ({critical:'अत्यंत गंभीर', high:'उच्च', moderate:'मध्यम', low:'निम्न', severe:'गंभीर'}[d.severity] || d.severity)
+                            : d.severity.charAt(0).toUpperCase() + d.severity.slice(1)}
                         </p>
                       )}
                     </div>
@@ -377,7 +380,11 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
                   <tbody>
                     {Object.entries(report.prediction_studio.areas).map(([area, info]: [string, any]) => (
                       <tr key={area} className="avoid-break">
-                        <td className="px-3 py-2 border border-sacred-gold/20 font-semibold">{area}</td>
+                        <td className="px-3 py-2 border border-sacred-gold/20 font-semibold">
+                          {isHi
+                            ? ({career:'करियर', health:'स्वास्थ्य', wealth:'धन', marriage:'विवाह', family:'परिवार', general:'सामान्य', education:'शिक्षा', spiritual:'आध्यात्मिक'}[area] || area)
+                            : area.charAt(0).toUpperCase() + area.slice(1)}
+                        </td>
                         <td className="px-3 py-2 border border-sacred-gold/20 text-center font-mono">
                           {typeof info?.score === 'number' ? info.score.toFixed(2) : '—'}
                         </td>
@@ -417,7 +424,9 @@ export default function LalKitabFullReport({ kundliId, onClose }: Props) {
                             r.urgency === 'medium' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
                             'bg-slate-100 text-slate-700 border border-slate-200'
                           }`}>
-                            {r.urgency.toUpperCase()}
+                            {isHi
+                              ? ({high:'उच्च', medium:'मध्यम', low:'निम्न'}[r.urgency] || r.urgency)
+                              : r.urgency.charAt(0).toUpperCase() + r.urgency.slice(1)}
                           </span>
                         )}
                       </div>

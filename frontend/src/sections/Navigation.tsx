@@ -278,7 +278,7 @@ export default function Navigation() {
           ? 'bg-background/96 backdrop-blur-lg py-2'
           : 'bg-background/92 py-3'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/about" className="flex items-center gap-2 shrink-0">

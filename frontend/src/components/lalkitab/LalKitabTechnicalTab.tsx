@@ -105,7 +105,9 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
           </div>
         </div>
         <div className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold mb-2 ${trainStatusColor[chalti_gaadi.train_status] || 'bg-gray-100 text-gray-600'}`}>
-          {(chalti_gaadi.train_status ?? 'unknown').toUpperCase()}
+          {hi
+            ? ({active:'सक्रिय', dormant:'निष्क्रिय', unknown:'अज्ञात'}[chalti_gaadi.train_status] || chalti_gaadi.train_status || 'अज्ञात')
+            : (chalti_gaadi.train_status ?? 'unknown').charAt(0).toUpperCase() + (chalti_gaadi.train_status ?? 'unknown').slice(1)}
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
           {pickLang(chalti_gaadi.interpretation, hi)}
@@ -147,7 +149,9 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
                   <span className="font-semibold text-foreground">{push.receiver}</span>
                   <span className="text-xs text-muted-foreground">H{isNaN(Number(push.receiver_house)) ? 0 : push.receiver_house}</span>
                   <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${directionColor[push.direction] || ''}`}>
-                    {push.direction}
+                    {hi
+                      ? ({forward:'आगे', backward:'पीछे', neutral:'तटस्थ'}[push.direction] || push.direction)
+                      : push.direction.charAt(0).toUpperCase() + push.direction.slice(1)}
                   </span>
                 </div>
               ))}

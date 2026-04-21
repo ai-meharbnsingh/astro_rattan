@@ -148,7 +148,7 @@ function LalKitabPageInner() {
         setBirthDate(full.birth_date || '');
         setView('result');
       } catch (e) {
-        setError('Failed to load chart');
+        setError(isHi ? 'कुंडली लोड करने में विफल' : 'Failed to load chart');
         setView('form');
       }
     })();
@@ -216,7 +216,7 @@ function LalKitabPageInner() {
 
   return (
     <div className="min-h-screen bg-background bg-mandala pt-32 pb-10 px-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-screen-2xl mx-auto">
         {/* Result View Header (only show when not in form) */}
         {view !== 'form' && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
@@ -273,7 +273,7 @@ function LalKitabPageInner() {
 
         {/* Form View */}
         {view === 'form' && (
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-6">
               <h1 className="text-3xl sm:text-4xl  font-bold text-sacred-gold mb-2">
                 {t('lk.title')}

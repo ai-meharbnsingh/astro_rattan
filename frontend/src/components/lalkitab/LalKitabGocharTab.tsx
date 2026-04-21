@@ -176,7 +176,9 @@ export default function LalKitabGocharTab({ chartData, apiResult }: Props) {
       <div className="flex items-start gap-3 p-4 rounded-xl border border-blue-300/30 bg-blue-500/5">
         <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
         <p className="text-xs text-blue-700">
-          {t('auto.planetPositionsAreLi')} using sidereal/Lahiri ayanamsa.
+          {isHi
+            ? 'ग्रहों की स्थिति आज की तिथि के अनुसार स्वचालित रूप से गणना की गई है (सायन/लाहिरी)।'
+            : 'Planet positions are live-calculated for today using sidereal/Lahiri ayanamsa.'}
         </p>
       </div>
 

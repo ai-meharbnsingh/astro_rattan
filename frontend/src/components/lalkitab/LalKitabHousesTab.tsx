@@ -67,7 +67,7 @@ export default function LalKitabHousesTab() {
                     <div className="flex flex-wrap gap-1">
                       {planets.map((p) => (
                         <span key={p} className="bg-sacred-gold/10 text-sacred-gold px-2 py-0.5 rounded-full text-sm font-medium">
-                          {p}
+                          {isHi ? ({Sun:'सूर्य', Moon:'चंद्र', Mars:'मंगल', Mercury:'बुध', Jupiter:'गुरु', Venus:'शुक्र', Saturn:'शनि', Rahu:'राहु', Ketu:'केतु'}[p] || p) : p}
                         </span>
                       ))}
                     </div>
@@ -111,7 +111,9 @@ export default function LalKitabHousesTab() {
                                 r.urgency === 'medium' ? 'border-amber-200 bg-amber-50 text-amber-700' :
                                 'border-gray-200 bg-gray-50 text-gray-700'
                               }`}>
-                                {r.urgency}
+                                {isHi
+                                  ? ({high:'उच्च', medium:'मध्यम', low:'निम्न'}[r.urgency] || r.urgency)
+                                  : r.urgency.charAt(0).toUpperCase() + r.urgency.slice(1)}
                               </span>
                             )}
                           </div>
