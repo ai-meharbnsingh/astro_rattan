@@ -8,6 +8,7 @@ import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSec
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface TransitsTabProps {
   transitData: any;
@@ -473,6 +474,7 @@ export default function TransitsTab(props: TransitsTabProps) {
 
       {/* Retrograde Station Dates */}
       {result?.id && <RetrogradeStationsSection kundliId={result.id} />}
+        <TimingTheorySection language={language} tab="transits" />
     </div>
   );
 }

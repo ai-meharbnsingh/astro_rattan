@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Card, CardContent } from '@/components/ui/card';
@@ -144,7 +145,15 @@ export default function Panchang() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [minuteTick, setMinuteTick] = useState(() => Math.floor(Date.now() / 60000));
   const [activeTab, setActiveTab] = useState('calendar');
+  const [searchParams] = useSearchParams();
   const citySearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && ['calendar', 'festivals', 'sankranti', 'muhurat-finder', 'muhurat', 'planets', 'hora', 'lagna', 'choghadiya', 'gowri', 'tarabalam', 'advanced'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
   const citySearchRef = useRef<HTMLDivElement>(null);
 
   // Calculate timezone offset from longitude (IST for India, otherwise approximate)

@@ -528,10 +528,90 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
             <HorasaraPhalaSection kundliId={ashtakvargaData.kundli_id || result?.id} language={language} t={t} />
           )}
 
+          {/* Ashtakvarga Theory Section — General educational summary */}
+          <AshtakvargaTheorySection language={language} />
+
         </div>
       ) : (
         <p className="text-center text-foreground py-8">{t('kundli.clickAshtakvargaTab')}</p>
       )}
     </>
+  );
+}
+
+function AshtakvargaTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  return (
+    <div className="mt-12 space-y-6 pb-10">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <Target className="w-5 h-5" />
+          {l('Understanding Ashtakvarga (The Points System)', 'अष्टकवर्ग को समझना (अंक प्रणाली)')}
+        </Heading>
+        
+        <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+          {l(
+            'Ashtakvarga is a unique numerical system in Vedic Astrology that measures the strength of houses and planets using "Bindus" (points). Think of it as a "Vedic Scorecard" that tells you which areas of your life have the most supporting energy.',
+            'अष्टकवर्ग वैदिक ज्योतिष में एक अद्वितीय संख्यात्मक प्रणाली है जो "बिंदु" (अंकों) का उपयोग करके भावों और ग्रहों की शक्ति को मापती है। इसे एक "वैदिक स्कोरकार्ड" के रूप में सोचें जो आपको बताता है कि आपके जीवन के किन क्षेत्रों में सबसे अधिक सहायक ऊर्जा है।'
+          )}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* SAV Section */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('Sarvashtakvarga (SAV) — The Total Score', 'सर्वाष्टकवर्ग (SAV) — कुल स्कोर')}
+            </h4>
+            <div className="space-y-4">
+              <p className="text-xs text-foreground/70 leading-relaxed">
+                {l('SAV is the total energy of a house from all 7 planets + Lagna. It shows the collective strength of a specific sign in your life.', 'SAV सभी 7 ग्रहों + लग्न से एक भाव की कुल ऊर्जा है। यह आपके जीवन में एक विशिष्ट राशि की सामूहिक शक्ति को दर्शाता है।')}
+              </p>
+              <div className="text-xs bg-white/40 p-3 rounded border border-sacred-gold/10">
+                <span className="font-bold text-sacred-gold-dark">{l('The Magic Number 28:', 'जादुई संख्या 28:')}</span>{' '}
+                <span className="text-foreground/70">{l('A house with 28 or more points is considered strong and capable of giving good results. Less than 28 points suggests areas where you may need more effort.', '28 या उससे अधिक अंकों वाले भाव को मजबूत माना जाता है और यह अच्छे परिणाम देने में सक्षम होता है। 28 से कम अंक उन क्षेत्रों का सुझाव देते हैं जहाँ आपको अधिक प्रयास की आवश्यकता हो सकती है।')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* BAV Section */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('Bhinnashtakvarga (BAV) — Individual Score', 'भिन्नाष्टकवर्ग (BAV) — व्यक्तिगत स्कोर')}
+            </h4>
+            <div className="space-y-4">
+              <p className="text-xs text-foreground/70 leading-relaxed">
+                {l('BAV shows the strength of an individual planet in each sign. It helps in predicting how a specific planet will behave during its transit.', 'BAV प्रत्येक राशि में एक व्यक्तिगत ग्रह की शक्ति को दर्शाता है। यह भविष्यवाणी करने में मदद करता है कि एक विशिष्ट ग्रह अपने गोचर के दौरान कैसा व्यवहार करेगा।')}
+              </p>
+              <div className="text-xs bg-white/40 p-3 rounded border border-sacred-gold/10">
+                <span className="font-bold text-sacred-gold-dark">{l('The Magic Number 4:', 'जादुई संख्या 4:')}</span>{' '}
+                <span className="text-foreground/70">{l('For an individual planet, 4 points is average. 5-8 points make the planet very powerful in that sign, while 0-3 points make it weak.', 'एक व्यक्तिगत ग्रह के लिए, 4 अंक औसत है। 5-8 अंक उस राशि में ग्रह को बहुत शक्तिशाली बनाते हैं, जबकि 0-3 अंक उसे कमजोर बनाते हैं।')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Practical Use */}
+        <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20">
+          <h4 className="text-xs font-bold text-sacred-gold-dark uppercase mb-2">{l('How to use this data?', 'इसका उपयोग कैसे करें?')}</h4>
+          <p className="text-xs text-foreground/80 leading-relaxed italic">
+            {l(
+              'Look at your 10th House (Career) and 11th House (Gains). If they have high SAV scores (30+), you will find it easier to succeed in professional life. When a planet like Jupiter transits through a sign where it has 6 BAV points, it will bring exceptionally lucky results.',
+              'अपने 10वें भाव (करियर) और 11वें भाव (लाभ) को देखें। यदि उनके पास उच्च SAV स्कोर (30+) हैं, तो आपको पेशेवर जीवन में सफल होना आसान लगेगा। जब बृहस्पति जैसा ग्रह उस राशि से गुजरता है जहाँ उसके 6 BAV अंक होते हैं, तो वह असाधारण रूप से भाग्यशाली परिणाम लाएगा।'
+            )}
+          </p>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-sacred-gold/20">
+          <p className="text-[11px] text-foreground/50 italic text-center">
+            {l(
+              'Note: High points provide a "safety net," but the actual event still depends on your current Dasha period.',
+              'नोट: उच्च अंक एक "सुरक्षा जाल" प्रदान करते हैं, लेकिन वास्तविक घटना अभी भी आपकी वर्तमान दशा अवधि पर निर्भर करती है।'
+            )}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

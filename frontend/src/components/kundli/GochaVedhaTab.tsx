@@ -3,6 +3,7 @@ import { Loader2, AlertTriangle, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface TransitRow {
   planet: string;
@@ -208,6 +209,7 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
           </div>
         </div>
       </div>
+      <TimingTheorySection language={language || 'en'} tab="gochara-vedha" />
     </div>
   );
 }

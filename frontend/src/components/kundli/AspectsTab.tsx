@@ -1,4 +1,5 @@
-import { Loader2, Eye } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, Eye, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
@@ -15,6 +16,8 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
   const spl = t('auto.Spl');
   const housePrefix = t('auto.h');
   const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+  const [eduOpen, setEduOpen] = useState(true);
 
   const header = (
     <div>
@@ -179,6 +182,86 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
           </Table>
         </div>
 
+      </div>
+
+      {/* Educational Summary (Aspects) */}
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setEduOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-sacred-gold-dark text-white text-sm font-semibold"
+        >
+          <span className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 opacity-90" />
+            {l('Educational Summary — Aspects (Drishti)', 'शिक्षात्मक सार — दृष्टि')}
+          </span>
+          {eduOpen ? (
+            <ChevronDown className="w-4 h-4 opacity-90" />
+          ) : (
+            <ChevronRight className="w-4 h-4 opacity-90" />
+          )}
+        </button>
+        {eduOpen && (
+          <div className="px-4 py-3 text-sm text-foreground/80 space-y-4">
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('What an “aspect” means', '“दृष्टि” का अर्थ')}</p>
+              <p>
+                {l(
+                  'An aspect (Drishti) is a planet’s influence cast onto another planet or a house. It describes where a planet’s energy “reaches” and modifies results.',
+                  'दृष्टि (Drishti) का अर्थ है किसी ग्रह का प्रभाव दूसरे ग्रह या भाव पर पड़ना। इससे पता चलता है कि ग्रह की ऊर्जा “कहाँ तक” पहुँच रही है और परिणाम कैसे बदलते हैं।'
+                )}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('How to read the two tables', 'दोनों तालिकाएँ कैसे पढ़ें')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{l('“Aspects on Planets” shows: for each planet, who is aspecting it and which houses it aspects.', '“ग्रहों पर दृष्टि” में: प्रत्येक ग्रह पर कौन दृष्टि डाल रहा है और वह किन भावों को देख रहा है।')}</li>
+                <li>{l('“Aspects on Bhavas” shows: for each house, benefic vs malefic planets casting aspects there.', '“भावों पर दृष्टि” में: प्रत्येक भाव पर शुभ/पाप ग्रहों की दृष्टि।')}</li>
+              </ul>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('Benefic vs Malefic (quick rule)', 'शुभ बनाम पाप (सरल नियम)')}</p>
+              <p>
+                {l(
+                  'This app treats Jupiter, Venus, Moon, and Mercury as benefics for the table split. Benefic aspects generally support growth; malefic aspects create pressure, effort, or obstacles (context matters).',
+                  'इस ऐप में बृहस्पति, शुक्र, चंद्र, बुध को “शुभ” मानकर तालिका में अलग किया गया है। शुभ दृष्टि सामान्यतः सहायता करती है; पाप दृष्टि दबाव/परिश्रम/बाधा दिखा सकती है (परिस्थिति पर निर्भर)।'
+                )}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('Strength, offsets, and “Spl”', 'Strength, offsets और “Spl”')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{l('`1.0x`, `0.75x` etc. is aspect strength (higher = stronger influence).', '`1.0x`, `0.75x` आदि दृष्टि-बल है (ज्यादा = अधिक प्रभाव)।')}</li>
+                <li>{l('`+4h`, `+8h` indicates the special aspect distance in houses.', '`+4h`, `+8h` भावों के अंतर के रूप में विशेष दृष्टि दूरी दिखाता है।')}</li>
+                <li>{l(`“${spl}” marks a special aspect (beyond the standard 7th).`, `“${spl}” का अर्थ है विशेष दृष्टि (सामान्य 7वीं से अतिरिक्त)।`)}</li>
+              </ul>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('Common Vedic aspect pattern (reference)', 'वैदिक दृष्टि पैटर्न (संदर्भ)')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{l('All planets aspect the 7th house from themselves (opposition).', 'सभी ग्रह अपने से 7वें भाव पर दृष्टि डालते हैं।')}</li>
+                <li>{l('Mars: special aspects on 4th and 8th.', 'मंगल: 4वीं और 8वीं विशेष दृष्टि।')}</li>
+                <li>{l('Jupiter: special aspects on 5th and 9th.', 'बृहस्पति: 5वीं और 9वीं विशेष दृष्टि।')}</li>
+                <li>{l('Saturn: special aspects on 3rd and 10th.', 'शनि: 3वीं और 10वीं विशेष दृष्टि।')}</li>
+                <li>{l('Rahu/Ketu are often treated with 5th/7th/9th aspects in many traditions (implementation varies).', 'राहु/केतु को कई परंपराओं में 5/7/9 दृष्टि माना जाता है (परंपरा/इम्प्लीमेंटेशन बदल सकता है)।')}</li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg bg-muted/30 border border-border/40 p-3">
+              <p className="font-semibold text-foreground mb-1">{l('Practical tip', 'व्यावहारिक टिप')}</p>
+              <p>
+                {l(
+                  'Combine aspects with house topics: aspects onto 1/7/10/11 often show visible life events, while aspects onto 4/5/9/12 may show inner shifts, learning, or faith patterns. Timing still comes from Dasha/Transits.',
+                  'दृष्टि को भाव-फल के साथ मिलाकर देखें: 1/7/10/11 पर दृष्टि अक्सर बाहरी घटनाएँ दिखाती है, जबकि 4/5/9/12 पर दृष्टि भीतर के बदलाव/सीख/धर्म-प्रवृत्ति दिखा सकती है। समय निर्धारण फिर भी दशा/गोचर से आता है।'
+                )}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

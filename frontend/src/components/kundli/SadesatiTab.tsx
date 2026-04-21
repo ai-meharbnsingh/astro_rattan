@@ -2,6 +2,8 @@ import { Loader2, Shield } from 'lucide-react';
 import { translateSign, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
+
 
 interface SadesatiTabProps {
   sadesatiData: any;
@@ -285,6 +287,7 @@ export default function SadesatiTab({ sadesatiData, loadingSadesati, language, t
           </ul>
         </div>
       )}
+          <TimingTheorySection language={language} tab="sadesati" />
     </div>
   );
 }

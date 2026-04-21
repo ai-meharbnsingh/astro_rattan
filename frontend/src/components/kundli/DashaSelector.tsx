@@ -259,6 +259,7 @@ export default function DashaSelector({
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   const hi = language === 'hi';
 
+  const [eduOpen, setEduOpen] = useState(true);
   const [selectedSystem, setSelectedSystem] = useState<DashaSystem>('vimshottari');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -602,6 +603,205 @@ export default function DashaSelector({
           </p>
         </div>
       )}
+
+      {/* Educational Summary (placed at the bottom, after tables) */}
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setEduOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-sacred-gold-dark text-white text-sm font-semibold"
+        >
+          <span>{l('Educational Summary', 'शिक्षात्मक सार')}</span>
+          {eduOpen ? (
+            <ChevronDown className="w-4 h-4 opacity-90" />
+          ) : (
+            <ChevronRight className="w-4 h-4 opacity-90" />
+          )}
+        </button>
+        {eduOpen && (
+          <div className="px-4 py-3 text-sm text-foreground/80 space-y-4">
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('How to read this tab', 'इस टैब को कैसे पढ़ें')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{l('Pick a Dasha system from the dropdown.', 'ड्रॉपडाउन से दशा पद्धति चुनें।')}</li>
+                <li>{l('The badge “Current” marks the running Mahadasha/period.', '“Current” बैज चल रही महादशा/अवधि बताता है।')}</li>
+                <li>{l('Click a row to expand sub-periods (when available).', 'उप-अवधि देखने के लिए रो पर क्लिक करके विस्तार करें (यदि उपलब्ध हो)।')}</li>
+              </ul>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('Dasha systems in this app (what each is for)', 'इस ऐप की दशाएँ (किसका क्या उपयोग)')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>
+                  {l(
+                    'Vimshottari (120yr): the most common “timing” system (Nakshatra-based). Use for main life timeline + Mahadasha/Antardasha.',
+                    'विंशोत्तरी (120 वर्ष): सबसे प्रचलित समय-निर्धारण (नक्षत्र-आधारित)। जीवन की मुख्य टाइमलाइन/महादशा–अन्तरदशा के लिए।'
+                  )}
+                </li>
+                <li>
+                  {l(
+                    'Yogini (36yr): a compact alternate timing system; often used as a cross-check alongside Vimshottari.',
+                    'योगिनी (36 वर्ष): छोटा वैकल्पिक टाइमिंग सिस्टम; अक्सर विंशोत्तरी के साथ क्रॉस-चेक के लिए।'
+                  )}
+                </li>
+                <li>
+                  {l(
+                    'Ashtottari (108yr): another Nakshatra-based system, traditionally preferred under specific birth conditions; use as a secondary view.',
+                    'अष्टोत्तरी (108 वर्ष): एक अन्य नक्षत्र-आधारित प्रणाली; कुछ विशेष जन्म-स्थितियों में अधिक उपयोग; सेकेंडरी व्यू के रूप में देखें।'
+                  )}
+                </li>
+                <li>
+                  {l(
+                    'Moola: sign/lord-based period view used for quick, simpler sequencing in some traditions (best as a supporting reference).',
+                    'मूल: कुछ परंपराओं में सरल क्रम/समयरेखा के लिए राशि/स्वामी-आधारित व्यू (सपोर्टिंग रेफरेंस)।'
+                  )}
+                </li>
+                <li>
+                  {l(
+                    'Tara: nakshatra-tara based period perspective; useful for another angle on supportive vs. challenging phases.',
+                    'तारा: नक्षत्र-तारा आधारित दृष्टि; सहायक बनाम चुनौतीपूर्ण चरण समझने के लिए एक अलग एंगल।'
+                  )}
+                </li>
+              </ul>
+            </div>
+
+            {/* Vimshottari planet cycles (only when viewing Vimshottari) */}
+            {selectedSystem === 'vimshottari' && (
+              <div className="space-y-2">
+                <p className="font-semibold text-foreground">
+                  {l('Vimshottari Mahadashas (the “Seasons of Life”)', 'विंशोत्तरी महादशाएँ (“जीवन के मौसम”)')}
+                </p>
+                <p className="text-foreground/80">
+                  {l(
+                    'Vimshottari divides life into 9 major planetary cycles. The running Mahadasha sets the big theme; sub-periods (Antardasha/Pratyantar) fine-tune events.',
+                    'विंशोत्तरी जीवन को 9 प्रमुख ग्रहीय चक्रों में बाँटती है। चल रही महादशा बड़ा थीम तय करती है; अन्तर्दशा/प्रत्यंतर विशिष्ट घटनाएँ और समय को सूक्ष्म बनाते हैं।'
+                  )}
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Sun — 6 years', 'सूर्य — 6 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Focus on identity, confidence, authority, career direction, and the father/mentors theme. A strong Sun brings leadership and recognition; a weak Sun can bring ego-tests and responsibility lessons.',
+                        'पहचान, आत्मविश्वास, अधिकार, करियर दिशा और पिता/गुरु थीम पर फोकस। मजबूत सूर्य नेतृत्व/मान-सम्मान देता है; कमजोर सूर्य अहं-परीक्षा और जिम्मेदारी के पाठ देता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Moon — 10 years', 'चंद्र — 10 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Emotions, home, mother, mental peace, and inner security become central. Often shows moves/changes in domestic life; good Moon supports calm, care, and emotional maturity.',
+                        'भावनाएँ, घर, माता, मानसिक शांति और सुरक्षा केंद्रीय हो जाती है। घर/परिवार में बदलाव/स्थान परिवर्तन संभव; शुभ चंद्र शांति, पोषण और भावनात्मक परिपक्वता देता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Mars — 7 years', 'मंगल — 7 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Energy, courage, competition, property/land, and decisive action. Great for initiative and breakthroughs; if afflicted, it can show conflict, impatience, injuries, or pressure.',
+                        'ऊर्जा, साहस, प्रतिस्पर्धा, संपत्ति/भूमि और निर्णायक कर्म। पहल/ब्रेकथ्रू के लिए अच्छा; पीड़ित होने पर विवाद, उतावलेपन, चोट या दबाव दिखा सकता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Rahu — 18 years', 'राहु — 18 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Transformative, unusual, and worldly-expansion focused: ambition, foreign links, sudden rises, tech/media, and new identities. Brings breakthroughs—but also illusions if ethics/clarity are weak.',
+                        'परिवर्तनकारी और असामान्य: महत्वाकांक्षा, विदेश/नेटवर्क, अचानक उन्नति, टेक/मीडिया और नई पहचान। ब्रेकथ्रू देता है—पर स्पष्टता/नीति कमजोर हो तो भ्रम भी दे सकता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Jupiter — 16 years', 'बृहस्पति — 16 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Growth through wisdom: education, mentors, marriage support, children, dharma and values. Strong Jupiter brings protection and opportunities; weak Jupiter can bring over-trust or missed guidance.',
+                        'ज्ञान से विकास: शिक्षा, गुरु, विवाह-सहायता, संतान, धर्म और मूल्य। मजबूत बृहस्पति संरक्षण/अवसर देता है; कमजोर बृहस्पति अति-विश्वास या गलत मार्गदर्शन दिखा सकता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Saturn — 19 years', 'शनि — 19 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Discipline, duty, endurance, and long-term foundation-building. Often rewards consistent work and integrity; can feel heavy if shortcuts are taken. Excellent for stability and mastery.',
+                        'अनुशासन, कर्तव्य, धैर्य और दीर्घकालीन आधार निर्माण। सतत मेहनत/सच्चाई का फल देता है; शॉर्टकट लेने पर भारीपन महसूस हो सकता है। स्थिरता और महारत के लिए श्रेष्ठ।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Mercury — 17 years', 'बुध — 17 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Learning, communication, trade/business, networking, and adaptability. Strong Mercury favors skills, writing, sales, analysis; afflicted Mercury can bring confusion, anxiety, or mixed decisions.',
+                        'सीख, संवाद, व्यापार, नेटवर्किंग और अनुकूलन। मजबूत बुध स्किल, लेखन, सेल्स, विश्लेषण में मदद करता है; पीड़ित बुध भ्रम, बेचैनी या मिश्रित निर्णय दे सकता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Ketu — 7 years', 'केतु — 7 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Detachment and inner breakthroughs: simplification, spiritual focus, cutting what no longer fits. Can feel like endings/reset; used well, it brings clarity and deep karmic resolution.',
+                        'वैराग्य और अंदरूनी ब्रेकथ्रू: सरलता, आध्यात्मिक फोकस, जो उपयुक्त नहीं उसे छोड़ना। अंत/रीसेट जैसा लग सकता है; सही उपयोग पर स्पष्टता और गहरी कर्म-शुद्धि देता है।'
+                      )}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/40 bg-muted/20 p-3 md:col-span-2">
+                    <p className="text-xs font-bold text-primary mb-1">{l('Venus — 20 years', 'शुक्र — 20 वर्ष')}</p>
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      {l(
+                        'Relationships, harmony, luxury, art, comfort and enjoyment. Strong Venus supports love, resources, beauty and social ease; weak Venus can show indulgence, relationship lessons, or value-conflicts.',
+                        'रिश्ते, सामंजस्य, विलासिता, कला, सुख-सुविधा और आनंद। मजबूत शुक्र प्रेम, संसाधन, सौंदर्य और सामाजिक सहजता देता है; कमजोर शुक्र अति-भोग, रिश्तों के पाठ या मूल्य-संघर्ष दिखा सकता है।'
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-muted/30 border border-border/40 p-3">
+                  <p className="font-semibold text-foreground mb-1">{l('How to interpret (fast rule)', 'कैसे समझें (फास्ट नियम)')}</p>
+                  <p>
+                    {l(
+                      'Treat the Mahadasha lord as the “temporary boss” of life. If that planet is strong in your chart (good dignity/house support), the period tends to manifest more smoothly; if weak/afflicted, growth often comes through challenge.',
+                      'महादशा स्वामी को जीवन का “अस्थायी बॉस” समझें। ग्रह मजबूत (दिग्निटी/भाव समर्थन) हो तो फल अधिक सहज; कमजोर/पीड़ित हो तो विकास अक्सर चुनौती के माध्यम से आता है।'
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('What “Nature” means', '“प्रकृति” का अर्थ')}</p>
+              <p>
+                {l(
+                  'Nature is a simple benefic/malefic indicator for the period’s lord (or sign-lord in sign-based systems). It helps you quickly see if a period is generally supportive vs. challenging.',
+                  'प्रकृति अवधि के स्वामी (या राशि-आधारित पद्धतियों में राशि-स्वामी) की शुभ/पाप/मिश्रित प्रवृत्ति का सरल संकेत है — इससे जल्दी समझ आता है कि अवधि सामान्यतः सहायक है या चुनौतीपूर्ण।'
+                )}
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-muted/30 border border-border/40 p-3">
+              <p className="font-semibold text-foreground mb-1">{l('Tip', 'टिप')}</p>
+              <p>
+                {l(
+                  'For detailed interpretations (“what it means for you”), open the “Dasha Phala” tab.',
+                  'विस्तृत फलादेश/व्याख्या (“आपके लिए इसका अर्थ”) के लिए “दशा फल” टैब खोलें।'
+                )}
+              </p>
+            </div>
+
+            {!kundliId && (
+              <p className="text-foreground/70">
+                {l('Generate or load a Kundli first to calculate the timeline.', 'समयरेखा देखने के लिए पहले कुंडली जनरेट या लोड करें।')}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

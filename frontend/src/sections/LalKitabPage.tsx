@@ -1,7 +1,7 @@
 // NOTE: LalKitabContext is available for all child tabs via useLalKitab().
 // New tabs should prefer context over props. Existing tabs will be migrated gradually.
 import { useState, useCallback, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, ArrowLeft, Loader2, ChevronDown, LayoutDashboard, ChartPie, Search, Clock3, Sparkles, ScrollText, Tags, Settings2, Home, CalendarCheck } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
@@ -84,7 +84,15 @@ function LalKitabPageInner() {
   const [clientId, setClientId] = useState(locState.clientId || '');
   const [kundliId, setKundliId] = useState(locState.loadKundliId || '');
   const [activeTopTab, setActiveTopTab] = useState('dashboard');
+  const [searchParams] = useSearchParams();
   const [timezoneAutoDetected, setTimezoneAutoDetected] = useState(false);
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && ['dashboard', 'chart', 'analysis', 'timing', 'upay', 'predictions', 'nishaniyan', 'advanced', 'vastu', 'tracker', 'farmaan'].includes(tabFromUrl)) {
+      setActiveTopTab(tabFromUrl);
+    }
+  }, [searchParams]);
   const [edition, setEdition] = useState<'1939' | '1941' | '1942' | '1952'>('1952');
   const EDITIONS = ['1939', '1941', '1942', '1952'] as const;
   // P2.6 — Full Report modal state.

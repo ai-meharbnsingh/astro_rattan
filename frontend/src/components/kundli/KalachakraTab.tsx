@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Clock, ChevronDown, ChevronRight, BookOpen, Info } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface Antardasha {
   planet: string;
@@ -270,6 +271,7 @@ export default function KalachakraTab({ kundliId, language }: Props) {
           <span>{data.sloka_ref}</span>
         </div>
       )}
+      <TimingTheorySection language={language || 'en'} tab="kalachakra" />
     </div>
   );
 }

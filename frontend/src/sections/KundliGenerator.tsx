@@ -43,7 +43,7 @@ import D108Analysis from '@/components/kundli/D108Analysis';
 import ChartAnimation from '@/components/kundli/ChartAnimation';
 import BirthRectification from '@/components/kundli/BirthRectification';
 import KPHorary from '@/components/kp/KPHorary';
-import SarvatobhadraChakra from '@/components/sarvatobhadra/SarvatobhadraChakra';
+import SarvatobhadraChakra, { SarvatobhadraTheorySection } from '@/components/sarvatobhadra/SarvatobhadraChakra';
 import PravrajyaTab from '@/components/kundli/PravrajyaTab';
 import ApatyaTab from '@/components/kundli/ApatyaTab';
 import StriJatakaTab from '@/components/kundli/StriJatakaTab';
@@ -65,6 +65,10 @@ import TransitLuckyTab from '@/components/kundli/TransitLuckyTab';
 import TransitInterpretationsTab from '@/components/kundli/TransitInterpretationsTab';
 import AstroMapTab from '@/components/kundli/AstroMapTab';
 import KundliInterpretationsTab from '@/components/kundli/KundliInterpretationsTab';
+import AdvancedTheorySection from '@/components/kundli/AdvancedTheorySection';
+
+import AnalysisTheorySection from '@/components/kundli/AnalysisTheorySection';
+import ChartsTheorySection from '@/components/kundli/ChartsTheorySection';
 
 // ── Single source of truth for ALL tab definitions ──────────
 interface TabDef {
@@ -217,6 +221,15 @@ export default function KundliGenerator() {
       setActiveTab('rectification');
     }
   }, [step, urlMode]);
+
+  // Auto-activate tab from ?tab= query param when on result step
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && step === 'result' && TAB_DEFS.some(t => t.value === tabFromUrl)) {
+      handleTabChange(tabFromUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, searchParams]);
 
   // Fetch Sarvatobhadra Chakra data
   const fetchSarvatobhadra = async () => {
@@ -506,14 +519,17 @@ export default function KundliGenerator() {
 
           <TabsContent value="details" className="min-h-[300px]">
             <BirthDetailsTab planets={planets} />
+            <AdvancedTheorySection language={language} tab="details" />
           </TabsContent>
 
           <TabsContent value="lordships" className="min-h-[300px]">
             <LordshipsTab planets={planets} houses={result.chart_data?.houses || {}} />
+            <AdvancedTheorySection language={language} tab="lordships" />
           </TabsContent>
 
           <TabsContent value="iogita" className="min-h-[300px]">
             <IogitaTab iogitaData={iogitaData} loadingIogita={loadingIogita} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="iogita" />
           </TabsContent>
 
           <TabsContent value="dasha" className="min-h-[300px]">
@@ -555,14 +571,17 @@ export default function KundliGenerator() {
               language={language}
               t={t}
             />
+            <AnalysisTheorySection language={language} tab="ashtakvarga-phala" />
           </TabsContent>
 
           <TabsContent value="shadbala" className="min-h-[300px]">
             <ShadbalaTab shadbalaData={shadbalaData} loadingShadbala={loadingShadbala} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="shadbala" />
           </TabsContent>
 
           <TabsContent value="avakhada" className="min-h-[300px]">
             <AvakhadaTab avakhadaData={avakhadaData} loadingAvakhada={loadingAvakhada} language={language} t={t} />
+            <AdvancedTheorySection language={language} tab="avakhada" />
           </TabsContent>
 
           <TabsContent value="yoga-dosha" className="min-h-[300px]">
@@ -591,6 +610,7 @@ export default function KundliGenerator() {
 
           <TabsContent value="kp" className="min-h-[300px]">
             <KPTab kpData={kpData} loadingKp={loadingKp} result={result} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="kp" />
           </TabsContent>
 
           <TabsContent value="yogini" className="min-h-[300px]">
@@ -599,6 +619,7 @@ export default function KundliGenerator() {
 
           <TabsContent value="upagrahas" className="min-h-[300px]">
             <UpagrahasTab upagrahasData={upagrahasData} loadingUpagrahas={loadingUpagrahas} language={language} t={t} />
+            <AdvancedTheorySection language={language} tab="upagrahas" />
           </TabsContent>
 
           <TabsContent value="sodashvarga" className="min-h-[300px]">
@@ -611,55 +632,68 @@ export default function KundliGenerator() {
 
           <TabsContent value="aspects-matrix" className="min-h-[300px]">
             <AspectsMatrixTab data={westernAspectsData} loading={loadingWesternAspects} />
+            <AnalysisTheorySection language={language} tab="aspects-matrix" />
           </TabsContent>
 
           <TabsContent value="jaimini" className="min-h-[300px]">
             <JaiminiTab data={jaiminiData} loading={loadingJaimini} />
+            <AnalysisTheorySection language={language} tab="jaimini" />
           </TabsContent>
 
           <TabsContent value="pravrajya" className="min-h-[300px]">
             <PravrajyaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="pravrajya" />
           </TabsContent>
 
           <TabsContent value="apatya" className="min-h-[300px]">
             <ApatyaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="apatya" />
           </TabsContent>
 
           <TabsContent value="stri-jataka" className="min-h-[300px]">
             <StriJatakaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="stri-jataka" />
           </TabsContent>
 
 
           <TabsContent value="conjunctions" className="min-h-[300px]">
             <ConjunctionsTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="conjunctions" />
           </TabsContent>
 
           <TabsContent value="roga" className="min-h-[300px]">
             <RogaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="roga" />
           </TabsContent>
 
           <TabsContent value="bhava-phala" className="min-h-[300px]">
             <BhavaPhalaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="bhava-phala" />
           </TabsContent>
 
           <TabsContent value="vritti" className="min-h-[300px]">
             <VrittiTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="vritti" />
           </TabsContent>
 
           <TabsContent value="bhava-vichara" className="min-h-[300px]">
             <BhavaVicharaTab kundliId={result?.id || ''} language={language} t={t} />
+            <AdvancedTheorySection language={language} tab="bhava-vichara" />
           </TabsContent>
 
           <TabsContent value="longevity" className="min-h-[300px]">
             <LongevityTab kundliId={result?.id || ''} language={language} t={t} />
+            <AdvancedTheorySection language={language} tab="longevity" />
           </TabsContent>
 
           <TabsContent value="janma-predictions" className="min-h-[300px]">
             <JanmaPredictionsTab kundliId={result?.id || ''} language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="janma-predictions" />
           </TabsContent>
 
           <TabsContent value="kundli-interpretations" className="min-h-[300px]">
             <KundliInterpretationsTab kundliId={result?.id || ''} language={language} />
+            <AnalysisTheorySection language={language} tab="kundli-interpretations" />
           </TabsContent>
 
           <TabsContent value="sadesati" className="min-h-[300px]">
@@ -668,10 +702,12 @@ export default function KundliGenerator() {
 
           <TabsContent value="mundane" className="min-h-[300px]">
             <MundaneTab language={language} />
+            <AdvancedTheorySection language={language} tab="mundane" />
           </TabsContent>
 
           <TabsContent value="milan" className="min-h-[300px]">
             <KundliMilanTab savedKundlis={savedKundlis} currentKundliId={result?.id} />
+            <AdvancedTheorySection language={language} tab="milan" />
           </TabsContent>
 
           {/* DashaSelector is now inside the "dasha" tab above — removed duplicate */}
@@ -696,6 +732,7 @@ export default function KundliGenerator() {
               language={language}
               t={t}
             />
+            <ChartsTheorySection language={language} tab="animation" />
           </TabsContent>
 
           <TabsContent value="rectification" className="min-h-[300px]">
@@ -709,10 +746,12 @@ export default function KundliGenerator() {
               language={language}
               t={t}
             />
+            <AdvancedTheorySection language={language} tab="rectification" />
           </TabsContent>
 
           <TabsContent value="kp-horary" className="min-h-[300px]">
             <KPHorary language={language} t={t} />
+            <AnalysisTheorySection language={language} tab="kp-horary" />
           </TabsContent>
 
           <TabsContent value="kalachakra" className="min-h-[300px]">
@@ -733,26 +772,32 @@ export default function KundliGenerator() {
 
           <TabsContent value="navamsha-career" className="min-h-[300px]">
             <NavamshaCareerTab kundliId={result?.id || ''} language={language} />
+            <AnalysisTheorySection language={language} tab="navamsha-career" />
           </TabsContent>
 
           <TabsContent value="graha-sambandha" className="min-h-[300px]">
             <GrahaSambandhaTab kundliId={result?.id || ''} language={language} />
+            <AnalysisTheorySection language={language} tab="graha-sambandha" />
           </TabsContent>
 
           <TabsContent value="panchadha-maitri" className="min-h-[300px]">
             <PanchadhaMaitriTab kundliId={result?.id || ''} language={language} />
+            <AnalysisTheorySection language={language} tab="panchadha-maitri" />
           </TabsContent>
 
           <TabsContent value="nadi-analysis" className="min-h-[300px]">
             <NadiAnalysisTab kundliId={result?.id || ''} language={language} />
+            <AnalysisTheorySection language={language} tab="nadi-analysis" />
           </TabsContent>
 
           <TabsContent value="family-demise" className="min-h-[300px]">
             <FamilyDemiseTab kundliId={result?.id || ''} language={language} />
+            <AdvancedTheorySection language={language} tab="family-demise" />
           </TabsContent>
 
           <TabsContent value="astro-map" className="min-h-[300px]">
             <AstroMapTab kundliId={result?.id || ''} kundliData={result} language={language} />
+            <AdvancedTheorySection language={language} tab="astro-map" />
           </TabsContent>
 
           <TabsContent value="sarvatobhadra" className="min-h-[300px]">
@@ -788,6 +833,7 @@ export default function KundliGenerator() {
                   {language === 'hi' ? 'सर्वतोभद्र चक्र डेटा उपलब्ध नहीं है' : 'No Sarvatobhadra Chakra data available'}
                 </p>
               )}
+              <ChartsTheorySection language={language} tab="sarvatobhadra" />
             </div>
           </TabsContent>
         </Tabs>

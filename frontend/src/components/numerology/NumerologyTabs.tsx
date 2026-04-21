@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Hash, Sparkles, Loader2, Phone, User, Car, Home, Eye, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -151,7 +152,15 @@ export default function NumerologyTabs() {
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer';
   const [activeTab, setActiveTab] = useState<TabType>('life_path');
+  const [searchParams] = useSearchParams();
   const isHi = language === 'hi';
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab') as TabType;
+    if (tabFromUrl && ['life_path', 'mobile', 'name', 'vehicle', 'house', 'mook_prashna', 'khoyi_vastu'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   const pick = (obj: any, key: string): string => {
     if (!obj) return '';

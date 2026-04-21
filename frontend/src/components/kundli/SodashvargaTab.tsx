@@ -266,6 +266,81 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           </div>
         </div>
       )}
+
+      {/* Sodashvarga Theory Section — General educational summary */}
+      <SodashvargaTheorySection language={language} />
+    </div>
+  );
+}
+
+function SodashvargaTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  const vargas = [
+    { code: 'D1', name: l('Rashi', 'लग्न/राशि'), focus: l('Physical body and general destiny.', 'शारीरिक शरीर और सामान्य भाग्य।') },
+    { code: 'D2', name: l('Hora', 'होरा'), focus: l('Wealth and prosperity.', 'धन और समृद्धि।') },
+    { code: 'D3', name: l('Drekkana', 'द्रेष्काण'), focus: l('Siblings, courage, and energy.', 'भाई-बहन, साहस और ऊर्जा।') },
+    { code: 'D4', name: l('Chaturthamsa', 'चतुर्थांश'), focus: l('Property, home, and happiness.', 'संपत्ति, घर और सुख।') },
+    { code: 'D7', name: l('Saptamsa', 'सप्तमांश'), focus: l('Children and grand-children.', 'संतान और पोते-पोतियां।') },
+    { code: 'D9', name: l('Navamsa', 'नवांश'), focus: l('Marriage, partner, and true inner strength.', 'विवाह, साथी और वास्तविक आंतरिक शक्ति।') },
+    { code: 'D10', name: l('Dasamsa', 'दशमांश'), focus: l('Career, profession, and social status.', 'करियर, पेशा और सामाजिक स्थिति।') },
+    { code: 'D12', name: l('Dwadasamsa', 'द्वादशांश'), focus: l('Parents and lineage.', 'माता-पिता और वंश।') },
+    { code: 'D16', name: l('Shodasamsa', 'षोडशांश'), focus: l('Vehicles and mental happiness.', 'वाहन और मानसिक सुख।') },
+    { code: 'D20', name: l('Vimsamsa', 'विंशांश'), focus: l('Spirituality and religious leanings.', 'आध्यात्मिकता और धार्मिक झुकाव।') },
+    { code: 'D24', name: l('Chaturvimsamsa', 'चतुर्विंशांश'), focus: l('Knowledge, learning, and education.', 'ज्ञान, विद्या और शिक्षा।') },
+    { code: 'D30', name: l('Trimsamsa', 'त्रिंशांश'), focus: l('Evils, risks, and character.', 'बुराइयां, जोखिम और चरित्र।') },
+    { code: 'D60', name: l('Shastyamsa', 'षष्ठ्यंश'), focus: l('The highest level of detail for all matters.', 'सभी मामलों के लिए सूक्ष्म विवरण का उच्चतम स्तर।') },
+  ];
+
+  return (
+    <div className="mt-12 space-y-6 pb-10">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <Layers className="w-5 h-5" />
+          {l('Understanding Sodashvarga (Divisional Charts)', 'षोडशवर्ग (विभागीय चार्ट) को समझना')}
+        </Heading>
+        
+        <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+          {l(
+            'In Vedic Astrology, the Rashi chart (D1) is the main map. However, to see specific details of life, we divide each sign into smaller parts. These are called "Vargas". If a planet is strong across multiple Vargas, its power to give results is significantly magnified.',
+            'वैदिक ज्योतिष में, राशि चार्ट (D1) मुख्य मानचित्र है। हालाँकि, जीवन के विशिष्ट विवरण देखने के लिए, हम प्रत्येक राशि को छोटे भागों में विभाजित करते हैं। इन्हें "वर्ग" कहा जाता है। यदि कोई ग्रह कई वर्गों में मजबूत है, तो परिणाम देने की उसकी शक्ति काफी बढ़ जाती है।'
+          )}
+        </p>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+            {l('Key Vargas and Their Focus', 'प्रमुख वर्ग और उनके क्षेत्र')}
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
+            {vargas.map((v) => (
+              <div key={v.code} className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{v.code} ({v.name}):</span>{' '}
+                <span className="text-foreground/70">{v.focus}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20">
+          <h4 className="text-xs font-bold text-sacred-gold-dark uppercase mb-2">{l('Vimshopak Bala — The Power Meter', 'विंशोपक बल — शक्ति मीटर')}</h4>
+          <p className="text-xs text-foreground/80 leading-relaxed italic">
+            {l(
+              'The "Vimshopak Bala" score (out of 20) measures a planet’s combined strength across all charts. A score above 15 indicates a planet is "Strong" and very capable of fulfilling your desires during its dasha period.',
+              '"विंशोपक बल" स्कोर (20 में से) सभी चार्टों में ग्रह की संयुक्त शक्ति को मापता है। 15 से ऊपर का स्कोर इंगित करता है कि ग्रह "मजबूत" है और अपनी दशा अवधि के दौरान आपकी इच्छाओं को पूरा करने में बहुत सक्षम है।'
+            )}
+          </p>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-sacred-gold/20">
+          <p className="text-[11px] text-foreground/50 italic text-center">
+            {l(
+              'Note: D9 (Navamsa) is the most important chart after D1. It confirms the actual strength of what is promised in the main chart.',
+              'नोट: D1 के बाद D9 (नवांश) सबसे महत्वपूर्ण चार्ट है। यह मुख्य चार्ट में किए गए वादे की वास्तविक शक्ति की पुष्टि करता है।'
+            )}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

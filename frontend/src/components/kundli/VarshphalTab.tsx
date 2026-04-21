@@ -3,6 +3,7 @@ import KundliChartSVG, { type PlanetEntry } from '@/components/KundliChartSVG';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface VarshphalTabProps {
   varshphalData: any;
@@ -187,6 +188,7 @@ export default function VarshphalTab({
       ) : (
         <p className="text-center text-foreground py-8">{t('varshphal.clickTab')}</p>
       )}
+      <TimingTheorySection language={language} tab="varshphal" />
     </div>
   );
 }

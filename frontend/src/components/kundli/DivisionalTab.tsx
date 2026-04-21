@@ -1,4 +1,5 @@
-import { Loader2, Grid3X3 } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, Grid3X3, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { getDivisionalChartOptions } from '@/components/kundli/kundli-utils';
 import { translatePlanet, translateSign, translateBackend } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -124,6 +125,84 @@ export default function DivisionalTab({
   handlePlanetClick, language, t,
 }: DivisionalTabProps) {
   const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+  const [eduOpen, setEduOpen] = useState(true);
+
+  const CHART_INFO: Record<string, { en: string; hi: string }> = {
+    D1: {
+      en: 'Foundation chart for the whole life: body, identity, overall karma and events. Use it to see baseline strengths (signs, houses, aspects) and then refine with other vargas.',
+      hi: 'मुख्य आधार चार्ट: शरीर, व्यक्तित्व, समग्र जीवन-घटनाएँ। पहले D1 से बेसलाइन ताकत/कमज़ोरी समझें, फिर अन्य वर्ग चार्ट से परिष्कृत करें।',
+    },
+    Moon: {
+      en: 'Moon chart is the Rashi chart read from the Moon as the 1st house. It highlights mind, emotions, how experiences feel internally, and day-to-day psychological patterns.',
+      hi: 'चंद्र चार्ट में चंद्रमा को लग्न मानकर भाव चलते हैं। यह मन, भावनाएँ और घटनाओं का आंतरिक अनुभव दिखाता है।',
+    },
+    D2: {
+      en: 'Wealth & resources (income, savings habits, asset-building). Helpful for “money style” and financial stability. In this app you’ll also see Hora-lord meanings.',
+      hi: 'धन/संसाधन: आय, बचत प्रवृत्ति, संपत्ति निर्माण। आर्थिक स्थिरता और “मनी स्टाइल” समझने में उपयोगी। यहाँ होरा-स्वामी के अर्थ भी दिखते हैं।',
+    },
+    D3: {
+      en: 'Courage, siblings, initiative, communication, short efforts. Often used for younger siblings/co-born and “self-effort” outcomes. This app also shows Drekkana lord/type.',
+      hi: 'साहस, भाई-बहन, पहल, संवाद, छोटे प्रयास। सहोदर/पराक्रम के संकेत। यहाँ द्रेक्काण स्वामी/प्रकार भी दिखता है।',
+    },
+    D4: {
+      en: 'Home, property, fixed assets, roots, inner security. Useful for house/land, settlement, and long-term comfort themes.',
+      hi: 'घर, संपत्ति, स्थायी संपदा, जड़ें/सुरक्षा। मकान/भूमि और दीर्घकालीन सुख-सुविधा के लिए।',
+    },
+    D7: {
+      en: 'Children, creativity, nurturing responsibilities and legacy. Often used for progeny indicators and the “next generation” themes.',
+      hi: 'संतान, रचनात्मकता, पालन-पोषण और वंश परंपरा। संतान-संबंधी संकेतों के लिए।',
+    },
+    D9: {
+      en: 'Marriage/partnership quality, dharma, maturity of planets. Also used to judge the deeper strength of planets and long-term life direction.',
+      hi: 'विवाह/साझेदारी की गुणवत्ता, धर्म और ग्रहों की परिपक्व शक्ति। दीर्घकालीन दिशा और ग्रह-बल जाँचने में बहुत उपयोगी।',
+    },
+    D10: {
+      en: 'Career, public role, authority, achievements and professional reputation. Best for job trajectory, responsibility levels, and vocation themes.',
+      hi: 'करियर, प्रतिष्ठा, अधिकार और उपलब्धियाँ। नौकरी/भूमिका परिवर्तन और प्रोफेशनल दिशा के लिए।',
+    },
+    D12: {
+      en: 'Parents, lineage, inherited patterns, family conditioning. Helpful for understanding parental influence and ancestral themes.',
+      hi: 'माता-पिता, वंश/परिवार की धारणाएँ, विरासत में मिले पैटर्न। अभिभावक-प्रभाव और पूर्वज-थीम के लिए।',
+    },
+    D16: {
+      en: 'Comforts, vehicles, luxuries and “quality of life” enjoyments. Often read for conveyances and lifestyle upgrades/downgrades.',
+      hi: 'सुख-सुविधा, वाहन, विलासिता और लाइफ़स्टाइल। वाहन/कम्फर्ट के संकेतों के लिए।',
+    },
+    D20: {
+      en: 'Spiritual practice, devotion, inner growth and “how one connects to the divine”. Useful for sadhana and spiritual temperament.',
+      hi: 'आध्यात्मिक साधना, भक्ति और आंतरिक विकास। साधना-प्रवृत्ति और आध्यात्मिक झुकाव के लिए।',
+    },
+    D24: {
+      en: 'Education, learning capacity, skills, and knowledge transmission. Useful for studies, certifications, and academic growth.',
+      hi: 'शिक्षा, सीखने की क्षमता, कौशल और विद्या। पढ़ाई/डिग्री/स्किल-ग्रोथ के लिए।',
+    },
+    D27: {
+      en: 'Strengths/weaknesses, resilience, “where you win vs struggle”. Often used for finer assessment of stamina and competence.',
+      hi: 'बल/कमज़ोरी, धैर्य, कहाँ जीत और कहाँ संघर्ष। स्टैमिना/कम्पिटेंस की सूक्ष्म जाँच के लिए।',
+    },
+    D30: {
+      en: 'Challenges, mishaps, vulnerabilities and “what trips you up”. Useful for identifying problem patterns; this app also shows Trimsamsha-lord meanings.',
+      hi: 'कष्ट/विघ्न, कमजोरियाँ और “कहाँ बाधा आती है”। समस्या-पैटर्न समझने के लिए; यहाँ त्रिंशांश स्वामी के अर्थ भी दिखते हैं।',
+    },
+    D40: {
+      en: 'Maternal lineage themes (tradition-dependent) and subtle inherited traits. Use as a supporting chart for family-pattern reading.',
+      hi: 'मातृ-पक्ष/वंश से जुड़े सूक्ष्म संकेत (परंपरा अनुसार)। फैमिली-पैटर्न के सपोर्टिंग चार्ट की तरह देखें।',
+    },
+    D45: {
+      en: 'Character refinement, inner nature and subtle personality traits (tradition-dependent). Use as a supporting “fine-tuning” chart.',
+      hi: 'चरित्र, स्वभाव और सूक्ष्म व्यक्तित्व (परंपरा अनुसार)। फाइन-ट्यूनिंग सपोर्टिंग चार्ट।',
+    },
+    D60: {
+      en: 'Karmic roots and deep patterns (very birth-time sensitive). Use only if birth time is accurate; even 1–2 minutes can change D60.',
+      hi: 'कर्म के गहरे संकेत (जन्म-समय के प्रति अत्यंत संवेदनशील)। केवल सटीक जन्म-समय होने पर ही देखें; 1–2 मिनट से भी बदल सकता है।',
+    },
+    D108: {
+      en: 'Ultra-fine varga analysis (extremely birth-time sensitive). Best treated as “expert mode” and only with verified birth time.',
+      hi: 'अत्यंत सूक्ष्म वर्ग (जन्म-समय अत्यधिक संवेदनशील)। इसे “एक्सपर्ट मोड” की तरह, सत्यापित जन्म-समय पर ही देखें।',
+    },
+  };
+
   const ascFromHouses = (houses: any): string => {
     const list = Array.isArray(houses) ? houses : [];
     const h1 = list.find((h: any) => Number(h?.number) === 1);
@@ -527,6 +606,77 @@ export default function DivisionalTab({
       ) : (
         <p className="text-center text-foreground py-8">{t('kundli.selectChartToLoad')}</p>
       )}
+
+      {/* Educational Summary (Divisional Charts) */}
+      <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setEduOpen((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-sacred-gold-dark text-white text-sm font-semibold"
+        >
+          <span className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 opacity-90" />
+            {l('Educational Summary — Divisional Charts', 'शिक्षात्मक सार — विभाजन चार्ट')}
+          </span>
+          {eduOpen ? (
+            <ChevronDown className="w-4 h-4 opacity-90" />
+          ) : (
+            <ChevronRight className="w-4 h-4 opacity-90" />
+          )}
+        </button>
+        {eduOpen && (
+          <div className="px-4 py-3 text-sm text-foreground/80 space-y-4">
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('How to use this tab', 'इस टैब का उपयोग कैसे करें')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{l('Select a D-chart (D1/D9/D10 etc.) from the dropdown.', 'ड्रॉपडाउन से D-चार्ट (D1/D9/D10 आदि) चुनें।')}</li>
+                <li>{l('Use D1 as baseline, then use specific vargas for the life area you care about.', 'पहले D1 को आधार मानें, फिर संबंधित जीवन-क्षेत्र के वर्ग चार्ट देखें।')}</li>
+                <li>{l('For D60/D108, accuracy of birth time is critical.', 'D60/D108 के लिए जन्म-समय की सटीकता बहुत महत्वपूर्ण है।')}</li>
+              </ul>
+            </div>
+
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{l('What a “Divisional (Varga) chart” means', '“वर्ग चार्ट” का अर्थ')}</p>
+              <p>
+                {l(
+                  'A divisional chart is a refinement of the same birth chart for a specific domain (marriage, career, children, etc.). Think of D1 as the full map, and other D-charts as “zoom lenses” for particular topics.',
+                  'वर्ग चार्ट जन्म-कुंडली का किसी विशेष क्षेत्र (विवाह, करियर, संतान आदि) के लिए परिष्कृत रूप है। D1 को “पूरा नक्शा” और अन्य D-चार्ट को “ज़ूम लेंस” समझें।'
+                )}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-semibold text-foreground">{l('Charts available here (and why they matter)', 'यहाँ उपलब्ध चार्ट (और उनका महत्व)')}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {getDivisionalChartOptions(language).map((opt) => {
+                  const info = CHART_INFO[opt.code] || {
+                    en: 'Supporting divisional view for additional context.',
+                    hi: 'अतिरिक्त संदर्भ के लिए सहायक वर्ग दृश्य।',
+                  };
+                  return (
+                    <div key={opt.code} className="rounded-lg border border-border/40 bg-muted/20 p-3">
+                      <div className="text-xs font-bold text-primary mb-1">{opt.name}</div>
+                      <div className="text-xs text-foreground/80 leading-relaxed">
+                        {hi ? info.hi : info.en}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-muted/30 border border-border/40 p-3">
+              <p className="font-semibold text-foreground mb-1">{l('Practical tip', 'व्यावहारिक टिप')}</p>
+              <p>
+                {l(
+                  'Use divisional charts together with timing (Dasha/Transits). A strong D-chart promise tends to manifest more clearly during supportive dashas and transits.',
+                  'वर्ग चार्ट को समय (दशा/गोचर) के साथ मिलाकर देखें। अनुकूल दशा/गोचर में मजबूत संकेत अधिक स्पष्ट रूप से फलित होते हैं।'
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -438,6 +438,79 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
           'D108 (अष्टोत्तरांश) उच्चतम विभागीय चार्टों में से एक है जो आत्मा के विकास और आध्यात्मिक मार्ग का आकलन करता है। परिणाम सटीक जन्म समय पर बहुत निर्भर करते हैं।'
         )}
       </div>
+
+      {/* D108 Theory Section — General educational summary */}
+      <D108TheorySection language={language} />
+    </div>
+  );
+}
+
+function D108TheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  return (
+    <div className="mt-12 space-y-6 pb-10">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5" />
+          {l('Understanding the D108 (Moksha Chart)', 'D108 (मोक्ष चार्ट) को समझना')}
+        </Heading>
+        
+        <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+          {l(
+            'The D108 chart, also known as Ashtottaramsha, is a highly specialized and rare divisional chart in Vedic Astrology. It divides the 360° zodiac into 108 equal parts of 3°20\' each. This number is sacred, matching the 108 beads of a Mala and the 108 padas of the 27 Nakshatras.',
+            'D108 चार्ट, जिसे अष्टोत्तरांश के रूप में भी जाना जाता है, वैदिक ज्योतिष में एक अत्यधिक विशिष्ट और दुर्लभ विभागीय चार्ट है। यह 360° राशि चक्र को 3°20\' के 108 समान भागों में विभाजित करता है। यह संख्या पवित्र है, जो एक माला के 108 मनकों और 27 नक्षत्रों के 108 चरणों से मेल खाती है।'
+          )}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Spiritual Evolution */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('Soul Evolution & Moksha', 'आत्मा का विकास और मोक्ष')}
+            </h4>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l(
+                'While the main chart (D1) shows your physical life, D108 peers into the soul’s journey across lifetimes. It is used to judge your "Moksha Potential" — the likelihood of spiritual liberation and the depth of your connection to the divine.',
+                'जबकि मुख्य चार्ट (D1) आपके भौतिक जीवन को दर्शाता है, D108 जन्मों-जन्मों की आत्मा की यात्रा को देखता है। इसका उपयोग आपकी "मोक्ष संभावना" — आध्यात्मिक मुक्ति की संभावना और ईश्वर के साथ आपके संबंध की गहराई को आंकने के लिए किया जाता है।'
+              )}
+            </p>
+          </div>
+
+          {/* Past Life Karma */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('Unlocking Past Life Karma', 'पूर्व जन्म के कर्मों को समझना')}
+            </h4>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l(
+                'Planetary placements in D108 reveal specific karmic patterns carried from previous births. This chart helps identify why certain spiritual or emotional tendencies exist in your current personality that cannot be explained by D1 alone.',
+                'D108 में ग्रहों की स्थिति पिछले जन्मों से लाए गए विशिष्ट कर्म पैटर्न को प्रकट करती है। यह चार्ट यह पहचानने में मदद करता है कि आपके वर्तमान व्यक्तित्व में कुछ आध्यात्मिक या भावनात्मक प्रवृत्तियां क्यों मौजूद हैं जिन्हें अकेले D1 द्वारा नहीं समझाया जा सकता है।'
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20">
+          <h4 className="text-xs font-bold text-sacred-gold-dark uppercase mb-2">{l('How to Interpret the Score?', 'स्कोर की व्याख्या कैसे करें?')}</h4>
+          <p className="text-xs text-foreground/80 leading-relaxed italic">
+            {l(
+              'A high Moksha Potential score (above 70%) indicates a highly evolved soul with strong spiritual merits (Punya). A moderate score suggests a balance between material duties and spiritual progress, while a low score means the focus is currently on fulfilling worldly karma.',
+              'एक उच्च मोक्ष संभावना स्कोर (70% से ऊपर) एक अत्यधिक विकसित आत्मा को इंगित करता है जिसमें मजबूत आध्यात्मिक गुण (पुण्य) होते हैं। एक मध्यम स्कोर भौतिक कर्तव्यों और आध्यात्मिक प्रगति के बीच संतुलन का सुझाव देता है, जबकि एक कम स्कोर का अर्थ है कि ध्यान वर्तमान में सांसारिक कर्मों को पूरा करने पर है।'
+            )}
+          </p>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-sacred-gold/20">
+          <p className="text-[11px] text-foreground/50 italic text-center">
+            {l(
+              'Note: D108 is extremely sensitive to birth time. Even a 1-minute difference can change the entire chart. Use this for spiritual contemplation rather than mundane predictions.',
+              'नोट: D108 जन्म समय के प्रति अत्यधिक संवेदनशील है। 1 मिनट का अंतर भी पूरे चार्ट को बदल सकता है। इसका उपयोग सांसारिक भविष्यवाणियों के बजाय आध्यात्मिक चिंतन के लिए करें।'
+            )}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

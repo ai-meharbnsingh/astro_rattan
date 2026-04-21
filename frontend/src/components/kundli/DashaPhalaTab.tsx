@@ -162,6 +162,117 @@ function dashaQualityBadgeClasses(tag: string): string {
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
+import { Sparkles, Clock, Calendar } from 'lucide-react';
+
+function DashaTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  const levels = [
+    {
+      name: l('Mahadasha (Major Period)', 'महादशा (मुख्य अवधि)'),
+      duration: l('Years', 'वर्षों तक'),
+      desc: l('The "Season" of your life. It sets the primary theme and background for a long period.', 'आपके जीवन का "सीजन"। यह एक लंबी अवधि के लिए प्राथमिक विषय और पृष्ठभूमि निर्धारित करता है।'),
+    },
+    {
+      name: l('Antardasha (Sub-Period)', 'अंतर्दशा (उप-अवधि)'),
+      duration: l('Months', 'महीनों तक'),
+      desc: l('The "Weather" within the season. It fine-tunes the results and shows specific events.', 'सीजन के भीतर का "मौसम"। यह परिणामों को और अधिक सटीक बनाता है और विशिष्ट घटनाओं को दर्शाता है।'),
+    },
+    {
+      name: l('Pratyantar (Sub-sub-period)', 'प्रत्यंतर दशा (सूक्ष्म अवधि)'),
+      duration: l('Days', 'दिनों तक'),
+      desc: l('The "Daily Forecast". It highlights the immediate focus and mood of shorter intervals.', ' "दैनिक पूर्वानुमान"। यह छोटे अंतराल के तत्काल फोकस और मूड को उजागर करता है।'),
+    },
+  ];
+
+  return (
+    <div className="mt-8 space-y-6 pb-6">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <Clock className="w-5 h-5" />
+          {l('Understanding Life Timing (The Seasons Metaphor)', 'जीवन के समय को समझना (सीजन का रूपक)')}
+        </Heading>
+        
+        <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+          {l(
+            'While your birth chart shows "what" is in your destiny, the Dasha system reveals "when" it will happen. In Vedic Astrology, life is divided into cycles ruled by different planets. This is called the Vimshottari Dasha — a 120-year cycle that governs the unfolding of your karma.',
+            'जबकि आपकी जन्म कुंडली बताती है कि आपके भाग्य में "क्या" है, दशा प्रणाली यह प्रकट करती है कि वह "कब" होगा। वैदिक ज्योतिष में, जीवन को विभिन्न ग्रहों द्वारा शासित चक्रों में विभाजित किया गया है। इसे विंशोत्तरी दशा कहा जाता है — एक 120 साल का चक्र जो आपके कर्मों के प्रकट होने को नियंत्रित करता है।'
+          )}
+        </p>
+
+        {/* Metaphor Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {levels.map((level, idx) => (
+            <div key={idx} className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+              <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-1">{level.name}</h5>
+              <p className="text-[10px] font-bold text-primary mb-2 italic">[{level.duration}]</p>
+              <p className="text-xs text-foreground/70 leading-relaxed">
+                {level.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary flex items-center gap-2 border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('How the Planets Shape Your Time', 'ग्रह आपके समय को कैसे आकार देते हैं')}
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Sun Dasha (6 yrs):', 'सूर्य दशा (6 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Focus on career, authority, father, and self-realization.', 'करियर, अधिकार, पिता और आत्म-साक्षात्कार पर ध्यान।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Moon Dasha (10 yrs):', 'चंद्र दशा (10 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Focus on emotions, home, mother, and mental peace.', 'भावनाओं, घर, माता और मानसिक शांति पर ध्यान।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Mars Dasha (7 yrs):', 'मंगल दशा (7 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Period of high energy, courage, properties, or conflicts.', 'उच्च ऊर्जा, साहस, संपत्ति या संघर्ष की अवधि।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Rahu Dasha (18 yrs):', 'राहु दशा (18 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Obsessive growth, foreign travels, illusions, or sudden gains.', 'जुनूनी विकास, विदेश यात्रा, भ्रम या अचानक लाभ।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Jupiter Dasha (16 yrs):', 'गुरु दशा (16 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Wisdom, expansion, children, wealth, and spiritual progress.', 'ज्ञान, विस्तार, संतान, धन और आध्यात्मिक प्रगति।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Saturn Dasha (19 yrs):', 'शनि दशा (19 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Hard work, discipline, delays, and fulfilling karmic duties.', 'कड़ी मेहनत, अनुशासन, देरी और कर्मिक कर्तव्यों की पूर्ति।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Mercury Dasha (17 yrs):', 'बुध दशा (17 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Intellect, business, learning, and communication events.', 'बुद्धि, व्यवसाय, सीखने और संचार की घटनाएं।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Ketu Dasha (7 yrs):', 'केतु दशा (7 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Detachment, spiritual insights, and resolving past karma.', 'वैराग्य, आध्यात्मिक अंतर्दृष्टि और पिछले कर्मों का समाधान।')}</span>
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-sacred-gold-dark">{l('Venus Dasha (20 yrs):', 'शुक्र दशा (20 वर्ष):')}</span>{' '}
+                <span className="text-foreground/70">{l('Luxury, love, marriage, arts, and worldly comforts.', 'विलासिता, प्रेम, विवाह, कला और सांसारिक सुख।')}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20 text-center">
+            <p className="text-xs text-foreground/80 leading-relaxed italic">
+              {l(
+                'Note: A planet’s results depend on its placement in your birth chart. A well-placed "Boss" (planet) brings growth, while a weak one brings challenges.',
+                'नोट: एक ग्रह का परिणाम आपकी जन्म कुंडली में उसकी स्थिति पर निर्भर करता है। एक अच्छी तरह से स्थित "बॉस" (ग्रह) विकास लाता है, जबकि एक कमजोर बॉस चुनौतियां लाता है।'
+              )}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabProps) {
   const l = (en: string, hi: string) => (language === 'hi' ? hi : en);
   const hi = language === 'hi';
@@ -464,6 +575,9 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
 
       {/* Dasha Timing Rule */}
       <DashaTimingSection kundliId={kundliId} language={language} l={l} hi={hi} />
+
+      {/* Dasha Theory Section — General educational summary */}
+      <DashaTheorySection language={language} />
     </div>
   );
 }

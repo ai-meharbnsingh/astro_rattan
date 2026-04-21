@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, CalendarDays, CalendarCheck, Sun, Star, Users, Orbit, ChevronDown, MapPin, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -91,7 +92,15 @@ export default function HoroscopePage() {
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [selectedSign, setSelectedSign] = useState('aries');
   const [activeTab, setActiveTab] = useState('daily');
+  const [searchParams] = useSearchParams();
   const [showPersonalize, setShowPersonalize] = useState(false);
+
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && ['daily', 'tomorrow', 'weekly', 'monthly', 'yearly', 'all', 'transits'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
   const [birthParams, setBirthParams] = useState<BirthParams>(() => {
     const saved = loadBirthParams();
     if (saved) return saved;

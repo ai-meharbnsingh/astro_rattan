@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Star, BookOpen, CheckCircle2, XCircle, Gem } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface BilingualField { en: string; hi: string; }
 interface DosDonts      { en: string; hi: string; }
@@ -258,6 +259,7 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
           </div>
         </div>
       )}
+      <TimingTheorySection language={language || 'en'} tab="transit-lucky" />
     </div>
   );
 }

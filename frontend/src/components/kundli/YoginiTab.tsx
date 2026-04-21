@@ -2,6 +2,7 @@ import { Clock3, Loader2 } from 'lucide-react';
 import { translatePlanet, translateName } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface YoginiTabProps {
   yoginiData: any;
@@ -70,6 +71,7 @@ export default function YoginiTab({ yoginiData, loadingYogini, language, t }: Yo
           </TableBody>
         </Table>
       </div>
+      <TimingTheorySection language={language} tab="yogini" />
     </div>
   );
 }

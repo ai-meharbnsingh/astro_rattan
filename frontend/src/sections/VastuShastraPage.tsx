@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Loader2, Compass, Grid3X3, DoorOpen, Wrench, Home, LayoutGrid, Upload } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
@@ -22,6 +23,18 @@ export default function VastuShastraPage() {
 
   const [mainMode, setMainMode] = useState<MainMode>('select');
   const [analysisView, setAnalysisView] = useState<AnalysisView>('form');
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const modeFromUrl = searchParams.get('mode') as MainMode;
+    if (modeFromUrl && ['select', 'analysis', 'home-grid', 'floorplan'].includes(modeFromUrl)) {
+      setMainMode(modeFromUrl);
+    }
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl && ['home', 'mandala', 'entrance', 'remedies', 'rooms'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('home');

@@ -330,3 +330,67 @@ export default function SarvatobhadraChakra({
     </svg>
   );
 }
+
+import { Heading } from '@/components/ui/heading';
+import { BookOpen, Zap } from 'lucide-react';
+
+export function SarvatobhadraTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  return (
+    <div className="mt-12 space-y-6 pb-10">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          {l('Understanding Sarvatobhadra Chakra', 'सर्वतोभद्र चक्र को समझना')}
+        </Heading>
+        
+        <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+          {l(
+            'Sarvatobhadra Chakra is the "Supreme Wheel of Fortune" in Vedic Astrology. It is a 9x9 grid containing all 28 Nakshatras (including Abhijit), 12 Signs, 16 Vowels, 12 Tithis, and Weekdays. It is primarily used for identifying the exact impact of transiting planets on your natal points.',
+            'सर्वतोभद्र चक्र वैदिक ज्योतिष में "भाग्य का सर्वोच्च चक्र" है। यह एक 9x9 ग्रिड है जिसमें सभी 28 नक्षत्र (अभिजित सहित), 12 राशियां, 16 स्वर, 12 तिथियां और सप्ताह के दिन शामिल हैं। इसका मुख्य रूप से आपके जन्म बिंदुओं पर गोचर करने वाले ग्रहों के सटीक प्रभाव की पहचान करने के लिए उपयोग किया जाता है।'
+          )}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Vedha Concept */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide flex items-center gap-2">
+              <Zap className="w-4 h-4" />
+              {l('The Concept of Vedha', 'वेध का सिद्धांत')}
+            </h4>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l(
+                '"Vedha" means obstruction or impact. When a planet transits through a cell in this grid, it casts an influence (diagonal, horizontal, or vertical) on other cells. If a malefic planet casts Vedha on your natal Moon or Lagna Nakshatra, it can signal challenges; a benefic planet brings success.',
+                '"वेध" का अर्थ है रुकावट या प्रभाव। जब कोई ग्रह इस ग्रिड में एक सेल के माध्यम से गोचर करता है, तो वह अन्य सेल पर एक प्रभाव (तिरछा, क्षैतिज, या लंबवत) डालता है। यदि कोई अशुभ ग्रह आपके जन्म के चंद्रमा या लग्न नक्षत्र पर वेध डालता है, तो यह चुनौतियों का संकेत दे सकता है; एक शुभ ग्रह सफलता लाता है।'
+              )}
+            </p>
+          </div>
+
+          {/* Practical Use */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+              {l('Why use this Chakra?', 'इस चक्र का उपयोग क्यों करें?')}
+            </h4>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l(
+                'This is the ultimate tool for "Market Timing" and "Personal Success". It allows an astrologer to predict sudden rises, falls, or major life events by looking at how transiting planets cross the sensitive cells linked to your name, birth day, and birth star.',
+                'यह "मार्केट टाइमिंग" और "व्यक्तिगत सफलता" के लिए अंतिम उपकरण है। यह एक ज्योतिषी को आपके नाम, जन्म दिन और जन्म नक्षत्र से जुड़े संवेदनशील सेल को पार करने वाले गोचर ग्रहों को देखकर अचानक वृद्धि, गिरावट या प्रमुख जीवन घटनाओं की भविष्यवाणी करने की अनुमति देता है।'
+              )}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20 text-center">
+          <p className="text-xs text-foreground/80 leading-relaxed italic">
+            {l(
+              'Interpretation Tip: Red lines indicate inauspicious Vedhas from malefic planets, while Green lines indicate auspicious support from benefic planets.',
+              'व्याख्या टिप: लाल रेखाएं अशुभ ग्रहों से अशुभ वेध का संकेत देती हैं, जबकि हरी रेखाएं शुभ ग्रहों से शुभ सहायता का संकेत देती हैं।'
+            )}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

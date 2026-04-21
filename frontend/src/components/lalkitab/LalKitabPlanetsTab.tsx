@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Star, ChevronDown, ChevronUp, ShieldCheck, Zap, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import { Heading } from '@/components/ui/heading';
 import { pickLang } from './safe-render';
 import { useLalKitab } from './LalKitabContext';
 import { LK_PLANETS } from './lalkitab-core';
@@ -215,6 +216,71 @@ export default function LalKitabPlanetsTab() {
             </div>
           );
         })}
+      </div>
+
+      {/* Astrology Theory Section — General educational summary */}
+      <AstrologyTheorySection language={language} />
+    </div>
+  );
+}
+
+function AstrologyTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  return (
+    <div className="mt-12 space-y-6 pb-10">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          {l('Understanding Your Lal Kitab Planets', 'लाल किताब ग्रहों को समझना')}
+        </Heading>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('The Actors (Planets)', 'अभिनेता (ग्रह)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('In Lal Kitab, planets are the living forces. They can be "Sleeping" (inactive) or "Kayam" (stable and strong).', 'लाल किताब में ग्रह जीवित शक्तियां हैं। वे "सोए हुए" (निष्क्रिय) या "कायम" (स्थिर और मजबूत) हो सकते हैं।')}
+            </p>
+          </div>
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('The Fixed Stage (Houses)', 'निश्चित मंच (भाव)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('Lal Kitab uses a fixed house system. Each house has a permanent nature regardless of the sign.', 'लाल किताब एक निश्चित भाव प्रणाली का उपयोग करती है। प्रत्येक भाव का स्वभाव स्थायी होता है, चाहे राशि कोई भी हो।')}
+            </p>
+          </div>
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('The Remedies (Upay)', 'उपाय (लाल किताब)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('Planets here are judged by their behavior. If an actor is "Malefic", specific logic-based remedies are given.', 'यहाँ ग्रहों को उनके व्यवहार से आंका जाता है। यदि कोई ग्रह "अशुभ" है, तो विशिष्ट तर्क-आधारित उपाय दिए जाते हैं।')}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+            {l('Core Lal Kitab Concepts', 'लाल किताब के मूल सिद्धांत')}
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="text-xs">
+              <span className="font-bold text-sacred-gold-dark">{l('Sleeping Planet:', 'सोया हुआ ग्रह:')}</span>{' '}
+              <span className="text-foreground/70">{l('A planet that is not activated. It needs a specific action or time to start giving results.', 'एक ऐसा ग्रह जो सक्रिय नहीं है। इसे परिणाम देना शुरू करने के लिए एक विशिष्ट कार्य या समय की आवश्यकता होती है।')}</span>
+            </div>
+            <div className="text-xs">
+              <span className="font-bold text-sacred-gold-dark">{l('Kayam Grah:', 'कायम ग्रह:')}</span>{' '}
+              <span className="text-foreground/70">{l('A planet that is stable, independent, and giving its own results without interference.', 'एक ऐसा ग्रह जो स्थिर, स्वतंत्र है और बिना किसी हस्तक्षेप के अपना परिणाम दे रहा है।')}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-4 border-t border-sacred-gold/20">
+          <p className="text-[11px] text-foreground/50 italic text-center">
+            {l(
+              'Lal Kitab is unique because it focuses on practical "Logic" and simple remedies over complex calculations.',
+              'लाल किताब अद्वितीय है क्योंकि यह जटिल गणनाओं के बजाय व्यावहारिक "तर्क" और सरल उपायों पर ध्यान केंद्रित करती है।'
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );

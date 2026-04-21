@@ -319,6 +319,127 @@ interface PlanetsTabProps {
   HOUSE_SIGNIFICANCE: Record<number, string>;
 }
 
+function AstrologyTheorySection({ language }: { language: string }) {
+  const hi = language === 'hi';
+  const l = (en: string, hiStr: string) => (hi ? hiStr : en);
+
+  const concepts = [
+    {
+      title: l('The 9 Planets (Grahas) — The Actors', '9 ग्रह (अभिनेता)'),
+      items: [
+        { name: l('Sun (Surya)', 'सूर्य'), desc: l('Represents soul, ego, father, authority, and health.', 'आत्मा, अहंकार, पिता, अधिकार और स्वास्थ्य का प्रतिनिधित्व करता है।') },
+        { name: l('Moon (Chandra)', 'चंद्र'), desc: l('Represents mind, emotions, mother, and mental peace.', 'मन, भावनाओं, माता और मानसिक शांति का प्रतिनिधित्व करता है।') },
+        { name: l('Mars (Mangal)', 'मंगल'), desc: l('Represents courage, energy, siblings, and land.', 'साहस, ऊर्जा, भाई-बहनों और भूमि का प्रतिनिधित्व करता है।') },
+        { name: l('Mercury (Budh)', 'बुध'), desc: l('Represents intellect, communication, business, and speech.', 'बुद्धि, संचार, व्यापार और वाणी का प्रतिनिधित्व करता है।') },
+        { name: l('Jupiter (Guru)', 'गुरु'), desc: l('Represents wisdom, luck, children, wealth, and spirituality.', 'ज्ञान, भाग्य, संतान, धन और आध्यात्मिकता का प्रतिनिधित्व करता है।') },
+        { name: l('Venus (Shukra)', 'शुक्र'), desc: l('Represents love, luxury, marriage, beauty, and art.', 'प्रेम, विलासिता, विवाह, सुंदरता और कला का प्रतिनिधित्व करता है।') },
+        { name: l('Saturn (Shani)', 'शनि'), desc: l('Represents discipline, karma, longevity, and obstacles.', 'अनुशासन, कर्म, दीर्घायु और बाधाओं का प्रतिनिधित्व करता है।') },
+        { name: l('Rahu & Ketu', 'राहु और केतु'), desc: l('Shadow planets representing worldly desires and spiritual liberation.', 'साया ग्रह जो सांसारिक इच्छाओं और आध्यात्मिक मुक्ति का प्रतिनिधित्व करते हैं।') },
+      ],
+    },
+    {
+      title: l('The 12 Houses (Bhavas) — The Stage', '12 भाव (मंच)'),
+      items: [
+        { name: l('1st House (Lagna)', 'प्रथम भाव (लग्न)'), desc: l('Self, appearance, personality, and life path.', 'स्वयं, रूप, व्यक्तित्व और जीवन पथ।') },
+        { name: l('2nd House', 'द्वितीय भाव'), desc: l('Wealth, family, speech, and early education.', 'धन, परिवार, वाणी और प्रारंभिक शिक्षा।') },
+        { name: l('4th House', 'चतुर्थ भाव'), desc: l('Home, mother, happiness, and properties.', 'घर, माता, सुख और संपत्ति।') },
+        { name: l('7th House', 'सप्तम भाव'), desc: l('Marriage, partnerships, and business.', 'विवाह, साझेदारी और व्यापार।') },
+        { name: l('9th House', 'नवम भाव'), desc: l('Luck, dharma, father, and long travels.', 'भाग्य, धर्म, पिता और लंबी यात्राएं।') },
+        { name: l('10th House', 'दशम भाव'), desc: l('Career, status, power, and social contribution.', 'करियर, प्रतिष्ठा, शक्ति और सामाजिक योगदान।') },
+      ],
+    },
+    {
+      title: l('The 12 Signs (Rashis) — The Costumes', '12 राशियां (वेशभूषा)'),
+      desc: l(
+        'Signs provide the "flavor" or behavior of a planet. For example, Sun in Leo (own sign) is strong and comfortable, while Sun in Libra (debilitated) is weak and uncomfortable.',
+        'राशियां ग्रहों को "स्वभाव" या व्यवहार प्रदान करती हैं। उदाहरण के लिए, सिंह राशि में सूर्य (स्वराशि) मजबूत और सहज होता है, जबकि तुला राशि में सूर्य (नीच) कमजोर और असहज होता है।'
+      ),
+    },
+    {
+      title: l('27 Nakshatras — The Detail', '27 नक्षत्र (सूक्ष्म विवरण)'),
+      desc: l(
+        'Nakshatras provide micro-details. While a sign tells you the general behavior, the Nakshatra reveals the specific quality of the mind and destiny.',
+        'नक्षत्र सूक्ष्म विवरण प्रदान करते हैं। जबकि एक राशि आपको सामान्य व्यवहार बताती है, नक्षत्र मन और भाग्य की विशिष्ट गुणवत्ता को प्रकट करता है।'
+      ),
+    },
+  ];
+
+  return (
+    <div className="mt-8 space-y-6">
+      <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+        <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5" />
+          {l('How to Read Your Chart (The Theater Metaphor)', 'अपनी कुंडली कैसे पढ़ें (थिएटर रूपक)')}
+        </Heading>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('1. The Actors (Planets)', '1. अभिनेता (ग्रह)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('Planets are the "Who". They represent different parts of your personality and life (Ego, Emotions, Wisdom).', 'ग्रह "कौन" हैं। वे आपके व्यक्तित्व और जीवन के विभिन्न हिस्सों (अहंकार, भावनाओं, ज्ञान) का प्रतिनिधित्व करते हैं।')}
+            </p>
+          </div>
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('2. The Costumes (Signs)', '2. वेशभूषा (राशियां)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('Signs are the "How". They show how a planet behaves. A strong sign makes the actor perform well; a weak one makes them struggle.', 'राशियां "कैसे" हैं। वे दिखाती हैं कि एक ग्रह कैसे व्यवहार करता है। एक मजबूत राशि अभिनेता को अच्छा प्रदर्शन करने के लिए प्रेरित करती है; एक कमजोर राशि उन्हें संघर्ष कराती है।')}
+            </p>
+          </div>
+          <div className="bg-white/40 p-4 rounded-lg border border-sacred-gold/10">
+            <h5 className="font-bold text-sacred-gold-dark text-xs uppercase mb-2">{l('3. The Stage (Houses)', '3. मंच (भाव)')}</h5>
+            <p className="text-xs text-foreground/70 leading-relaxed">
+              {l('Houses are the "Where". They represent the specific area of life where the planet’s energy will manifest (Career, Home, Marriage).', 'भाव "कहाँ" हैं। वे जीवन के उस विशिष्ट क्षेत्र का प्रतिनिधित्व करते हैं जहाँ ग्रह की ऊर्जा प्रकट होगी (करियर, घर, विवाह)।')}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {concepts.map((concept, idx) => (
+            <div key={idx} className="space-y-3">
+              <h4 className="text-sm font-bold text-primary flex items-center gap-2 border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+                {concept.title}
+              </h4>
+              {concept.items ? (
+                <div className="space-y-2.5">
+                  {concept.items.map((item, i) => (
+                    <div key={i} className="text-xs">
+                      <span className="font-bold text-sacred-gold-dark">{item.name}:</span>{' '}
+                      <span className="text-foreground/70">{item.desc}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-foreground/70 leading-relaxed">
+                  {concept.desc}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20">
+          <h4 className="text-xs font-bold text-sacred-gold-dark uppercase mb-3">{l('Example: Sun in Leo in 10th House', 'उदाहरण: 10वें भाव में सिंह राशि का सूर्य')}</h4>
+          <p className="text-xs text-foreground/80 leading-relaxed">
+            {l(
+              'If the Sun (The Actor of Authority) is in Leo (A Strong Costume) in the 10th House (The Career Stage), it means you likely have natural leadership and status in your professional life.',
+              'यदि सूर्य (अधिकार का अभिनेता) 10वें भाव (करियर मंच) में सिंह राशि (एक मजबूत वेशभूषा) में है, तो इसका अर्थ है कि आपके पेशेवर जीवन में प्राकृतिक नेतृत्व और प्रतिष्ठा होने की संभावना है।'
+            )}
+          </p>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-sacred-gold/20">
+          <p className="text-[11px] text-foreground/50 italic text-center">
+            {l(
+              'Note: These are general significations. A planet’s actual result in your life depends on its strength, lordship, and the aspects it receives.',
+              'नोट: ये सामान्य फल हैं। आपके जीवन में ग्रह का वास्तविक परिणाम उसकी शक्ति, स्वामित्व और उस पर पड़ने वाली दृष्टियों पर निर्भर करता है।'
+            )}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PlanetsTab({
   planets, result, kundliId, sidePanel, setSidePanel,
   handlePlanetClick, handleHouseClick,
@@ -607,6 +728,9 @@ export default function PlanetsTab({
         {kundliId && <PanchadhaMaitriSection kundliId={kundliId} language={language} />}
       </div>
       </div>
+
+      {/* Astrology Theory Section — General educational summary */}
+      <AstrologyTheorySection language={language} />
     </div>
   );
 }

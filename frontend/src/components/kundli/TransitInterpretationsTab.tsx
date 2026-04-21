@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, BookOpen, ChevronDown, ChevronUp, Heart, Briefcase, Coins, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface InterpretationCategory {
   en: string;
@@ -194,11 +195,14 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
           {isHi ? 'कोई गोचर व्याख्या उपलब्ध नहीं' : 'No transit interpretations available'}
         </div>
       ) : (
-        <div className="space-y-3">
-          {interpretations.map((item, i) => (
-            <PlanetSection key={i} item={item} isHi={isHi} defaultOpen={i === 0} />
-          ))}
-        </div>
+        <>
+          <div className="space-y-3">
+            {interpretations.map((item, i) => (
+              <PlanetSection key={i} item={item} isHi={isHi} defaultOpen={i === 0} />
+            ))}
+          </div>
+          {interpretations.length > 0 && <TimingTheorySection language={language || 'en'} tab="transit-interp" />}
+        </>
       )}
     </div>
   );

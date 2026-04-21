@@ -1,4 +1,4 @@
-import { Loader2, CheckCircle, Shield, ChevronDown } from 'lucide-react';
+import { Loader2, CheckCircle, Shield, ChevronDown, BookOpen } from 'lucide-react';
 import { formatDate } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { ChartLegend, type PlanetData } from '@/components/InteractiveKundli';
@@ -912,17 +912,88 @@ export default function ReportTab({
                   )}
                   </div>
                 </div>
+              </div>
 
-                {/* Remedies (quick access) */}
-                {result?.id && (
-                  <GeneralRemedies
-                    language={language}
-                    t={t}
-                    kundliId={result.id}
-                    title={language === 'hi' ? 'उपाय (सामान्य)' : 'Remedies (General)'}
-                  />
-                )}
+              {/* Remedies (quick access) */}
+              {result?.id && (
+                <GeneralRemedies
+                  language={language}
+                  t={t}
+                  kundliId={result.id}
+                  title={language === 'hi' ? 'उपाय (सामान्य)' : 'Remedies (General)'}
+                />
+              )}
 
+              {/* Consolidated Report Theory Section — General educational summary */}
+              <div className="mt-12 space-y-6 pb-10">
+                <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-6 overflow-hidden">
+                  <Heading as={3} variant={3} className="text-sacred-gold-dark mb-4 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5" />
+                    {language === 'hi' ? 'रिपोर्ट को समझना (सामान्य सिद्धांत)' : 'Understanding Your Report (General Theory)'}
+                  </Heading>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* The 3 Pillars */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+                        {language === 'hi' ? 'ज्योतिष के 3 स्तंभ (थिएटर रूपक)' : 'The 3 Pillars (Theater Metaphor)'}
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? '1. अभिनेता (ग्रह):' : '1. The Actors (Planets):'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'ग्रह "कौन" हैं। वे आपके व्यक्तित्व (सूर्य = अहंकार, चंद्रमा = मन) का प्रतिनिधित्व करते हैं।' : 'Planets are the "Who". They represent different parts of your personality (Sun = Ego, Moon = Mind).'}</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? '2. वेशभूषा (राशियां):' : '2. The Costumes (Signs):'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'राशियां "कैसे" हैं। वे दिखाती हैं कि ग्रह कैसे व्यवहार करता है। एक अच्छी राशि का अर्थ है एक अच्छा प्रदर्शन।' : 'Signs are the "How". They show how a planet behaves. A strong sign means a better performance.'}</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? '3. मंच (भाव):' : '3. The Stage (Houses):'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'भाव "कहाँ" हैं। यह जीवन का वह क्षेत्र है जहाँ ग्रह का प्रभाव दिखता है (करियर, घर, धन)।' : 'Houses are the "Where". This is the area of life where the planet’s energy manifests (Career, Home, Wealth).'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* How to Read Charts */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold text-primary border-b border-sacred-gold/20 pb-1.5 uppercase tracking-wide">
+                        {language === 'hi' ? 'चार्ट कैसे पढ़ें?' : 'How to Read the Charts'}
+                      </h4>
+                      <div className="space-y-4">
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? 'लग्न चार्ट (D1):' : 'Lagna Chart (D1):'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'यह आपकी भौतिक वास्तविकता और दुनिया आपको कैसे देखती है, यह दर्शाता है।' : 'This shows your physical reality and how the world sees you.'}</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? 'चंद्र चार्ट:' : 'Moon Chart:'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'यह आपकी मानसिक स्थिति और आप भावनात्मक रूप से कैसा महसूस करते हैं, यह दर्शाता है।' : 'This shows your mental state and how you feel emotionally.'}</span>
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-bold text-sacred-gold-dark">{language === 'hi' ? 'दशा (समय):' : 'Dasha (Timing):'}</span>{' '}
+                          <span className="text-foreground/70">{language === 'hi' ? 'दशा बताती है कि आपके भाग्य में लिखा "कब" होगा। यह जीवन के मौसम की तरह है।' : 'Dasha tells "when" things will happen. It is like the seasons of your life.'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Practical Example */}
+                  <div className="mt-8 p-4 bg-sacred-gold-dark/[0.03] rounded-lg border border-sacred-gold/20">
+                    <h4 className="text-xs font-bold text-sacred-gold-dark uppercase mb-3">{language === 'hi' ? 'व्यावहारिक उदाहरण: 10वें भाव में सूर्य' : 'Practical Example: Sun in 10th House'}</h4>
+                    <p className="text-xs text-foreground/80 leading-relaxed italic">
+                      {language === 'hi' 
+                        ? 'यदि सूर्य (अधिकार) 10वें भाव (करियर मंच) में है, तो इसका अर्थ है कि व्यक्ति को अपने करियर में उच्च पद और सम्मान मिलेगा।'
+                        : 'If the Sun (Authority) is in your 10th House (Career Stage), it means you are meant to shine and hold authority in your professional life.'}
+                    </p>
+                  </div>
+
+                  <div className="mt-8 pt-4 border-t border-sacred-gold/20">
+                    <p className="text-[11px] text-foreground/50 italic text-center">
+                      {language === 'hi'
+                        ? 'नोट: यह एक सामान्य मार्गदर्शिका है। व्यक्तिगत परिणामों के लिए ग्रहों की शक्ति और उनके आपसी संबंधों का गहराई से विश्लेषण आवश्यक है।'
+                        : 'Note: This is a general guide. For personal results, a deep analysis of planet strength and their relations is required.'}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
   );
