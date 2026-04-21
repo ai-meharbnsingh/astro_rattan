@@ -267,6 +267,9 @@
 select.input-sacred {
   appearance: none;
 }
+/* Icon inputs: two-class specificity beats .input-sacred's padding shorthand */
+.input-sacred.pl-9  { padding-left: 2.25rem; }
+.input-sacred.pl-10 { padding-left: 2.5rem; }
 
 /* Scrollbar — sacred gold theme, wider thumb */
 ::-webkit-scrollbar {

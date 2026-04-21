@@ -80,9 +80,7 @@ export default function Hero() {
             {[
               { label: language === 'hi' ? 'राशिफल' : 'Horoscope', id: 'horoscope-section', href: '/horoscope' },
               { label: language === 'hi' ? 'पंचांग' : 'Panchang', id: 'panchang-section', href: '/panchang' },
-              { label: language === 'hi' ? 'होरा' : 'Hora', id: 'hora-section', href: '/panchang' },
-              { label: language === 'hi' ? 'चौघड़िया' : 'Choghadiya', id: 'hora-section', href: '/panchang' },
-              { label: language === 'hi' ? 'सवाल-जवाब' : 'FAQ', id: 'faq-section', href: '' },
+              { label: language === 'hi' ? 'अंकशास्त्र' : 'Numerology', id: 'numerology-section', href: '/numerology' },
             ].map((item, i, arr) => (
               <span key={item.label} className="inline-flex items-center">
                 <button

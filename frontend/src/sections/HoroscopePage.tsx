@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CalendarDays, CalendarCheck, Sun, Star, Users, Orbit, ChevronDown } from 'lucide-react';
+import { Calendar, CalendarDays, CalendarCheck, Sun, Star, Users, Orbit, ChevronDown, MapPin, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +29,33 @@ const SIGNS = [
   { id: 'pisces', en: 'Pisces', hi: 'मीन', emoji: '\u2653' },
 ];
 
+// ── Geocode autocomplete ────────────────────────────────────
+interface GeocodeResult { name: string; lat: number; lon: number; }
+
+function useGeocodeAutocomplete() {
+  const [suggestions, setSuggestions] = useState<GeocodeResult[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const search = (query: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (query.length < 3) { setSuggestions([]); setShowDropdown(false); return; }
+    timerRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const results = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(query)}`);
+        setSuggestions(Array.isArray(results) ? results : []);
+        setShowDropdown(true);
+      } catch { setSuggestions([]); }
+      setLoading(false);
+    }, 300);
+  };
+
+  const close = () => setShowDropdown(false);
+  return { suggestions, showDropdown, loading, search, close };
+}
+
 // Helper: local date as YYYY-MM-DD
 const getLocalDateString = () => {
   const now = new Date();
@@ -42,6 +69,7 @@ interface BirthParams {
   birth_time: string;
   birth_lat: string;
   birth_lon: string;
+  birth_place: string;
 }
 
 function loadBirthParams(): BirthParams | null {
@@ -57,6 +85,8 @@ export default function HoroscopePage() {
   const { t, language } = useTranslation();
   const { user } = useAuth();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const geocode = useGeocodeAutocomplete();
+  const placeWrapperRef = useRef<HTMLDivElement>(null);
 
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [selectedSign, setSelectedSign] = useState('aries');
@@ -65,7 +95,7 @@ export default function HoroscopePage() {
   const [birthParams, setBirthParams] = useState<BirthParams>(() => {
     const saved = loadBirthParams();
     if (saved) return saved;
-    return { birth_date: user?.date_of_birth || '', birth_time: '', birth_lat: '', birth_lon: '' };
+    return { birth_date: user?.date_of_birth || '', birth_time: '', birth_lat: '', birth_lon: '', birth_place: '' };
   });
 
   // Data states
@@ -88,6 +118,15 @@ export default function HoroscopePage() {
 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [detectedSign, setDetectedSign] = useState<{ moon_sign: string; moon_sign_hindi: string; nakshatra: string } | null>(null);
+
+  // Close place dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (placeWrapperRef.current && !placeWrapperRef.current.contains(e.target as Node)) geocode.close();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [geocode]);
 
   // Persist birth params to localStorage
   const saveBirthParams = (params: BirthParams) => {
@@ -291,32 +330,49 @@ export default function HoroscopePage() {
                   className="input-sacred"
                 />
               </div>
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'अक्षांश' : 'Latitude'}</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  placeholder="28.6139"
-                  value={birthParams.birth_lat}
-                  onChange={e => saveBirthParams({ ...birthParams, birth_lat: e.target.value })}
-                  className="input-sacred"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'देशांतर' : 'Longitude'}</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  placeholder="77.2090"
-                  value={birthParams.birth_lon}
-                  onChange={e => saveBirthParams({ ...birthParams, birth_lon: e.target.value })}
-                  className="input-sacred"
-                />
+              <div className="col-span-2" ref={placeWrapperRef}>
+                <label className="block text-xs text-muted-foreground mb-1">{language === 'hi' ? 'जन्म स्थान' : 'Birth Place'}</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary pointer-events-none" />
+                  {geocode.loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 animate-spin text-muted-foreground" />}
+                  <input
+                    type="text"
+                    placeholder={language === 'hi' ? 'जन्म स्थान खोजें' : 'Search birth place'}
+                    value={birthParams.birth_place}
+                    onChange={e => {
+                      saveBirthParams({ ...birthParams, birth_place: e.target.value, birth_lat: '', birth_lon: '' });
+                      geocode.search(e.target.value);
+                    }}
+                    autoComplete="off"
+                    className="input-sacred pl-9 w-full"
+                  />
+                  {geocode.showDropdown && geocode.suggestions.length > 0 && (
+                    <ul className="absolute z-50 left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {geocode.suggestions.map((s, i) => (
+                        <li
+                          key={i}
+                          className="px-3 py-2 text-sm cursor-pointer hover:bg-muted truncate"
+                          onMouseDown={() => {
+                            saveBirthParams({ ...birthParams, birth_place: s.name, birth_lat: String(s.lat), birth_lon: String(s.lon) });
+                            geocode.close();
+                          }}
+                        >
+                          {s.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                {birthParams.birth_lat && (
+                  <p className="text-[10px] text-muted-foreground mt-0.5 pl-1">
+                    {birthParams.birth_lat}, {birthParams.birth_lon}
+                  </p>
+                )}
               </div>
               {birthQuery && (
                 <div className="col-span-2 sm:col-span-4">
                   <button
-                    onClick={() => saveBirthParams({ birth_date: '', birth_time: '', birth_lat: '', birth_lon: '' })}
+                    onClick={() => saveBirthParams({ birth_date: '', birth_time: '', birth_lat: '', birth_lon: '', birth_place: '' })}
                     className="text-xs text-muted-foreground hover:text-destructive transition-colors"
                   >
                     {language === 'hi' ? 'साफ़ करें' : 'Clear personalization'}

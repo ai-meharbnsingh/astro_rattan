@@ -1815,7 +1815,7 @@ export default function Features() {
         </div>
 
         {/* ── Today's Numerology — Quick Widget ──────────────────── */}
-        <div id="numerology-widget" className="numero-section features-title mb-12">
+        <div id="numerology-section" className="numero-section features-title mb-12">
           <Heading as={2} variant={2} className="text-sacred-gold-dark mb-6 leading-[1.1] text-center">
             {l("Today's Numerology", 'आज का अंकशास्त्र')}
           </Heading>
