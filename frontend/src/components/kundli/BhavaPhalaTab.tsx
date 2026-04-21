@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Home, Star, BookOpen, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface PlanetPlacement {
   planet: string;
@@ -57,7 +58,7 @@ const thCls       = 'p-1.5 text-left text-[10px] font-semibold uppercase trackin
 const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-top';
 const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
 
-function PlacementTable({ rows, isHi, t }: { rows: PlanetPlacement[]; isHi: boolean; t: (k: string) => string }) {
+function PlacementTable({ rows, isHi, language, t }: { rows: PlanetPlacement[]; isHi: boolean; language: string; t: (k: string) => string }) {
   if (rows.length === 0) {
     return (
       <div className="px-4 py-3 text-xs text-muted-foreground">
@@ -104,7 +105,7 @@ function PlacementTable({ rows, isHi, t }: { rows: PlanetPlacement[]; isHi: bool
               <td className={tdWrapCls}>
                 <div className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
                   <BookOpen className="w-2.5 h-2.5 shrink-0 mt-0.5" />
-                  <span>{pp.sloka_ref}</span>
+                  <SlokaHover slokaRef={pp.sloka_ref} language={language} className="italic" />
                 </div>
               </td>
             </tr>
@@ -175,7 +176,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
           <span>{t('auto.planetInHouse')}</span>
           <span className="ml-auto text-[12px] font-normal opacity-80">{data.planet_placements.length}</span>
         </div>
-        <PlacementTable rows={data.planet_placements} isHi={isHi} t={t} />
+        <PlacementTable rows={data.planet_placements} isHi={isHi} language={language} t={t} />
       </div>
 
       {/* House-wise Status */}
@@ -230,7 +231,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
                   <td className={tdWrapCls}>
                     <div className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
                       <BookOpen className="w-2.5 h-2.5 shrink-0 mt-0.5" />
-                      <span>{b.sloka_ref}</span>
+                      <SlokaHover slokaRef={b.sloka_ref} language={language} className="italic" />
                     </div>
                   </td>
                 </tr>
@@ -242,7 +243,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
 
       {/* Sloka footer */}
       <div className="text-center text-xs text-muted-foreground italic pt-2 border-t border-sacred-gold/20">
-        {data.sloka_ref}
+        <SlokaHover slokaRef={data.sloka_ref} language={language} />
       </div>
     </div>
   );

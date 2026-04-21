@@ -3,6 +3,7 @@ import { Loader2, AlertTriangle, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface TransitRow {
@@ -173,10 +174,10 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
                     <td className={tdWrapCls}>{netResult ?? '—'}</td>
                     <td className={tdWrapCls}>
                       {row.sloka_ref ? (
-                        <div className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
+                        <SlokaHover slokaRef={row.sloka_ref} language={language} className="flex items-start gap-1 text-[10px] text-muted-foreground italic">
                           <BookOpen className="w-3 h-3 shrink-0 mt-0.5" />
                           <span>{row.sloka_ref}</span>
-                        </div>
+                        </SlokaHover>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
@@ -205,7 +206,9 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
           </div>
           <div className="flex items-center gap-1.5">
             <BookOpen className="w-3 h-3 text-sacred-gold-dark" />
-            <span>{isHi ? 'श्लोक संदर्भ — फलदीपिका' : 'Sloka references — Phaladeepika'}</span>
+            <SlokaHover slokaRef="Phaladeepika" language={language}>
+              {isHi ? 'श्लोक संदर्भ — फलदीपिका' : 'Sloka references — Phaladeepika'}
+            </SlokaHover>
           </div>
         </div>
       </div>

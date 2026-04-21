@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 // ───────────────────────────────────────────────────────────────
 // Types
@@ -200,9 +201,10 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
         <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
           <div className={`h-full ${scoreBar} transition-all`} style={{ width: `${score}%` }} />
         </div>
-        <p className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
-          <BookOpen className="w-3 h-3" />{data.sloka_ref}
-        </p>
+        <div className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
+          <BookOpen className="w-3 h-3" />
+          <SlokaHover slokaRef={data.sloka_ref} language={language} />
+        </div>
       </div>
 
       {/* House Strengths */}
@@ -244,9 +246,11 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
             );
           })}
         </div>
-        <p className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
-          <BookOpen className="w-3 h-3" />{t('auto.savBindus')} · Adh. 24 sloka 2
-        </p>
+        <div className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
+          <BookOpen className="w-3 h-3" />
+          <span>{t('auto.savBindus')} · </span>
+          <SlokaHover slokaRef="Phaladeepika Adh. 24 sloka 2" language={language}>Adh. 24 sloka 2</SlokaHover>
+        </div>
       </section>
 
       {/* Planet Transit Strengths */}
@@ -279,9 +283,10 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
                 <p className="text-[11px] leading-snug opacity-90">
                   {isHi ? p.interpretation_hi : p.interpretation_en}
                 </p>
-                <p className="text-[10px] italic text-muted-foreground mt-2 flex items-center gap-1">
-                  <BookOpen className="w-3 h-3" />{p.sloka_ref}
-                </p>
+                <SlokaHover slokaRef={p.sloka_ref} language={language} className="text-[10px] italic text-muted-foreground mt-2 flex items-center gap-1">
+                  <BookOpen className="w-3 h-3" />
+                  <span>{p.sloka_ref}</span>
+                </SlokaHover>
               </div>
             );
           })}
@@ -320,7 +325,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
                 </p>
                 <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-current/15 text-[10px] opacity-70">
                   <BookOpen className="w-3 h-3" />
-                  <span className="italic">{c.sloka_ref}</span>
+                  <SlokaHover slokaRef={c.sloka_ref} language={language} className="italic" />
                 </div>
               </div>
             );
@@ -364,9 +369,10 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
             </TableBody>
           </Table>
         </div>
-        <p className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
-          <BookOpen className="w-3 h-3" />Phaladeepika Adh. 24
-        </p>
+        <div className="text-[11px] italic text-muted-foreground mt-2 flex items-center gap-1">
+          <BookOpen className="w-3 h-3" />
+          <SlokaHover slokaRef="Phaladeepika Adh. 24" language={language}>Phaladeepika Adh. 24</SlokaHover>
+        </div>
       </section>
     </div>
   );

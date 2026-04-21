@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Flame, CheckCircle2, BookOpen, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface PravrajyaYoga {
   key: string;
@@ -188,7 +189,7 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
                   {/* Sloka ref */}
                   <div className="flex items-center gap-1.5 pt-2 border-t border-border text-[11px] text-muted-foreground">
                     <BookOpen className="w-3 h-3" />
-                    <span className="italic">{yoga.sloka_ref}</span>
+                    <SlokaHover slokaRef={yoga.sloka_ref} language={language} className="italic" />
                   </div>
                 </div>
               </div>

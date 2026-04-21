@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Gauge, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 const STHANA_DETAIL_KEYS: Record<string, { en: string; hi: string }> = {
   uchcha:       { en: 'Exaltation', hi: 'उच्च' },
@@ -302,8 +303,8 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
         </table>
         <p className="text-[10px] text-muted-foreground text-right px-3 py-2 italic">
           {hi
-            ? 'न्यूनतम षड्बल (फलदीपिका अध्याय 4) — सूर्य 390, चन्द्र 360, मंगल 300, बुध 420, बृहस्पति 390, शुक्र 330, शनि 300 (रूप)'
-            : 'Minimum Shadbala per Phaladeepika Adh. 4 — Sun 390, Moon 360, Mars 300, Mercury 420, Jupiter 390, Venus 330, Saturn 300 (Rupas)'}
+            ? <>{'न्यूनतम षड्बल ('}<SlokaHover slokaRef="Phaladeepika Adh. 4" language={language}>{'फलदीपिका अध्याय 4'}</SlokaHover>{') — सूर्य 390, चन्द्र 360, मंगल 300, बुध 420, बृहस्पति 390, शुक्र 330, शनि 300 (रूप)'}</>
+            : <>{'Minimum Shadbala per '}<SlokaHover slokaRef="Phaladeepika Adh. 4" language={language}>{'Phaladeepika Adh. 4'}</SlokaHover>{' — Sun 390, Moon 360, Mars 300, Mercury 420, Jupiter 390, Venus 330, Saturn 300 (Rupas)'}</>}
         </p>
       </div>
 
@@ -311,7 +312,9 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
       {shadbalaData.ishta_kashta_summary && (
         <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
-            {hi ? 'इष्ट-कष्ट फल (फलदीपिका अध्याय 4, श्लोक 26)' : 'Ishta-Kashta Phala (Phaladeepika Adh. 4 Sloka 26)'}
+            <SlokaHover slokaRef="Phaladeepika Adh. 4 sloka 26" language={language}>
+              {hi ? 'इष्ट-कष्ट फल (फलदीपिका अध्याय 4, श्लोक 26)' : 'Ishta-Kashta Phala (Phaladeepika Adh. 4 Sloka 26)'}
+            </SlokaHover>
           </div>
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-4">

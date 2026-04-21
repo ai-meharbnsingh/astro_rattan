@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Briefcase, BookOpen, Sun, Moon, Compass, CheckCircle2, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface PrimaryVocation {
   vocation_en: string;
@@ -174,7 +175,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
           {pv.sloka_ref && (
             <div className="flex items-center gap-1.5 pt-2 border-t border-border text-[11px] text-muted-foreground">
               <BookOpen className="w-3 h-3" />
-              <span className="italic">{pv.sloka_ref}</span>
+              <SlokaHover slokaRef={pv.sloka_ref} language={language} className="italic" />
             </div>
           )}
         </div>
@@ -223,7 +224,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
               {t10.sloka_ref && (
                 <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground italic">
                   <BookOpen className="w-2.5 h-2.5" />
-                  <span>{t10.sloka_ref}</span>
+                  <SlokaHover slokaRef={t10.sloka_ref} language={language} className="italic" />
                 </div>
               )}
             </div>
@@ -274,7 +275,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
             {lum.sloka_ref && (
               <div className="flex items-center gap-1 text-[10px] text-muted-foreground italic">
                 <BookOpen className="w-2.5 h-2.5" />
-                <span>{lum.sloka_ref}</span>
+                <SlokaHover slokaRef={lum.sloka_ref} language={language} className="italic" />
               </div>
             )}
           </div>
@@ -382,7 +383,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
             {navamsha.sloka_ref && (
               <div className="flex items-center gap-1 pt-1 border-t border-border text-[10px] text-muted-foreground italic">
                 <BookOpen className="w-2.5 h-2.5" />
-                <span>{navamsha.sloka_ref}</span>
+                <SlokaHover slokaRef={navamsha.sloka_ref} language={language} className="italic" />
               </div>
             )}
           </div>
@@ -392,7 +393,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
       {/* Footer */}
       <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground italic pt-2 border-t border-border">
         <BookOpen className="w-3 h-3" />
-        <span>{data.sloka_ref}</span>
+        <SlokaHover slokaRef={data.sloka_ref} language={language} />
       </div>
     </div>
   );

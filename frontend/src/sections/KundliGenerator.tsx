@@ -369,31 +369,48 @@ export default function KundliGenerator() {
                 fetchD10();
                 fetchDasha();
                 fetchExtendedDasha();
-                setJhoraOpen(true);
-              }}>
-              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.jhoraView')}
-            </Button>
-            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
-              onClick={() => {
-                fetchTransit();
                 setReportOpen(true);
               }}>
               <ScrollText className="w-4 h-4 mr-1" />{t('kundli.fullReport')}
             </Button>
             <Button size="sm"
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
-              onClick={() => {
+              onClick={async () => {
                 if (!result?.id) return;
-                const token = localStorage.getItem('astrorattan_token') || '';
-                const a = document.createElement('a');
-                a.href = `/api/kundli/${result.id}/full-report?token=${encodeURIComponent(token)}&lang=${language}`;
-                a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
-                a.style.display = 'none';
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => document.body.removeChild(a), 1000);
+                const token = localStorage.getItem('astrorattan_token');
+                const API_BASE = import.meta.env.VITE_API_URL || '';
+                try {
+                  const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/full-report?lang=${language}`, {
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                  });
+                  if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({ detail: resp.statusText }));
+                    throw new Error(err.detail || 'PDF download failed');
+                  }
+                  const blob = await resp.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `Kundli_Report_${result.person_name || 'chart'}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                } catch (e: any) {
+                  alert(e.message || t('report.failedToDownloadPDF'));
+                }
               }}>
               <BookOpen className="w-4 h-4 mr-1" />{t('auto.downloadFullReportPD')}
+            </Button>
+            <Button variant="outline" size="sm" className="border-sacred-gold text-sacred-brown"
+              onClick={() => {
+                fetchTransit();
+                fetchD10();
+                fetchDasha();
+                fetchExtendedDasha();
+                setJhoraOpen(true);
+              }}>
+              <ScrollText className="w-4 h-4 mr-1" />{t('kundli.jhoraView')}
             </Button>
           </div>
         </div>

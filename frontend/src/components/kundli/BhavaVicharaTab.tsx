@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Sparkles, BookOpen, Shield, AlertTriangle, Home } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface BhavaAssessment {
   house: number;
@@ -182,9 +183,11 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                           {t('auto.bhavaFlourishing')}
                         </span>
                         <span className="text-[9px] text-emerald-700 italic text-right leading-tight">
-                          {language === 'hi'
-                            ? 'भावेश बली + शुभ दृष्टि (फलदीपिका अध्याय 15)'
-                            : 'Lord strong + benefic aspect (Phaladeepika Adh. 15)'}
+                          <SlokaHover slokaRef="Phaladeepika Adh. 15" language={language}>
+                            {language === 'hi'
+                              ? 'भावेश बली + शुभ दृष्टि (फलदीपिका अध्याय 15)'
+                              : 'Lord strong + benefic aspect (Phaladeepika Adh. 15)'}
+                          </SlokaHover>
                         </span>
                       </div>
                     )}
@@ -228,9 +231,11 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-600" />
                     <span>
                       <strong>{isHi ? 'भावकामण्ड' : 'Bhava Kamanda'}:</strong>{' '}
-                      {isHi
-                        ? 'भावेश स्व-भाव में स्थित — जातक के इस भाव-सम्बन्धी मामलों में व्यवधान (फलदीपिका अ. 15-16)'
-                        : 'House lord occupies its own bhava — self-encumbering, causes distress to this house\'s affairs (Phaladeepika Adh. 15-16)'}
+                      <SlokaHover slokaRef="Phaladeepika Adh. 15" language={language}>
+                        {isHi
+                          ? 'भावेश स्व-भाव में स्थित — जातक के इस भाव-सम्बन्धी मामलों में व्यवधान (फलदीपिका अ. 15-16)'
+                          : "House lord occupies its own bhava — self-encumbering, causes distress to this house's affairs (Phaladeepika Adh. 15-16)"}
+                      </SlokaHover>
                     </span>
                   </div>
                 )}
@@ -241,9 +246,11 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                     <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-orange-600" />
                     <span>
                       <strong>{isHi ? 'शुभ भाव में पापग्रह' : 'Malefic in Good House'}:</strong>{' '}
-                      {isHi
-                        ? 'केन्द्र/त्रिकोण में पापग्रह — इस भाव के फल को पीड़ा (फलदीपिका अ. 15)'
-                        : 'Malefic in Kendra/Trikona harms this house\'s significations (Phaladeepika Adh. 15)'}
+                      <SlokaHover slokaRef="Phaladeepika Adh. 15" language={language}>
+                        {isHi
+                          ? 'केन्द्र/त्रिकोण में पापग्रह — इस भाव के फल को पीड़ा (फलदीपिका अ. 15)'
+                          : "Malefic in Kendra/Trikona harms this house's significations (Phaladeepika Adh. 15)"}
+                      </SlokaHover>
                     </span>
                   </div>
                 )}
@@ -255,9 +262,11 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                     <span>
                       <strong>{isHi ? 'दुःस्थान में पापग्रह — भाव बलवान' : 'Malefic in Dusthana — Bhava Strengthened'}:</strong>
                       {' '}
-                      {isHi
-                        ? 'फलदीपिका के अनुसार, दुःस्थान (6/8/12) में प्राकृतिक पापग्रह उस भाव के विशिष्ट फल को बलवान बनाता है।'
-                        : 'Per Phaladeepika Adh. 15 — a natural malefic in a dusthana (6/8/12) energises that house\'s core significations.'}
+                      <SlokaHover slokaRef="Phaladeepika Adh. 15" language={language}>
+                        {isHi
+                          ? 'फलदीपिका के अनुसार, दुःस्थान (6/8/12) में प्राकृतिक पापग्रह उस भाव के विशिष्ट फल को बलवान बनाता है।'
+                          : "Per Phaladeepika Adh. 15 — a natural malefic in a dusthana (6/8/12) energises that house's core significations."}
+                      </SlokaHover>
                     </span>
                   </div>
                 )}
@@ -282,7 +291,7 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
                 {/* Sloka ref */}
                 <div className="flex items-center gap-1.5 pt-2 mt-2 border-t border-current/10 text-[10px] text-muted-foreground">
                   <BookOpen className="w-3 h-3" />
-                  <span className="italic">{b.sloka_ref}</span>
+                  <SlokaHover slokaRef={b.sloka_ref} language={language} className="italic" />
                 </div>
               </div>
             );
@@ -292,7 +301,7 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
 
       {/* Footer sloka ref */}
       <div className="text-center text-xs text-muted-foreground italic pt-4 border-t border-sacred-gold/20">
-        {data.sloka_ref}
+        <SlokaHover slokaRef={data.sloka_ref} language={language} />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { Layers, Loader2 } from 'lucide-react';
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface SodashvargaTabProps {
   sodashvargaData: any;
@@ -243,9 +244,11 @@ export default function SodashvargaTab({ sodashvargaData, loadingSodashvarga, la
           {/* Saptavarga tier legend */}
           {sodashvargaData.varga_strength && (
             <div className="mt-4 pt-3 border-t border-border/40">
-              <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2">
-                {language === 'hi' ? 'सप्तवर्ग बल — शास्त्रीय श्रेणी' : 'Saptavarga Tier (Phaladeepika Adh. 3)'}
-              </p>
+              <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2">
+                <SlokaHover slokaRef="Phaladeepika Adh. 3" language={language}>
+                  {language === 'hi' ? 'सप्तवर्ग बल — शास्त्रीय श्रेणी' : 'Saptavarga Tier (Phaladeepika Adh. 3)'}
+                </SlokaHover>
+              </div>
               <div className="flex flex-wrap gap-1.5 text-xs">
                 {[
                   ['Bhedaka', language === 'hi' ? 'भेदक' : 'Bhedaka', '0-1'],

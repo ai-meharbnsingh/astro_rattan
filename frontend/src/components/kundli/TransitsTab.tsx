@@ -8,6 +8,7 @@ import RetrogradeStationsSection from '@/components/kundli/RetrogradeStationsSec
 import { translatePlanet, translateSign } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 import TimingTheorySection from '@/components/kundli/TimingTheorySection';
 
 interface TransitsTabProps {
@@ -450,7 +451,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                             </p>
                           )}
                           {(tr.sloka_ref || tr.kaksha?.sloka_ref) && (
-                            <p className="mt-1 opacity-50 italic">{tr.sloka_ref || tr.kaksha?.sloka_ref}</p>
+                            <SlokaHover slokaRef={tr.sloka_ref || tr.kaksha?.sloka_ref} language={language} className="mt-1 opacity-50 italic" />
                           )}
                         </TableCell>
                       </TableRow>

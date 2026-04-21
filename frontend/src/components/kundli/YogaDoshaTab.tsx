@@ -4,6 +4,7 @@ import { translateName, translateLabel, translateRemedy, translateBackend, trans
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface YogaDoshaTabProps {
   yogaDoshaData: any;
@@ -263,7 +264,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                                   <p className="text-[10px] text-violet-700 italic mt-1 leading-relaxed whitespace-normal break-words">{fruition}</p>
                                 )}
                                 {yoga.sloka_ref && (
-                                  <p className="text-[10px] text-muted-foreground italic mt-0.5">{yoga.sloka_ref}</p>
+                                  <SlokaHover slokaRef={yoga.sloka_ref} language={language} className="text-[10px] text-muted-foreground italic mt-0.5" />
                                 )}
                               </TableCell>
                               <TableCell className="p-2 text-center">
@@ -524,7 +525,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                                 {yoga.count !== undefined ? yoga.count : '—'}
                               </TableCell>
                               <TableCell className="p-2 text-foreground/90 leading-relaxed whitespace-normal break-words max-w-0">{hi ? yoga.effect_hi : yoga.effect_en}</TableCell>
-                              <TableCell className="p-2 text-[10px] text-muted-foreground italic">{yoga.sloka_ref || '—'}</TableCell>
+                              <TableCell className="p-2 text-[10px] text-muted-foreground italic">
+                                {yoga.sloka_ref ? <SlokaHover slokaRef={yoga.sloka_ref} language={language} /> : '—'}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -535,7 +538,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
               });
             })()}
 
-            <p className="text-[10px] text-muted-foreground text-right italic">{mahaData.sloka_ref}</p>
+            <div className="text-[10px] text-muted-foreground text-right italic">
+              <SlokaHover slokaRef={mahaData.sloka_ref} language={language} />
+            </div>
           </div>
         )}
         </div>
@@ -546,7 +551,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Crown className="w-4 h-4" />
-            <span>{hi ? 'राज योग — अध्याय ७' : 'Raja Yogas — Adhyaya 7'}</span>
+            <SlokaHover slokaRef="Phaladeepika Adhyaya 7" language={language}>
+              <span>{hi ? 'राज योग — अध्याय ७' : 'Raja Yogas — Adhyaya 7'}</span>
+            </SlokaHover>
           </div>
           {rajaData && (
             <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/20 text-white">
@@ -622,7 +629,7 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                           <TableCell className="p-2 text-foreground/90 leading-relaxed whitespace-normal break-words max-w-0">
                             <p>{hi ? yoga.description_hi : yoga.description}</p>
                             {yoga.sloka_ref && (
-                              <p className="text-[10px] text-muted-foreground italic mt-0.5">{yoga.sloka_ref}</p>
+                              <SlokaHover slokaRef={yoga.sloka_ref} language={language} className="text-[10px] text-muted-foreground italic mt-0.5" />
                             )}
                           </TableCell>
                         </TableRow>
@@ -640,7 +647,9 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                     : `${absent.length} yogas absent: ${absent.map((y) => y.name).join(', ')}`}
                 </p>
               )}
-              <p className="text-[10px] text-muted-foreground text-right italic">{rajaData.sloka_ref}</p>
+              <div className="text-[10px] text-muted-foreground text-right italic">
+                <SlokaHover slokaRef={rajaData.sloka_ref} language={language} />
+              </div>
             </div>
           );
         })()}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles, Eye, Activity, AlertTriangle, Star, TrendingUp, CheckCircle2, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface MarakaPlanet { planet: string; role: string; role_hi?: string; placement: number; strength: string; notes_en: string; notes_hi: string; }
 interface EighthHouseAnalysis { eighth_lord: string; eighth_lord_placement: number; eighth_lord_strength: string; planets_in_8th: string[]; interpretation_en: string; interpretation_hi: string; }
@@ -50,11 +51,12 @@ const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-
 const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
 const tdMuted     = 'p-1.5 text-xs text-muted-foreground border-t border-border align-top';
 
-function SlokaRef({ ref: r }: { ref?: string }) {
+function SlokaRef({ ref: r, language }: { ref?: string; language: string }) {
   if (!r) return null;
   return (
     <div className="flex items-center gap-1.5 px-4 py-2 border-t border-border text-[11px] text-muted-foreground italic">
-      <BookOpen className="w-3 h-3 shrink-0" /><span>{r}</span>
+      <BookOpen className="w-3 h-3 shrink-0" />
+      <SlokaHover slokaRef={r} language={language} />
     </div>
   );
 }
@@ -253,7 +255,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
-          <SlokaRef ref={data.transit_timing_indicators.sloka_ref} />
+          <SlokaRef ref={data.transit_timing_indicators.sloka_ref} language={language} />
         </div>
       )}
 
@@ -331,7 +333,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </div>
           </div>
-          <SlokaRef ref={data.dasha_gochara_lagna_score.sloka_ref} />
+          <SlokaRef ref={data.dasha_gochara_lagna_score.sloka_ref} language={language} />
         </div>
       )}
 
@@ -359,7 +361,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             </div>
             <p className="text-sm text-foreground leading-relaxed">{isHi ? data.saturn_transit_death_indicator.interpretation_hi : data.saturn_transit_death_indicator.interpretation_en}</p>
           </div>
-          <SlokaRef ref={data.saturn_transit_death_indicator.sloka_ref} />
+          <SlokaRef ref={data.saturn_transit_death_indicator.sloka_ref} language={language} />
         </div>
       )}
 
@@ -414,7 +416,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               </>}
             </tbody>
           </table>
-          {data.moon_death_transit?.sloka_ref && <SlokaRef ref={data.moon_death_transit.sloka_ref} />}
+          {data.moon_death_transit?.sloka_ref && <SlokaRef ref={data.moon_death_transit.sloka_ref} language={language} />}
         </div>
       )}
 
@@ -453,7 +455,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
-          <SlokaRef ref={data.lucky_time_estimate.sloka_ref} />
+          <SlokaRef ref={data.lucky_time_estimate.sloka_ref} language={language} />
         </div>
       )}
 
@@ -479,7 +481,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               </ul>
             )}
           </div>
-          <SlokaRef ref={data.region_after_death.sloka_ref} />
+          <SlokaRef ref={data.region_after_death.sloka_ref} language={language} />
         </div>
       )}
 

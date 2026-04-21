@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2, AlertTriangle, ChevronDown, ChevronRight, Layers } from 'lucide-react';
 import { translateSign, translateNakshatra } from '@/lib/backend-translations';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 interface UpagrahasTabProps {
   upagrahasData: any;
@@ -90,13 +91,13 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
           <div>
             <p className="font-bold text-red-800 text-sm">
               {isHi
-                ? `${UPAGRAHA_HI[u.name] || u.name} लग्न में — अत्यंत अशुभ (फलदीपिका अध्याय 25)`
-                : `${u.name} in Lagna — Highly Inauspicious (Phaladeepika Adh. 25)`}
+                ? <>{UPAGRAHA_HI[u.name] || u.name}{' लग्न में — अत्यंत अशुभ ('}<SlokaHover slokaRef="Phaladeepika Adh. 25" language={language}>{'फलदीपिका अध्याय 25'}</SlokaHover>{')'}</>
+                : <>{u.name}{' in Lagna — Highly Inauspicious ('}<SlokaHover slokaRef="Phaladeepika Adh. 25" language={language}>{'Phaladeepika Adh. 25'}</SlokaHover>{')'}</>}
             </p>
             <p className="text-xs text-red-700 mt-1 leading-relaxed">
               {isHi
-                ? `${UPAGRAHA_HI[u.name] || u.name} लग्न में होने से जातक की जीवन-शक्ति, स्वास्थ्य एवं समग्र भाग्य पर गहरा पाप-प्रभाव पड़ता है। फलदीपिका के अनुसार यह सर्वाधिक क्रूर संयोगों में से एक है।`
-                : `${u.name} occupying the Lagna casts a severe malefic shadow over the native's vitality, health, and overall fortune. Phaladeepika Adh. 25 classifies this as one of the most inauspicious placements.`}
+                ? <>{UPAGRAHA_HI[u.name] || u.name}{' लग्न में होने से जातक की जीवन-शक्ति, स्वास्थ्य एवं समग्र भाग्य पर गहरा पाप-प्रभाव पड़ता है। '}<SlokaHover slokaRef="Phaladeepika Adh. 25" language={language}>{'फलदीपिका'}</SlokaHover>{' के अनुसार यह सर्वाधिक क्रूर संयोगों में से एक है।'}</>
+                : <>{u.name}{" occupying the Lagna casts a severe malefic shadow over the native's vitality, health, and overall fortune. "}<SlokaHover slokaRef="Phaladeepika Adh. 25" language={language}>{'Phaladeepika Adh. 25'}</SlokaHover>{' classifies this as one of the most inauspicious placements.'}</>}
             </p>
           </div>
         </div>

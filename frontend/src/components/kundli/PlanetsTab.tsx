@@ -8,6 +8,7 @@ import { translatePlanet, translateSign, translateLabel, translateNakshatra } fr
 import type { SidePanelState } from '@/hooks/useKundliData';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption, TableFooter } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; language: string }) {
   const [data, setData] = useState<any>(null);
@@ -63,7 +64,9 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
               </p>
             </div>
           </div>
-          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">{dni.sloka_ref}</p>
+          {dni.sloka_ref && (
+            <SlokaHover slokaRef={dni.sloka_ref} language={language} className="px-3 pb-2 text-[10px] text-foreground/40 italic" />
+          )}
         </div>
       )}
 
@@ -96,7 +99,9 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
               </div>
             )}
           </div>
-          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">{mgs.sloka_ref}</p>
+          {mgs.sloka_ref && (
+            <SlokaHover slokaRef={mgs.sloka_ref} language={language} className="px-3 pb-2 text-[10px] text-foreground/40 italic" />
+          )}
         </div>
       )}
 
@@ -123,7 +128,9 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
                       ))}
                     </div>
                   )}
-                  <p className="text-[10px] text-foreground/40 italic mt-1">{note.sloka_ref}</p>
+                  {note.sloka_ref && (
+                    <SlokaHover slokaRef={note.sloka_ref} language={language} className="text-[10px] text-foreground/40 italic mt-1" />
+                  )}
                 </>
               );
             })()}
@@ -184,7 +191,9 @@ function PlanetPropertiesSection({ kundliId, language }: { kundliId: string; lan
               </div>
             )}
           </div>
-          <p className="px-3 pb-2 text-[10px] text-foreground/40 italic">Phaladeepika Adh. 1</p>
+          <div className="px-3 pb-2 text-[10px] text-foreground/40 italic">
+            <SlokaHover slokaRef="Phaladeepika Adh. 1" language={language}>{'Phaladeepika Adh. 1'}</SlokaHover>
+          </div>
         </div>
       )}
 
@@ -584,9 +593,11 @@ export default function PlanetsTab({
                     <p className="text-xs text-muted-foreground">{t('kundli.strength')}</p>
                     <p className={`font-semibold ${strengthColor}`}>{translateLabel(strengthLabel, language)}</p>
                     {isParamochha && (
-                      <p className="text-[10px] text-yellow-600 italic mt-0.5">
-                        {language === 'hi' ? 'परमोच्च — अधिकतम उच्च बल' : 'Paramochha — maximum exaltation degree (Phaladeepika Adh. 1)'}
-                      </p>
+                      <div className="text-[10px] text-yellow-600 italic mt-0.5">
+                        <SlokaHover slokaRef="Phaladeepika Adh. 1" language={language}>
+                          {language === 'hi' ? 'परमोच्च — अधिकतम उच्च बल' : 'Paramochha — maximum exaltation degree (Phaladeepika Adh. 1)'}
+                        </SlokaHover>
+                      </div>
                     )}
                   </div>
                   <div className="bg-card rounded-lg p-3 border border-sacred-gold/20">
@@ -595,9 +606,11 @@ export default function PlanetsTab({
                   </div>
                   {moonAspectors.length > 0 && (
                     <div className="bg-card rounded-lg p-3 border border-sacred-gold/20 col-span-2">
-                      <p className="text-xs text-muted-foreground mb-2">
-                        {language === 'hi' ? 'चन्द्र पर ग्रह-दृष्टि (फलदीपिका अ. 18)' : 'Planets aspecting Moon (Phaladeepika Adh. 18)'}
-                      </p>
+                      <div className="text-xs text-muted-foreground mb-2">
+                        <SlokaHover slokaRef="Phaladeepika Adh. 18" language={language}>
+                          {language === 'hi' ? 'चन्द्र पर ग्रह-दृष्टि (फलदीपिका अ. 18)' : 'Planets aspecting Moon (Phaladeepika Adh. 18)'}
+                        </SlokaHover>
+                      </div>
                       <div className="flex flex-wrap gap-1.5">
                         {moonAspectors.map(op => {
                           const isBen = NATURAL_BENEFICS_SET.has(op.planet);

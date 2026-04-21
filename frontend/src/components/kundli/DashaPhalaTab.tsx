@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { translatePlanet } from '@/lib/backend-translations';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Heading } from '@/components/ui/heading';
+import SlokaHover from './SlokaHover';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -454,7 +455,7 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
                   </ul>
                 )}
                 {md.analysis.dasha_quality.sloka_ref && (
-                  <p className="text-[10px] italic text-foreground/50">{md.analysis.dasha_quality.sloka_ref}</p>
+                  <SlokaHover slokaRef={md.analysis.dasha_quality.sloka_ref} language={language} className="text-[10px] italic text-foreground/50" />
                 )}
               </div>
             )}
@@ -469,7 +470,7 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
                 </span>
               ))}
               {md.analysis.sloka_ref && (
-                <span className="ml-auto text-foreground/50 italic">{md.analysis.sloka_ref}</span>
+                <SlokaHover slokaRef={md.analysis.sloka_ref} language={language} className="ml-auto text-foreground/50 italic" />
               )}
             </div>
 
@@ -536,7 +537,7 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
                 </span>
               ))}
               {ad.analysis.sloka_ref && (
-                <span className="ml-auto text-foreground/50 italic">{ad.analysis.sloka_ref}</span>
+                <SlokaHover slokaRef={ad.analysis.sloka_ref} language={language} className="ml-auto text-foreground/50 italic" />
               )}
             </div>
           </div>
@@ -640,7 +641,9 @@ function DashaTimingSection({
     <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
       <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-3">
         <span>{l('Dasha Timing Rule', 'दशा फल-काल नियम')}</span>
-        <span className="text-[10px] italic opacity-70">{l('Phaladeepika Adh. 19-21', 'फलदीपिका अ. 19-21')}</span>
+        <SlokaHover slokaRef="Phaladeepika Adh. 19" language={language} className="text-[10px] italic opacity-70">
+          {l('Phaladeepika Adh. 19-21', 'फलदीपिका अ. 19-21')}
+        </SlokaHover>
       </div>
 
       <div className="p-4 space-y-4">
@@ -730,7 +733,9 @@ function DashaTimingSection({
               </Table>
             </div>
 
-            <p className="text-[10px] italic text-foreground/40 text-right">{data.sloka_ref}</p>
+            <div className="text-[10px] italic text-foreground/40 text-right">
+              <SlokaHover slokaRef={data.sloka_ref} language={language} />
+            </div>
           </>
         )}
       </div>
