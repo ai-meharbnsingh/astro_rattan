@@ -436,7 +436,7 @@ export default function FloorplanMapper({
         }} className="max-h-[50vh] sm:max-h-[500px]">
         <img
           src={imageUrl}
-          alt="Floor plan"
+          alt={isHi ? 'फर्श योजना' : 'Floor plan'}
           style={{ width: '100%', height: '100%', display: 'block' }}
           draggable={false}
         />
@@ -491,7 +491,7 @@ export default function FloorplanMapper({
                 <div className="absolute w-5 h-5 rounded-full bg-sacred-gold/20 animate-ping" />
                 <div className="w-3 h-3 rounded-full bg-sacred-gold border-2 border-sacred-gold/80 z-10" />
               </div>
-              <span className="text-sm font-bold text-sacred-gold mt-0.5 whitespace-nowrap drop-shadow">✦ Brahmasthana</span>
+              <span className="text-sm font-bold text-sacred-gold mt-0.5 whitespace-nowrap drop-shadow">{t('auto.brahmasthanaLabel')}</span>
             </div>
 
             {/* North arrow — confirms physical north direction */}

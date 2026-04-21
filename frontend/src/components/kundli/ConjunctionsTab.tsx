@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Link2, Sparkles, TrendingUp, TrendingDown, BookOpen, Zap } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -85,7 +86,7 @@ export default function ConjunctionsTab({ kundliId, language, t }: Props) {
         const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/conjunctions`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load conjunctions');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

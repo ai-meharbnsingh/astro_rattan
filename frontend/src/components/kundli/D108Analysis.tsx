@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Sparkles } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -193,7 +194,7 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
 
         if (!cancelled) setData(normalized);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load D108 analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

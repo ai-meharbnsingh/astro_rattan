@@ -395,6 +395,27 @@ const PANCHANG_TERMS: Record<string, string> = {
   'Waning Moon': 'कृष्ण पक्ष (घटता चांद)',
 };
 
+const FESTIVAL_NAMES: Record<string, string> = {
+  'Makar Sankranti': 'मकर संक्रांति',
+  'Pongal': 'पोंगल',
+  'Republic Day': 'गणतंत्र दिवस',
+  'Holika Dahan': 'होलिका दहन',
+  'Holi': 'होली',
+  'Baisakhi': 'बैसाखी',
+  'Ambedkar Jayanti': 'अंबेडकर जयंती',
+  'Independence Day': 'स्वतंत्रता दिवस',
+  'Krishna Janmashtami': 'कृष्ण जन्माष्टमी',
+  'Gandhi Jayanti': 'गांधी जयंती',
+  'Dussehra': 'दशहरा',
+  'Diwali': 'दीवाली',
+  'Guru Nanak Jayanti': 'गुरु नानक जयंती',
+  'Christmas': 'क्रिसमस',
+  'Ekadashi Vrat': 'एकादशी व्रत',
+  'Pradosh Vrat': 'प्रदोष व्रत',
+  'Amavasya': 'अमावस्या',
+  'Purnima': 'पूर्णिमा',
+};
+
 // All lookup tables merged for generic matching
 const ALL_LOOKUPS: Record<string, string> = {
   ...PLANET_NAMES, ...SIGN_NAMES, ...DOSHA_NAMES, ...YOGA_NAMES,
@@ -403,6 +424,7 @@ const ALL_LOOKUPS: Record<string, string> = {
   ...NAKSHATRA_NAMES, ...SADE_SATI_CYCLES, ...SADE_SATI_DESCRIPTIONS,
   ...TRANSIT_DETAILS, ...REMEDY_CATEGORIES, ...SADE_SATI_EXPLANATIONS,
   ...YOGA_DESCRIPTIONS, ...AVAKHADA_VALUES, ...PANCHANG_TERMS,
+  ...FESTIVAL_NAMES,
 };
 
 type TranslationId = string;

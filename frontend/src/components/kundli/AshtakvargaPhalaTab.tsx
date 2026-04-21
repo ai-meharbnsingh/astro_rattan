@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, TrendingUp, Compass, Sparkles, Gauge, BookOpen, Info } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -127,7 +128,7 @@ export default function AshtakvargaPhalaTab({ kundliId, language, t }: Props) {
         const res = await api.get<PhalaData>(`/api/kundli/${kundliId}/ashtakvarga-phala`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load ashtakvarga-phala');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

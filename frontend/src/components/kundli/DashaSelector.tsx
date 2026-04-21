@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import React, { useState, useCallback, useEffect } from 'react';
 import { Loader2, ChevronDown, ChevronRight, Clock3 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -298,7 +299,7 @@ export default function DashaSelector({
     } catch (err: any) {
       // Only surface the error if this is still the latest request (prevents stale errors)
       if (reqId === latestReqRef.current) {
-        setError(err?.message || 'Failed to load dasha data');
+        setError(err?.message || t('auto.genericError'));
       }
     } finally {
       if (reqId === latestReqRef.current) {

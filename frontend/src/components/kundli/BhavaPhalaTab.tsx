@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Home, Star, BookOpen, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -132,7 +133,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
         const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/bhava-phala`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Bhava Phala');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

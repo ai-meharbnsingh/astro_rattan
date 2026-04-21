@@ -184,7 +184,7 @@ export default function AuthPage() {
           </div>
           <Heading as={2} variant={2} className="mb-2">{t('auth.welcome')}</Heading>
           <p className="text-muted-foreground">{t('auth.subtitle')}</p>
-          <p className="text-xs text-muted-foreground mt-2">{t('auth.dataEncrypted') || 'Your data is encrypted and never shared'}</p>
+          <p className="text-xs text-muted-foreground mt-2">{t('auth.dataEncrypted')}</p>
         </div>
         {error && <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">{error}</div>}
         {success && <div className="mb-4 p-3 rounded-xl bg-green-50 border border-green-300 text-green-700 text-sm text-center">{success}</div>}

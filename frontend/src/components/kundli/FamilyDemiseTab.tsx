@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Heart, BookOpen, Info, ShieldCheck } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -47,6 +48,7 @@ const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent over
 const ohHeader    = 'bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold flex items-center gap-2';
 
 export default function FamilyDemiseTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<FamilyDemiseData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +64,7 @@ export default function FamilyDemiseTab({ kundliId, language }: Props) {
         const res = await api.get(`/api/kundli/${kundliId}/family-demise-timing`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Family Health & Longevity analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

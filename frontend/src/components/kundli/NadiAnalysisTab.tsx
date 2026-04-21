@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Sparkles, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -56,6 +57,7 @@ const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-
 const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
 
 export default function NadiAnalysisTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<NadiAnalysisData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +70,7 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
     setError(null);
     api.get<NadiAnalysisData>(`/api/kundli/${kundliId}/nadi-analysis`)
       .then(res => { if (!cancelled) setData(res); })
-      .catch((err: any) => { if (!cancelled) setError(err?.message || 'Failed to load Nadi Analysis'); })
+      .catch((err: any) => { if (!cancelled) setError(err?.message || t('auto.genericError')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [kundliId]);

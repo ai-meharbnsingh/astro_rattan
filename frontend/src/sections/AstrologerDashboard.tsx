@@ -886,10 +886,10 @@ function ConsultationsPanel({ consultations, clients, statusFilter, onStatusFilt
                 onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                 className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
               >
-                <option value="chat">Chat</option>
-                <option value="audio">Audio</option>
-                <option value="video">Video</option>
-                <option value="in_person">In Person</option>
+                <option value="chat">{language === 'hi' ? 'चैट' : 'Chat'}</option>
+                <option value="audio">{language === 'hi' ? 'ऑडियो' : 'Audio'}</option>
+                <option value="video">{language === 'hi' ? 'वीडियो' : 'Video'}</option>
+                <option value="in_person">{language === 'hi' ? 'व्यक्तिगत' : 'In Person'}</option>
               </select>
             </div>
             <div>

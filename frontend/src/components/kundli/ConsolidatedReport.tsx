@@ -225,7 +225,7 @@ export default function ConsolidatedReport({
       URL.revokeObjectURL(url);
     } catch (e: any) {
       /* PDF download failed — alert shown to user */
-      alert(e.message || 'Failed to download PDF');
+      alert(e.message || t('report.failedToDownloadPDF'));
     }
   };
 

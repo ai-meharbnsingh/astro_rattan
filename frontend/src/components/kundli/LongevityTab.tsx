@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Info, BookOpen, Heart, Clock3, Moon as MoonIcon, Sparkles, Eye, Activity, AlertTriangle, Star, TrendingUp, CheckCircle2, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -76,7 +77,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
         const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/longevity-indicators`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load longevity indicators');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

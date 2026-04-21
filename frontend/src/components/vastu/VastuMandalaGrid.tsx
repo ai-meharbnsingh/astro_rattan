@@ -87,15 +87,16 @@ const DIR_LABELS = [
   { x: 0, y: -12, text: 'NW / वायव्य', anchor: 'start' },
   { x: 225, y: -12, text: 'N / उत्तर', anchor: 'middle' },
   { x: 450, y: -12, text: 'NE / ईशान', anchor: 'end' },
-  { x: -8, y: 230, text: 'W', anchor: 'end', rotate: -90 },
-  { x: 458, y: 230, text: 'E', anchor: 'start', rotate: 90 },
+  { x: -8, y: 230, text: l('W / पश्चिम', 'पश्चिम / W'), anchor: 'end', rotate: -90 },
+  { x: 458, y: 230, text: l('E / पूर्व', 'पूर्व / E'), anchor: 'start', rotate: 90 },
   { x: 0, y: 468, text: 'SW / नैऋत्य', anchor: 'start' },
   { x: 225, y: 468, text: 'S / दक्षिण', anchor: 'middle' },
   { x: 450, y: 468, text: 'SE / आग्नेय', anchor: 'end' },
 ];
 
 export default function VastuMandalaGrid({ zones }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const isHi = language === 'hi';
   const [selected, setSelected] = useState<DevtaCell | null>(null);
 
@@ -114,7 +115,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
         {Object.entries(NATURE_COLORS).map(([nature, c]) => (
           <div key={nature} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded" style={{ background: c.fill, border: `1px solid ${c.stroke}` }} />
-            <span className="text-foreground capitalize">{nature}</span>
+            <span className="text-foreground capitalize">{l(nature, t('auto.' + nature) || nature)}</span>
           </div>
         ))}
         <div className="flex items-center gap-1.5">
@@ -267,7 +268,7 @@ export default function VastuMandalaGrid({ zones }: Props) {
             />
             <Heading as={4} variant={4}>{selected.name}</Heading>
             <span className="text-sm text-foreground/60">{selected.name_hi}</span>
-            <span className="ml-auto text-sm px-2 py-0.5 rounded bg-white/10 text-foreground capitalize">{selected.nature}</span>
+            <span className="ml-auto text-sm px-2 py-0.5 rounded bg-white/10 text-foreground capitalize">{l(selected.nature, t('auto.' + selected.nature) || selected.nature)}</span>
           </div>
           <p className="text-sm text-foreground leading-relaxed mb-3">
             {isHi ? selected.description_hi : selected.description_en}

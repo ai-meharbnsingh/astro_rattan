@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect, useCallback } from 'react';
 import { Loader2, Map, ChevronDown, ChevronUp, Briefcase, Heart, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -172,6 +173,7 @@ function CityRow({ city, isHi, defaultOpen }: { city: CityDetail; isHi: boolean;
 type SortKey = 'score' | 'city';
 
 export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<AstroMapData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -197,7 +199,7 @@ export default function AstroMapTab({ kundliId, kundliData, language }: Props) {
       planet_longitudes: longitudes,
     })
       .then(res => setData(res))
-      .catch((err: any) => setError(err?.message || 'Failed to load Astro Map'))
+      .catch((err: any) => setError(err?.message || t('auto.genericError')))
       .finally(() => setLoading(false));
   }, [kundliData]);
 

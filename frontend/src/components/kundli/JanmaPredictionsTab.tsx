@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import {
   Loader2, User, Moon, Compass, Sparkles, BookOpen,
@@ -84,7 +85,7 @@ export default function JanmaPredictionsTab({ kundliId, language, t }: Props) {
         const res = await api.get<JanmaData>(`/api/kundli/${kundliId}/janma-predictions`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Janma Predictions');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

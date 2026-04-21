@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Link2, BookOpen, Info } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -66,6 +67,7 @@ const tdCls       = 'p-1.5 text-xs text-foreground border-t border-border align-
 const tdWrapCls   = 'p-1.5 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
 
 export default function GrahaSambandhaTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<GrahaSambandhaData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +83,7 @@ export default function GrahaSambandhaTab({ kundliId, language }: Props) {
         const res = await api.get(`/api/kundli/${kundliId}/graha-sambandha`);
         if (!cancelled) setData(res as GrahaSambandhaData);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Graha Sambandha');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

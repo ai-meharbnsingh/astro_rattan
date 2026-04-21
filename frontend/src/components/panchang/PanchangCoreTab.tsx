@@ -59,14 +59,14 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   const yogaData = panchang.yoga as any;
   const yogaBadge = yogaData?.quality === 'bad' || yogaData?.auspicious === false ? (
     <span
-      title={`${yogaData?.name || ''} — Yoga Dosha (inauspicious yoga)`}
+      title={`${yogaData?.name || ''} — ${l('Yoga Dosha (inauspicious yoga)', 'योग दोष (अशुभ योग)')}`}
       className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-red-100 text-red-700 border-red-200 cursor-help"
     >
       {isHi ? 'योग दोष' : 'Yoga Dosha'}
     </span>
   ) : (
     <span
-      title={`${yogaData?.name || ''} — Shubha (auspicious yoga)`}
+      title={`${yogaData?.name || ''} — ${l('Shubha (auspicious yoga)', 'शुभ (मंगलमय योग)')}`}
       className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-green-100 text-green-700 border-green-200 cursor-help"
     >
       {isHi ? 'शुभ' : 'Shubha'}
@@ -77,21 +77,21 @@ export default function PanchangCoreTab({ panchang, language, t }: Props) {
   const karanaData = panchang.karana as any;
   const karanaBadge = karanaData?.is_vishti === true ? (
     <span
-      title="Inauspicious Karana — avoid new work"
+      title={l('Inauspicious Karana — avoid new work', 'अशुभ करण — नया कार्य न करें')}
       className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-red-100 text-red-700 border-red-200 cursor-help"
     >
       {isHi ? 'विष्टि/भद्रा' : 'Vishti/Bhadra'}
     </span>
   ) : karanaData?.type === 'sthira' ? (
     <span
-      title={`${karanaData?.name || ''} — Sthira (fixed) Karana`}
+      title={`${karanaData?.name || ''} — ${l('Sthira (fixed) Karana', 'स्थिर करण')}`}
       className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-slate-100 text-slate-600 border-slate-200 cursor-help"
     >
       {isHi ? 'स्थिर' : 'Sthira'}
     </span>
   ) : (
     <span
-      title={`${karanaData?.name || ''} — Chara (moveable) Karana`}
+      title={`${karanaData?.name || ''} — ${l('Chara (moveable) Karana', 'चर करण')}`}
       className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border bg-blue-100 text-blue-600 border-blue-200 cursor-help"
     >
       {isHi ? 'चर' : 'Chara'}

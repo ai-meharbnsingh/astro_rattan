@@ -85,6 +85,7 @@ export default function KundliSummaryModal({
   avakhadaData,
 }: KundliSummaryModalProps) {
   const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
 
   const planets = useMemo(() => {
     const raw = result?.chart_data?.planets || {};
@@ -112,9 +113,9 @@ export default function KundliSummaryModal({
       return yogaDoshaData.doshas.filter((d) => d?.present).slice(0, 4);
     }
     const fallback: DoshaRow[] = [];
-    if (doshaData?.mangal_dosha?.has_dosha) fallback.push({ name: 'Mangal Dosha', severity: doshaData.mangal_dosha.severity });
-    if (doshaData?.kaal_sarp_dosha?.has_dosha) fallback.push({ name: 'Kaal Sarp Dosha', severity: doshaData.kaal_sarp_dosha.severity });
-    if (doshaData?.sade_sati?.has_sade_sati) fallback.push({ name: 'Sade Sati', severity: doshaData.sade_sati.severity });
+    if (doshaData?.mangal_dosha?.has_dosha) fallback.push({ name: translateBackend('Mangal Dosha', language), severity: doshaData.mangal_dosha.severity });
+    if (doshaData?.kaal_sarp_dosha?.has_dosha) fallback.push({ name: translateBackend('Kaal Sarp Dosha', language), severity: doshaData.kaal_sarp_dosha.severity });
+    if (doshaData?.sade_sati?.has_sade_sati) fallback.push({ name: translateBackend('Sade Sati', language), severity: doshaData.sade_sati.severity });
     return fallback;
   }, [doshaData, yogaDoshaData]);
 
@@ -158,7 +159,7 @@ export default function KundliSummaryModal({
                     <div key={`${planet.planet}-${idx}`} className="flex items-center justify-between p-2 rounded bg-black text-sm">
                       <span className="text-white font-medium">{translatePlanet(planet.planet, language)}</span>
                       <span className="text-[#d4af37]">
-                        {translateSign(planet.sign, language)} {planet.house ? `• H${planet.house}` : ''}
+                        {translateSign(planet.sign, language)} {planet.house ? `• ${l('H', 'भा')}${planet.house}` : ''}
                       </span>
                     </div>
                   ))}

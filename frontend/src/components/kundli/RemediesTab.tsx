@@ -26,7 +26,7 @@ export default function RemediesTab({ kundliId, language, t }: Props) {
     setLoadingYearly(true);
     apiFetch('/api/kundli/remedies', {
       method: 'POST',
-      body: JSON.stringify({ kundli_id: kundliId, year: year }),
+      body: JSON.stringify({ kundli_id: kundliId, year: year, language }),
     })
       .then((data) => {
         if (data?.yearly_remedies) setYearlyData(data.yearly_remedies);

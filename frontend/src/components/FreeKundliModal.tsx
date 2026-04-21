@@ -108,7 +108,7 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border border-sacred-gold/40 text-sacred-gold-dark hover:bg-sacred-gold/10 transition-colors disabled:opacity-50"
             >
               {downloading === 'en' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-              English PDF
+              {l('English PDF', 'अंग्रेजी PDF')}
             </button>
             <button
               onClick={() => handleDownload('hi')}
@@ -322,7 +322,7 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
                       <div key={i} className="rounded-lg border border-amber-200 bg-amber-50 p-3 flex items-start gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                         <div>
-                          <p className="text-sm font-semibold text-amber-800">{prob.title || prob.problem || `Issue ${i + 1}`}</p>
+                          <p className="text-sm font-semibold text-amber-800">{prob.title || prob.problem || l(`Issue ${i + 1}`, `समस्या ${i + 1}`)}</p>
                           {prob.detail && <p className="text-xs text-amber-700 mt-0.5">{prob.detail}</p>}
                         </div>
                       </div>

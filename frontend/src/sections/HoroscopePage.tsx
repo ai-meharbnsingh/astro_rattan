@@ -424,7 +424,7 @@ export default function HoroscopePage() {
               >
                 <img
                   src={`/images/zodiac-orange/zodiac-${s.id}-orange.png`}
-                  alt={s.en}
+                  alt={language === 'hi' ? s.hi : s.en}
                   className="w-10 h-10 object-contain"
                 />
                 <span className="text-[10px]">{language === 'hi' ? s.hi : s.en}</span>

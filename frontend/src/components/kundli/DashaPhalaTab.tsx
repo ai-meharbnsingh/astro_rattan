@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import React, { useEffect, useState } from 'react';
 import { Clock3, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -306,7 +307,7 @@ export default function DashaPhalaTab({ kundliId, language, t }: DashaPhalaTabPr
       const res = await api.get(`/api/kundli/${kundliId}/dasha-phala${qs}`);
       setData(res);
     } catch (err: any) {
-      setError(err?.message || 'Failed to load dasha phala');
+      setError(err?.message || t('auto.genericError'));
     } finally {
       setLoading(false);
     }

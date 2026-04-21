@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState } from 'react';
 import { Loader2, Plus, Trash2, Clock, Star, ChevronDown, ChevronUp, AlertCircle, CheckCircle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,17 +40,17 @@ interface RectificationResult {
 // ── Constants ────────────────────────────────────────────────
 
 const EVENT_TYPES = [
-  { value: 'marriage',      label: 'Marriage' },
-  { value: 'child_birth',   label: 'Child Birth' },
-  { value: 'job_start',     label: 'Job Start' },
-  { value: 'job_loss',      label: 'Job Loss' },
-  { value: 'accident',      label: 'Accident' },
-  { value: 'education',     label: 'Education (Degree/Admission)' },
-  { value: 'foreign_travel',label: 'Foreign Travel' },
-  { value: 'property',      label: 'Property Purchase' },
-  { value: 'father_death',  label: "Father's Death" },
-  { value: 'mother_death',  label: "Mother's Death" },
-  { value: 'health_issue',  label: 'Serious Health Issue' },
+  { value: 'marriage',      label: 'Marriage', labelHi: 'विवाह' },
+  { value: 'child_birth',   label: 'Child Birth', labelHi: 'बच्चे का जन्म' },
+  { value: 'job_start',     label: 'Job Start', labelHi: 'नौकरी शुरू' },
+  { value: 'job_loss',      label: 'Job Loss', labelHi: 'नौकरी जाना' },
+  { value: 'accident',      label: 'Accident', labelHi: 'दुर्घटना' },
+  { value: 'education',     label: 'Education (Degree/Admission)', labelHi: 'शिक्षा (डिग्री/प्रवेश)' },
+  { value: 'foreign_travel',label: 'Foreign Travel', labelHi: 'विदेश यात्रा' },
+  { value: 'property',      label: 'Property Purchase', labelHi: 'संपत्ति खरीद' },
+  { value: 'father_death',  label: "Father's Death", labelHi: 'पिता की मृत्यु' },
+  { value: 'mother_death',  label: "Mother's Death", labelHi: 'माता की मृत्यु' },
+  { value: 'health_issue',  label: 'Serious Health Issue', labelHi: 'गंभीर स्वास्थ्य समस्या' },
 ];
 
 const ohContainer = 'rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden';
@@ -98,11 +99,11 @@ export default function BirthRectification({
 
   const handleSubmit = async () => {
     setError(''); setResult(null);
-    if (!birthDate)          { setError('Please enter the birth date.'); return; }
-    if (!timeStart || !timeEnd) { setError('Please set the time window.'); return; }
-    if (!latitude || !longitude) { setError('Please enter birth place coordinates.'); return; }
+    if (!birthDate)          { setError(hi ? 'कृपया जन्म तिथि दर्ज करें।' : 'Please enter the birth date.'); return; }
+    if (!timeStart || !timeEnd) { setError(hi ? 'कृपया समय सीमा निर्धारित करें।' : 'Please set the time window.'); return; }
+    if (!latitude || !longitude) { setError(hi ? 'कृपया जन्म स्थान के निर्देशांक दर्ज करें।' : 'Please enter birth place coordinates.'); return; }
     const validEvents = events.filter((e) => e.date && e.type);
-    if (validEvents.length === 0) { setError('Please add at least one life event with a date.'); return; }
+    if (validEvents.length === 0) { setError(hi ? 'कृपया कम से कम एक जीवन घटना तिथि के साथ जोड़ें।' : 'Please add at least one life event with a date.'); return; }
     setLoading(true);
     try {
       const data = await api.post('/api/kundli/birth-rectification', {
@@ -115,7 +116,7 @@ export default function BirthRectification({
       });
       setResult(data as RectificationResult);
     } catch (err: any) {
-      setError(err?.message || 'Failed to calculate rectification.');
+      setError(err?.message || t('auto.genericError'));
     }
     setLoading(false);
   };
@@ -229,7 +230,7 @@ export default function BirthRectification({
                 className="flex-1 bg-transparent border border-border rounded px-2 py-1.5 text-sm focus:border-primary focus:outline-none"
               >
                 {EVENT_TYPES.map(et => (
-                  <option key={et.value} value={et.value}>{et.label}</option>
+                  <option key={et.value} value={et.value}>{hi ? et.labelHi : et.label}</option>
                 ))}
               </select>
               <Input

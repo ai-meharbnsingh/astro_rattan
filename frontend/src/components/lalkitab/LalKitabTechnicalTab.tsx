@@ -144,10 +144,10 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
               {dhur_dhur_aage.pushes?.map((push: any, i: number) => (
                 <div key={i} className="flex items-center gap-2 text-sm border border-border rounded-lg p-2.5">
                   <span className="font-semibold text-foreground">{push.pusher}</span>
-                  <span className="text-xs text-muted-foreground">H{isNaN(Number(push.pusher_house)) ? 0 : push.pusher_house}</span>
+                  <span className="text-xs text-muted-foreground">{hi ? `भाव ${isNaN(Number(push.pusher_house)) ? 0 : push.pusher_house}` : `H${isNaN(Number(push.pusher_house)) ? 0 : push.pusher_house}`}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="font-semibold text-foreground">{push.receiver}</span>
-                  <span className="text-xs text-muted-foreground">H{isNaN(Number(push.receiver_house)) ? 0 : push.receiver_house}</span>
+                  <span className="text-xs text-muted-foreground">{hi ? `भाव ${isNaN(Number(push.receiver_house)) ? 0 : push.receiver_house}` : `H${isNaN(Number(push.receiver_house)) ? 0 : push.receiver_house}`}</span>
                   <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${directionColor[push.direction] || ''}`}>
                     {hi
                       ? ({forward:'आगे', backward:'पीछे', neutral:'तटस्थ'}[push.direction] || push.direction)
@@ -209,10 +209,10 @@ export default function LalKitabTechnicalTab({ kundliId, language }: Props) {
               <div className="flex items-center gap-2 mb-1.5">
                 <span className={`w-2.5 h-2.5 rounded-full ${PLANET_DOT[typeof p.planet === 'string' ? p.planet : pickLang(p.planet, false)] || 'bg-gray-400'}`} />
                 <span className="font-semibold text-sm">{typeof p.planet === 'string' ? p.planet : pickLang(p.planet, false)}</span>
-                <span className="text-xs text-muted-foreground">H{p.house}</span>
+                <span className="text-xs text-muted-foreground">{hi ? `भाव ${p.house}` : `H${p.house}`}</span>
                 <div className="flex flex-wrap gap-1 ml-1">
                   {p.status.sarkari && <span className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded flex items-center gap-0.5"><Crown className="w-3 h-3" />{hi?'सरकारी':'Sarkari'}</span>}
-                  {p.status.gair_sarkari && <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">Gair-Sarkari</span>}
+                  {p.status.gair_sarkari && <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">{hi?'गैर-सरकारी':'Gair-Sarkari'}</span>}
                   {p.status.bhedi && <span className="text-xs px-1.5 py-0.5 bg-gray-200 text-gray-700 rounded flex items-center gap-0.5"><Eye className="w-3 h-3" />{hi?'भेदी':'Bhedi'}</span>}
                   {p.status.zakhmi && <span className="text-xs px-1.5 py-0.5 bg-red-100 text-red-700 rounded flex items-center gap-0.5"><Swords className="w-3 h-3" />{hi?'ज़ख्मी':'Zakhmi'}</span>}
                   {p.status.pardesi && <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded flex items-center gap-0.5"><Plane className="w-3 h-3" />{hi?'परदेसी':'Pardesi'}</span>}

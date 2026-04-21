@@ -114,7 +114,7 @@ function LalKitabPageInner() {
         const full = await api.get(`/api/lalkitab/full/${kundliId}`);
         if (!cancelled) ctx.setFullData(full);
       } catch {
-        if (!cancelled) ctx.setFullData({ _errors: { full: 'Failed to load consolidated data' } });
+        if (!cancelled) ctx.setFullData({ _errors: { full: isHi ? 'संयुक्त डेटा लोड नहीं हो सका' : 'Failed to load consolidated data' } });
       }
     })();
     return () => { cancelled = true; };
@@ -208,7 +208,7 @@ function LalKitabPageInner() {
         });
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Failed to generate Lal Kitab kundli';
+      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : (isHi ? 'लाल किताब कुंडली बनाने में विफल' : 'Failed to generate Lal Kitab kundli');
       setError(msg);
       setView('form');
     }

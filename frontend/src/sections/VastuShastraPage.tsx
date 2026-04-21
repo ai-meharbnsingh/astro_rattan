@@ -57,7 +57,7 @@ export default function VastuShastraPage() {
       setAnalysisData(result);
       setAnalysisView('result');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to analyze';
+      const msg = err instanceof Error ? err.message : t('auto.failedToAnalyze');
       setError(msg);
       setAnalysisView('form');
     }

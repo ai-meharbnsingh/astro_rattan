@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Heart, AlertTriangle, BookOpen, Info, CheckCircle2 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -94,7 +95,7 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
         const res = await api.get<StriJatakaData>(`/api/kundli/${kundliId}/stri-jataka`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Stri-Jataka analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, HeartPulse, AlertTriangle, ShieldCheck, BookOpen, CheckCircle2, ChevronDown, ChevronUp, Sun, Moon, Compass, Scale, Info } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -137,7 +138,7 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
           if (!cancelled) setData({ ...fallback, lifespan: null as any });
         }
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load lifespan data');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

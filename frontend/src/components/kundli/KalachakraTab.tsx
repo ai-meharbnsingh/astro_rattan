@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Clock, ChevronDown, ChevronRight, BookOpen, Info } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -64,6 +65,7 @@ function formatDate(dateStr?: string): string {
 }
 
 export default function KalachakraTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<KalachakraData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export default function KalachakraTab({ kundliId, language }: Props) {
         const res = await api.get(`/api/kundli/${kundliId}/kalachakra-dasha`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Kalachakra Dasha');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -137,7 +139,7 @@ export default function KalachakraTab({ kundliId, language }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-sacred-gold/20 flex items-center justify-center shrink-0">
-            <span className="text-sacred-gold-dark font-bold text-sm">देह</span>
+            <span className="text-sacred-gold-dark font-bold text-sm">{hi ? 'देह' : 'Deha'}</span>
           </div>
           <div>
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
@@ -148,7 +150,7 @@ export default function KalachakraTab({ kundliId, language }: Props) {
         </div>
         <div className="rounded-xl border border-sacred-gold/30 bg-sacred-gold/5 p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-sacred-gold/20 flex items-center justify-center shrink-0">
-            <span className="text-sacred-gold-dark font-bold text-sm">जीव</span>
+            <span className="text-sacred-gold-dark font-bold text-sm">{hi ? 'जीव' : 'Jeeva'}</span>
           </div>
           <div>
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">

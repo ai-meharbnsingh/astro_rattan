@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Play, Pause, SkipForward, SkipBack, RotateCcw } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -190,7 +191,7 @@ export default function ChartAnimation({
       setSnapshots(results);
       setFrameIndex(0);
     } catch (err: any) {
-      setError(err?.message || 'Failed to load transit data');
+      setError(err?.message || t('auto.genericError'));
     } finally {
       setLoading(false);
     }

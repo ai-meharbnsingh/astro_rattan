@@ -258,7 +258,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                       <select value={birthNakshatra !== null ? String(birthNakshatra) : ''} onChange={e => setBirthNakshatra(e.target.value === '' ? null : Number(e.target.value))}
                         className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-sacred-gold">
                         <option value="">{language === 'hi' ? '-- चुनें --' : '-- Not set --'}</option>
-                        {['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati'].map((name, idx) => (
+                        {(language === 'hi' ? ['अश्विनी','भरणी','कृत्तिका','रोहिणी','मृगशिरा','आर्द्रा','पुनर्वसु','पुष्य','आश्लेषा','मघा','पूर्व फाल्गुनी','उत्तर फाल्गुनी','हस्त','चित्रा','स्वाति','विशाखा','अनुराधा','ज्येष्ठा','मूल','पूर्वाषाढ़ा','उत्तराषाढ़ा','श्रवण','धनिष्ठा','शतभिषा','पूर्वभाद्रपद','उत्तरभाद्रपद','रेवती'] : ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati']).map((name, idx) => (
                           <option key={idx} value={idx}>{idx + 1}. {name}</option>
                         ))}
                       </select>
@@ -268,7 +268,7 @@ export default function MuhuratFinderTab({ language, t, latitude, longitude }: P
                       <select value={birthMoonRashi !== null ? String(birthMoonRashi) : ''} onChange={e => setBirthMoonRashi(e.target.value === '' ? null : Number(e.target.value))}
                         className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-sacred-gold">
                         <option value="">{language === 'hi' ? '-- चुनें --' : '-- Not set --'}</option>
-                        {['Aries / Mesh','Taurus / Vrishabha','Gemini / Mithuna','Cancer / Karka','Leo / Simha','Virgo / Kanya','Libra / Tula','Scorpio / Vrishchika','Sagittarius / Dhanu','Capricorn / Makara','Aquarius / Kumbha','Pisces / Meena'].map((name, idx) => (
+                        {(language === 'hi' ? ['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन'] : ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']).map((name, idx) => (
                           <option key={idx} value={idx}>{name}</option>
                         ))}
                       </select>

@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, AlertTriangle, BookOpen } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -37,6 +38,7 @@ const tdCls = 'p-1 text-xs text-foreground border-t border-border align-top';
 const tdWrapCls = 'p-1 text-xs text-foreground border-t border-border align-top break-words overflow-hidden';
 
 export default function GochaVedhaTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<GochaVedhaData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +51,7 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
     setError(null);
     api.get<GochaVedhaData>(`/api/kundli/${kundliId}/gochara-vedha`)
       .then(res => { if (!cancelled) setData(res); })
-      .catch((err: any) => { if (!cancelled) setError(err?.message || 'Failed to load Gochara Vedha data'); })
+      .catch((err: any) => { if (!cancelled) setError(err?.message || t('auto.genericError')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [kundliId]);

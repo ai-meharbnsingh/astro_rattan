@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Briefcase, BookOpen, Sun, Moon, Compass, CheckCircle2, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -96,7 +97,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
         const res = await api.get<VrittiData>(`/api/kundli/${kundliId}/vritti`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Vritti analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

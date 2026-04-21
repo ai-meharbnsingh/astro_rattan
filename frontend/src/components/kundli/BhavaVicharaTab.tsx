@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Sparkles, BookOpen, Shield, AlertTriangle, Home } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -68,7 +69,7 @@ export default function BhavaVicharaTab({ kundliId, language, t }: Props) {
         const res = await api.get<ApiResponse>(`/api/kundli/${kundliId}/bhava-vichara`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Bhava Vichara');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

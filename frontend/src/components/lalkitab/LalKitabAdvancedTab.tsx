@@ -1503,9 +1503,9 @@ export default function LalKitabAdvancedTab({ kundliId, chartData }: Props) {
                 {isHi ? data.rahu_ketu_axis.axis_hi : data.rahu_ketu_axis.axis_en}
               </h4>
               <span className="text-sm font-semibold text-indigo-700 bg-white/70 border border-indigo-200 px-2 py-0.5 rounded">
-                H{data.rahu_ketu_axis.rahu_house}
+                {isHi ? `भाव ${data.rahu_ketu_axis.rahu_house}` : `H${data.rahu_ketu_axis.rahu_house}`}
                 <span className="mx-1 text-indigo-500">↔</span>
-                H{data.rahu_ketu_axis.ketu_house}
+                {isHi ? `भाव ${data.rahu_ketu_axis.ketu_house}` : `H${data.rahu_ketu_axis.ketu_house}`}
               </span>
               <span className="text-[10px] font-bold text-indigo-700 bg-indigo-200/60 px-2 py-0.5 rounded uppercase tracking-widest">
                 {isHi ? 'छाया अक्ष' : 'Shadow Axis'}

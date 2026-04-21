@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Briefcase, BookOpen, Star, Compass, Users } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -36,6 +37,7 @@ const tdCls       = 'p-1.5 text-xs text-muted-foreground border-t border-border 
 const tdValCls    = 'p-1.5 text-xs text-foreground font-medium border-t border-border align-top break-words overflow-hidden';
 
 export default function NavamshaCareerTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<NavamshaCareerData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function NavamshaCareerTab({ kundliId, language }: Props) {
         const res = await api.get(`/api/kundli/${kundliId}/navamsha-profession`);
         if (!cancelled) setData(res as NavamshaCareerData);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Navamsha Career analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

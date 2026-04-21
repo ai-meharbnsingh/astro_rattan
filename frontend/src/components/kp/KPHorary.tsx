@@ -110,7 +110,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
       ]);
       setChartResult(chart); setPrediction(pred);
     } catch (err: any) {
-      setError(typeof err?.message === 'string' ? err.message : typeof err?.detail === 'string' ? err.detail : 'Failed to get horary analysis');
+      setError(typeof err?.message === 'string' ? err.message : typeof err?.detail === 'string' ? err.detail : (hi ? 'होररी विश्लेषण प्राप्त करने में विफल' : 'Failed to get horary analysis'));
     } finally {
       setLoading(false);
     }

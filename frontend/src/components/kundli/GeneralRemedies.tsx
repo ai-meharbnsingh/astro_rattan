@@ -44,7 +44,7 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
       setLoading(true);
       apiFetch('/api/kundli/remedies', {
         method: 'POST',
-        body: JSON.stringify({ kundli_id: kundliId }),
+        body: JSON.stringify({ kundli_id: kundliId, language }),
       })
         .then((data) => {
           if (data?.general_remedies) setCategories(data.general_remedies);
@@ -126,7 +126,7 @@ export default function GeneralRemedies({ language, t: tProp, title, kundliId }:
                     <span className="text-sm font-black uppercase tracking-wider text-sacred-gold-dark">{rem.title}</span>
                   </div>
                   {rem.source_type === 'narad_puran' && (
-                    <span className="text-[9px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200 uppercase">Narad Puran</span>
+                    <span className="text-[9px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200 uppercase">{isHi ? 'नारद पुराण' : 'Narad Puran'}</span>
                   )}
                 </div>
                 

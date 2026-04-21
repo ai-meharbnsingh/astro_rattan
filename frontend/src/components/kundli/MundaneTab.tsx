@@ -398,7 +398,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
       setAnalysisData(normalized);
     } catch (err) {
       setAnalysisData(null);
-      setError(err instanceof Error ? err.message : 'Failed to load analysis');
+      setError(err instanceof Error ? err.message : t('auto.failedToLoad'));
     }
     setLoading(false);
   }, [lang]);

@@ -500,7 +500,7 @@ export function useKundliData() {
 
   const handlePrashnaKundli = async () => {
     if (!isAuthenticated) {
-      setError('Sign in is required to generate and save a kundli.');
+      setError(t('auto.signInRequired'));
       return;
     }
     setStep('generating');
@@ -545,7 +545,7 @@ export function useKundliData() {
       resetTabData();
       setStep('result');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate Prashna Kundli');
+      setError(err instanceof Error ? err.message : t('auto.failedToGeneratePrashna'));
       setStep('form');
     }
   };
@@ -577,7 +577,7 @@ export function useKundliData() {
       // Refresh saved kundlis list (for Milan dropdown)
       try { const list = await api.get('/api/kundli/list'); setSavedKundlis(Array.isArray(list) ? list : []); } catch {}
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate kundli');
+      setError(err instanceof Error ? err.message : t('auto.failedToGenerateKundli'));
       setStep('form');
     }
   };
@@ -650,11 +650,11 @@ export function useKundliData() {
   const doshaDisplay = useMemo(() => {
     if (!doshaData) return null;
     return {
-      mangal: doshaData.mangal_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
-      kaalsarp: doshaData.kaal_sarp_dosha || { has_dosha: false, severity: 'none', description: 'No data' },
-      sadesati: doshaData.sade_sati || { has_sade_sati: false, phase: 'none', description: 'No data' },
+      mangal: doshaData.mangal_dosha || { has_dosha: false, severity: 'none', description: t('auto.noData') },
+      kaalsarp: doshaData.kaal_sarp_dosha || { has_dosha: false, severity: 'none', description: t('auto.noData') },
+      sadesati: doshaData.sade_sati || { has_sade_sati: false, phase: 'none', description: t('auto.noData') },
     };
-  }, [doshaData]);
+  }, [doshaData, t]);
 
   // Convenience helpers for tab components
   const changeDivision = (code: string) => {

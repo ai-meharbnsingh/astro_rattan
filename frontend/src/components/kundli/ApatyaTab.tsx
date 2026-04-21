@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Baby, BookOpen, Heart, Sparkles, Calendar, Eye, ShieldAlert, Clock, Users } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -245,7 +246,7 @@ export default function ApatyaTab({ kundliId, language, t }: Props) {
         const res = await api.get<ApatyaData>(`/api/kundli/${kundliId}/apatya`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Apatya analysis');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

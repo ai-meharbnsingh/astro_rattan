@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Flame, CheckCircle2, BookOpen, XCircle } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -57,7 +58,7 @@ export default function PravrajyaTab({ kundliId, language, t }: Props) {
         const res = await api.get<PravrajyaData>(`/api/kundli/${kundliId}/pravrajya`);
         if (!cancelled) setData(res);
       } catch (err: any) {
-        if (!cancelled) setError(err?.message || 'Failed to load Pravrajya yogas');
+        if (!cancelled) setError(err?.message || t('auto.genericError'));
       } finally {
         if (!cancelled) setLoading(false);
       }

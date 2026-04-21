@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function FloorplanUploader({ onUploaded }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -42,7 +42,7 @@ export default function FloorplanUploader({ onUploaded }: Props) {
       };
       img.src = result.image_url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
+      setError(err instanceof Error ? err.message : t('auto.uploadFailed'));
     } finally {
       setUploading(false);
     }

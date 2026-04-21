@@ -84,8 +84,8 @@ export default function Dashboard() {
           </Heading>
           <p className="text-sm text-muted-foreground mt-1">
             {kundlis.length} {kundlis.length === 1
-              ? (t('dashboard.chart') || 'chart')
-              : (t('dashboard.charts') || 'charts')} {t('dashboard.saved') || 'saved'}
+              ? t('dashboard.chart')
+              : t('dashboard.charts')} {t('dashboard.saved')}
           </p>
         </div>
         <div className="flex gap-2">

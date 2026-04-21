@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, BookOpen, ChevronDown, ChevronUp, Heart, Briefcase, Coins, Activity } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -123,6 +124,7 @@ function PlanetSection({ item, isHi, defaultOpen }: { item: PlanetInterpretation
 }
 
 export default function TransitInterpretationsTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<TransitInterpretationsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -148,7 +150,7 @@ export default function TransitInterpretationsTab({ kundliId, language }: Props)
     setError(null);
     api.get<TransitInterpretationsData>(`/api/kundli/${kundliId}/transit-interpretations`)
       .then(res => { if (!cancelled) setData(res as TransitInterpretationsData); })
-      .catch((err: any) => { if (!cancelled) setError(err?.message || 'Failed to load Transit Interpretations'); })
+      .catch((err: any) => { if (!cancelled) setError(err?.message || t('auto.genericError')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [kundliId]);

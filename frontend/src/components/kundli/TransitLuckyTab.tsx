@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { useState, useEffect } from 'react';
 import { Loader2, Star, BookOpen, CheckCircle2, XCircle, Gem } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -48,6 +49,7 @@ const tdLbl       = 'p-1.5 text-xs text-muted-foreground border-t border-border 
 const tdVal       = 'p-1.5 text-xs text-foreground font-medium border-t border-border align-top break-words overflow-hidden';
 
 export default function TransitLuckyTab({ kundliId, language }: Props) {
+  const { t } = useTranslation();
   const [data, setData] = useState<TransitLuckyData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
     setError(null);
     api.get<TransitLuckyData>(`/api/kundli/${kundliId}/transit-lucky`)
       .then(res => { if (!cancelled) setData(res); })
-      .catch((err: any) => { if (!cancelled) setError(err?.message || 'Failed to load Lucky Indicators'); })
+      .catch((err: any) => { if (!cancelled) setError(err?.message || t('auto.genericError')); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [kundliId]);

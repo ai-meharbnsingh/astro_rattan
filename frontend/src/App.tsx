@@ -240,7 +240,7 @@ function LocationBadge() {
   return (
     <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 text-white shadow-lg backdrop-blur-sm rounded-xl cursor-default select-none px-3 py-2.5 flex flex-col gap-1 min-w-[180px]" style={{ background: 'linear-gradient(135deg, #FF9933 0%, #e07b1a 100%)' }}>
       <div className="flex items-center gap-1.5 border-b border-white/20 pb-1.5 mb-0.5">
-        <span className="text-[10px] font-bold tracking-widest uppercase opacity-70">Current Location</span>
+        <span className="text-[10px] font-bold tracking-widest uppercase opacity-70">{t('auto.currentLocation')}</span>
       </div>
       <span className="text-sm font-semibold leading-tight">{label}</span>
       <span className="text-[11px] opacity-70">{latStr} &nbsp; {lonStr}</span>

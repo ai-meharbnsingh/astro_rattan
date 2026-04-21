@@ -254,7 +254,7 @@ export default function CalculationDetailPanel({ kundliId, visible, onToggle, is
                       <th className="text-left p-1.5">{isHi ? 'राशि' : 'Sign'}</th>
                       <th className="text-left p-1.5">{isHi ? 'नक्षत्र' : 'Nakshatra'}</th>
                       <th className="text-center p-1.5">{isHi ? 'पाद' : 'Pada'}</th>
-                      <th className="text-center p-1.5">LK H</th>
+                      <th className="text-center p-1.5">{isHi ? 'LK भाव' : 'LK H'}</th>
                       <th className="text-center p-1.5">{isHi ? 'स्थिति' : 'Flags'}</th>
                     </tr>
                   </thead>

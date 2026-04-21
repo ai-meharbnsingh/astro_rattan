@@ -94,7 +94,7 @@ interface FloorplanMarker {
 }
 
 export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const isHi = language === 'hi';
 
   const [mode, setMode] = useState<MapperMode>(initialMode);
@@ -221,7 +221,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
         setLayoutResult(result);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Analysis failed');
+      setError(err instanceof Error ? err.message : t('auto.analysisFailed'));
     } finally {
       setAnalyzing(false);
     }

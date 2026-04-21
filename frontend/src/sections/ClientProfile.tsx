@@ -50,7 +50,8 @@ interface TimelineEvent {
 export default function ClientProfile() {
   const { clientId } = useParams<{ clientId: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const { user } = useAuth();
   const isAstrologer = user?.role === 'astrologer' || user?.role === 'admin';
   const [client, setClient] = useState<Client | null>(null);
@@ -217,7 +218,7 @@ export default function ClientProfile() {
                   className="input-sacred" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block"><MapPin className="w-3 h-3 inline mr-1" />Birth Place</label>
+                <label className="text-xs text-muted-foreground mb-1 block"><MapPin className="w-3 h-3 inline mr-1" />{t('auto.birthPlace')}</label>
                 <input type="text" value={editForm.birth_place} onChange={e => setEditForm(f => ({ ...f, birth_place: e.target.value }))}
                   className="input-sacred" />
               </div>
@@ -228,19 +229,19 @@ export default function ClientProfile() {
                   <option value="">{t('auto.select')}</option>
                   <option value="male">{t('auto.male')}</option>
                   <option value="female">{t('auto.female')}</option>
-                  <option value="other">Other</option>
+                  <option value="other">{t('auto.other')}</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Notes</label>
+              <label className="text-xs text-muted-foreground mb-1 block">{t('auto.notes')}</label>
               <textarea value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} rows={2}
                 className="input-sacred resize-none" />
             </div>
             <div className="flex gap-2">
               <Button onClick={saveEdit} disabled={editSaving} className="flex items-center gap-2 px-4 py-2 text-sm">
                 {editSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : editSaved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                {editSaving ? 'Saving...' : editSaved ? 'Saved!' : 'Save'}
+                {editSaving ? t('common.saving') : editSaved ? t('common.saved') : t('common.save')}
               </Button>
               <Button variant="outline" onClick={cancelEdit}
                 className="flex items-center gap-1.5 px-4 py-2 border-border text-foreground rounded-lg text-sm hover:bg-gray-50">
@@ -262,28 +263,28 @@ export default function ClientProfile() {
               </Heading>
             </div>
             <span className="text-[11px] text-muted-foreground">
-              Profile · Left Hand · Right Hand (palmistry)
+              {l('Profile · Left Hand · Right Hand (palmistry)', 'प्रोफाइल · बायां हाथ · दायां हाथ (हस्तरेखा)')}
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <ClientPhotoSlot
               clientId={client.id}
               field="profile_photo_url"
-              label="Profile"
+              label={l('Profile', 'प्रोफाइल')}
               value={client.profile_photo_url ?? null}
               onUpdate={(url) => setClient((prev) => prev ? { ...prev, profile_photo_url: url } : prev)}
             />
             <ClientPhotoSlot
               clientId={client.id}
               field="left_hand_photo_url"
-              label="Left Hand"
+              label={l('Left Hand', 'बायां हाथ')}
               value={client.left_hand_photo_url ?? null}
               onUpdate={(url) => setClient((prev) => prev ? { ...prev, left_hand_photo_url: url } : prev)}
             />
             <ClientPhotoSlot
               clientId={client.id}
               field="right_hand_photo_url"
-              label="Right Hand"
+              label={l('Right Hand', 'दायां हाथ')}
               value={client.right_hand_photo_url ?? null}
               onUpdate={(url) => setClient((prev) => prev ? { ...prev, right_hand_photo_url: url } : prev)}
             />
@@ -313,7 +314,7 @@ export default function ClientProfile() {
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-sacred-gold-dark" />
               <Heading as={2} variant={6} className="uppercase tracking-wider">
-                {t('client.consultations') || 'Consultations'} ({consultations.length})
+                {t('client.consultations') || l('Consultations', 'परामर्श')} ({consultations.length})
               </Heading>
             </div>
             <button
@@ -321,7 +322,7 @@ export default function ClientProfile() {
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
-              {schedOpen ? 'Close' : 'Schedule'}
+              {schedOpen ? t('common.close') : l('Schedule', 'अनुसूची')}
             </button>
           </div>
 
@@ -329,20 +330,20 @@ export default function ClientProfile() {
             <div className="rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 p-4 mb-4 space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">Type</label>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">{l('Type', 'प्रकार')}</label>
                   <select
                     value={schedForm.type}
                     onChange={(e) => setSchedForm((f) => ({ ...f, type: e.target.value }))}
                     className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
                   >
-                    <option value="chat">Chat</option>
-                    <option value="audio">Audio</option>
-                    <option value="video">Video</option>
-                    <option value="in_person">In Person</option>
+                    <option value="chat">{l('Chat', 'चैट')}</option>
+                    <option value="audio">{l('Audio', 'ऑडियो')}</option>
+                    <option value="video">{l('Video', 'वीडियो')}</option>
+                    <option value="in_person">{l('In Person', 'व्यक्तिगत रूप से')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">When</label>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">{l('When', 'कब')}</label>
                   <input
                     type="datetime-local"
                     value={schedForm.scheduled_at}
@@ -351,7 +352,7 @@ export default function ClientProfile() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">Duration (min)</label>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">{l('Duration (min)', 'अवधि (मिनट)')}</label>
                   <input
                     type="number" min={5} max={480} step={5}
                     value={schedForm.duration_minutes}
@@ -364,18 +365,18 @@ export default function ClientProfile() {
                 value={schedForm.notes}
                 onChange={(e) => setSchedForm((f) => ({ ...f, notes: e.target.value }))}
                 rows={2}
-                placeholder="Agenda, questions, topic…"
+                placeholder={l('Agenda, questions, topic…', 'एजेंडा, प्रश्न, विषय…')}
                 className="w-full px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm resize-none"
               />
               <div className="flex justify-end gap-2">
-                <button onClick={() => setSchedOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">Cancel</button>
+                <button onClick={() => setSchedOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">{t('common.cancel')}</button>
                 <button
                   onClick={bookConsultation}
                   disabled={schedSaving}
                   className="px-4 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {schedSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                  Book
+                  {l('Book', 'बुक करें')}
                 </button>
               </div>
             </div>
@@ -383,7 +384,7 @@ export default function ClientProfile() {
 
           {consultations.length === 0 ? (
             <div className="text-sm text-muted-foreground border border-dashed border-sacred-gold/30 rounded-xl p-6 text-center mb-4">
-              No consultations yet.
+              {l('No consultations yet.', 'अभी तक कोई परामर्श नहीं।')}
             </div>
           ) : (
             <div className="space-y-2 mb-4">
@@ -411,25 +412,25 @@ export default function ClientProfile() {
                             {when.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </span>
                         )}
-                        {c.duration_minutes && <span className="text-xs text-muted-foreground">· {c.duration_minutes}min</span>}
+                        {c.duration_minutes && <span className="text-xs text-muted-foreground">· {c.duration_minutes}{l('min', 'मिन')}</span>}
                       </div>
                       {c.notes && <p className="text-sm text-foreground/80 mt-1">{c.notes}</p>}
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {c.status === 'scheduled' && (
-                        <button onClick={() => updateConsultationStatus(c.id, 'confirmed')} className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200">Confirm</button>
+                        <button onClick={() => updateConsultationStatus(c.id, 'confirmed')} className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-lg hover:bg-blue-200">{l('Confirm', 'पुष्टि करें')}</button>
                       )}
                       {(c.status === 'scheduled' || c.status === 'confirmed') && (
-                        <button onClick={() => updateConsultationStatus(c.id, 'active')} className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200">Start</button>
+                        <button onClick={() => updateConsultationStatus(c.id, 'active')} className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-lg hover:bg-emerald-200">{l('Start', 'शुरू करें')}</button>
                       )}
                       {c.status === 'active' && (
                         <button onClick={() => updateConsultationStatus(c.id, 'completed')} className="text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-lg hover:bg-green-200 inline-flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> Complete
+                          <CheckCircle2 className="w-3 h-3" /> {l('Complete', 'पूर्ण करें')}
                         </button>
                       )}
                       {c.status !== 'completed' && c.status !== 'cancelled' && (
                         <button onClick={() => updateConsultationStatus(c.id, 'cancelled')} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-red-100 hover:text-red-700 inline-flex items-center gap-1">
-                          <XCircle className="w-3 h-3" /> Cancel
+                          <XCircle className="w-3 h-3" /> {t('common.cancel')}
                         </button>
                       )}
                     </div>
@@ -457,9 +458,9 @@ export default function ClientProfile() {
                     'bg-blue-100 text-blue-700';
                   const Icon = ev.kind === 'kundli' ? BookOpen : ev.kind === 'note' ? StickyNote : Clock;
                   const title =
-                    ev.kind === 'kundli' ? `Generated ${ev.chart_type ?? 'chart'} for ${ev.person_name ?? client.name}` :
-                    ev.kind === 'note' ? `Note added${ev.chart_type ? ` (${ev.chart_type})` : ''}` :
-                    `Consultation ${ev.status ?? ''} (${ev.type ?? ''})`;
+                    ev.kind === 'kundli' ? `${l('Generated', 'बनाया गया')} ${ev.chart_type ?? 'chart'} for ${ev.person_name ?? client.name}` :
+                    ev.kind === 'note' ? `${l('Note added', 'नोट जोड़ा गया')}${ev.chart_type ? ` (${ev.chart_type})` : ''}` :
+                    `${l('Consultation', 'परामर्श')} ${ev.status ?? ''} (${ev.type ?? ''})`;
                   const detail =
                     ev.kind === 'note' ? ev.content :
                     ev.kind === 'consultation' ? (ev.notes || ev.scheduled_at) :
@@ -501,7 +502,7 @@ export default function ClientProfile() {
             </Heading>
           </div>
           <p className="text-xs text-muted-foreground">
-            {t('notes.subtitle') || 'All notes across every chart · date-wise'}
+            {t('notes.subtitle') || l('All notes across every chart · date-wise', 'सभी चार्ट के नोट · दिनांक अनुसार')}
           </p>
         </div>
 
@@ -509,7 +510,7 @@ export default function ClientProfile() {
           <div className="text-center py-10 border border-dashed border-sacred-gold/30 rounded-lg">
             <StickyNote className="w-8 h-8 text-sacred-gold/40 mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              {t('notes.empty') || 'No notes yet. Notes added from Kundli / Lal Kitab / Numerology pages will appear here.'}
+              {t('notes.empty') || l('No notes yet. Notes added from Kundli / Lal Kitab / Numerology pages will appear here.', 'अभी तक कोई नोट नहीं। कुंडली / लाल किताब / अंकशास्त्र पेज से जोड़े गए नोट यहां दिखेंगे।')}
             </p>
           </div>
         ) : (() => {
@@ -531,7 +532,7 @@ export default function ClientProfile() {
               {dayKeys.map((dayKey) => {
                 const dayNotes = groups[dayKey];
                 const headerLabel = dayKey === 'unknown'
-                  ? (t('notes.unknownDate') || 'Undated')
+                  ? (t('notes.unknownDate') || l('Undated', 'बिना तिथि'))
                   : formatDate(dayKey);
                 return (
                   <div key={dayKey}>
@@ -541,7 +542,7 @@ export default function ClientProfile() {
                         {headerLabel}
                       </span>
                       <span className="text-[11px] text-muted-foreground">
-                        · {dayNotes.length} {dayNotes.length === 1 ? (t('notes.noteSingular') || 'note') : (t('notes.notePlural') || 'notes')}
+                        · {dayNotes.length} {dayNotes.length === 1 ? (t('notes.noteSingular') || l('note', 'नोट')) : (t('notes.notePlural') || l('notes', 'नोट्स'))}
                       </span>
                       <div className="flex-1 h-px bg-sacred-gold/15" />
                     </div>
@@ -603,6 +604,8 @@ function ClientChartTabs({ client, kundlis, birthState, navigate, onRefresh }: {
   navigate: (to: string, opts?: any) => void;
   onRefresh: () => void | Promise<void>;
 }) {
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const vedicK = kundlis.find((k) => !k.chart_type || k.chart_type === 'vedic');
   const lkK = kundlis.find((k) => k.chart_type === 'lalkitab');
   const numK = kundlis.find((k) => k.chart_type === 'numerology');
@@ -614,15 +617,15 @@ function ClientChartTabs({ client, kundlis, birthState, navigate, onRefresh }: {
   const [generating, setGenerating] = useState<TabKey | null>(null);
 
   const tabs: { key: TabKey; label: string; icon: any; hasData: boolean }[] = [
-    { key: 'kundli', label: 'Kundli', icon: Star, hasData: !!vedicK },
-    { key: 'lalkitab', label: 'Lal Kitab', icon: BookOpen, hasData: !!lkK },
-    { key: 'numerology', label: 'Numerology', icon: Hash, hasData: !!numK },
-    { key: 'vastu', label: 'Vastu', icon: User, hasData: false }, // not client-scoped yet
+    { key: 'kundli', label: l('Kundli', 'कुंडली'), icon: Star, hasData: !!vedicK },
+    { key: 'lalkitab', label: l('Lal Kitab', 'लाल किताब'), icon: BookOpen, hasData: !!lkK },
+    { key: 'numerology', label: l('Numerology', 'अंकशास्त्र'), icon: Hash, hasData: !!numK },
+    { key: 'vastu', label: l('Vastu', 'वास्तु'), icon: User, hasData: false }, // not client-scoped yet
   ];
 
   const generateChart = async (chart_type: string) => {
     if (!client.birth_date || !client.birth_time || client.latitude == null || client.longitude == null) {
-      alert('Birth date, time, latitude and longitude required on client profile before generating.');
+      alert(l('Birth date, time, latitude and longitude required on client profile before generating.', 'जन्म तिथि, समय, अक्षांश और देशांतर ग्राहक प्रोफाइल पर आवश्यक हैं, बनाने से पहले।'));
       return;
     }
     setGenerating(tab);
@@ -681,51 +684,51 @@ function ClientChartTabs({ client, kundlis, birthState, navigate, onRefresh }: {
         {tab === 'kundli' && (
           <ChartTabBody
             icon={Star}
-            title="Vedic Kundli"
+            title={l('Vedic Kundli', 'वैदिक कुंडली')}
             exists={!!vedicK}
             lastUpdated={vedicK?.created_at}
             onOpen={() => vedicK && navigate('/kundli', { state: { loadKundliId: vedicK.id } })}
             onGenerate={() => generateChart('vedic')}
             generating={generating === 'kundli'}
-            emptyText="No Vedic kundli for this client yet. Generate one to get planet positions, dasha, yogas, and the full analysis suite."
+            emptyText={l('No Vedic kundli for this client yet. Generate one to get planet positions, dasha, yogas, and the full analysis suite.', 'इस ग्राहक के लिए अभी तक वैदिक कुंडली नहीं है। ग्रह स्थिति, दशा, योग और पूर्ण विश्लेषण सूट प्राप्त करने के लिए एक बनाएं।')}
           />
         )}
         {tab === 'lalkitab' && (
           <ChartTabBody
             icon={BookOpen}
-            title="Lal Kitab"
+            title={l('Lal Kitab', 'लाल किताब')}
             exists={!!lkK}
             lastUpdated={lkK?.created_at}
             onOpen={() => lkK && navigate('/lal-kitab', { state: { ...birthState, loadKundliId: lkK.id } })}
             onGenerate={() => generateChart('lalkitab')}
             generating={generating === 'lalkitab'}
-            emptyText="No Lal Kitab chart yet. Generate to access Tewa, Doshas, Karmic Debts (Rin), safety layer and remedies."
+            emptyText={l('No Lal Kitab chart yet. Generate to access Tewa, Doshas, Karmic Debts (Rin), safety layer and remedies.', 'लाल किताब चार्ट अभी तक नहीं। टेवा, दोष, कर्मिक ऋण, सुरक्षा परत और उपाय देखने के लिए बनाएं।')}
           />
         )}
         {tab === 'numerology' && (
           <ChartTabBody
             icon={Hash}
-            title="Numerology"
+            title={l('Numerology', 'अंकशास्त्र')}
             exists={!!numK}
             lastUpdated={numK?.created_at}
             onOpen={() => numK && navigate('/numerology', { state: { clientName: client.name, birthDate: client.birth_date, loadKundliId: numK.id } })}
             onGenerate={() => generateChart('numerology')}
             generating={generating === 'numerology'}
-            emptyText="No numerology profile yet. Generate to see life path, destiny, expression numbers and lucky-number guidance."
+            emptyText={l('No numerology profile yet. Generate to see life path, destiny, expression numbers and lucky-number guidance.', 'अंकशास्त्र प्रोफाइल अभी तक नहीं। जीवन पथ, भाग्य, अभिव्यक्ति अंक और भाग्यशाली अंक मार्गदर्शन देखने के लिए बनाएं।')}
           />
         )}
         {tab === 'vastu' && (
           <ChartTabBody
             icon={User}
-            title="Vastu"
+            title={l('Vastu', 'वास्तु')}
             exists={false}
             lastUpdated={undefined}
             onOpen={() => navigate('/vastu', { state: birthState })}
             onGenerate={() => navigate('/vastu', { state: birthState })}
             generating={false}
-            emptyText="Vastu consultations open in the standalone Vastu page (not persisted per-client yet). Opens with this client's birth context pre-filled."
-            generateLabel="Open Vastu"
-            openLabel="Open Vastu"
+            emptyText={l('Vastu consultations open in the standalone Vastu page (not persisted per-client yet). Opens with this client\'s birth context pre-filled.', 'वास्तु परामर्श अलग वास्तु पेज में खुलते हैं (अभी तक प्रति-ग्राहक सहेजे नहीं गए हैं)। इस ग्राहक का जन्म संदर्भ पहले से भरा हुआ खुलेगा।')}
+            generateLabel={l('Open Vastu', 'वास्तु खोलें')}
+            openLabel={l('Open Vastu', 'वास्तु खोलें')}
           />
         )}
       </div>
@@ -738,6 +741,8 @@ function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenera
   onOpen: () => void; onGenerate: () => void; generating: boolean;
   emptyText: string; generateLabel?: string; openLabel?: string;
 }) {
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   return (
     <div className="flex items-center gap-5 flex-wrap">
       <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 ${
@@ -750,17 +755,17 @@ function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenera
           <h3 className="text-lg font-semibold text-foreground">{title}</h3>
           {exists ? (
             <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Generated
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> {l('Generated', 'बनाया गया')}
             </span>
           ) : (
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-semibold">
-              Not yet
+              {l('Not yet', 'अभी नहीं')}
             </span>
           )}
         </div>
         {exists && lastUpdated && (
           <p className="text-xs text-muted-foreground mt-0.5">
-            Last updated {formatDate(lastUpdated)}
+            {l('Last updated', 'अंतिम अद्यतन')} {formatDate(lastUpdated)}
           </p>
         )}
         {!exists && (
@@ -776,7 +781,7 @@ function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenera
             className="bg-sacred-gold-dark text-white hover:bg-sacred-gold"
           >
             <ChevronRight className="w-4 h-4 mr-1" />
-            {openLabel || `Open ${title} →`}
+            {openLabel || `${l('Open', 'खोलें')} ${title} →`}
           </Button>
         ) : (
           <Button
@@ -785,7 +790,7 @@ function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenera
             className="bg-sacred-gold-dark text-white hover:bg-sacred-gold disabled:opacity-50"
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Plus className="w-4 h-4 mr-1" />}
-            {generating ? 'Generating…' : (generateLabel || `Generate ${title}`)}
+            {generating ? t('common.generating') : (generateLabel || `${t('common.generate')} ${title}`)}
           </Button>
         )}
       </div>
@@ -800,6 +805,8 @@ function ChartTabBody({ icon: Icon, title, exists, lastUpdated, onOpen, onGenera
  * Empty state when nothing recorded yet. Inline "+ Add payment" form.
  */
 function ClientPaymentsSection({ clientId }: { clientId: string }) {
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const [payments, setPayments] = useState<any[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -844,11 +851,11 @@ function ClientPaymentsSection({ clientId }: { clientId: string }) {
         <div className="flex items-center gap-2">
           <Hash className="w-4 h-4 text-sacred-gold-dark" />
           <Heading as={2} variant={6} className="uppercase tracking-wider">
-            Payments ({payments.length})
+            {l('Payments', 'भुगतान')} ({payments.length})
           </Heading>
           {totalAmount > 0 && (
             <span className="text-sm font-bold text-sacred-gold-dark ml-2">
-              Total: ₹{totalAmount.toLocaleString('en-IN')}
+              {l('Total:', 'कुल:')} ₹{totalAmount.toLocaleString('en-IN')}
             </span>
           )}
         </div>
@@ -857,26 +864,26 @@ function ClientPaymentsSection({ clientId }: { clientId: string }) {
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
-          {formOpen ? 'Close' : 'Record Payment'}
+          {formOpen ? t('common.close') : l('Record Payment', 'भुगतान दर्ज करें')}
         </button>
       </div>
 
       {formOpen && (
         <div className="mb-4 rounded-xl border border-sacred-gold/40 bg-sacred-gold/5 p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
           <input
-            type="number" step="0.01" min="0" placeholder="Amount *"
+            type="number" step="0.01" min="0" placeholder={l('Amount *', 'राशि *')}
             value={form.amount}
             onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
             className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
           />
           <input
-            placeholder="Method (UPI / Cash / Card)"
+            placeholder={l('Method (UPI / Cash / Card)', 'तरीका (UPI / नकद / कार्ड)')}
             value={form.method}
             onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))}
             className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
           />
           <input
-            placeholder="Purpose (Consultation / Report…)"
+            placeholder={l('Purpose (Consultation / Report…)', 'उद्देश्य (परामर्श / रिपोर्ट…)')}
             value={form.purpose}
             onChange={(e) => setForm((f) => ({ ...f, purpose: e.target.value }))}
             className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
@@ -888,41 +895,41 @@ function ClientPaymentsSection({ clientId }: { clientId: string }) {
             className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm"
           />
           <input
-            placeholder="Notes (optional)"
+            placeholder={l('Notes (optional)', 'नोट (वैकल्पिक)')}
             value={form.notes}
             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             className="px-3 py-2 rounded-lg border border-sacred-gold/30 bg-white text-sm sm:col-span-2"
           />
           <div className="sm:col-span-3 flex justify-end gap-2">
-            <button onClick={() => setFormOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">Cancel</button>
+            <button onClick={() => setFormOpen(false)} className="px-4 py-1.5 text-sm border border-sacred-gold/30 rounded-lg">{t('common.cancel')}</button>
             <button
               onClick={submit}
               disabled={saving || !form.amount}
               className="px-4 py-1.5 text-sm bg-sacred-gold-dark text-white rounded-lg hover:bg-sacred-gold disabled:opacity-50 inline-flex items-center gap-1.5"
             >
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-              Record
+              {l('Record', 'दर्ज करें')}
             </button>
           </div>
         </div>
       )}
 
       {loading ? (
-        <div className="text-sm text-muted-foreground">Loading…</div>
+        <div className="text-sm text-muted-foreground">{t('common.loading')}</div>
       ) : payments.length === 0 ? (
         <div className="text-center py-10 border border-dashed border-sacred-gold/30 rounded-lg">
-          <p className="text-sm text-muted-foreground">No payments recorded yet.</p>
+          <p className="text-sm text-muted-foreground">{l('No payments recorded yet.', 'अभी तक कोई भुगतान दर्ज नहीं।')}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-sacred-gold/20 bg-card overflow-hidden">
           <table className="table-sacred w-full">
             <thead className="bg-sacred-gold/5 border-b border-sacred-gold/20">
               <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2 font-semibold">Date</th>
-                <th className="px-4 py-2 font-semibold">Amount</th>
-                <th className="px-4 py-2 font-semibold">Method</th>
-                <th className="px-4 py-2 font-semibold">Purpose</th>
-                <th className="px-4 py-2 font-semibold">Notes</th>
+                <th className="px-4 py-2 font-semibold">{t('table.date')}</th>
+                <th className="px-4 py-2 font-semibold">{t('table.amount')}</th>
+                <th className="px-4 py-2 font-semibold">{l('Method', 'तरीका')}</th>
+                <th className="px-4 py-2 font-semibold">{l('Purpose', 'उद्देश्य')}</th>
+                <th className="px-4 py-2 font-semibold">{t('auto.notes')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sacred-gold/10">
@@ -954,6 +961,8 @@ function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
   value: string | null;
   onUpdate: (url: string) => void;
 }) {
+  const { t, language } = useTranslation();
+  const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const ref = (window as any)._phSlotRefs ??= {};
   const slotKey = `${clientId}-${field}`;
   const [uploading, setUploading] = useState(false);
@@ -961,7 +970,7 @@ function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
   const pick = async (file: File | null) => {
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      alert('File must be under 2MB');
+      alert(l('File must be under 2MB', 'फाइल 2MB से कम होनी चाहिए'));
       return;
     }
     setUploading(true);
@@ -1009,7 +1018,7 @@ function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
             onClick={remove}
             disabled={uploading}
             className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs disabled:opacity-50"
-            aria-label="Remove"
+            aria-label={l('Remove', 'हटाएं')}
           >
             ×
           </button>
@@ -1022,7 +1031,7 @@ function ClientPhotoSlot({ clientId, field, label, value, onUpdate }: {
       <div className="text-center">
         <p className="text-xs font-semibold text-foreground">{label}</p>
         <label htmlFor={slotKey} className="text-[11px] text-sacred-gold-dark hover:underline cursor-pointer">
-          {value ? 'Change' : 'Upload'}
+          {value ? l('Change', 'बदलें') : l('Upload', 'अपलोड')}
         </label>
       </div>
     </div>
