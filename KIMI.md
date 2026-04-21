@@ -7,6 +7,10 @@
 > Kimi operates as QC Director with parallel agent TDD execution.
 > All factory invariants from root CLAUDE.md apply — this file adds project-specific rules.
 
+NOTE (Context/Token Hygiene):
+- Default to `KIMI_MIN.md` for day-to-day work to avoid context bloat.
+- Use this full `KIMI.md` only when you are explicitly running the full QC Director / parallel TDD process.
+
 ---
 
 ## 1. ROOT INVARIANTS (Non-Negotiable)

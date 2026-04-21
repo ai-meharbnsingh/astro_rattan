@@ -109,7 +109,7 @@ export default function NameNumerology({ birthDate }: Props) {
   return (
     <div className="space-y-6">
       {/* Input Card */}
-      <Card className="bg-card border-sacred-gold/20 shadow-soft max-w-4xl mx-auto">
+      <Card className="bg-card border-sacred-gold/20 shadow-soft">
         <CardContent className="p-6">
           <h3 className="font-semibold text-foreground mb-4 text-center flex items-center justify-center gap-2">
             <User className="w-5 h-5 text-sacred-gold" />
@@ -175,7 +175,7 @@ export default function NameNumerology({ birthDate }: Props) {
       </Card>
 
       {error && (
-        <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center max-w-xl mx-auto">
+        <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">
           {error}
         </div>
       )}

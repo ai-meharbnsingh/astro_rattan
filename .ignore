@@ -1,0 +1,42 @@
+# Repo-local ignore file for search/indexing tools (ripgrep, some LLM coding tools).
+# Goal: reduce accidental context bloat + token burn from huge/generated/duplicated artifacts.
+
+# Git internals (never useful as LLM context, sometimes huge)
+.git/
+
+# LLM/agent tool state (can contain full duplicated worktrees)
+.claude/
+
+# Generated graphs / caches
+graphify-out/cache/
+graphify-out/graph.json
+
+# Browser snapshots / MCP artifacts
+.playwright-mcp/
+
+# Build + deps
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Tool caches
+.pytest_cache/
+.vite/
+.DS_Store
+
+# Large research/docs (kept locally; not needed for most coding tasks)
+docs/
+reports/
+_trash/
+scratch/
+
+# Large binary assets
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.pt
+*.onnx

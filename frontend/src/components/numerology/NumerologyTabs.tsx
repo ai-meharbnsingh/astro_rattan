@@ -287,7 +287,7 @@ export default function NumerologyTabs() {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center max-w-xl mx-auto">
+        <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-700 text-sm text-center">
           {error}
         </div>
       )}
@@ -320,7 +320,7 @@ export default function NumerologyTabs() {
 
         {/* Life Path Tab */}
         <TabsContent value="life_path" className="space-y-6">
-          <div className="max-w-4xl mx-auto">
+          <div>
           <Card className="bg-card border-sacred-gold/20 shadow-soft">
             <CardContent className="p-6">
               <Heading as={3} variant={3}>{t('numerology.calculateNumbers')}</Heading>
@@ -343,7 +343,7 @@ export default function NumerologyTabs() {
         </div>
 
           {numResult?.insights && (
-            <div className="max-w-4xl mx-auto w-full">
+            <div className="w-full">
               <InsightPanel insights={numResult.insights} />
             </div>
           )}
@@ -1011,7 +1011,7 @@ export default function NumerologyTabs() {
 
       {/* Mobile Tab */}
       <TabsContent value="mobile" className="space-y-6">
-          <div className="max-w-4xl mx-auto">
+          <div>
           <Card className="bg-card border-sacred-gold/20 shadow-soft">
             <CardContent className="p-6">
               <Heading as={3} variant={3} className="mb-6">{t('numerology.mobileAnalyzeHeading')}</Heading>
@@ -1455,7 +1455,7 @@ export default function NumerologyTabs() {
               <Card className="bg-card border-0 shadow-soft">
                 <CardContent className="p-6 space-y-4">
                   <Heading as={5} variant={5}>{t('numerology.mobile.vedicGrid')}</Heading>
-                  <div className="rounded-xl border border-sacred-gold/25 bg-white p-4 max-w-xs mx-auto">
+                  <div className="rounded-xl border border-sacred-gold/25 bg-white p-4">
                     <div className="grid grid-cols-3 gap-2">
                       {mobileResult.vedic_grid.flat().map((cell: number, idx: number) => {
                         const v = mobileResult.vedic_values?.[cell] || '';

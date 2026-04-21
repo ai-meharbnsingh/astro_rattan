@@ -1,0 +1,26 @@
+# ripgrep also supports .ignore, but keeping this file improves compatibility
+# with tools/workflows that look specifically for .rgignore.
+.git/
+.claude/
+graphify-out/cache/
+graphify-out/graph.json
+.playwright-mcp/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+.pytest_cache/
+.vite/
+.DS_Store
+docs/
+reports/
+_trash/
+scratch/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.pt
+*.onnx

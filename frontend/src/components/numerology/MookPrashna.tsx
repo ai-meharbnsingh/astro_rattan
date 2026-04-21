@@ -75,7 +75,7 @@ export default function MookPrashna({ mode }: Props) {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-1">
         <Heading as={3} variant={3}>
