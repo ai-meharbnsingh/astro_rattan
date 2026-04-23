@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSEO } from '../hooks/useSEO';
-import { SEOConfig, PAGE_SEO_CONFIG } from '../lib/seoConfig';
+import type { SEOConfig } from '../lib/seoConfig';
+import { PAGE_SEO_CONFIG } from '../lib/seoConfig';
 
 interface SEOHeadProps {
   config?: Partial<SEOConfig>;

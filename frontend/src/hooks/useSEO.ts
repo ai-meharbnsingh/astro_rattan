@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { SEOConfig, DEFAULT_SEO, DEFAULT_OG_IMAGE, SITE_NAME } from '../lib/seoConfig';
+import type { SEOConfig } from '../lib/seoConfig';
+import { DEFAULT_SEO, DEFAULT_OG_IMAGE, SITE_NAME } from '../lib/seoConfig';
 
 export const useSEO = (config: Partial<SEOConfig>) => {
   useEffect(() => {

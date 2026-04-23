@@ -96,7 +96,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
   render() {
     if (this.state.hasError) {
-      const lang = (typeof window !== 'undefined' && localStorage.getItem('astrorattan-language') === 'hi') ? 'hi' : 'en';
+      let lang: 'en' | 'hi' = 'en';
+      try {
+        lang = (typeof window !== 'undefined' && localStorage.getItem('astrorattan-language') === 'hi') ? 'hi' : 'en';
+      } catch { lang = 'en'; }
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">

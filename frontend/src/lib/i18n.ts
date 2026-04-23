@@ -113,7 +113,6 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.years': 'years',
     'auto.start': 'Start',
     'auto.end': 'End',
-    'auto.current': 'Current',
     'auto.jaiminiDrishtiSignBa': 'Jaimini Drishti (Sign-based Aspects)',
     'auto.jaiminiYogas': 'Jaimini Yogas',
     'auto.longevityCalculation': 'Longevity Calculation',
@@ -5342,7 +5341,6 @@ export const translations: Record<Language, TranslationMap> = {
     'auto.failedToAnalyze': 'विश्लेषण विफल',
     'auto.analysisFailed': 'विश्लेषण विफल',
     'auto.brahmasthanaLabel': '✦ ब्रह्मस्थान',
-    'auto.current': 'वर्तमान',
     'dashboard.saved': 'सहेजे गए',
     'panchang.shareFooter': '_AstroRattan.com द्वारा जनरेटेड_',
     'panchang.defaultLocation': 'नई दिल्ली',
@@ -5353,15 +5351,19 @@ export const translations: Record<Language, TranslationMap> = {
 
 function getStoredLanguage(): Language {
   if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('astrorattan-language');
-    if (stored === 'hi' || stored === 'en') return stored;
+    try {
+      const stored = localStorage.getItem('astrorattan-language');
+      if (stored === 'hi' || stored === 'en') return stored;
+    } catch { /* ignore — private mode / restricted storage */ }
   }
   return 'en';
 }
 
 function storeLanguage(lang: Language) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('astrorattan-language', lang);
+    try {
+      localStorage.setItem('astrorattan-language', lang);
+    } catch { /* ignore — private mode / restricted storage */ }
   }
 }
 

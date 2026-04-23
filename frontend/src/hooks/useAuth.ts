@@ -38,11 +38,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('astrorattan_token');
+    let token: string | null = null;
+    try { token = localStorage.getItem('astrorattan_token'); } catch { /* ignore */ }
     if (token) {
       api.get('/api/auth/me').then(setUser).catch(() => {
-        localStorage.removeItem('astrorattan_token');
-        localStorage.removeItem('astrorattan_refresh_token');
+        try {
+          localStorage.removeItem('astrorattan_token');
+          localStorage.removeItem('astrorattan_refresh_token');
+        } catch { /* ignore */ }
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
