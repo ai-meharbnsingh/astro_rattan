@@ -176,7 +176,7 @@ export default function KundliForm({
   const hi = language === 'hi';
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="max-w-5xl mx-auto pt-32 pb-10 px-4 bg-transparent">
+    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="max-w-5xl mx-auto pt-24 sm:pt-32 pb-10 px-4 bg-transparent">
       <div className="text-center mb-6">
         <Heading as={3} variant={3} className="sm:">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</Heading>
       </div>
@@ -224,11 +224,12 @@ export default function KundliForm({
               type="text"
               value={formData.name}
               onChange={(e) => { setFormData({ ...formData, name: e.target.value }); clearError('name'); }}
+              onBlur={() => { if (!formData.name.trim()) setValidationErrors(p => ({...p, name: t('auto.nameIsRequired') })); }}
               placeholder={hi ? 'पूरा नाम दर्ज करें' : 'Enter full name'}
               className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.name ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.name && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.name}</p>}
+          {validationErrors.name && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.name}</p>}
         </div>
 
         {/* Gender */}
@@ -265,7 +266,7 @@ export default function KundliForm({
                     className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.phone ? 'border-red-500 ring-1 ring-red-500' : ''}`}
                   />
                 </div>
-                {validationErrors.phone && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.phone}</p>}
+                {validationErrors.phone && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.phone}</p>}
               </div>
             )}
           </div>
@@ -285,10 +286,11 @@ export default function KundliForm({
               type="date"
               value={formData.date}
               onChange={(e) => { setFormData({ ...formData, date: e.target.value }); clearError('date'); }}
+              onBlur={(e) => { if (!e.target.value) setValidationErrors(p => ({...p, date: t('auto.birthDateIsRequired') })); }}
               className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.date ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.date && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.date}</p>}
+          {validationErrors.date && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.date}</p>}
         </div>
 
         {/* Time field */}
@@ -304,10 +306,11 @@ export default function KundliForm({
               step="1"
               value={formData.time}
               onChange={(e) => { setFormData({ ...formData, time: e.target.value }); clearError('time'); }}
+              onBlur={(e) => { if (!e.target.value && !timeOptional) setValidationErrors(p => ({...p, time: t('auto.birthTimeIsRequired') })); }}
               className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.time ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
-          {validationErrors.time && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.time}</p>}
+          {validationErrors.time && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.time}</p>}
         </div>
 
         {/* Place field */}
@@ -326,6 +329,7 @@ export default function KundliForm({
                 clearError('place');
                 geocode.search(e.target.value);
               }}
+              onBlur={(e) => { if (!e.target.value.trim()) setValidationErrors(p => ({...p, place: t('auto.birthPlaceIsRequired') })); }}
               placeholder={hi ? 'जन्म स्थान खोजें' : 'Search birth place'}
               className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.place ? 'border-red-500 ring-1 ring-red-500' : ''}`}
               autoComplete="off"
@@ -353,7 +357,7 @@ export default function KundliForm({
               </div>
             )}
           </div>
-          {validationErrors.place && <p className="text-red-600 text-[10px] mt-0.5">{validationErrors.place}</p>}
+          {validationErrors.place && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.place}</p>}
           
           {/* Location confirmation + collapsible coordinates */}
           {formData.place && (
@@ -378,7 +382,7 @@ export default function KundliForm({
         </div>
 
         <div className="md:col-span-2 pt-2">
-          <Button type="submit" disabled={false} className="w-full h-11 bg-muted text-white font-bold text-base rounded-lg shadow-md hover:bg-muted/90 transition-all hover:scale-[1.01] active:scale-[0.99]">
+          <Button type="submit" className="w-full h-12 bg-primary text-white font-bold text-base rounded-lg shadow-lg hover:bg-primary/90 transition-all hover:scale-[1.01] active:scale-[0.98]">
             <Sparkles className="w-5 h-5 mr-1.5" />{hi ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-1.5" />
           </Button>
         </div>
