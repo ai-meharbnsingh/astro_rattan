@@ -127,13 +127,17 @@ export default function KundliForm({
   };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: MouseEvent | TouchEvent) => {
       if (placeWrapperRef.current && !placeWrapperRef.current.contains(e.target as Node)) {
         geocode.close();
       }
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
   }, [geocode]);
 
   const handleSubmit = () => {
@@ -172,7 +176,7 @@ export default function KundliForm({
   const hi = language === 'hi';
 
   return (
-    <div className="max-w-5xl mx-auto pt-32 pb-10 px-4 bg-transparent">
+    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="max-w-5xl mx-auto pt-32 pb-10 px-4 bg-transparent">
       <div className="text-center mb-6">
         <Heading as={3} variant={3} className="sm:">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</Heading>
       </div>
@@ -231,11 +235,11 @@ export default function KundliForm({
         <div>
           <label className="block text-xs font-medium text-foreground mb-1">{hi ? 'लिंग' : 'Gender'}</label>
           <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={hi ? 'लिंग' : 'Gender'}>
-            <button role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} 
+            <button type="button" role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} 
               className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'male' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
               {hi ? 'पुरुष' : 'Male'}
             </button>
-            <button role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} 
+            <button type="button" role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} 
               className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'female' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
               {hi ? 'महिला' : 'Female'}
             </button>
@@ -374,11 +378,11 @@ export default function KundliForm({
         </div>
 
         <div className="md:col-span-2 pt-2">
-          <Button onClick={handleSubmit} disabled={false} className="w-full h-11 bg-muted text-white font-bold text-base rounded-lg shadow-md hover:bg-muted/90 transition-all hover:scale-[1.01] active:scale-[0.99]">
+          <Button type="submit" disabled={false} className="w-full h-11 bg-muted text-white font-bold text-base rounded-lg shadow-md hover:bg-muted/90 transition-all hover:scale-[1.01] active:scale-[0.99]">
             <Sparkles className="w-5 h-5 mr-1.5" />{hi ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-1.5" />
           </Button>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
