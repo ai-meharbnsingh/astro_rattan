@@ -216,6 +216,7 @@ function AppInner() {
 }
 
 function LocationBadge() {
+  const { t } = useTranslation();
   const [label, setLabel] = useState<string>(() => localStorage.getItem('ar_location_label') || 'New Delhi, India');
   const [lat, setLat] = useState<string>(() => localStorage.getItem('ar_location_lat') || '28.6139');
   const [lon, setLon] = useState<string>(() => localStorage.getItem('ar_location_lon') || '77.2090');
