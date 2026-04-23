@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Astro Rattan - Vedic Astrology & Spiritual Guidance</title>
 
+    <!-- Preload & Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://js.puter.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    
+    <!-- Critical Assets Preload -->
+    <link rel="preload" href="/logo.png" as="image" />
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="Astro Rattan — comprehensive Vedic astrology platform featuring Kundli generation, daily horoscope, Panchang, editorial guides, KP system, Lal Kitab remedies, numerology, tarot, AI-powered guidance, and astrologer consultations." />
     <meta name="keywords" content="vedic astrology, kundli, horoscope, panchang, jyotish, birth chart, numerology, tarot, lal kitab, kp system, astrology consultation, astrology blog" />
@@ -36,8 +45,6 @@
     <script src="https://js.puter.com/v2/" defer></script>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
@@ -60,7 +67,12 @@
           "@id": "https://astrorattan.com/#organization",
           "name": "Astro Rattan",
           "url": "https://astrorattan.com/",
-          "logo": "https://astrorattan.com/logo.png"
+          "logo": "https://astrorattan.com/logo.png",
+          "sameAs": [
+            "https://facebook.com/astrorattan",
+            "https://twitter.com/astrorattan",
+            "https://instagram.com/astrorattan"
+          ]
         },
         {
           "@type": "WebSite",
@@ -71,7 +83,12 @@
           "publisher": {
             "@id": "https://astrorattan.com/#organization"
           },
-          "inLanguage": "en-IN"
+          "inLanguage": "en-IN",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://astrorattan.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
         },
         {
           "@type": "SoftwareApplication",
@@ -81,6 +98,15 @@
           "operatingSystem": "Web",
           "description": "Comprehensive Vedic astrology platform with Kundli generation, daily horoscope, Panchang, editorial guides, KP system, Lal Kitab remedies, numerology, tarot, AI-powered guidance, and live astrologer consultations.",
           "url": "https://astrorattan.com/",
+          "featureList": [
+            "Kundli Generation",
+            "Daily Horoscope",
+            "Panchang",
+            "Lal Kitab Remedies",
+            "Numerology",
+            "Tarot Reading",
+            "Vastu Shastra Tips"
+          ],
           "offers": {
             "@type": "Offer",
             "price": "0",
@@ -90,11 +116,70 @@
           "publisher": {
             "@id": "https://astrorattan.com/#organization"
           }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://astrorattan.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is Vedic Astrology?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Vedic Astrology, also known as Jyotish, is an ancient Indian system of astrology that studies the positions and movements of celestial bodies to understand their influence on human life."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can I generate my free Kundli?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can generate your free Kundli by entering your birth date, time, and place of birth on our Kundli Generator page."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is the daily horoscope accurate?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our daily horoscopes are calculated based on Moon sign and planetary transits, providing accurate general guidance for each zodiac sign."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What are Lal Kitab remedies?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Lal Kitab remedies are simple, practical solutions to astrological problems, often involving charity or household items, based on the unique principles of the Lal Kitab system."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I consult with an astrologer live?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Astro Rattan offers live consultations with experienced Vedic astrologers for personalized guidance and deep chart analysis."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://astrorattan.com/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://astrorattan.com/"
+            }
+          ]
         }
       ]
     }
     </script>
   </head>
+
   <body style="background:#F5F0E8;color:#1a1a2e;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

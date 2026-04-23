@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heading } from '@/components/ui/heading';
 import { Download, Share2, Loader2, ScrollText, Home, RefreshCw, ChevronDown, X, BookOpen, Star, Clock3, Sparkles, Grid3X3, Eye } from 'lucide-react';
 import { useKundliData } from '@/hooks/useKundliData';
+import SEOHead from '@/components/SEOHead';
+import { generateBreadcrumbSchema } from '@/lib/seoConfig';
 import KundliForm from '@/components/kundli/KundliForm';
 import KundliSummaryModal from '@/components/KundliSummaryModal';
 import ConsolidatedReport from '@/components/kundli/ConsolidatedReport';
@@ -288,12 +290,20 @@ export default function KundliGenerator() {
     tabs: moreTabs.filter(t => t.category === cat),
   })).filter(g => g.tabs.length > 0);
 
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: 'Home', item: '/' },
+    { name: 'Kundli', item: '/kundli' }
+  ]);
+
   // --- LOADING ---
   if (step === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
-      </div>
+      <>
+        <SEOHead pageKey="kundli" jsonLd={[breadcrumbs]} />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
+        </div>
+      </>
     );
   }
 
@@ -341,6 +351,7 @@ export default function KundliGenerator() {
   if (step === 'result' && result) {
     return (
       <div className="max-w-screen-2xl mx-auto pt-24 pb-48 px-4 bg-transparent">
+        <SEOHead pageKey="kundli" jsonLd={[breadcrumbs]} />
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
           <div className="flex items-center gap-3 min-w-0">
@@ -954,6 +965,7 @@ export default function KundliGenerator() {
 
   return (
     <>
+      <SEOHead pageKey="kundli" jsonLd={[breadcrumbs]} />
       <KundliForm
         formData={formData}
         setFormData={setFormData}

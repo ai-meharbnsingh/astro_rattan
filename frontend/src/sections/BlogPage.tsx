@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Check, X, Minus, ExternalLink } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import SEOHead from '@/components/SEOHead';
+import { generateBreadcrumbSchema } from '@/lib/seoConfig';
 
 import blogContent from '@/content/blog-accuracy-problem.md?raw';
 import comparisonData from '@/content/comparison-data.json';
@@ -192,8 +194,14 @@ export default function BlogPage() {
   const hero = landingHero as any;
   const [activeTab, setActiveTab] = useState<'article' | 'compare' | 'accuracy'>('article');
 
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: 'Home', item: '/' },
+    { name: 'Blog', item: '/blog' }
+  ]);
+
   return (
     <div className="min-h-screen bg-[var(--parchment)]">
+      <SEOHead pageKey="blog" jsonLd={[breadcrumbs]} />
       {/* Hero */}
       <div className="relative overflow-hidden bg-gradient-to-b from-sacred-gold/5 to-transparent">
         <div className="max-w-4xl mx-auto px-4 pt-8 pb-6 relative">

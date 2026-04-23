@@ -1,4 +1,18 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /astrologer
+Disallow: /login
+Disallow: /client/
+Disallow: /feedback
 
+# Sitemap location
 Sitemap: https://astrorattan.com/sitemap.xml
+
+# Crawl-delay for smaller bots
+User-agent: BLEXBot
+Crawl-delay: 10
+
+User-agent: DotBot
+Crawl-delay: 10

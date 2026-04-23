@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heading } from '@/components/ui/heading';
 import { Calendar, Clock, Download, Loader2, MapPin, Search, Share2, Sun, Moon, Star, Sparkles, Timer, Microscope } from 'lucide-react';
 import { api } from '@/lib/api';
+import SEOHead from '@/components/SEOHead';
+import { generateBreadcrumbSchema } from '@/lib/seoConfig';
 import { useTranslation } from '@/lib/i18n';
 import { translateBackend } from '@/lib/backend-translations';
 import MuhuratFinderTab from '@/components/panchang/MuhuratFinderTab';
@@ -340,8 +342,14 @@ ${t('panchang.shareFooter')}`;
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
+  const breadcrumbs = generateBreadcrumbSchema([
+    { name: 'Home', item: '/' },
+    { name: 'Panchang', item: '/panchang' }
+  ]);
+
   return (
     <section ref={sectionRef} id="panchang" className="relative pt-32 pb-8 bg-transparent">
+      <SEOHead pageKey="panchang" jsonLd={[breadcrumbs]} />
       <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Kundli-style section header */}
