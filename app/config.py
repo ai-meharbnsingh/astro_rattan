@@ -1,6 +1,8 @@
 """Application configuration — loaded from environment variables with defaults."""
+import hashlib
 import logging
 import os
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +30,11 @@ if not JWT_SECRET:
     if any(os.getenv(var) for var in PROD_ENV_VARS):
         raise RuntimeError("FATAL: JWT_SECRET environment variable is REQUIRED in production. Set it and redeploy.")
     
-    # Fallback for local development
-    import secrets
-    JWT_SECRET = secrets.token_urlsafe(32)
-    logger.warning("JWT_SECRET not set. Using stable dev key. DO NOT USE IN PRODUCTION.")
+    # Fallback for local development: stable across restarts (prevents "random logout" / 401 after reload).
+    # This is intentionally not cryptographically secret; set JWT_SECRET in any real environment.
+    dev_seed = os.getenv("JWT_DEV_SEED", "") or str(Path(__file__).resolve().parents[1])
+    JWT_SECRET = hashlib.sha256(f"astrorattan-dev:{dev_seed}".encode()).hexdigest()
+    logger.warning("JWT_SECRET not set. Using derived dev key (stable across restarts). DO NOT USE IN PRODUCTION.")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_HOURS = 24
 

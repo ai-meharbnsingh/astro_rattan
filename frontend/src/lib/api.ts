@@ -15,6 +15,20 @@ function friendlyError(msg: string): string {
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
+function shouldAttemptRefresh(endpoint: string): boolean {
+  // Don't attempt refresh for endpoints that are part of auth flows themselves.
+  // (Refreshing there can cause loops and confusing UX.)
+  const skip = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/register-astrologer',
+    '/api/auth/refresh',
+    '/api/auth/send-otp',
+    '/api/auth/verify-otp',
+  ];
+  return !skip.some((p) => endpoint.startsWith(p));
+}
+
 async function tryRefreshToken(): Promise<boolean> {
   const refreshToken = localStorage.getItem('astrorattan_refresh_token');
   if (!refreshToken) return false;
@@ -67,7 +81,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
   const res = await fetchWithRetry(`${API_BASE}${endpoint}`, { ...options, headers });
 
-  if (res.status === 401 && !endpoint.includes('/api/auth/')) {
+  if (res.status === 401 && shouldAttemptRefresh(endpoint)) {
     // Try to refresh the token silently
     if (!isRefreshing) {
       isRefreshing = true;

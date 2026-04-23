@@ -7,6 +7,7 @@ set -e
 
 REPO_DIR="/app/astro_rattan"
 FRONTEND_DIR="$REPO_DIR/frontend"
+PROD_DIST="/var/www/astrorattan/dist"
 
 echo ""
 echo "=== AstroRattan Deploy === $(date)"
@@ -26,6 +27,14 @@ cd "$FRONTEND_DIR"
 npm ci --silent
 npm run build
 echo "      Built -> $FRONTEND_DIR/dist"
+echo "      Syncing -> $PROD_DIST"
+mkdir -p "$PROD_DIST"
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --delete "$FRONTEND_DIR/dist/" "$PROD_DIST/"
+else
+  rm -rf "$PROD_DIST"/*
+  cp -R "$FRONTEND_DIR/dist/"* "$PROD_DIST/"
+fi
 
 # 3. Restart backend container
 echo "[3/4] Restarting backend..."

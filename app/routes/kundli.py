@@ -2426,6 +2426,279 @@ def download_full_report(
     except Exception as e:
         logger.warning("Full report: %s section failed: %s", "sodashvarga", e)
 
+    # ── Aspects ───────────────────────────────────────────
+    try:
+        from app.aspects_engine import calculate_aspects
+        kundli_data["aspects"] = calculate_aspects(planets, chart.get("houses"))
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "aspects", e)
+
+    # ── Conjunctions ───────────────────────────────────────
+    try:
+        from app.conjunction_engine import detect_conjunctions
+        conjunctions = detect_conjunctions(chart)
+        kundli_data["conjunctions"] = {"conjunctions": conjunctions, "count": len(conjunctions)}
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "conjunctions", e)
+
+    # ── Yogini Dasha ───────────────────────────────────────
+    try:
+        from app.yogini_dasha_engine import calculate_yogini_dasha
+        moon_info = planets.get("Moon", {}) if isinstance(planets, dict) else {}
+        moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+        moon_longitude = moon_info.get("longitude", 0.0) or 0.0
+        kundli_data["yogini_dasha"] = calculate_yogini_dasha(
+            moon_nakshatra,
+            str(row["birth_date"]),
+            float(moon_longitude),
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "yogini_dasha", e)
+
+    # ── Kalachakra Dasha ───────────────────────────────────
+    try:
+        from app.kalachakra_engine import calculate_kalachakra_dasha
+        moon_info = planets.get("Moon", {}) if isinstance(planets, dict) else {}
+        moon_longitude = moon_info.get("longitude", 0.0) or 0.0
+        kundli_data["kalachakra"] = calculate_kalachakra_dasha(
+            float(moon_longitude),
+            str(row["birth_date"]),
+            str(row["birth_time"]),
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "kalachakra", e)
+
+    # ── Dasha Phala (Effects) ─────────────────────────────
+    try:
+        from datetime import timezone as _tz
+        from app.dasha_engine import get_current_dasha_phala
+        _now = datetime.now(_tz.utc)
+        kundli_data["dasha_phala"] = get_current_dasha_phala(
+            chart_data=chart,
+            birth_date=str(row["birth_date"]),
+            as_of_date=_now.strftime("%Y-%m-%d"),
+            latitude=row.get("latitude", 28.6),
+            longitude=row.get("longitude", 77.2),
+            tz_offset=row.get("timezone_offset", 5.5),
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "dasha_phala", e)
+
+    # ── Other Dasha Systems (Ashtottari / Moola / Tara) ───
+    try:
+        moon_info = planets.get("Moon", {}) if isinstance(planets, dict) else {}
+        moon_nakshatra = moon_info.get("nakshatra", "Ashwini")
+        moon_longitude = moon_info.get("longitude", None)
+        if moon_nakshatra:
+            try:
+                from app.ashtottari_dasha_engine import calculate_ashtottari_dasha
+                kundli_data["ashtottari_dasha"] = calculate_ashtottari_dasha(
+                    birth_nakshatra=moon_nakshatra,
+                    birth_date=str(row["birth_date"]),
+                    moon_longitude=moon_longitude,
+                )
+            except Exception as e:
+                logger.warning("Full report: %s section failed: %s", "ashtottari_dasha", e)
+            try:
+                from app.tara_dasha_engine import calculate_tara_dasha
+                kundli_data["tara_dasha"] = calculate_tara_dasha(
+                    birth_nakshatra=moon_nakshatra,
+                    birth_date=str(row["birth_date"]),
+                    moon_longitude=moon_longitude,
+                )
+            except Exception as e:
+                logger.warning("Full report: %s section failed: %s", "tara_dasha", e)
+        try:
+            from app.moola_dasha_engine import calculate_moola_dasha
+            planet_signs = {
+                pn: (pi.get("sign", "") if isinstance(pi, dict) else "")
+                for pn, pi in (planets or {}).items()
+                if pn
+            }
+            asc_sign = chart.get("ascendant", {}).get("sign", "")
+            if asc_sign and planet_signs:
+                _SIGNS = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]
+                _idx = _SIGNS.index(asc_sign) if asc_sign in _SIGNS else 0
+                seventh_sign = _SIGNS[(_idx + 6) % 12]
+                kundli_data["moola_dasha"] = calculate_moola_dasha(
+                    asc_sign,
+                    seventh_sign,
+                    planet_signs,
+                    str(row["birth_date"]),
+                )
+        except Exception as e:
+            logger.warning("Full report: %s section failed: %s", "moola_dasha", e)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "other_dashas", e)
+
+    # ── Transits (includes Vedha/Latta enrichment) ─────────
+    try:
+        kundli_data["transit"] = calculate_transits(
+            chart,
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "transit", e)
+
+    # ── Transit Interpretations (bilingual fragments) ──────
+    try:
+        from app.transit_interpretations import TRANSIT_FRAGMENTS
+        interpretations = []
+        transit_result = kundli_data.get("transit", {}) if isinstance(kundli_data.get("transit"), dict) else {}
+        _AREAS = ["general", "love", "career", "finance", "health"]
+        for t in transit_result.get("transits", []) if isinstance(transit_result, dict) else []:
+            planet = t.get("planet", "")
+            house = t.get("natal_house_from_moon") or t.get("house_from_moon") or t.get("current_house") or t.get("house")
+            if not planet or not house:
+                continue
+            if planet not in TRANSIT_FRAGMENTS:
+                continue
+            house_int = int(house)
+            planet_frags = TRANSIT_FRAGMENTS.get(planet, {})
+            if house_int not in planet_frags:
+                continue
+            house_frags = planet_frags[house_int]
+            interp = {area: house_frags.get(area, {}) for area in _AREAS}
+            interpretations.append({"planet": planet, "house": house_int, "interpretation": interp})
+        kundli_data["transit_interpretations"] = {"interpretations": interpretations}
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "transit_interpretations", e)
+
+    # ── Transit Lucky Metadata ─────────────────────────────
+    try:
+        from app.transit_lucky import get_all_lucky_metadata
+        moon_info = chart.get("planets", {}).get("Moon", {}) or {}
+        sign = str(moon_info.get("sign", "Aries")).lower()
+        moon_nakshatra_index = moon_info.get("nakshatra_index", 0) or 0
+        if not moon_nakshatra_index:
+            moon_lon = moon_info.get("longitude", 0.0) or 0.0
+            moon_nakshatra_index = int(moon_lon / (360.0 / 27)) % 27
+        moon_pada = moon_info.get("pada", 1) or 1
+        transit_result = kundli_data.get("transit", {}) if isinstance(kundli_data.get("transit"), dict) else {}
+        planet_houses: dict = {}
+        planet_dignities: dict = {}
+        transit_dignities: dict = {}
+        for t in transit_result.get("transits", []) if isinstance(transit_result, dict) else []:
+            p = t.get("planet", "")
+            if not p:
+                continue
+            planet_houses[p] = t.get("natal_house_from_moon") or t.get("house_from_moon") or t.get("house") or 1
+            dignity = t.get("dignity", "") or t.get("effect", "")
+            planet_dignities[p] = dignity
+            transit_dignities[p] = t.get("current_sign", "") or t.get("sign", "")
+        overall_score = max(1, min(10, int((transit_result.get("daily_score", 50) or 50) / 10)))
+        date_str = transit_result.get("transit_date") or ""
+        kundli_data["transit_lucky"] = get_all_lucky_metadata(
+            sign=sign,
+            moon_nakshatra_index=moon_nakshatra_index,
+            moon_pada=moon_pada,
+            date_str=date_str,
+            overall_score=overall_score,
+            planet_houses=planet_houses,
+            planet_dignities=planet_dignities,
+            transit_dignities=transit_dignities,
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "transit_lucky", e)
+
+    # ── Varshphal (Annual Chart) ───────────────────────────
+    try:
+        from datetime import datetime as _dt
+        target_year = _dt.now().year
+        kundli_data["varshphal"] = calculate_varshphal(
+            natal_chart_data=chart,
+            target_year=target_year,
+            birth_date=row["birth_date"],
+            latitude=row.get("latitude", 0.0),
+            longitude=row.get("longitude", 0.0),
+            tz_offset=row.get("timezone_offset", 5.5),
+        )
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "varshphal", e)
+
+    # ── Jaimini ────────────────────────────────────────────
+    try:
+        from app.jaimini_engine import calculate_jaimini
+        kundli_data["jaimini"] = calculate_jaimini(planets, chart.get("ascendant", {}) or {})
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "jaimini", e)
+
+    # ── Remedies (Narad Puran reference layer) ─────────────
+    try:
+        from app.remedy_engine import generate_astrological_remedies
+        from datetime import datetime as _dt
+        chart_for_remedies = dict(chart) if isinstance(chart, dict) else {}
+        chart_for_remedies.setdefault("birth_date", str(row.get("birth_date", "")))
+        chart_for_remedies.setdefault("birth_time", str(row.get("birth_time", "")))
+        kundli_data["remedies"] = generate_astrological_remedies(chart_data=chart_for_remedies, year=_dt.now().year)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "remedies", e)
+
+    # ── Specialized Engines (existing repo logic; wire into report) ───
+    # Nadi
+    try:
+        from app.nadi_engine import calculate_nadi_insights
+        kundli_data["nadi"] = {"results": calculate_nadi_insights(chart)}
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "nadi", e)
+
+    # Roga (Disease tendencies)
+    try:
+        from app.roga_engine import analyze_diseases
+        kundli_data["roga"] = analyze_diseases(chart)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "roga", e)
+
+    # Vritti (Career)
+    try:
+        from app.vritti_engine import analyze_vritti
+        kundli_data["vritti"] = analyze_vritti(chart)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "vritti", e)
+
+    # Apatya (Progeny)
+    try:
+        from app.apatya_engine import analyze_apatya
+        kundli_data["apatya"] = analyze_apatya(chart)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "apatya", e)
+
+    # Longevity (Ayurdaya)
+    try:
+        from app.ayurdaya_engine import calculate_lifespan
+        kundli_data["longevity"] = calculate_lifespan(chart)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "longevity", e)
+
+    # Lal Kitab remedies (traditional reference layer)
+    try:
+        from app.lalkitab_engine import get_remedies
+        planet_signs_map: dict = {}
+        for pn, pi in planets.items():
+            if isinstance(pi, dict) and pi.get("sign"):
+                planet_signs_map[pn] = pi.get("sign")
+        kundli_data["lal_kitab"] = {"results": get_remedies(planet_signs_map, chart_data=chart)}
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "lal_kitab", e)
+
+    # Sade Sati (lifelong phases; used in audit appendix)
+    try:
+        from app.lifelong_sade_sati import calculate_lifelong_sade_sati
+        from datetime import datetime as _dt
+        bt = str(row.get("birth_time", "00:00:00"))
+        if len(bt.split(":")) == 2:
+            bt = bt + ":00"
+        try:
+            birth_dt = _dt.strptime(f"{row.get('birth_date','')} {bt}", "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            birth_dt = _dt.strptime(str(row.get("birth_date", ""))[:10], "%Y-%m-%d")
+        moon_sign_name = (planets.get("Moon", {}) or {}).get("sign", "") if isinstance(planets, dict) else ""
+        moon_idx = _SIGN_ORDER.index(moon_sign_name) if moon_sign_name in _SIGN_ORDER else 0
+        kundli_data["sade_sati"] = calculate_lifelong_sade_sati(birth_dt, moon_idx, moon_sign_name)
+    except Exception as e:
+        logger.warning("Full report: %s section failed: %s", "sade_sati", e)
+
     # ── Build PDF ─────────────────────────────────────────
     try:
         pdf_bytes = build_full_report(kundli_data)

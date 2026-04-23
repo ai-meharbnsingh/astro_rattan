@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Download, Printer, Loader2, CheckCircle, Shield } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api, formatDate } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
@@ -324,6 +324,9 @@ export default function ConsolidatedReport({
           <DialogTitle className="text-sm font-semibold text-primary">
             {t('section.consolidatedReport')}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {language === 'hi' ? 'समेकित रिपोर्ट देखने के लिए डायलॉग' : 'Dialog for viewing the consolidated report'}
+          </DialogDescription>
           <button onClick={() => onOpenChange(false)} className="p-1.5 hover:bg-muted rounded transition-colors">
             <X className="w-5 h-5 text-foreground" />
           </button>

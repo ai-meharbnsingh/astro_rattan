@@ -3631,9 +3631,9 @@ export const translations: Record<Language, TranslationMap> = {
     'lk.43DayProtocol': '43-दिवसीय चंद्र प्रोटोकॉल',
     'lk.chart.incompleteWarning': 'चार्ट अधूरा है — कृपया पुनः बनाएं',
     'lk.dashboard.loadError': 'उन्नत विश्लेषण लोड नहीं हो सका',
-    'lk.timezone.browserFallback': 'ब्राउज़र का समय क्षेत्र उपयोग किया जा रहा है',\n    'lk.prediction.notHappened': 'अभी तक नहीं हुआ',\n    'lk.studio.score': 'स्कोर',
-
-    // Navigation
+    'lk.timezone.browserFallback': 'ब्राउज़र का समय क्षेत्र उपयोग किया जा रहा है',
+    'lk.prediction.notHappened': 'अभी तक नहीं हुआ',
+    'lk.studio.score': 'स्कोर',
     'app.name': 'एस्ट्रो रतन',
     'nav.home': 'होम',
     'nav.kundli': 'कुंडली',
@@ -3851,7 +3851,9 @@ export const translations: Record<Language, TranslationMap> = {
     'dashboard.clientsRegistered': 'ग्राहक पंजीकृत',
     'dashboard.searchPlaceholder': 'नाम से ग्राहक खोजें...',
     'dashboard.noClients': 'अभी तक कोई ग्राहक नहीं',
-    'dashboard.createPrompt': 'अपना पहला ग्राहक पंजीकृत करने के लिए कुंडली बनाएं',\n    'dashboard.myCharts': 'मेरे चार्ट',\n    'dashboard.noCharts': 'कोई चार्ट नहीं',
+    'dashboard.createPrompt': 'अपना पहला ग्राहक पंजीकृत करने के लिए कुंडली बनाएं',
+    'dashboard.myCharts': 'मेरे चार्ट',
+    'dashboard.noCharts': 'कोई चार्ट नहीं',
     'dashboard.createFirst': 'पहली कुंडली बनाएं',
     'dashboard.newKundli': 'नई कुंडली',
     'dashboard.fullAdmin': 'पूर्ण एडमिन',
