@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useCallback, useEffect, type ReactNode, createElement } from 'react';
+import SafeStorage from './storage';
 
 export type Language = 'en' | 'hi';
 
@@ -5351,19 +5352,15 @@ export const translations: Record<Language, TranslationMap> = {
 
 function getStoredLanguage(): Language {
   if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('astrorattan-language');
-      if (stored === 'hi' || stored === 'en') return stored;
-    } catch { /* ignore — private mode / restricted storage */ }
+    const stored = SafeStorage.getItem('local', 'astrorattan-language');
+    if (stored === 'hi' || stored === 'en') return stored;
   }
   return 'en';
 }
 
 function storeLanguage(lang: Language) {
   if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('astrorattan-language', lang);
-    } catch { /* ignore — private mode / restricted storage */ }
+    SafeStorage.setItem('local', 'astrorattan-language', lang);
   }
 }
 

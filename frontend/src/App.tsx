@@ -1,20 +1,25 @@
 import { useEffect, useRef, lazy, Suspense, Component } from 'react';
 import type { ReactNode, ErrorInfo } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import SafeStorage from './lib/storage';
+import { BrowserCompat } from './lib/browserCompat';
 
 function usePageTracking() {
   const location = useLocation();
   useEffect(() => {
     // `ScrollBehavior` supports only 'auto' | 'smooth' (mobile Safari can throw on unknown values).
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    let sid = sessionStorage.getItem('_asid');
-    if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('_asid', sid); }
-    fetch('/api/analytics/hit', {
+    let sid = SafeStorage.getItem('session', '_asid');
+    if (!sid) {
+      sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      SafeStorage.setItem('session', '_asid', sid);
+    }
+    BrowserCompat.fetchWithRetry('/api/analytics/hit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: location.pathname, session_id: sid, referrer: document.referrer || null }),
       keepalive: true,
-    }).catch(() => {});
+    }, 1).catch(() => {});
   }, [location.pathname]);
 }
 import { I18nProvider, useTranslation } from './lib/i18n';
@@ -85,20 +90,18 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
     // Surface details in console (helps mobile remote debugging) and persist last crash for support.
     // eslint-disable-next-line no-console
     console.error('ErrorBoundary caught:', error, info);
-    try {
-      localStorage.setItem('ar_last_ui_error', JSON.stringify({
-        message: error?.message || String(error),
-        stack: error?.stack || null,
-        componentStack: info?.componentStack || null,
-        at: new Date().toISOString(),
-      }));
-    } catch { /* ignore */ }
+    SafeStorage.setItem('local', 'ar_last_ui_error', JSON.stringify({
+      message: error?.message || String(error),
+      stack: error?.stack || null,
+      componentStack: info?.componentStack || null,
+      at: new Date().toISOString(),
+    }));
   }
   render() {
     if (this.state.hasError) {
       let lang: 'en' | 'hi' = 'en';
       try {
-        lang = (typeof window !== 'undefined' && localStorage.getItem('astrorattan-language') === 'hi') ? 'hi' : 'en';
+        lang = (typeof window !== 'undefined' && SafeStorage.getItem('local', 'astrorattan-language') === 'hi') ? 'hi' : 'en';
       } catch { lang = 'en'; }
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">

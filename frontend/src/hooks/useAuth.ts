@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext, useCallback, type ReactNode, createElement } from 'react';
 import { api } from '../lib/api';
+import SafeStorage from '../lib/storage';
 
 interface User {
   id: string;
@@ -38,14 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let token: string | null = null;
-    try { token = localStorage.getItem('astrorattan_token'); } catch { /* ignore */ }
+    const token = SafeStorage.getItem('local', 'astrorattan_token');
     if (token) {
       api.get('/api/auth/me').then(setUser).catch(() => {
-        try {
-          localStorage.removeItem('astrorattan_token');
-          localStorage.removeItem('astrorattan_refresh_token');
-        } catch { /* ignore */ }
+        SafeStorage.removeItem('local', 'astrorattan_token');
+        SafeStorage.removeItem('local', 'astrorattan_refresh_token');
       }).finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -54,16 +52,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const data = await api.post('/api/auth/login', { email, password });
-    localStorage.setItem('astrorattan_token', data.token);
-    if (data.refresh_token) localStorage.setItem('astrorattan_refresh_token', data.refresh_token);
+    SafeStorage.setItem('local', 'astrorattan_token', data.token);
+    if (data.refresh_token) SafeStorage.setItem('local', 'astrorattan_refresh_token', data.refresh_token);
     setUser(data.user);
     return data;
   }, []);
 
   const register = useCallback(async (email: string, password: string, name: string, emailToken: string) => {
     const data = await api.post('/api/auth/register', { email, password, name, email_token: emailToken });
-    localStorage.setItem('astrorattan_token', data.token);
-    if (data.refresh_token) localStorage.setItem('astrorattan_refresh_token', data.refresh_token);
+    SafeStorage.setItem('local', 'astrorattan_token', data.token);
+    if (data.refresh_token) SafeStorage.setItem('local', 'astrorattan_refresh_token', data.refresh_token);
     setUser(data.user);
     return data;
   }, []);
@@ -76,8 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('astrorattan_token');
-    localStorage.removeItem('astrorattan_refresh_token');
+    SafeStorage.removeItem('local', 'astrorattan_token');
+    SafeStorage.removeItem('local', 'astrorattan_refresh_token');
     setUser(null);
     window.location.href = '/';
   }, []);
