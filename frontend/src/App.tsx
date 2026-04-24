@@ -212,6 +212,7 @@ function AppInner() {
           <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
           <Route path="/horoscope" element={<ErrorBoundary><HoroscopePage /></ErrorBoundary>} />
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} />
