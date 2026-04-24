@@ -246,7 +246,7 @@
 /* Inputs — sacred card style (matches Home "Get your free kundli" form) */
 .input-sacred {
   width: 100%;
-  min-height: 36px; /* ~h-9 */
+  min-height: 44px; /* 44px minimum for touch targets */
   padding: 0.375rem 0.75rem; /* py-1.5 px-3 */
   border-radius: 0.5rem; /* rounded-lg */
   background: rgba(240, 236, 248, 0.4); /* bg-[#f0ecf8]/40 */

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Sparkles, LogOut, Shield, User, ChevronDown, Briefcase } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
@@ -19,7 +19,16 @@ const serviceLinks: { key: string; href: string; highlight?: boolean; megaMenuKe
 ];
 
 // Routes that require authentication — unauthenticated users go to /login
-const authRequiredRoutes = new Set(['/kundli']);
+// Note: `/kundli`, `/horoscope`, `/panchang`, `/blog` are intentionally public.
+const authRequiredRoutes = new Set([
+  '/dashboard',
+  '/astrologer',
+  '/admin',
+  '/lal-kitab',
+  '/numerology',
+  '/vastu',
+  '/feedback',
+]);
 
 // ── Mega Menu Data ───────────────────────────────────────────
 interface MegaMenuTab { en: string; hi: string; value: string; }
@@ -243,6 +252,7 @@ export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const { t, language } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -270,6 +280,14 @@ export default function Navigation() {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  // Close all menus on navigation so overlays can't block page content on mobile.
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setMobileMegaMenu(null);
+    setOpenMegaMenu(null);
+    setIsProfileMenuOpen(false);
+  }, [location.pathname, location.search]);
 
   return (
     <>

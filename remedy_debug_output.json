@@ -1,0 +1,24 @@
+{
+  "last_audit_timestamp": "2026-04-21T16:00:00Z",
+  "engine_status": "OK",
+  "bilingual_support": "Active (EN/HI)",
+  "triggers_supported": [
+    "shadbala_weakness",
+    "combustion",
+    "debilitation",
+    "mangal_dosha",
+    "kaal_sarp_dosha",
+    "sade_sati",
+    "pitra_dosha",
+    "kemadruma_dosha",
+    "mahadasha_active",
+    "year_lord_active"
+  ],
+  "source_layers": [
+    "chart_logic",
+    "traditional_mapping",
+    "narad_puran"
+  ],
+  "narad_puran_coverage": "Comprehensive - mapped to all major planetary afflictions and primary doshas.",
+  "empty_prevention": "Enabled - Falls back to Universal Balance (सार्वभौमिक संतुलन) and Vitality Routine (जीवन शक्ति दिनचर्या) if no afflictions detected."
+}

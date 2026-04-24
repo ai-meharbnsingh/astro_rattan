@@ -82,22 +82,23 @@ const NATURE_COLORS: Record<string, { fill: string; stroke: string; text: string
 
 const EMPTY_CELL = { fill: '#0f172a', stroke: '#1e293b', text: '#475569' };
 
-// Direction labels for the grid edges
-const DIR_LABELS = [
-  { x: 0, y: -12, text: 'NW / वायव्य', anchor: 'start' },
-  { x: 225, y: -12, text: 'N / उत्तर', anchor: 'middle' },
-  { x: 450, y: -12, text: 'NE / ईशान', anchor: 'end' },
-  { x: -8, y: 230, text: l('W / पश्चिम', 'पश्चिम / W'), anchor: 'end', rotate: -90 },
-  { x: 458, y: 230, text: l('E / पूर्व', 'पूर्व / E'), anchor: 'start', rotate: 90 },
-  { x: 0, y: 468, text: 'SW / नैऋत्य', anchor: 'start' },
-  { x: 225, y: 468, text: 'S / दक्षिण', anchor: 'middle' },
-  { x: 450, y: 468, text: 'SE / आग्नेय', anchor: 'end' },
-];
-
 export default function VastuMandalaGrid({ zones }: Props) {
   const { t, language } = useTranslation();
   const l = (en: string, hi: string) => language === 'hi' ? hi : en;
   const isHi = language === 'hi';
+
+  // Direction labels for the grid edges (moved inside component to access l() function)
+  const DIR_LABELS = [
+    { x: 0, y: -12, text: 'NW / वायव्य', anchor: 'start' },
+    { x: 225, y: -12, text: 'N / उत्तर', anchor: 'middle' },
+    { x: 450, y: -12, text: 'NE / ईशान', anchor: 'end' },
+    { x: -8, y: 230, text: l('W / पश्चिम', 'पश्चिम / W'), anchor: 'end', rotate: -90 },
+    { x: 458, y: 230, text: l('E / पूर्व', 'पूर्व / E'), anchor: 'start', rotate: 90 },
+    { x: 0, y: 468, text: 'SW / नैऋत्य', anchor: 'start' },
+    { x: 225, y: 468, text: 'S / दक्षिण', anchor: 'middle' },
+    { x: 450, y: 468, text: 'SE / आग्नेय', anchor: 'end' },
+  ];
+
   const [selected, setSelected] = useState<DevtaCell | null>(null);
 
   const gridMap = buildGridMap(zones);

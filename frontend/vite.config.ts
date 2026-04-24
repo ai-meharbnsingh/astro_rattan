@@ -50,10 +50,10 @@ export default defineConfig({
     chunkSizeWarningLimit: 600, // Increase limit to account for large pages
   },
   server: {
-    port: 5198,
+    port: 5173,
     proxy: {
-      '/api': 'http://localhost:8028',
-      '/ws': { target: 'ws://localhost:8028', ws: true },
+      '/api': 'http://127.0.0.1:8010',
+      '/ws': { target: 'ws://127.0.0.1:8010', ws: true },
     },
   },
 });

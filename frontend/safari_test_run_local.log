@@ -1,0 +1,292 @@
+
+Running 17 tests using 1 worker
+
+HOME: {
+  "url": "https://astrorattan.com/",
+  "pathname": "/",
+  "title": "Astro Rattan - Vedic Astrology & Spiritual Guidance",
+  "width": 1920,
+  "height": 1080,
+  "ls": {
+    "available": true,
+    "keys": [],
+    "quotaOk": true,
+    "error": null
+  },
+  "ss": {
+    "available": true
+  },
+  "idb": true,
+  "scrollBehavior": "smooth",
+  "gsap": false,
+  "animateSections": 0,
+  "motionElements": 1,
+  "forms": 0,
+  "inputs": [],
+  "headings": [
+    "A Complete Astrology Platform",
+    "Complete Astrological Operating System"
+  ],
+  "hasNav": true,
+  "hasSVG": true,
+  "hasCanvas": false,
+  "hasErrorBoundary": false,
+  "hasToken": false,
+  "language": "en"
+}
+  ✘   1 [safari] › e2e/safari_desktop_audit.spec.ts:82:3 › Safari Desktop — 14-page audit › Page 01 — Home (/) (6.4s)
+REGISTER: {
+  "pathname": "/register",
+  "inputs": [],
+  "headings": [
+    "404"
+  ]
+}
+  ✓   2 [safari] › e2e/safari_desktop_audit.spec.ts:111:3 › Safari Desktop — 14-page audit › Page 02 — Register (/register) (2.9s)
+LOGIN: {
+  "pathname": "/login",
+  "inputs": [
+    {
+      "type": "email",
+      "placeholder": "Email",
+      "name": ""
+    },
+    {
+      "type": "password",
+      "placeholder": "Password",
+      "name": ""
+    }
+  ],
+  "headings": [
+    "Welcome to AstroRattan"
+  ]
+}
+LOGIN localStorage keys: []
+  ✓   3 [safari] › e2e/safari_desktop_audit.spec.ts:137:3 › Safari Desktop — 14-page audit › Page 03 — Login (/login) (2.8s)
+DASHBOARD: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ],
+  "hasToken": false
+}
+  ✓   4 [safari] › e2e/safari_desktop_audit.spec.ts:155:3 › Safari Desktop — 14-page audit › Page 04 — Dashboard (/dashboard) (3.3s)
+KUNDLI: {
+  "pathname": "/kundli",
+  "inputs": [
+    {
+      "type": "text",
+      "placeholder": "Enter full name",
+      "name": ""
+    },
+    {
+      "type": "date",
+      "placeholder": "",
+      "name": ""
+    },
+    {
+      "type": "time",
+      "placeholder": "",
+      "name": ""
+    },
+    {
+      "type": "text",
+      "placeholder": "Search birth place",
+      "name": ""
+    }
+  ],
+  "headings": [
+    "23 Analysis Modules — All in One Place"
+  ]
+}
+KUNDLI localStorage draft keys: {}
+KUNDLI name field after reload: (empty — no persistence)
+KUNDLI localStorage after reload: {}
+  ✓   5 [safari] › e2e/safari_desktop_audit.spec.ts:170:3 › Safari Desktop — 14-page audit › Page 05 — Kundli (/kundli) — form persistence (5.1s)
+PANCHANG: {
+  "pathname": "/panchang",
+  "headings": [],
+  "hasSVG": true
+}
+PANCHANG calendar present: [33mfalse[39m navigation: [33mfalse[39m
+  ✓   6 [safari] › e2e/safari_desktop_audit.spec.ts:225:3 › Safari Desktop — 14-page audit › Page 06 — Panchang (/panchang) (4.4s)
+HOROSCOPE: {
+  "pathname": "/horoscope",
+  "headings": []
+}
+HOROSCOPE has content: [33mfalse[39m has zodiac: [33mfalse[39m
+  ✘   7 [safari] › e2e/safari_desktop_audit.spec.ts:243:3 › Safari Desktop — 14-page audit › Page 07 — Horoscope (/horoscope) (3.2s)
+LAL KITAB: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ],
+  "inputs": [
+    {
+      "type": "email",
+      "placeholder": "Email",
+      "name": ""
+    },
+    {
+      "type": "password",
+      "placeholder": "Password",
+      "name": ""
+    }
+  ]
+}
+  ✓   8 [safari] › e2e/safari_desktop_audit.spec.ts:266:3 › Safari Desktop — 14-page audit › Page 08 — Lal Kitab (/lal-kitab) (3.3s)
+NUMEROLOGY: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ],
+  "inputs": [
+    {
+      "type": "email",
+      "placeholder": "Email",
+      "name": ""
+    },
+    {
+      "type": "password",
+      "placeholder": "Password",
+      "name": ""
+    }
+  ]
+}
+  ✓   9 [safari] › e2e/safari_desktop_audit.spec.ts:287:3 › Safari Desktop — 14-page audit › Page 09 — Numerology (/numerology) (3.4s)
+VASTU: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ],
+  "inputs": [
+    {
+      "type": "email",
+      "placeholder": "Email",
+      "name": ""
+    },
+    {
+      "type": "password",
+      "placeholder": "Password",
+      "name": ""
+    }
+  ]
+}
+  ✓  10 [safari] › e2e/safari_desktop_audit.spec.ts:308:3 › Safari Desktop — 14-page audit › Page 10 — Vastu (/vastu) (3.3s)
+FEEDBACK: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ],
+  "inputs": [
+    {
+      "type": "email",
+      "placeholder": "Email",
+      "name": ""
+    },
+    {
+      "type": "password",
+      "placeholder": "Password",
+      "name": ""
+    }
+  ]
+}
+  ✓  11 [safari] › e2e/safari_desktop_audit.spec.ts:331:3 › Safari Desktop — 14-page audit › Page 11 — Feedback (/feedback) (3.3s)
+ADMIN: {
+  "pathname": "/login",
+  "headings": [
+    "Welcome to AstroRattan"
+  ]
+}
+  ✓  12 [safari] › e2e/safari_desktop_audit.spec.ts:352:3 › Safari Desktop — 14-page audit › Page 12 — Admin (/admin) (3.3s)
+ASTROLOGER: {
+  "pathname": "/astrologer",
+  "headings": [
+    "404"
+  ]
+}
+ASTROLOGER tabs: [33m0[39m clients: [33m0[39m
+  ✓  13 [safari] › e2e/safari_desktop_audit.spec.ts:366:3 › Safari Desktop — 14-page audit › Page 13 — Astrologer Dashboard (/astrologer) (3.3s)
+CLIENT PROFILE: {
+  "pathname": "/client/1",
+  "headings": []
+}
+  ✓  14 [safari] › e2e/safari_desktop_audit.spec.ts:386:3 › Safari Desktop — 14-page audit › Page 14 — Client Profile (/client/1) (2.6s)
+STORAGE AUDIT: {
+  "ls_write": true,
+  "ls_quota_100kb": true,
+  "ss_write": true,
+  "idb_available": true,
+  "cookies_available": true,
+  "existing_ls_keys": []
+}
+  ✓  15 [safari] › e2e/safari_desktop_audit.spec.ts:400:3 › Safari Desktop — 14-page audit › Safari — localStorage quota and IDB availability (5.6s)
+BLOG: {
+  "pathname": "/blog",
+  "headings": [
+    "404"
+  ]
+}
+BLOG has content: [33mtrue[39m blog cards: [33mtrue[39m
+  ✓  16 [safari] › e2e/safari_desktop_audit.spec.ts:450:3 › Safari Desktop — 14-page audit › Page 15 — Blog (/blog) (3.3s)
+ANIMATION AUDIT: {
+  "gsap_loaded": false,
+  "scroll_trigger": false,
+  "animate_sections": 0,
+  "css_animations": 9,
+  "scroll_behavior": "smooth",
+  "prefers_reduced_motion": false,
+  "will_change_els": 0,
+  "transform_els": 20
+}
+Scroll position after smooth scroll: [33m1000[39m
+  ✓  17 [safari] › e2e/safari_desktop_audit.spec.ts:471:3 › Safari Desktop — 14-page audit › Safari — Scroll animation and GSAP check (6.0s)
+
+
+  1) [safari] › e2e/safari_desktop_audit.spec.ts:82:3 › Safari Desktop — 14-page audit › Page 01 — Home (/) 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32mtrue[39m
+    Received: [31mfalse[39m
+
+       97 |     // Form should be visible (Kundli form on home)
+       98 |     const hasForm = state.inputs.length > 0 || state.forms > 0;
+    >  99 |     expect(hasForm).toBe(true);
+          |                     ^
+      100 |
+      101 |     // SVG chart should render
+      102 |     expect(state.hasSVG).toBe(true);
+        at /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/frontend/e2e/safari_desktop_audit.spec.ts:99:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/safari_desktop_audit-Safar-16fa3--page-audit-Page-01-—-Home--safari/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/safari_desktop_audit-Safar-16fa3--page-audit-Page-01-—-Home--safari/error-context.md
+
+  2) [safari] › e2e/safari_desktop_audit.spec.ts:243:3 › Safari Desktop — 14-page audit › Page 07 — Horoscope (/horoscope) 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      254 |     const hasZodiacSign = await page.locator('[class*="sign"], [class*="zodiac"], [class*="rashi"]').count() > 0;
+      255 |     console.log('HOROSCOPE has content:', hasContent, 'has zodiac:', hasZodiacSign);
+    > 256 |     expect(hasContent || hasZodiacSign).toBeTruthy();
+          |                                         ^
+      257 |
+      258 |     // Check for error boundary rendering (blank page indicator)
+      259 |     const hasErrorUI = await page.locator('text=Something went wrong').isVisible({ timeout: 1000 }).catch(() => false);
+        at /Users/meharban/Projects/Autonmous_Factory/multi_llm_orchestrator/case-studies/project_28_astro_app/frontend/e2e/safari_desktop_audit.spec.ts:256:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/safari_desktop_audit-Safar-e00e9-e-07-—-Horoscope-horoscope--safari/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/safari_desktop_audit-Safar-e00e9-e-07-—-Horoscope-horoscope--safari/error-context.md
+
+  2 failed
+    [safari] › e2e/safari_desktop_audit.spec.ts:82:3 › Safari Desktop — 14-page audit › Page 01 — Home (/) 
+    [safari] › e2e/safari_desktop_audit.spec.ts:243:3 › Safari Desktop — 14-page audit › Page 07 — Horoscope (/horoscope) 
+  15 passed (1.1m)

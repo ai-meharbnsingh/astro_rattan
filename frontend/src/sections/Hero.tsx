@@ -94,7 +94,7 @@ export default function Hero() {
                       window.location.href = item.href;
                     }
                   }}
-                  className="hover:underline hover:text-sacred-gold cursor-pointer px-1.5 sm:px-2"
+                  className="hover:underline hover:text-sacred-gold cursor-pointer px-3 py-2 rounded-lg min-h-11"
                 >
                   {item.label}
                 </button>
@@ -190,6 +190,27 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const [generating, setGenerating] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout>>();
 
+  const resolveSelectedPlace = async (): Promise<{ lat: number; lon: number } | null> => {
+    if (selectedPlace) return selectedPlace;
+    const q = birthPlace.trim();
+    if (q.length < 3) return null;
+    try {
+      const res = await api.get(`/api/kundli/geocode?query=${encodeURIComponent(q)}`);
+      const first = Array.isArray(res) ? res[0] : null;
+      if (first && typeof first.lat === 'number' && typeof first.lon === 'number') {
+        const coords = { lat: first.lat, lon: first.lon };
+        setSelectedPlace(coords);
+        if (typeof first.name === 'string' && first.name.trim()) {
+          setBirthPlace(first.name.split(',')[0]);
+        }
+        return coords;
+      }
+    } catch {
+      // ignore: we'll fall back to /kundli navigation below
+    }
+    return null;
+  };
+
   const searchPlace = (q: string) => {
     setBirthPlace(q);
     setSelectedPlace(null);
@@ -212,13 +233,14 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const handleGenerate = async () => {
     setGenerating(true);
     try {
+      const coords = await resolveSelectedPlace();
       const data = await api.post('/api/kundli/free-preview', {
         name,
         birth_date: birthDate,
         birth_time: birthTime + ':00',
         birth_place: birthPlace,
-        latitude: selectedPlace?.lat,
-        longitude: selectedPlace?.lon,
+        latitude: coords?.lat,
+        longitude: coords?.lon,
         timezone_offset: 5.5,
         gender,
         phone,
@@ -243,7 +265,10 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
   const inputClass = "input-sacred pl-9";
 
   return (
-    <div className="flex flex-col justify-start gap-3">
+    <form
+      onSubmit={(e) => { e.preventDefault(); if (!generating) void handleGenerate(); }}
+      className="flex flex-col justify-start gap-3"
+    >
       {/* Fields — exact like screenshot: no heading */}
       <div className="flex flex-col gap-6">
         {/* Full Name */}
@@ -261,12 +286,12 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           <div>
             <label className="text-sm font-semibold text-foreground mb-0 block">{l('Gender', 'लिंग')}</label>
             <div className="flex gap-4 mt-1">
-              <button onClick={() => setGender('male')}
-                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
+              <button type="button" onClick={() => setGender('male')}
+                className={`flex-1 min-h-11 py-2 rounded-lg text-sm font-semibold transition-all ${gender === 'male' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
                 {l('Male', 'पुरुष')}
               </button>
-              <button onClick={() => setGender('female')}
-                className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
+              <button type="button" onClick={() => setGender('female')}
+                className={`flex-1 min-h-11 py-2 rounded-lg text-sm font-semibold transition-all ${gender === 'female' ? 'bg-sacred-gold-dark text-white' : 'border border-sacred-gold/50 text-foreground'}`}>
                 {l('Female', 'महिला')}
               </button>
             </div>
@@ -347,13 +372,14 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
         </label>
       </div>
 
-      {/* Submit */}
+        {/* Submit */}
       {(() => {
-        const isFormValid = name && birthDate && birthTime && birthPlace && selectedPlace && phone && email;
+        const isFormValid = !!(name && birthDate && birthTime && birthPlace && phone && email);
         return (
-          <button onClick={handleGenerate}
+          <button
+            type="submit"
             disabled={!isFormValid || generating}
-            className={`w-full py-2.5 rounded-lg font-semibold text-base transition-all flex items-center justify-center gap-2 shrink-0 ${
+            className={`w-full min-h-11 py-2.5 rounded-lg font-semibold text-base transition-all flex items-center justify-center gap-2 shrink-0 ${
               isFormValid && !generating
                 ? 'bg-sacred-gold hover:bg-sacred-gold-dark text-white cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -382,6 +408,6 @@ function HeroKundliForm({ language, l }: { language: string; l: (en: string, hi:
           language={language}
         />
       )}
-    </div>
+    </form>
   );
 }

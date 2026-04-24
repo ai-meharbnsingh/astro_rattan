@@ -1,0 +1,52 @@
+
+Running 6 tests using 1 worker
+
+
+📱 iPhone 14 - KundliForm Submission Test
+  Form visible: ⚠️
+  ✅ Date filled: 1990-05-15
+  ✅ Time filled: 10:30
+  Button visible: ✅ (opacity: 1)
+  Button enabled: ✅
+  ✅ Button clicked
+  Chart/Result loaded: ⚠️
+  Network 4xx errors: 0, Console errors: 0
+  RESULT: ✅ SUBMITTED
+  ✓  1 tests/form-submission-mobile-final.spec.ts:55:7 › iPhone 14 Safari (390x844) › KundliForm: Fill & Submit - iPhone (7.3s)
+
+📱 iPhone 14 - Login Form Test
+  Form visible: ⚠️
+  RESULT: ⚠️ Form not accessible
+  ✓  2 tests/form-submission-mobile-final.spec.ts:129:7 › iPhone 14 Safari (390x844) › Login Form: Email/Password - iPhone (1.2s)
+
+📱 iPhone 14 - ProfileEditPanel Test
+  ✅ Field updated: "Test_Updated..."
+  ⚠️ Save button not found
+  Network 4xx errors: 0, Console errors: 0
+  RESULT: ✅ TESTED
+  ✓  3 tests/form-submission-mobile-final.spec.ts:203:7 › iPhone 14 Safari (390x844) › ProfileEditPanel: Load & Interaction - iPhone (2.0s)
+
+📱 Android Chrome - KundliForm Submission Test
+  Form visible: ⚠️
+  ✅ Date filled: 1992-03-22
+  ✅ Time filled: 14:15
+  Button visible: ✅ (opacity: 1)
+  ✅ Button clicked
+  Chart/Result loaded: ⚠️
+  Network 4xx errors: 0, Console errors: 0
+  RESULT: ✅ SUBMITTED
+  ✓  4 tests/form-submission-mobile-final.spec.ts:285:7 › Android Chrome (393x851) › KundliForm: Fill & Submit - Android (7.2s)
+
+📱 Android Chrome - Login Form Test
+  Form visible: ⚠️
+  RESULT: ⚠️ Form not accessible
+  ✓  5 tests/form-submission-mobile-final.spec.ts:342:7 › Android Chrome (393x851) › Login Form: Email/Password - Android (1.2s)
+
+📱 Android Chrome - ProfileEditPanel Test
+  ✅ Field updated
+  ⚠️ Save button not found
+  Network 4xx errors: 0, Console errors: 0
+  RESULT: ✅ TESTED
+  ✓  6 tests/form-submission-mobile-final.spec.ts:407:7 › Android Chrome (393x851) › ProfileEditPanel: Load & Interaction - Android (2.0s)
+
+  6 passed (21.9s)

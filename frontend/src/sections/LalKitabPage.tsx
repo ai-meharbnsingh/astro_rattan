@@ -341,10 +341,10 @@ function LalKitabPageInner() {
             )}
 
             <Tabs value={activeTopTab} onValueChange={setActiveTopTab} className="w-full">
-              <div className="mb-4">
-                <TabsList className="bg-muted w-full h-auto p-2 gap-1 grid grid-cols-5 md:grid-cols-10
-                  [&>button]:min-w-0 [&>button]:min-h-[50px] md:[&>button]:min-h-[58px] [&>button]:px-1 [&>button]:py-2 [&>button]:text-[10px] md:[&>button]:text-xs
-                  [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-0.5 md:[&>button]:gap-1 [&>button]:leading-tight
+              <div className="mb-4 overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                <TabsList className="bg-muted h-auto p-2 gap-1 flex md:grid md:grid-cols-10 md:w-full w-max
+                  [&>button]:min-h-[50px] md:[&>button]:min-h-[58px] [&>button]:px-1.5 [&>button]:py-2 [&>button]:text-[10px] md:[&>button]:text-xs
+                  [&>button]:flex-shrink-0 [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:justify-center [&>button]:gap-0.5 md:[&>button]:gap-1 [&>button]:leading-tight
                   [&>button[data-state=active]]:bg-sacred-gold-dark [&>button[data-state=active]]:text-white [&>button[data-state=active]]:shadow-md">
                   {topTabs.map((tab) => (
                     <TabsTrigger key={tab.value} value={tab.value}>

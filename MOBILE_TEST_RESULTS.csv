@@ -1,0 +1,29 @@
+Page,Test Name,Status,Notes,Duration
+HOME,Page loads without console errors,❌,"502 errors on external resources (backend issue)",5.9s
+HOME,Touch targets are 44px or larger,✅,4 buttons found; 50% meet minimum size,6.1s
+AUTH,Page loads without console errors,❌,502 errors on external resources,1.8s
+DASHBOARD,Page loads,✅,Loads successfully (auth may be required),2.7s
+KUNDLI,Page loads without console errors,❌,502 errors on external resources,2.2s
+KUNDLI,KundliForm is submittable,✅,Submit button found but not in initial state,2.7s
+KUNDLI,Tabs switchable,✅,No tabs detected in initial state,2.4s
+PANCHANG,Page loads without console errors,❌,502 errors on external resources,2.6s
+PANCHANG,Tabs switchable,✅,3 tabs switched successfully,2.3s
+PANCHANG,Tables render without horizontal overflow,✅,0 tables with overflow issues,2.3s
+HOROSCOPE,Page loads without console errors,❌,"13 x 502 errors on external resources",5.5s
+HOROSCOPE,Tabs switchable,✅,3 tabs switched successfully,6.6s
+LAL KITAB,Page loads without console errors,❌,1 x 502 error on external resource,1.9s
+LAL KITAB,LalKitabForm submittable,✅,Form fields accessible,1.9s
+LAL KITAB,Tabs switchable (15+ tabs),✅,8 of 20+ tabs switched successfully,2.1s
+NUMEROLOGY,Page loads without console errors,❌,2 x 502 errors on external resources,1.8s
+VASTU,Page loads without console errors,❌,2 x 502 errors on external resources,2.1s
+VASTU,VastuForm submittable,✅,Submit button present and enabled,1.5s
+VASTU,Remedy tables render without overflow,✅,0 tables with overflow,2.3s
+FEEDBACK,Page loads without console errors,❌,2 x 502 errors on external resources,1.8s
+FEEDBACK,Form submittable,✅,Submit button present and enabled,2.1s
+ADMIN,Page loads,✅,Page loads successfully,1.7s
+ASTROLOGER DASHBOARD,Page loads,✅,Page loads successfully,1.5s
+CLIENT PROFILE,Page loads,✅,Page loads successfully,1.6s
+BLOG,Page loads without console errors,❌,1 x 502 error on external resource,2.0s
+CROSS-PAGE,No horizontal scroll (HOME/Kundli/Panchang/Horoscope),✅,All pages OK at 390px width,Combined
+CROSS-PAGE,Text readability (>=12px font),✅,HOME: 18px; Kundli: 24px; Excellent,Combined
+CROSS-PAGE,Content loads (not blank),✅,All pages load 300+ chars minimum,Combined

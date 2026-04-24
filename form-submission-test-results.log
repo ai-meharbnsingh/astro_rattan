@@ -1,0 +1,98 @@
+
+Running 10 tests using 1 worker
+
+
+📱 iPhone 14 - KundliForm Submission Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ✅
+  ✅ Date filled: 1990-05-15
+  ✅ Time filled: 10:30
+  ✅ Location filled
+  Button visible: ✅ (opacity: 1)
+  Button enabled: ✅
+  ✅ Button clicked
+  Chart loaded: ⚠️
+  Network errors: 0, Console errors: 2
+  RESULT: ⚠️ WARNINGS
+  ✘   1 tests/form-submission-mobile.spec.ts:53:7 › iPhone 14 Safari (390x844) › KundliForm: Fill & Submit (1.0m)
+
+📱 iPhone 14 - LalKitabForm Submission Test
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓   2 tests/form-submission-mobile.spec.ts:137:7 › iPhone 14 Safari (390x844) › LalKitabForm: Fill & Submit (1.2s)
+
+📱 iPhone 14 - VastuForm Submission Test
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓   3 tests/form-submission-mobile.spec.ts:204:7 › iPhone 14 Safari (390x844) › VastuForm: Fill & Submit (1.2s)
+
+📱 iPhone 14 - ProfileEditPanel Submission Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️ No editable fields found
+  Network errors: 0, Console errors: 2
+  RESULT: ⚠️ WARNINGS
+  ✓   4 tests/form-submission-mobile.spec.ts:258:7 › iPhone 14 Safari (390x844) › ProfileEditPanel: Edit & Save (1.2s)
+
+📱 iPhone 14 - Login Form Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓   5 tests/form-submission-mobile.spec.ts:325:7 › iPhone 14 Safari (390x844) › Login Form: Submit (1.2s)
+
+📱 Android Chrome - KundliForm Submission Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ✅
+  ✅ Date filled: 1992-03-22
+  ✅ Time filled: 14:15
+  Button visible: ✅ (opacity: 1)
+  ✅ Button clicked
+  Chart loaded: ⚠️
+  Network errors: 0, Console errors: 2
+  RESULT: ⚠️ WARNINGS
+  ✓   6 tests/form-submission-mobile.spec.ts:403:7 › Android Chrome (393x851) › KundliForm: Fill & Submit (4.3s)
+
+📱 Android Chrome - LalKitabForm Submission Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓   7 tests/form-submission-mobile.spec.ts:462:7 › Android Chrome (393x851) › LalKitabForm: Fill & Submit (1.2s)
+
+📱 Android Chrome - VastuForm Submission Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓   8 tests/form-submission-mobile.spec.ts:515:7 › Android Chrome (393x851) › VastuForm: Fill & Submit (1.2s)
+
+📱 Android Chrome - ProfileEditPanel Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️ No editable fields found
+  Network errors: 0, Console errors: 2
+  RESULT: ⚠️ WARNINGS
+  ✓   9 tests/form-submission-mobile.spec.ts:563:7 › Android Chrome (393x851) › ProfileEditPanel: Edit & Save (1.2s)
+
+📱 Android Chrome - Login Form Test
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  ⚠️  Error: Failed to load resource: the server responded with a status of 429 (Too Many Requests)
+  Form visible: ❌
+  RESULT: ❌ Form not found
+  ✓  10 tests/form-submission-mobile.spec.ts:618:7 › Android Chrome (393x851) › Login Form: Submit (1.2s)
+
+
+  1) tests/form-submission-mobile.spec.ts:53:7 › iPhone 14 Safari (390x844) › KundliForm: Fill & Submit 
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error Context: test-results/tests-form-submission-mobi-17b59-x844-KundliForm-Fill-Submit/error-context.md
+
+  1 failed
+    tests/form-submission-mobile.spec.ts:53:7 › iPhone 14 Safari (390x844) › KundliForm: Fill & Submit 
+  9 passed (1.3m)

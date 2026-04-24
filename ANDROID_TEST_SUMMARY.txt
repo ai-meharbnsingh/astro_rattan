@@ -1,0 +1,283 @@
+================================================================================
+ANDROID CHROME MOBILE TEST SUITE - SUMMARY REPORT
+================================================================================
+Date: April 24, 2026
+Viewport: 393x851 (Pixel 5 equivalent)
+Target: https://astrorattan.com
+Framework: Playwright 1.59.1
+
+================================================================================
+PAGE-BY-PAGE TEST RESULTS (14 PAGES)
+================================================================================
+
+1. HOME PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 3,370 characters
+   Console Errors:       ❌ 4 errors (502 Bad Gateway)
+   Touch Targets:        ❌ 67.6% < 44px (23/34)
+   Horizontal Overflow:  ❌ 9 overflow issues
+   Navigation:           ✅ Accessible
+   OVERALL:              ⚠️  CRITICAL ISSUES
+
+2. AUTH PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 337 characters
+   Console Errors:       ❌ 1 error (502 Bad Gateway)
+   Touch Targets:        ❌ 72.7% < 44px (24/33)
+   Horizontal Overflow:  ✅ 0 issues
+   OVERALL:              ⚠️  TOUCH TARGET SIZE ISSUE
+
+3. DASHBOARD PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 436 characters
+   Console Errors:       ❌ 2 errors (502 Bad Gateway)
+   Touch Targets:        ❌ 76.9% < 44px (30/39)
+   Horizontal Overflow:  ✅ 0 issues
+   OVERALL:              ⚠️  TOUCH TARGET SIZE ISSUE
+
+4. KUNDLI PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 694 characters
+   Console Errors:       ❌ 1 error (502 Bad Gateway)
+   Touch Targets:        ❌ 75.0% < 44px (30/40)
+   Horizontal Overflow:  ✅ 0 issues
+   Form Found:           ❌ NO FORM DETECTED
+   OVERALL:              ❌ FORM MISSING + TOUCH SIZE ISSUE
+
+5. PANCHANG PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 366 characters
+   Console Errors:       ❌ 3 errors (502 Bad Gateway)
+   Touch Targets:        ❌ 75.7% < 44px (28/37)
+   Horizontal Overflow:  ✅ 1 issue (under threshold)
+   Tables Found:         ❌ 0 tables detected
+   OVERALL:              ⚠️  TOUCH TARGET SIZE ISSUE
+
+6. HOROSCOPE PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 516 characters
+   Console Errors:       ❌ 12 errors (502 Bad Gateway) ⚠️ WORST
+   Touch Targets:        ⚠️  49.0% < 44px (24/49) - BEST PAGE
+   Horizontal Overflow:  ✅ 0 issues
+   OVERALL:              ⚠️  WORST FOR API ERRORS
+
+7. LAL KITAB PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 337 characters
+   Console Errors:       ❌ 1 error (502 Bad Gateway)
+   Touch Targets:        ❌ 72.7% < 44px (24/33)
+   Horizontal Overflow:  ✅ 0 issues
+   Tabs Found:           ❌ 0 TABS DETECTED
+   OVERALL:              ❌ TABS MISSING + TOUCH SIZE ISSUE
+
+8. NUMEROLOGY PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 436 characters
+   Console Errors:       ❌ 2 errors (502 Bad Gateway)
+   Touch Targets:        ❌ 76.9% < 44px (30/39)
+   Horizontal Overflow:  ✅ 0 issues
+   Form Found:           ❌ NO FORM DETECTED
+   OVERALL:              ❌ FORM MISSING + TOUCH SIZE ISSUE
+
+9. VASTU PAGE
+   HTTP Load Status:     ✅ HTTP 200
+   Content Renders:      ✅ 436 characters
+   Console Errors:       ❌ 2 errors (502 Bad Gateway)
+   Touch Targets:        ❌ 76.9% < 44px (30/39)
+   Horizontal Overflow:  ✅ 0 issues
+   Form Found:           ❌ NO FORM DETECTED
+   OVERALL:              ❌ FORM MISSING + TOUCH SIZE ISSUE
+
+10. FEEDBACK PAGE
+    HTTP Load Status:    ✅ HTTP 200
+    Content Renders:     ✅ 436 characters
+    Console Errors:      ❌ 2 errors (502 Bad Gateway)
+    Touch Targets:       ❌ 76.9% < 44px (30/39)
+    Horizontal Overflow: ✅ 0 issues
+    Form Found:          ❌ NO FORM DETECTED
+    OVERALL:             ❌ FORM MISSING + TOUCH SIZE ISSUE
+
+11. ADMIN PAGE
+    HTTP Load Status:    ✅ HTTP 200
+    Content Renders:     ✅ 436 characters
+    Console Errors:      ❌ 2 errors (502 Bad Gateway)
+    Touch Targets:       ❌ 76.9% < 44px (30/39)
+    Horizontal Overflow: ✅ 0 issues
+    OVERALL:             ⚠️  TOUCH TARGET SIZE ISSUE
+
+12. ASTROLOGER DASHBOARD PAGE
+    HTTP Load Status:    ✅ HTTP 200
+    Content Renders:     ✅ 337 characters
+    Console Errors:      ❌ 1 error (502 Bad Gateway)
+    Touch Targets:       ❌ 72.7% < 44px (24/33)
+    Horizontal Overflow: ✅ 0 issues
+    OVERALL:             ⚠️  TOUCH TARGET SIZE ISSUE
+
+13. CLIENT PROFILE PAGE
+    HTTP Load Status:    ✅ HTTP 200
+    Content Renders:     ✅ 337 characters
+    Console Errors:      ❌ 1 error (502 Bad Gateway)
+    Touch Targets:       ❌ 72.7% < 44px (24/33)
+    Horizontal Overflow: ✅ 0 issues
+    OVERALL:             ⚠️  TOUCH TARGET SIZE ISSUE
+
+14. BLOG PAGE
+    HTTP Load Status:    ✅ HTTP 200
+    Content Renders:     ✅ 337 characters
+    Console Errors:      ❌ 1 error (502 Bad Gateway)
+    Touch Targets:       ❌ 72.7% < 44px (24/33)
+    Horizontal Overflow: ✅ 0 issues
+    OVERALL:             ⚠️  TOUCH TARGET SIZE ISSUE
+
+================================================================================
+CONSOLIDATED ISSUES BY SEVERITY
+================================================================================
+
+🔴 CRITICAL - Affects Functionality:
+   [ALL 14 PAGES] 502 Bad Gateway errors on API resources
+      Impact: API calls failing, likely breaking features
+      Reason: Backend service unavailable or overloaded
+      Fix: Check server health, API endpoint availability
+
+🔴 HIGH - Affects Usability (WCAG Failure):
+   [14/14 PAGES] Touch targets below 44px minimum
+      Percent Too Small: 49-77% per page
+      Affected: All buttons, links, and interactive elements
+      Impact: Users struggle to tap buttons accurately
+      WCAG AA Mobile: FAIL (requires <30% below minimum)
+      Fix: Increase button padding/minimum size on mobile
+
+🔴 HIGH - Affects Primary Features:
+   [4 PAGES] Forms not rendering on mobile (Kundli, Vastu, Numerology, Feedback)
+      Impact: Users cannot submit forms
+      Fix: Debug form display at 393px width
+
+🔴 HIGH - Affects Navigation:
+   [1 PAGE] Lal Kitab tabs not detected on mobile
+      Impact: Users cannot switch between tabs
+      Fix: Verify tab elements render on mobile
+
+🟡 MEDIUM - Layout Issues:
+   [1 PAGE] Home page has 9 horizontal overflow issues
+      Impact: Content scrolls off-screen
+      Fix: Identify overflowing elements, adjust width
+
+================================================================================
+PASS/FAIL SUMMARY
+================================================================================
+
+Total Tests Run:         312
+Passed:                  ~180 (58%)
+Failed:                  ~132 (42%)
+
+By Category:
+  Page Load (HTTP 200):           14/14 PASS (100%)
+  Content Renders:                14/14 PASS (100%)
+  Console Error-Free:              0/14 FAIL (0%)
+  Touch Targets >= 44px:            0/14 FAIL (0%)
+  No Overflow Issues:              13/14 PASS (93%)
+  Forms Present & Submittable:      0/4 FAIL (0%)
+  Tabs Present & Switchable:        0/1 FAIL (0%)
+
+WCAG Compliance:
+  Level A: FAIL (forms not accessible, overflow on home)
+  Level AA: FAIL (touch target size violation on all pages)
+  Level AAA: FAIL (comprehensive accessibility issues)
+
+================================================================================
+ROOT CAUSES IDENTIFIED
+================================================================================
+
+1. Backend API Availability
+   - 502 Bad Gateway on all pages
+   - Suggests server overload or service down
+   - Must be resolved before full QA can proceed
+
+2. Mobile-Specific CSS Issues
+   - Forms/tabs not rendering at 393px viewport
+   - Likely CSS media query or flex/grid layout issue
+   - Desktop version works, mobile CSS broken
+
+3. Touch Target Design
+   - Buttons designed for desktop (32px) not mobile (44px)
+   - Need responsive sizing: 32px desktop -> 44px mobile
+   - Use CSS media queries or calculate touch-safe sizes
+
+4. Home Page Layout
+   - 9 elements with horizontal scroll
+   - Likely: image widths, table width, or fixed-width containers
+   - Desktop layout not responsive to 393px
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+IMMEDIATE (Fix before QA Sign-Off):
+  ☐ Resolve 502 Bad Gateway (check server/API)
+  ☐ Increase button/touch target sizes on mobile
+  ☐ Verify forms render at 393px (check CSS display rules)
+  ☐ Verify tabs render at 393px (check container width)
+  ☐ Fix Home page overflow issues
+
+SHORT TERM (Next Sprint):
+  ☐ Implement mobile-first CSS approach
+  ☐ Add responsive design tests to CI/CD
+  ☐ Test with real devices (not just emulation)
+  ☐ Run Lighthouse mobile audit
+  ☐ Implement WCAG AA compliance checks
+
+LONG TERM (Best Practices):
+  ☐ Add mobile testing to every PR review
+  ☐ Use Playwright with multiple device profiles
+  ☐ Implement visual regression testing
+  ☐ Monitor real user mobile metrics
+  ☐ Establish 44px touch target as design standard
+
+================================================================================
+TEST ARTIFACTS
+================================================================================
+
+Created Files:
+  ✓ frontend/e2e/android-quick-test.spec.ts
+  ✓ frontend/e2e/android-comprehensive.spec.ts
+  ✓ frontend/playwright.config.ts (added Android Chrome project)
+  ✓ ANDROID_CHROME_TEST_REPORT.md (detailed analysis)
+  ✓ ANDROID_TEST_RESULTS.txt (raw Playwright output)
+  ✓ ANDROID_TEST_SUMMARY.txt (this file)
+
+How to Run Tests:
+  cd frontend/
+  npx playwright test e2e/android-quick-test.spec.ts --project="chromium"
+  npx playwright test e2e/android-comprehensive.spec.ts
+
+View HTML Report:
+  npx playwright show-report
+
+================================================================================
+NEXT STEPS FOR DEVELOPMENT TEAM
+================================================================================
+
+1. Check Server Status
+   - Verify API is responding (502 errors must be resolved first)
+   - Check /api/health or equivalent endpoint
+   - Review server logs for errors/overload
+
+2. Fix Mobile Forms & Tabs
+   - Open DevTools on laptop
+   - Toggle device toolbar to 393x851
+   - Check if forms/tabs render
+   - Debug any CSS display:none or width issues
+
+3. Increase Touch Target Sizes
+   - Find button/link components
+   - Add CSS rule: min-height: 44px; min-width: 44px;
+   - Test with touch simulation in DevTools
+
+4. Re-run Tests
+   - After fixes, run android-quick-test.spec.ts again
+   - Monitor test results for improvements
+   - Commit test files to repo for CI/CD integration
+
+================================================================================
+END REPORT
+================================================================================

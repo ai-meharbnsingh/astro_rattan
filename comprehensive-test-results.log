@@ -1,0 +1,80 @@
+
+Running 6 tests using 1 worker
+
+
+📱 Testing iPhone 14 Safari (390x844) - KundliForm
+  Date input: ✅
+  Time input: ✅
+  Location input: ✅
+  ✅ All inputs filled
+  Button visible: ✅
+  Button enabled: ❌
+  ❌ iPhone 14 Safari (390x844) - KundliForm: FAIL
+  ✓  1 tests/form-submission-comprehensive.spec.ts:34:7 › Mobile Form Submission Tests › iPhone 14 - KundliForm (Kundli Generation) (2.6s)
+
+📱 Testing iPhone 14 Safari (390x844) - LoginForm
+  Email input: ✅
+  Password input: ✅
+  ✅ Both inputs filled
+  Button visible: ✅
+  Button enabled: ✅
+  ✅ Submit clicked
+  ✅ iPhone 14 Safari (390x844) - LoginForm: PASS
+  ✓  2 tests/form-submission-comprehensive.spec.ts:142:7 › Mobile Form Submission Tests › iPhone 14 - Login Form (3.3s)
+
+📱 Testing iPhone 14 Safari (390x844) - LalKitabForm
+  Page: Login (redirected)
+  ⚠️ Auth redirected (expected for protected route)
+  ⚠️ iPhone 14 Safari (390x844) - LalKitabForm: SKIPPED
+  ✓  3 tests/form-submission-comprehensive.spec.ts:242:7 › Mobile Form Submission Tests › iPhone 14 - LalKitabForm (Auth protected) (1.2s)
+
+📱 Testing Android Chrome (393x851) - KundliForm
+  Date input: ✅
+  Time input: ✅
+  Location input: ✅
+  ✅ All inputs filled
+  Button visible: ✅
+  Button enabled: ❌
+  ❌ Android Chrome (393x851) - KundliForm: FAIL
+  ✓  4 tests/form-submission-comprehensive.spec.ts:303:7 › Mobile Form Submission Tests › Android Chrome - KundliForm (2.5s)
+
+📱 Testing Android Chrome (393x851) - LoginForm
+  Email input: ✅
+  Password input: ✅
+  ✅ Both inputs filled
+  Button visible: ✅
+  Button enabled: ✅
+  ✅ Submit clicked
+  ✅ Android Chrome (393x851) - LoginForm: PASS
+  ✓  5 tests/form-submission-comprehensive.spec.ts:407:7 › Mobile Form Submission Tests › Android Chrome - Login Form (3.3s)
+
+📱 Testing Android Chrome (393x851) - VastuForm
+  Page: Login (redirected)
+  ⚠️ Auth redirected (expected for protected route)
+  ⚠️ Android Chrome (393x851) - VastuForm: SKIPPED
+
+
+========== TEST SUMMARY ==========
+Total tests: 6
+✅ PASS: 2 | ⚠️ PARTIAL: 0 | ❌ FAIL: 2 | ⏭️ SKIPPED: 2
+
+========== DETAILS BY FORM ==========
+
+KundliForm:
+  ❌ iPhone: form=✅ inputs=✅ btn=✅ submitted=❌ errors=0
+  ❌ Android: form=✅ inputs=✅ btn=✅ submitted=❌ errors=0
+
+LoginForm:
+  ✅ iPhone: form=✅ inputs=✅ btn=❌ submitted=✅ errors=2
+  ✅ Android: form=✅ inputs=✅ btn=❌ submitted=✅ errors=2
+
+LalKitabForm:
+  ⚠️ iPhone: form=❌ inputs=❌ btn=❌ submitted=❌ errors=0
+
+VastuForm:
+  ⚠️ Android: form=❌ inputs=❌ btn=❌ submitted=❌ errors=0
+
+=================================
+  ✓  6 tests/form-submission-comprehensive.spec.ts:507:7 › Mobile Form Submission Tests › Android Chrome - VastuForm (Auth protected) (1.2s)
+
+  6 passed (15.1s)

@@ -1,0 +1,314 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-04-21T22:03:08.363196",
+    "native_name": "Sample Native",
+    "birth_date": "1990-06-15",
+    "report_depth": "detailed"
+  },
+  "sections": [
+    {
+      "section_name": "Cover Page",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Table of Contents",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Executive Summary",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Birth Particulars & Panchang",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Panchang",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Avakhada Chakra",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Core Natal Charts (D1)",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Core Charts (Moon & Navamsha)",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Planetary Positions",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Bhava Analysis",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Aspects & Conjunctions",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Yogas & Doshas",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Divisional Charts",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Shodashvarga Summary",
+      "backend_engine_found": true,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "PARTIALLY GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Shadbala & Bhava Bala",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Planetary Friendship (Maitri)",
+      "backend_engine_found": false,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Planetary Avasthas",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Ashtakavarga",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Dasha Systems",
+      "backend_engine_found": false,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Dasha Effects",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Transits & Gochar",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Gochara Vedha",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Transit Interpretations",
+      "backend_engine_found": true,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "PARTIALLY GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Transit Lucky",
+      "backend_engine_found": true,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "PARTIALLY GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Varshphal (Annual Chart)",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "KP System",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Jaimini Astrology",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Nadi Analysis",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Disease Analysis (Roga)",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Career (Vritti)",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Progeny (Apatya)",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Longevity Indicators",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Lal Kitab Summary",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Life Area Interpretations",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Remedies & Upayas",
+      "backend_engine_found": false,
+      "included_in_payload": false,
+      "included_in_pdf": false,
+      "status": "NOT IMPLEMENTED",
+      "notes": "Engine missing or failed"
+    },
+    {
+      "section_name": "Lucky Indicators & Practical Guidance",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "Missing / Pending Sections Audit",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    },
+    {
+      "section_name": "About This Report",
+      "backend_engine_found": true,
+      "included_in_payload": true,
+      "included_in_pdf": true,
+      "status": "GENERATED",
+      "notes": "Engine computed successfully"
+    }
+  ]
+}

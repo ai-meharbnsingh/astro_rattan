@@ -154,6 +154,9 @@ export default function KundliForm({
     if (!formData.place.trim()) {
       errors.place = t('auto.birthPlaceIsRequired');
     }
+    if (formData.latitude === 0 && formData.longitude === 0) {
+      errors.place = t('auto.pleaseSelectPlaceFromSuggestions') || 'Please select location from suggestions';
+    }
     if (isAstrologer && isNewClient && !formData.phone?.trim()) {
       errors.phone = t('auto.phoneNumberIsRequire');
     }
@@ -189,11 +192,11 @@ export default function KundliForm({
       
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
         {savedKundlisCount > 0 && (
-          <Button variant="outline" size="sm" onClick={onBackToList} className="flex-1 border-border text-foreground h-9">
+          <Button variant="outline" size="sm" onClick={onBackToList} className="flex-1 border-border text-foreground min-h-11">
             <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />{hi ? `मेरी कुंडलियाँ (${savedKundlisCount})` : `My Kundlis (${savedKundlisCount})`}
           </Button>
         )}
-        <Button onClick={onPrashnaKundli} variant="outline" size="sm" className="flex-[2] border-border text-foreground hover:bg-muted/10 h-9">
+        <Button onClick={onPrashnaKundli} variant="outline" size="sm" className="flex-[2] border-border text-foreground hover:bg-muted/10 min-h-11">
           <Clock className="w-4 h-4 mr-1.5 text-primary" />{t('kundli.prashnaKundli')}
           <span className="ml-1.5 text-[10px] text-foreground opacity-70 hidden sm:inline">{t('kundli.prashnaSubtitle')}</span>
         </Button>
@@ -226,7 +229,7 @@ export default function KundliForm({
               onChange={(e) => { setFormData({ ...formData, name: e.target.value }); clearError('name'); }}
               onBlur={() => { if (!formData.name.trim()) setValidationErrors(p => ({...p, name: t('auto.nameIsRequired') })); }}
               placeholder={hi ? 'पूरा नाम दर्ज करें' : 'Enter full name'}
-              className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.name ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 min-h-11 bg-muted border-border text-foreground text-sm ${validationErrors.name ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
           {validationErrors.name && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.name}</p>}
@@ -237,11 +240,11 @@ export default function KundliForm({
           <label className="block text-xs font-medium text-foreground mb-1">{hi ? 'लिंग' : 'Gender'}</label>
           <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={hi ? 'लिंग' : 'Gender'}>
             <button type="button" role="radio" aria-checked={formData.gender === 'male'} onClick={() => setFormData({ ...formData, gender: 'male' })} 
-              className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'male' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
+              className={`min-h-11 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'male' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
               {hi ? 'पुरुष' : 'Male'}
             </button>
             <button type="button" role="radio" aria-checked={formData.gender === 'female'} onClick={() => setFormData({ ...formData, gender: 'female' })} 
-              className={`h-10 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'female' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
+              className={`min-h-11 rounded-lg border transition-all text-sm font-medium ${formData.gender === 'female' ? 'border-border bg-primary text-white shadow-sm' : 'border-border/40 text-foreground bg-white/50 hover:bg-muted/5'}`}>
               {hi ? 'महिला' : 'Female'}
             </button>
           </div>
@@ -287,7 +290,7 @@ export default function KundliForm({
               value={formData.date}
               onChange={(e) => { setFormData({ ...formData, date: e.target.value }); clearError('date'); }}
               onBlur={(e) => { if (!e.target.value) setValidationErrors(p => ({...p, date: t('auto.birthDateIsRequired') })); }}
-              className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.date ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 min-h-11 bg-muted border-border text-foreground text-sm ${validationErrors.date ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
           {validationErrors.date && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.date}</p>}
@@ -307,7 +310,7 @@ export default function KundliForm({
               value={formData.time}
               onChange={(e) => { setFormData({ ...formData, time: e.target.value }); clearError('time'); }}
               onBlur={(e) => { if (!e.target.value && !timeOptional) setValidationErrors(p => ({...p, time: t('auto.birthTimeIsRequired') })); }}
-              className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.time ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 min-h-11 bg-muted border-border text-foreground text-sm ${validationErrors.time ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
           </div>
           {validationErrors.time && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.time}</p>}
@@ -331,7 +334,7 @@ export default function KundliForm({
               }}
               onBlur={(e) => { if (!e.target.value.trim()) setValidationErrors(p => ({...p, place: t('auto.birthPlaceIsRequired') })); }}
               placeholder={hi ? 'जन्म स्थान खोजें' : 'Search birth place'}
-              className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.place ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              className={`pl-9 min-h-11 bg-muted border-border text-foreground text-sm ${validationErrors.place ? 'border-red-500 ring-1 ring-red-500' : ''}`}
               autoComplete="off"
             />
             {geocode.loading && (
@@ -348,7 +351,7 @@ export default function KundliForm({
                       clearError('place');
                       geocode.close();
                     }}
-                    className="w-full text-left px-3 py-2 hover:bg-muted transition-colors border-b border-border-dark last:border-b-0"
+                    className="w-full min-h-11 text-left px-3 py-3 hover:bg-muted transition-colors border-b border-border-dark last:border-b-0"
                   >
                     <p className="text-xs font-medium text-foreground truncate">{s.name}</p>
                     <p className="text-[10px] text-foreground opacity-70">{s.lat.toFixed(4)}, {s.lon.toFixed(4)}</p>
@@ -367,7 +370,7 @@ export default function KundliForm({
               <button
                 type="button"
                 onClick={() => setShowCoordinates(prev => !prev)}
-                className="ml-auto text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                className="ml-auto min-h-11 px-2 text-[10px] text-primary hover:underline flex items-center gap-0.5"
               >
                 {hi ? 'निर्देशांक' : 'Coordinates'}
                 <ChevronDown className={`w-3 h-3 transition-transform ${showCoordinates ? 'rotate-180' : ''}`} />
@@ -382,7 +385,11 @@ export default function KundliForm({
         </div>
 
         <div className="md:col-span-2 pt-2">
-          <Button type="submit" className="w-full h-12 bg-primary text-white font-bold text-base rounded-lg shadow-lg hover:bg-primary/90 transition-all hover:scale-[1.01] active:scale-[0.98]">
+          <Button
+            type="submit"
+            disabled={!formData.name.trim() || !formData.date || (!formData.time && !timeOptional) || !formData.place.trim() || (formData.latitude === 0 && formData.longitude === 0) || (isAstrologer && isNewClient && !formData.phone?.trim())}
+            className="w-full h-12 bg-primary text-white font-bold text-base rounded-lg shadow-lg hover:bg-primary/90 transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Sparkles className="w-5 h-5 mr-1.5" />{hi ? 'कुंडली बनाएं' : 'Generate Kundli'}<ChevronRight className="w-5 h-5 ml-1.5" />
           </Button>
         </div>
