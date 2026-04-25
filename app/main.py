@@ -112,7 +112,10 @@ for router in all_routers:
 # Static file serving for uploaded images
 from app.config import STATIC_DIR
 if os.path.isdir(STATIC_DIR):
-    os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
+    try:
+        os.makedirs(os.path.join(STATIC_DIR, "uploads"), exist_ok=True)
+    except PermissionError:
+        pass
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
