@@ -1462,38 +1462,38 @@ export default function Features() {
                 {/* All chips — one row, each a different colour, fills full width */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {currentHora && (
-                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    <div className="sm:flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-[140px] flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs">
                       <span className="text-amber-500 text-lg shrink-0">☀</span>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-amber-800 font-semibold text-xs">{l('Hora', 'होरा')}: {hi ? (PLANET_HI[currentHora.lord] || currentHora.lord) : currentHora.lord}</span>
-                        <span className="text-amber-500 text-[11px]">{currentHora.start}–{currentHora.end}</span>
+                        <span className="text-amber-800 font-semibold">{l('Hora', 'होरा')}: {hi ? (PLANET_HI[currentHora.lord] || currentHora.lord) : currentHora.lord}</span>
+                        <span className="text-amber-500">{currentHora.start}–{currentHora.end}</span>
                       </div>
                     </div>
                   )}
                   {currentChog && (() => { const cc = chogColor(currentChog.quality); return (
-                    <div className={`flex-1 min-w-[140px] flex items-center gap-2 ${cc.bg} border ${cc.border} rounded-lg px-3 py-2`}>
+                    <div className={`sm:flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-[140px] flex items-center gap-2 ${cc.bg} border ${cc.border} rounded-lg px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs`}>
                       <span className={`text-lg shrink-0 ${cc.icon}`}>◈</span>
                       <div className="flex flex-col min-w-0">
-                        <span className={`font-semibold text-xs ${cc.text}`}>{l('Choghadiya', 'चौघड़िया')}: {hi ? (CHOGHADIYA_HI[currentChog.name] || currentChog.name) : currentChog.name}</span>
-                        <span className={`text-[11px] ${cc.sub}`}>{currentChog.start}–{currentChog.end}</span>
+                        <span className={`font-semibold ${cc.text}`}>{l('Choghadiya', 'चौघड़िया')}: {hi ? (CHOGHADIYA_HI[currentChog.name] || currentChog.name) : currentChog.name}</span>
+                        <span className={`${cc.sub}`}>{currentChog.start}–{currentChog.end}</span>
                       </div>
                     </div>
                   ); })()}
                   {bestTime && bestTime.start !== '--:--' && (
-                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <div className="sm:flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-[140px] flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs">
                       <span className="text-green-600 text-lg shrink-0 font-bold">✓</span>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-green-800 font-semibold text-xs">{l('Best Time', 'सर्वश्रेष्ठ')}</span>
-                        <span className="text-green-500 text-[11px]">{bestTime.start}–{bestTime.end}</span>
+                        <span className="text-green-800 font-semibold">{l('Best Time', 'सर्वश्रेष्ठ')}</span>
+                        <span className="text-green-500">{bestTime.start}–{bestTime.end}</span>
                       </div>
                     </div>
                   )}
                   {rahuKaal && rahuKaal.start !== '--:--' && (
-                    <div className="flex-1 min-w-[140px] flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">
+                    <div className="sm:flex-1 min-w-[calc(50%-0.5rem)] sm:min-w-[140px] flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs">
                       <span className="text-orange-500 text-lg shrink-0">⚠</span>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-orange-800 font-semibold text-xs">{l('Avoid (Rahu Kaal)', 'बचें (राहु काल)')}</span>
-                        <span className="text-orange-500 text-[11px]">{rahuKaal.start}–{rahuKaal.end}</span>
+                        <span className="text-orange-800 font-semibold">{l('Avoid (Rahu Kaal)', 'बचें (राहु काल)')}</span>
+                        <span className="text-orange-500">{rahuKaal.start}–{rahuKaal.end}</span>
                       </div>
                     </div>
                   )}
