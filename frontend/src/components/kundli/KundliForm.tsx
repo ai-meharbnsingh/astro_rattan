@@ -93,6 +93,16 @@ export default function KundliForm({
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const geocode = useGeocodeAutocomplete();
   const placeWrapperRef = useRef<HTMLDivElement>(null);
+  const formContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (formContainerRef.current && window.innerWidth < 1024) {
+      const rect = formContainerRef.current.getBoundingClientRect();
+      if (rect.top > window.innerHeight * 0.8) {
+        formContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, []);
 
   const handleClientSelect = (client: ClientData | null) => {
     setSelectedClient(client);
@@ -179,7 +189,7 @@ export default function KundliForm({
   const hi = language === 'hi';
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="max-w-5xl mx-auto pt-24 sm:pt-32 pb-10 px-4 bg-transparent">
+    <form ref={formContainerRef} onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="max-w-5xl mx-auto pt-24 sm:pt-32 pb-10 px-4 bg-transparent">
       <div className="text-center mb-6">
         <Heading as={3} variant={3} className="sm:">{hi ? 'अपनी कुंडली बनाएं' : 'Generate Your Kundli'}</Heading>
       </div>
@@ -266,7 +276,7 @@ export default function KundliForm({
                     value={formData.phone || ''}
                     onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); clearError('phone'); }}
                     placeholder={hi ? 'फ़ोन नंबर' : 'Phone number'}
-                    className={`pl-9 h-10 bg-muted border-border text-foreground text-sm ${validationErrors.phone ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+                    className={`pl-9 min-h-11 bg-muted border-border text-foreground text-sm ${validationErrors.phone ? 'border-red-500 ring-1 ring-red-500' : ''}`}
                   />
                 </div>
                 {validationErrors.phone && <p className="text-red-600 text-xs mt-1 font-medium">{validationErrors.phone}</p>}
