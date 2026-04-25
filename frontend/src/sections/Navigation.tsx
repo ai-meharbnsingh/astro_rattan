@@ -514,7 +514,7 @@ export default function Navigation() {
               {isAuthenticated && (user?.role === 'astrologer' || user?.role === 'admin') && (
                 <Link
                   to="/astrologer"
-                  className="p-2.5 text-sacred-gold-dark hover:text-sacred-gold transition-colors sm:hidden"
+                  className="min-h-11 min-w-11 p-3 text-sacred-gold-dark hover:text-sacred-gold transition-colors sm:hidden"
                   title={language === 'hi' ? 'पेशेवर डैशबोर्ड' : 'Professional Dashboard'}
                 >
                   <Briefcase className="w-5 h-5" />
@@ -522,7 +522,7 @@ export default function Navigation() {
               )}
 
               {isAuthenticated && user?.role === 'admin' && (
-                <Link to="/admin" className="p-2.5 text-foreground hover:text-sacred-gold-dark transition-colors sm:hidden" title={t('nav.admin')}>
+                <Link to="/admin" className="min-h-11 min-w-11 p-3 text-foreground hover:text-sacred-gold-dark transition-colors sm:hidden" title={t('nav.admin')}>
                   <Shield className="w-5 h-5" />
                 </Link>
               )}
@@ -530,7 +530,7 @@ export default function Navigation() {
               {/* Mobile toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-foreground ml-1"
+                className="lg:hidden min-h-11 min-w-11 p-3 text-foreground ml-1"
                 aria-expanded={isMobileMenuOpen}
                 aria-controls="mobile-menu"
                 aria-label={isMobileMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
@@ -580,7 +580,7 @@ export default function Navigation() {
                                   key={tab.value}
                                   to={`${link.href}?tab=${tab.value}`}
                                   onClick={() => setIsMobileMenuOpen(false)}
-                                  className="block text-xs text-foreground hover:text-sacred-gold-dark hover:bg-sacred-gold/5 rounded px-2 py-1.5 transition-colors"
+                                  className="block min-h-11 text-xs text-foreground hover:text-sacred-gold-dark hover:bg-sacred-gold/5 rounded px-2 py-2.5 transition-colors"
                                 >
                                   {language === 'hi' ? tab.hi : tab.en}
                                 </Link>
@@ -591,7 +591,7 @@ export default function Navigation() {
                         <Link
                           to={link.href}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="block text-xs font-semibold text-sacred-gold-dark hover:text-sacred-gold transition-colors px-2 py-1"
+                          className="block min-h-11 text-xs font-semibold text-sacred-gold-dark hover:text-sacred-gold transition-colors px-2 py-2.5"
                         >
                           {language === 'hi' ? 'सभी देखें →' : 'View all →'}
                         </Link>

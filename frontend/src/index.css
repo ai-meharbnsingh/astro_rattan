@@ -176,6 +176,28 @@
   border: 1px solid var(--aged-gold);
   transition: all 0.3s ease;
 }
+
+/* Mobile accessibility — 44x44px touch target (WCAG AA guidance). */
+@media (max-width: 640px) {
+  button,
+  [role="button"],
+  a[href],
+  input,
+  select,
+  textarea,
+  [data-slot="button"],
+  [data-slot="tabs-trigger"],
+  [data-slot="select-trigger"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ensure anchors actually take the min-height on mobile. */
+  a[href] {
+    display: inline-flex;
+    align-items: center;
+  }
+}
 .btn-sacred:hover {
   background: var(--sacred-gold-dark, #B45309);
   color: #ffffff;

@@ -339,9 +339,9 @@ export default function LiveTransitWheel() {
             </div>
           )}
 
-          <div className="chakra-float" style={{ transformStyle: 'preserve-3d' }}>
+          <div className="chakra-float overflow-hidden" style={{ transformStyle: 'preserve-3d' }}>
             <svg viewBox="0 0 600 600" className="w-full h-full" style={{
-            overflow: 'visible',
+            overflow: 'hidden',
             transform: 'scale(0.85)',
             transformOrigin: 'center center',
             filter: 'drop-shadow(4px 8px 16px rgba(139,69,19,0.25)) drop-shadow(0 2px 6px rgba(196,97,31,0.12))',

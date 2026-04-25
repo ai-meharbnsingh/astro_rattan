@@ -292,6 +292,16 @@ export default function HoroscopePage() {
   return (
     <section ref={sectionRef} id="horoscope" className="relative pt-32 pb-8 bg-transparent">
       <div className="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            {language === 'hi' ? 'राशिफल' : 'Horoscope'}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {language === 'hi'
+              ? 'अपनी राशि चुनें और दैनिक/साप्ताहिक/मासिक राशिफल देखें।'
+              : 'Pick your sign to view daily, weekly, monthly, and yearly guidance.'}
+          </p>
+        </header>
 
         {/* Date + Time Header */}
         <div className="rounded-xl border border-border bg-card p-3 mb-4">
@@ -311,7 +321,7 @@ export default function HoroscopePage() {
         <div className="rounded-xl border border-border bg-card mb-4 overflow-hidden">
           <button
             onClick={() => setShowPersonalize(v => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="w-full min-h-11 flex items-center justify-between px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <span className="flex items-center gap-2">
               <Star className="w-4 h-4 text-sacred-gold" />
