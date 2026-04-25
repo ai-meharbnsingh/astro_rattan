@@ -275,21 +275,34 @@ export default function KundliChartSVG({
         />
       ))}
 
-      {/* Ascendant marker (degree-in-sign) */}
+      {/* Ascendant marker (degree-in-sign) — radial line + triangle */}
       {showAscendantMarker && lagnaSignIdx >= 0 && (
-        <text
-          x={marker.x}
-          y={marker.y}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="14"
-          fontWeight="800"
-          fill={GOLD_MED}
-          opacity="0.85"
-          fontFamily="'Inter',sans-serif"
-        >
-          ▲
-        </text>
+        <>
+          {/* Radial clock line from center to marker */}
+          <line
+            x1={M}
+            y1={M}
+            x2={marker.x}
+            y2={marker.y}
+            stroke={GOLD_MED}
+            strokeWidth="1.5"
+            opacity="0.7"
+          />
+          {/* Ascendant triangle marker */}
+          <text
+            x={marker.x}
+            y={marker.y}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize="14"
+            fontWeight="800"
+            fill={GOLD_MED}
+            opacity="0.9"
+            fontFamily="'Inter',sans-serif"
+          >
+            ▲
+          </text>
+        </>
       )}
 
       {/* Zodiac sign images — orange, low opacity, counter-clockwise house order */}
