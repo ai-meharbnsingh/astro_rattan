@@ -285,8 +285,9 @@ export default function KundliChartSVG({
             x2={marker.x}
             y2={marker.y}
             stroke={GOLD_MED}
-            strokeWidth="1.5"
-            opacity="0.7"
+            strokeWidth="2.2"
+            opacity="0.9"
+            vectorEffect="non-scaling-stroke"
           />
           {/* Ascendant triangle marker */}
           <text
