@@ -207,13 +207,13 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                   <div>
                     <Table className="w-full text-xs table-fixed">
                       <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[20%]">{hi ? 'योग' : 'Yoga'}</TableHead>
-                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{hi ? 'ग्रह' : 'Planets'}</TableHead>
-                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'बल' : 'Strength'}</TableHead>
-                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'भाव' : 'Houses'}</TableHead>
-                          <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[35%]">{hi ? 'विवरण' : 'Description'}</TableHead>
-                          <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{hi ? 'स्वभाव' : 'Nature'}</TableHead>
+                        <TableRow className="min-w-max sm:min-w-0">
+                          <TableHead className="text-left p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[80px] sm:w-[20%] text-xs sm:text-sm">{hi ? 'योग' : 'Yoga'}</TableHead>
+                          <TableHead className="text-left p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[70px] sm:w-[15%] text-xs sm:text-sm">{hi ? 'ग्रह' : 'Planets'}</TableHead>
+                          <TableHead className="text-center p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[60px] sm:w-[10%] text-xs sm:text-sm">{hi ? 'बल' : 'Strength'}</TableHead>
+                          <TableHead className="text-center p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[50px] sm:w-[10%] text-xs sm:text-sm hidden sm:table-cell">{hi ? 'भाव' : 'Houses'}</TableHead>
+                          <TableHead className="text-left p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[100px] sm:w-[35%] text-xs sm:text-sm">{hi ? 'विवरण' : 'Description'}</TableHead>
+                          <TableHead className="text-center p-1 sm:p-2 text-primary font-semibold uppercase tracking-wide min-w-[60px] sm:w-[10%] text-xs sm:text-sm">{hi ? 'स्वभाव' : 'Nature'}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -231,10 +231,10 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                           const sStyle = hasStrength ? (STRENGTH_STYLE[yoga.strength!] || '') : '';
 
                           return (
-                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top">
-                              <TableCell className="p-2 font-semibold text-foreground leading-snug">{name}</TableCell>
-                              <TableCell className="p-2">
-                                <div className="flex flex-wrap gap-1">
+                            <TableRow key={idx} className="border-t border-border hover:bg-muted/5 transition-colors align-top min-w-max sm:min-w-0">
+                              <TableCell className="p-1 sm:p-2 font-semibold text-foreground leading-snug min-w-[80px] sm:w-[20%] text-xs sm:text-sm">{name}</TableCell>
+                              <TableCell className="p-1 sm:p-2 min-w-[70px] sm:w-[15%]">
+                                <div className="flex flex-wrap gap-0.5 sm:gap-1 text-xs sm:text-sm">
                                   {(yoga.planets_involved || []).map((p: string) => (
                                     <span key={p} className="px-1.5 py-0.5 rounded bg-sacred-gold/10 text-sacred-gold-dark font-medium text-[10px] whitespace-nowrap">
                                       {translatePlanet(p, language)}
@@ -242,33 +242,33 @@ export default function YogaDoshaTab({ yogaDoshaData, loadingYogaDosha, doshaDis
                                   ))}
                                 </div>
                               </TableCell>
-                              <TableCell className="p-2 text-center">
+                              <TableCell className="p-1 sm:p-2 text-center min-w-[60px] sm:w-[10%]">
                                 {hasStrength && (
-                                  <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${sStyle}`}>
+                                  <span className={`px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-xs font-semibold ${sStyle}`}>
                                     {getStrengthLabel(yoga.strength!, hi)}
                                   </span>
                                 )}
                               </TableCell>
-                              <TableCell className="p-2 text-center">
-                                <div className="flex flex-wrap gap-1 justify-center">
+                              <TableCell className="p-1 sm:p-2 text-center min-w-[50px] sm:w-[10%] hidden sm:table-cell">
+                                <div className="flex flex-wrap gap-0.5 justify-center">
                                   {(yoga.trigger_houses || []).map((h: number) => (
-                                    <span key={h} className="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold text-[10px] border border-indigo-100">
+                                    <span key={h} className="px-1 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold text-[8px] border border-indigo-100">
                                       H{h}
                                     </span>
                                   ))}
                                 </div>
                               </TableCell>
-                              <TableCell className="p-2 whitespace-normal break-words max-w-0">
-                                <p className="text-foreground/90 leading-relaxed whitespace-normal break-words">{desc}</p>
+                              <TableCell className="p-1 sm:p-2 whitespace-normal break-words max-w-0 min-w-[100px] sm:w-[35%]">
+                                <p className="text-foreground/90 leading-relaxed whitespace-normal break-words text-xs sm:text-sm">{desc}</p>
                                 {fruition && (
-                                  <p className="text-[10px] text-violet-700 italic mt-1 leading-relaxed whitespace-normal break-words">{fruition}</p>
+                                  <p className="text-[8px] sm:text-[10px] text-violet-700 italic mt-1 leading-relaxed whitespace-normal break-words">{fruition}</p>
                                 )}
                                 {yoga.sloka_ref && (
-                                  <SlokaHover slokaRef={yoga.sloka_ref} language={language} className="text-[10px] text-muted-foreground italic mt-0.5" />
+                                  <SlokaHover slokaRef={yoga.sloka_ref} language={language} className="text-[7px] sm:text-[10px] text-muted-foreground italic mt-0.5" />
                                 )}
                               </TableCell>
-                              <TableCell className="p-2 text-center">
-                                <span className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${nStyle}`}>
+                              <TableCell className="p-1 sm:p-2 text-center min-w-[60px] sm:w-[10%]">
+                                <span className={`px-1 sm:px-1.5 py-0.5 rounded-full text-[8px] sm:text-xs font-semibold ${nStyle}`}>
                                   {getNatureLabel(nature, hi)}
                                 </span>
                               </TableCell>

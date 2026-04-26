@@ -45,7 +45,8 @@ export default function YoginiTab({ yoginiData, loadingYogini, language, t }: Yo
             </span>
           )}
         </div>
-        <Table className="w-full text-xs table-fixed">
+        <div className="overflow-x-auto">
+          <Table className="w-full text-xs table-fixed min-w-[520px]">
           <TableHeader>
             <TableRow>
               <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('table.yogini')}</TableHead>
@@ -69,7 +70,8 @@ export default function YoginiTab({ yoginiData, loadingYogini, language, t }: Yo
               );
             })}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
       <TimingTheorySection language={language} tab="yogini" />
     </div>

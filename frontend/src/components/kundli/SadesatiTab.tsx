@@ -110,7 +110,7 @@ export default function SadesatiTab({ sadesatiData, loadingSadesati, language, t
             {t('sadeSati.cyclesTitle')}
           </div>
           <div className="overflow-x-auto">
-            <Table className="w-full text-xs table-fixed">
+            <Table className="w-full text-xs table-fixed min-w-[620px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[22%]">{hi ? 'चक्र' : 'Cycle'}</TableHead>
@@ -165,7 +165,7 @@ export default function SadesatiTab({ sadesatiData, loadingSadesati, language, t
             {hi ? 'ढैया / कंटक शनि / पनौती' : 'Dhaiya / Kantaka Saturn / Panauti'}
           </div>
           <div className="overflow-x-auto">
-            <Table className="w-full text-xs table-fixed">
+            <Table className="w-full text-xs table-fixed min-w-[550px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[16%]">{hi ? 'प्रकार' : 'Type'}</TableHead>

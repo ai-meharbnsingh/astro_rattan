@@ -67,7 +67,7 @@ export default function PlanetaryPositionsTab({ panchang, language, t }: Props) 
           <span>{t('auto.navgrahaPositionsPla')}</span>
         </div>
         <div className="overflow-x-auto">
-          <Table className="w-full min-w-[780px] text-xs table-fixed">
+          <Table className="w-full min-w-[640px] text-xs table-fixed">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('auto.planet')}</TableHead>

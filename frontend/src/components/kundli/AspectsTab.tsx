@@ -64,7 +64,8 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('section.aspectsOnPlanets')}
           </div>
-          <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[670px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('table.planet')}</TableHead>
@@ -119,6 +120,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
               })()}
             </TableBody>
           </Table>
+            </div>
         </div>
 
         {/* Aspects on Bhavas */}
@@ -126,7 +128,8 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('section.aspectsOnBhavas')}
           </div>
-          <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[680px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[12%]">{t('table.house')}</TableHead>
@@ -180,6 +183,7 @@ export default function AspectsTab({ aspectsData, loadingAspects, language, t }:
               })()}
             </TableBody>
           </Table>
+            </div>
         </div>
 
       </div>

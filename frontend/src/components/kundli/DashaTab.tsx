@@ -291,8 +291,8 @@ export default function DashaTab({
             <span>{t('section.currentDashaStatus')}</span>
             <span className="px-2 py-0.5 bg-white/20 text-white text-[10px] font-bold rounded animate-pulse">● {l('LIVE', 'लाइव')}</span>
           </div>
-          <div>
-            <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[500px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-left p-1.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('kundli.mahadasha')}</TableHead>
@@ -318,8 +318,8 @@ export default function DashaTab({
         {/* Full Dasha Timeline Table */}
         <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">{hi ? 'विस्तृत दशा तालिका' : 'Detailed Dasha Timeline'}</div>
-          <div>
-            <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[600px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-8 p-1.5"></TableHead>

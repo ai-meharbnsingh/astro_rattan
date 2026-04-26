@@ -340,7 +340,8 @@ export default function TransitsTab(props: TransitsTabProps) {
               <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
                 {t('transit.transitDate')}: {transitData.transit_date}
               </div>
-              <Table className="w-full text-xs table-fixed">
+              <div className="overflow-x-auto">
+              <Table className="w-full text-xs table-fixed min-w-[600px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('table.planet')}</TableHead>
@@ -365,6 +366,7 @@ export default function TransitsTab(props: TransitsTabProps) {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </div>
           </div>
 
@@ -381,7 +383,7 @@ export default function TransitsTab(props: TransitsTabProps) {
               {t('transit.transitDate')}: {transitData.transit_date} — {language === 'hi' ? 'विस्तृत विवरण' : 'Detailed Analysis'}
             </div>
             <div className="overflow-x-auto">
-              <Table className="w-full text-xs table-fixed">
+              <Table className="w-full text-xs table-fixed min-w-[800px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[10%]">{t('table.planet')}</TableHead>

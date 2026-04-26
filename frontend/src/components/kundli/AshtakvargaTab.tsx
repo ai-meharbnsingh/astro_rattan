@@ -109,7 +109,8 @@ function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; lan
         )}
         {planetReadings.length > 0 && (
           <div className="rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-            <Table className="w-full text-xs table-fixed">
+            <div className="overflow-x-auto">
+              <Table className="w-full text-xs table-fixed min-w-[500px]">
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('table.planet')}</TableHead>
@@ -135,7 +136,8 @@ function HorasaraPhalaSection({ kundliId, language, t }: { kundliId: string; lan
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           </div>
         )}
       </div>
@@ -314,12 +316,12 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                       </div>
                       <div className="flex flex-col lg:flex-row">
                         {/* LEFT: Full contributor matrix table */}
-                        <div className="flex-1 overflow-x-auto p-3">
+                        <div className="flex-1 overflow-x-auto p-2">
                           {(() => {
                             const kakshaOrder = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon', 'Lagna'];
                             const contribData = ashtakvargaData.planet_details?.[planet]?.contributors;
                             return (
-                              <Table className="w-full text-xs border-collapse">
+                              <Table className="w-full text-xs border-collapse min-w-[600px]">
                                 <TableHeader>
                                   <TableRow>
                                     <TableHead className="text-center p-1 text-violet-700 font-bold border-b border-border w-8 text-xs">K#</TableHead>
@@ -482,8 +484,8 @@ export default function AshtakvargaTab(props: AshtakvargaTabProps) {
                           {t('ashtakvarga.shodhyaPinda')}: <span className="text-lg font-bold">{purified.shodhya_pinda}</span>
                         </span>
                       </div>
-                      <div className="overflow-x-auto p-3">
-                        <Table className="w-full text-xs border-collapse">
+                      <div className="overflow-x-auto p-2">
+                        <Table className="w-full text-xs border-collapse min-w-[500px]">
                           <TableHeader>
                             <TableRow>
                               <TableHead className="text-left p-1 text-primary font-semibold border-b border-border whitespace-nowrap">{t('auto.process')}</TableHead>

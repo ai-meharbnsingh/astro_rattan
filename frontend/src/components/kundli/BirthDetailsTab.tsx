@@ -57,7 +57,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
           </colgroup>
           <thead>
             <tr>
-              <th className={thCls}>{t('auto.planet')}</th>
+              <th className={thCls} style={{ position: 'sticky', left: 0, zIndex: 10, backgroundColor: 'var(--background)' }}>{t('auto.planet')}</th>
               <th className={thCls}>{t('auto.sign')}</th>
               <th className={thCls}>{t('auto.degree')}</th>
               <th className={thCls}>{t('auto.nakshatra')}</th>
@@ -86,7 +86,7 @@ export default function BirthDetailsTab({ planets }: BirthDetailsTabProps) {
 
               return (
                 <tr key={idx} className={idx % 2 !== 0 ? 'bg-muted/5' : ''}>
-                  <td className={`${tdCls} font-medium`}>
+                  <td className={`${tdCls} font-medium`} style={{ position: 'sticky', left: 0, zIndex: 9, backgroundColor: idx % 2 !== 0 ? 'var(--muted)' : 'var(--background)' }}>
                     {translatePlanet(p.planet, language)}
                     {isRetro && <span className="text-red-500 ml-0.5" title={t('kundli.retrograde')}>*</span>}
                   </td>

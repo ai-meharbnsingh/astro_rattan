@@ -69,7 +69,7 @@ export default function RetrogradeStationsSection({ kundliId }: RetrogradeStatio
         </div>
       ) : data?.stations ? (
         <div className="overflow-x-auto">
-          <Table className="w-full text-xs table-fixed">
+          <Table className="w-full text-xs table-fixed min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[16%]">{t('auto.planet')}</TableHead>

@@ -91,7 +91,8 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
           {t('section.shadbalaStrength')}
         </div>
         <div className="p-5">
-          <div className="flex items-end justify-around gap-2 h-[280px]">
+          <div className="overflow-x-auto">
+            <div className="flex items-end justify-around gap-2 h-[280px] min-w-[420px]">
             {PLANETS.map((planet) => {
               const data = shadbalaData.planets[planet];
               if (!data) return null;
@@ -121,6 +122,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
                 </div>
               );
             })}
+            </div>
           </div>
           <div className="flex items-center justify-center gap-6 mt-4 text-sm text-foreground">
             <div className="flex items-center gap-1"><div className="w-3 h-3 rounded" style={{ backgroundColor: '#16a34a' }} /><span>{t('kundli.strong')}</span></div>

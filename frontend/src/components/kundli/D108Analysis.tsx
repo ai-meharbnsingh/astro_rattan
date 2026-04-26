@@ -306,7 +306,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('table.planet')} — {t('table.sign')} / {t('table.degree')}
           </div>
-          <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[450px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[35%]">{t('table.planet')}</TableHead>
@@ -323,7 +324,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
       </div>
 
@@ -350,7 +352,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {l('Spiritual Indicators', 'आध्यात्मिक संकेतक')}
           </div>
-          <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[40%]">{l('Indicator', 'संकेतक')}</TableHead>
@@ -379,7 +382,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
       )}
 
@@ -389,7 +393,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {l('Past Life Karma', 'पूर्व जन्म के कर्म')}
           </div>
-          <Table className="w-full text-xs table-fixed">
+          <div className="overflow-x-auto">
+            <Table className="w-full text-xs table-fixed min-w-[550px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center p-2 text-primary font-semibold uppercase tracking-wide w-[8%]">#</TableHead>
@@ -416,7 +421,8 @@ export default function D108Analysis({ kundliId, language, t }: D108AnalysisProp
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
       )}
 

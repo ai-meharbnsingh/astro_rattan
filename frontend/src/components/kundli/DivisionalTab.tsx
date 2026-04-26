@@ -50,8 +50,9 @@ function DrekkanaLordCard({ positions, language }: { positions: any[]; language:
         {isHi ? 'द्रेष्काण स्वामी और प्रकार (D3)' : 'Drekkana Lord & Decanate Type (D3)'}
       </div>
       <div className="p-0">
-        <Table className="w-full text-xs table-fixed">
-          <TableHeader>
+        <div className="overflow-x-auto">
+          <Table className="w-full text-xs table-fixed min-w-[500px]">
+            <TableHeader>
             <TableRow>
               <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[18%]">{isHi ? 'ग्रह' : 'Planet'}</TableHead>
               <TableHead className="text-left p-2 text-primary font-semibold uppercase tracking-wide w-[15%]">{isHi ? 'द्रेष्काण' : 'Decanate'}</TableHead>
@@ -79,7 +80,8 @@ function DrekkanaLordCard({ positions, language }: { positions: any[]; language:
               );
             })}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
     </div>
   );
@@ -300,7 +302,8 @@ export default function DivisionalTab({
               <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
                 {t('table.planet')} — {t('table.sign')} / {t('table.degree')}
               </div>
-              <Table className="w-full text-xs table-fixed">
+              <div className="overflow-x-auto">
+                <Table className="w-full text-xs table-fixed min-w-[500px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-left p-3 text-primary font-semibold uppercase tracking-wide text-xs w-[40%]">{t('table.planet')}</TableHead>
@@ -327,6 +330,7 @@ export default function DivisionalTab({
                   })}
                 </TableBody>
               </Table>
+              </div>
             </div>
           </div>
 
@@ -356,7 +360,8 @@ export default function DivisionalTab({
               </div>
               <div className="p-3">
                 <p className="text-xs text-foreground/70 mb-3">{t('auto.vargaStrengthDesc')}</p>
-                <Table className="w-full text-xs table-fixed">
+                <div className="overflow-x-auto">
+                  <Table className="w-full text-xs table-fixed min-w-[600px]">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[25%]">{t('table.planet')}</TableHead>
@@ -380,7 +385,8 @@ export default function DivisionalTab({
                       );
                     })}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </div>
             </div>
           )}
@@ -495,7 +501,8 @@ export default function DivisionalTab({
                 <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
                   {t('auto.planetWiseKarmicAnal')}
                 </div>
-                <Table className="w-full text-xs table-fixed">
+                <div className="overflow-x-auto">
+                  <Table className="w-full text-xs table-fixed min-w-[700px]">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-left p-2.5 text-primary font-semibold uppercase tracking-wide w-[18%]">{t('table.planet')}</TableHead>
@@ -534,7 +541,8 @@ export default function DivisionalTab({
                       );
                     })}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </div>
 
               {/* Karmic Debts */}
