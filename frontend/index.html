@@ -3,9 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, proxy-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <title>Astro Rattan - Vedic Astrology & Spiritual Guidance</title>
 
     <!-- Preload & Resource Hints -->
@@ -18,30 +15,35 @@
     <link rel="preload" href="/logo.png" as="image" />
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Astro Rattan — comprehensive Vedic astrology platform featuring Kundli generation, daily horoscope, Panchang, editorial guides, KP system, Lal Kitab remedies, numerology, tarot, AI-powered guidance, and astrologer consultations." />
-    <meta name="keywords" content="vedic astrology, kundli, horoscope, panchang, jyotish, birth chart, numerology, tarot, lal kitab, kp system, astrology consultation, astrology blog" />
+    <meta name="description" content="Free Vedic Kundli, daily horoscope, Panchang, KP system, Lal Kitab remedies, numerology, tarot — plus AI-powered guidance and live astrologer consultations." />
     <meta name="author" content="Astro Rattan" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#F5F0E8" />
     <meta name="application-name" content="Astro Rattan" />
     <link rel="canonical" href="https://astrorattan.com/" />
     <link rel="alternate" href="https://astrorattan.com/" hreflang="en-IN" />
+    <link rel="alternate" href="https://astrorattan.com/?lang=hi" hreflang="hi-IN" />
+    <link rel="alternate" href="https://astrorattan.com/" hreflang="x-default" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Astro Rattan - Vedic Astrology & Spiritual Guidance" />
-    <meta property="og:description" content="Explore ancient Vedic wisdom with AI-powered astrology tools, Panchang, practical editorial guides, tarot, numerology, and live astrologer consultations." />
+    <meta property="og:description" content="Free Vedic Kundli, daily horoscope, Panchang, KP system, Lal Kitab remedies, numerology, tarot — plus AI-powered guidance and live astrologer consultations." />
     <meta property="og:url" content="https://astrorattan.com/" />
-    <meta property="og:image" content="https://astrorattan.com/logo.png" />
+    <meta property="og:image" content="https://astrorattan.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Astro Rattan — Vedic Astrology Platform" />
     <meta property="og:site_name" content="Astro Rattan" />
     <meta property="og:locale" content="en_IN" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Astro Rattan - Vedic Astrology & Spiritual Guidance" />
-    <meta name="twitter:description" content="AI-powered Vedic astrology: Kundli, horoscope, Panchang, numerology, tarot, and live consultations." />
-    <meta name="twitter:image" content="https://astrorattan.com/logo.png" />
+    <meta name="twitter:description" content="Free Vedic Kundli, daily horoscope, Panchang, KP system, Lal Kitab remedies, numerology, tarot — plus AI-powered guidance and live astrologer consultations." />
+    <meta name="twitter:image" content="https://astrorattan.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Astro Rattan — Vedic Astrology Platform" />
     <meta name="twitter:site" content="@astrorattan" />
 
     <!-- Puter.js — free client-side AI provider (no API key required) -->
@@ -54,11 +56,11 @@
     />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
 
-    <!-- Google Verification (replace with actual code) -->
-    <meta name="google-site-verification" content="GOOGLE_VERIFICATION_CODE_HERE" />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -165,18 +167,6 @@
               }
             }
           ]
-        },
-        {
-          "@type": "BreadcrumbList",
-          "@id": "https://astrorattan.com/#breadcrumb",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "https://astrorattan.com/"
-            }
-          ]
         }
       ]
     }
@@ -184,7 +174,28 @@
   </head>
 
   <body style="background:#F5F0E8;color:#1a1a2e;">
-    <div id="root"></div>
+    <div id="root">
+      <header>
+        <h1>Vedic Astrology, Kundli &amp; Panchang — Astro Rattan</h1>
+        <p>Astro Rattan is a comprehensive Vedic astrology platform offering free Kundli (birth chart) generation, daily horoscope, Panchang (Tithi, Nakshatra, Yoga, Karana), KP system analysis, Lal Kitab remedies, numerology, tarot readings, Vastu Shastra guidance, and live consultations with experienced astrologers.</p>
+        <p>Built on classical Vedic principles (Parashara, Phaladeepika, Lal Kitab) and validated against Drik Panchang for astronomical accuracy. Bilingual interface (English + हिन्दी).</p>
+        <nav aria-label="Site sections">
+          <ul>
+            <li><a href="/kundli">Free Kundli Generator</a></li>
+            <li><a href="/horoscope">Daily Horoscope</a></li>
+            <li><a href="/panchang">Panchang &amp; Muhurat</a></li>
+            <li><a href="/lal-kitab">Lal Kitab Remedies</a></li>
+            <li><a href="/numerology">Numerology &amp; Tarot</a></li>
+            <li><a href="/vastu">Vastu Shastra</a></li>
+            <li><a href="/blog">Astrology Blog</a></li>
+            <li><a href="/about">About Astro Rattan</a></li>
+          </ul>
+        </nav>
+      </header>
+    </div>
+    <noscript>
+      <p>Astro Rattan requires JavaScript for the interactive astrology tools. The full site offers Kundli, Panchang, horoscope, Lal Kitab remedies, numerology, tarot, Vastu, and live astrologer consultations.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

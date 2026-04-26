@@ -10,7 +10,8 @@
     "i18n:scan": "node scripts/scan-hardcoded-strings.cjs",
     "i18n:validate": "node scripts/validate-i18n-keys.cjs",
     "i18n:check": "node scripts/scan-hardcoded-strings.cjs && node scripts/validate-i18n-keys.cjs",
-    "build": "node scripts/check-i18n.cjs && vite build",
+    "build": "node scripts/check-i18n.cjs && node scripts/generate-sitemap.cjs && vite build",
+    "sitemap": "node scripts/generate-sitemap.cjs",
     "build:skip-check": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -60,6 +60,10 @@ export default function Hero() {
       <div className="relative z-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-0">
         {/* Centered header above main section */}
         <div className="text-center">
+          {/* SEO H1 — visually hidden, present for crawlers */}
+          <Heading as={1} variant={2} className="sr-only">
+            {l('Vedic Astrology, Kundli & Panchang — Astro Rattan', 'वैदिक ज्योतिष, कुंडली और पंचांग — एस्ट्रो रत्न')}
+          </Heading>
           {/* Shloka */}
           <div className="hero-shloka opacity-0 mt-6">
             <p className="font-sans text-lg sm:text-2xl lg:text-[2.2rem] opacity-70 tracking-[3px] text-gray-600"
