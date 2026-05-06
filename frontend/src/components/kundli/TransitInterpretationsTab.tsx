@@ -86,7 +86,8 @@ function PlanetSection({ item, isHi, defaultOpen }: { item: PlanetInterpretation
           )}
 
           {/* 4 categories as table */}
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '28%' }} />
               <col style={{ width: '72%' }} />
@@ -117,6 +118,7 @@ function PlanetSection({ item, isHi, defaultOpen }: { item: PlanetInterpretation
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

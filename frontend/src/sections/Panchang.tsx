@@ -484,7 +484,7 @@ ${t('panchang.shareFooter')}`;
                   { id: 'tarabalam', label: language === 'hi' ? 'तारा/चन्द्र बल' : 'Tara/Chandra', icon: Star },
                   { id: 'advanced', label: language === 'hi' ? 'विशेष' : 'Advanced', icon: Microscope },
                 ].map(tab => (
-                  <TabsTrigger key={tab.id} value={tab.id} className="flex-1 min-w-0 flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
+                  <TabsTrigger key={tab.id} value={tab.id} className="flex-1 min-w-[72px] flex flex-col items-center gap-0.5 py-2 px-1 text-xs data-[state=active]:bg-sacred-gold data-[state=active]:text-white rounded-lg">
                     <tab.icon className="w-4 h-4" />
                     <span className="hidden sm:block">{tab.label}</span>
                   </TabsTrigger>

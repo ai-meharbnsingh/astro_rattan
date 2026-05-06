@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import SafeStorage from '@/lib/storage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, CalendarDays, CalendarCheck, Sun, Star, Users, Orbit, ChevronDown, MapPin, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -75,7 +76,7 @@ interface BirthParams {
 
 function loadBirthParams(): BirthParams | null {
   try {
-    const raw = localStorage.getItem(BIRTH_PARAMS_KEY);
+    const raw = SafeStorage.getItem('local', BIRTH_PARAMS_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -140,7 +141,7 @@ export default function HoroscopePage() {
   // Persist birth params to localStorage
   const saveBirthParams = (params: BirthParams) => {
     setBirthParams(params);
-    localStorage.setItem(BIRTH_PARAMS_KEY, JSON.stringify(params));
+    SafeStorage.setItem('local', BIRTH_PARAMS_KEY, JSON.stringify(params));
   };
 
   // Auto-detect Moon sign (Rashi) when birth date + coords are available
@@ -421,7 +422,7 @@ export default function HoroscopePage() {
 
         {/* Sign Tabs — equally spaced grid of 12 */}
         <div className="rounded-xl border border-border bg-card p-2 mb-4">
-          <div className="grid grid-cols-6 sm:grid-cols-12 gap-1">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-12 gap-1">
             {SIGNS.map((s) => (
               <button
                 key={s.id}
@@ -445,7 +446,8 @@ export default function HoroscopePage() {
 
         {/* Tab Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 h-auto p-1 bg-card rounded-xl">
+          <div className="overflow-x-auto w-full">
+          <TabsList className="grid grid-cols-7 h-auto p-1 bg-card rounded-xl min-w-[480px]">
             {[
               { id: 'daily', label: t('auto.daily'), icon: Sun },
               { id: 'tomorrow', label: language === 'hi' ? 'कल' : 'Tomorrow', icon: CalendarCheck },
@@ -461,6 +463,7 @@ export default function HoroscopePage() {
               </TabsTrigger>
             ))}
           </TabsList>
+          </div>
 
           <div className="mt-4">
             <TabsContent value="daily">

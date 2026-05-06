@@ -4,7 +4,7 @@ import { useTranslation } from '@/lib/i18n';
 import { Heading } from '@/components/ui/heading';
 
 // Vastu is WIP — only visible on staging
-const isProduction = typeof window !== 'undefined' && window.location.hostname === 'astrorattan.com';
+const isProduction = typeof window !== 'undefined' && (window.location.hostname === 'astrorattan.com' || window.location.hostname === 'www.astrorattan.com');
 
 export default function Footer() {
   const { t } = useTranslation();

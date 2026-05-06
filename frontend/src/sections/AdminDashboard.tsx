@@ -461,7 +461,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60dvh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sacred-gold" />
       </div>
     );
@@ -478,7 +478,7 @@ export default function AdminDashboard() {
   ] as const;
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 max-w-screen-2xl mx-auto">
+    <div className="min-h-[100dvh] pt-24 pb-16 px-4 max-w-screen-2xl mx-auto">
       {/* Page header */}
       <div className="flex items-center gap-3 mb-8">
         <Shield className="w-8 h-8 text-sacred-gold-dark" />
@@ -489,7 +489,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-8 border-b border-sacred-gold/30 pb-0">
+      <div className="flex gap-1 mb-8 border-b border-sacred-gold/30 pb-0 overflow-x-auto scrollbar-none">
         {tabs.map(t => (
           <button
             key={t.key}
@@ -875,7 +875,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Top pages */}
-          <div className="border border-sacred-gold/25 rounded-xl overflow-hidden bg-white/60">
+          <div className="border border-sacred-gold/25 rounded-xl bg-white/60">
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-sacred-gold/20 bg-sacred-gold/5">
               <TrendingUp className="w-4 h-4 text-sacred-gold-dark" />
               <h3 className="text-sm font-semibold text-sacred-gold-dark uppercase tracking-wider">
@@ -885,7 +885,7 @@ export default function AdminDashboard() {
             {!analyticsData || analyticsData.top_pages.length === 0 ? (
               <div className="py-8 text-center text-sm text-muted-foreground">{l('No page views recorded yet', 'अभी तक कोई पेज व्यू दर्ज नहीं हुआ')}</div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
                 <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/10 text-left text-xs text-muted-foreground uppercase tracking-wider">
@@ -1051,7 +1051,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Table */}
-          <div className="border border-sacred-gold/20 rounded-xl overflow-hidden bg-white/60">
+          <div className="border border-sacred-gold/20 rounded-xl bg-white/60">
             {feedbackItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <MessageSquare className="w-8 h-8 text-gray-200 mb-3" />
@@ -1059,7 +1059,7 @@ export default function AdminDashboard() {
                 <p className="text-xs text-muted-foreground mt-1">{l('Submissions will appear here', 'सबमिशन यहां दिखेंगे')}</p>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+              <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
                 <table className="table-sacred w-full text-sm">
                   <thead>
                     <tr className="border-b border-sacred-gold/20 bg-sacred-gold/5 text-left text-xs text-muted-foreground uppercase tracking-wider">

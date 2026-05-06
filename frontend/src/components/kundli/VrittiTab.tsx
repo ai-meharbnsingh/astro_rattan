@@ -191,7 +191,8 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
             <Compass className="w-4 h-4" />
             <span>{t('auto.tenthLord')}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '45%' }} />
               <col style={{ width: '55%' }} />
@@ -219,6 +220,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
               )}
             </tbody>
           </table>
+          </div>
           {placementEffect && (
             <div className="px-3 py-2 border-t border-border">
               <p className="text-xs text-foreground/80 leading-relaxed">{placementEffect}</p>
@@ -328,7 +330,8 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
             )}
           </div>
           {/* Key facts table */}
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '40%' }} />
               <col style={{ width: '60%' }} />
@@ -360,6 +363,7 @@ export default function VrittiTab({ kundliId, language, t }: Props) {
               )}
             </tbody>
           </table>
+          </div>
           <div className="px-3 py-3 border-t border-border space-y-2">
             {(navamsha.detailed_interpretation_en || navamsha.detailed_interpretation_hi) && (
               <p className="text-xs text-foreground/80 leading-relaxed">

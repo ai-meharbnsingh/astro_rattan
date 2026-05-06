@@ -128,7 +128,8 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
             <span>{t('auto.marakaPlanets')}</span>
             <span className="ml-auto text-[12px] font-normal opacity-80">{data.maraka_planets.length}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '14%' }} />
               <col style={{ width: '20%' }} />
@@ -161,6 +162,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -218,7 +220,8 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               {isHi ? data.transit_timing_indicators.summary_hi : data.transit_timing_indicators.summary_en}
             </div>
           )}
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '18%' }} />
               <col style={{ width: '8%' }} />
@@ -256,6 +259,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
           <SlokaRef ref={data.transit_timing_indicators.sloka_ref} language={language} />
         </div>
       )}
@@ -284,7 +288,8 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
           <div className="px-4 py-3">
             <p className="text-sm text-foreground leading-relaxed mb-3">{isHi ? data.dasha_gochara_timing.summary_hi : data.dasha_gochara_timing.summary_en}</p>
             {data.dasha_gochara_timing.signals.length > 0 && (
-              <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+              <div className="overflow-x-auto">
+              <table style={{ tableLayout: 'fixed', minWidth: '320px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                 <colgroup><col style={{ width: '18%' }} /><col style={{ width: '14%' }} /><col style={{ width: '68%' }} /></colgroup>
                 <thead><tr>
                   <th className={thCls}>{isHi ? 'दशा' : 'Dasha'}</th>
@@ -301,6 +306,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
@@ -381,7 +387,8 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
                 : 'Classical philosophical indicators — NOT death predictions.'}
             </p>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup><col style={{ width: '35%' }} /><col style={{ width: '65%' }} /></colgroup>
             <tbody>
               {data.moon_death_transit?.janma_nakshatra && <>
@@ -417,6 +424,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               </>}
             </tbody>
           </table>
+          </div>
           {data.moon_death_transit?.sloka_ref && <SlokaRef ref={data.moon_death_transit.sloka_ref} language={language} />}
         </div>
       )}
@@ -433,7 +441,8 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               </span>
             )}
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup><col style={{ width: '12%' }} /><col style={{ width: '12%' }} /><col style={{ width: '20%' }} /><col style={{ width: '56%' }} /></colgroup>
             <thead><tr>
               <th className={thCls}>{isHi ? 'प्रकार' : 'Type'}</th>
@@ -456,6 +465,7 @@ export default function LongevityTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
           <SlokaRef ref={data.lucky_time_estimate.sloka_ref} language={language} />
         </div>
       )}

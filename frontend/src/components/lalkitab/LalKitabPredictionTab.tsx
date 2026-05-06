@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import SafeStorage from '@/lib/storage';
 import { useLalKitab } from './LalKitabContext';
 import { Star, Info, ThumbsUp, Meh, AlertTriangle, TrendingUp, Scale, Shield, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { pickLang } from './safe-render';
@@ -156,7 +157,7 @@ export default function LalKitabPredictionTab() {
   useEffect(() => {
     if (!kundliId) return;
     try {
-      const cached = localStorage.getItem(storageKey);
+      const cached = SafeStorage.getItem('local', storageKey);
       if (cached) setFeedback(JSON.parse(cached));
     } catch { /* ignore */ }
 
@@ -164,7 +165,7 @@ export default function LalKitabPredictionTab() {
       .then((res: any) => {
         if (res?.feedback && typeof res.feedback === 'object') {
           setFeedback(res.feedback);
-          localStorage.setItem(storageKey, JSON.stringify(res.feedback));
+          SafeStorage.setItem('local', storageKey, JSON.stringify(res.feedback));
         }
       })
       .catch(() => { /* keep local */ });
@@ -174,7 +175,7 @@ export default function LalKitabPredictionTab() {
     if (!kundliId) return;
     const next = { ...feedback, [areaKey]: value };
     setFeedback(next);
-    localStorage.setItem(storageKey, JSON.stringify(next));
+    SafeStorage.setItem('local', storageKey, JSON.stringify(next));
     api.post('/api/lalkitab/predictions/feedback', { kundli_id: kundliId, feedback: next })
       .catch(() => { /* optimistic */ });
   }, [feedback, kundliId, storageKey]);

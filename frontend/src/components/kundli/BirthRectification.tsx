@@ -315,7 +315,8 @@ export default function BirthRectification({
               <span>{hi ? 'शीर्ष उम्मीदवार' : 'Top Candidates'}</span>
               <span className="ml-auto text-[12px] font-normal opacity-80">{result.candidates.length}</span>
             </div>
-            <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <div className="overflow-x-auto">
+            <table style={{ tableLayout: 'fixed', minWidth: '600px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
               <colgroup>
                 <col style={{ width: '6%' }} />
                 <col style={{ width: '14%' }} />
@@ -391,6 +392,7 @@ export default function BirthRectification({
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

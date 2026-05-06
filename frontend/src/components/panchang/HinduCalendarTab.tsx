@@ -590,7 +590,7 @@ export default function HinduCalendarTab({ language, t, latitude, longitude, loc
           onClick={closeLightbox}
         >
           <div
-            className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-card border border-border shadow-2xl"
+            className="relative w-full max-w-md max-h-[85dvh] overflow-y-auto rounded-2xl bg-card border border-border shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}

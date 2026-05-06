@@ -199,7 +199,7 @@ export default function AstrologerDashboard() {
   // ── Guard rendering ──
   if (!isAllowed) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center pt-28 pb-12 px-4">
+      <div className="min-h-[60dvh] flex items-center justify-center pt-28 pb-12 px-4">
         <div className="text-center max-w-md">
           <Sparkles className="w-12 h-12 text-sacred-gold mx-auto mb-3" />
           <h2 className="text-xl font-sans font-semibold text-sacred-gold mb-2">
@@ -663,6 +663,7 @@ function ClientsPanel({ clients, search, onSearchChange, isHi, onOpenClient }: {
         </div>
       ) : (
         <div className="rounded-xl border border-sacred-gold/20 bg-card overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="table-sacred w-full">
             <thead className="bg-sacred-gold/10 border-b border-sacred-gold/20">
               <tr className="text-left text-[11px] uppercase tracking-wider text-sacred-gold-dark">
@@ -703,6 +704,7 @@ function ClientsPanel({ clients, search, onSearchChange, isHi, onOpenClient }: {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

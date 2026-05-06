@@ -217,6 +217,7 @@
 .card-sacred {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid var(--cosmic-border);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 .card-sacred:hover {
@@ -330,4 +331,42 @@ textarea:focus-visible {
   outline: 2px solid var(--sacred-gold, #C4A35A);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* ai-chat-hide: placeholder for future AI-chat widget integration.
+   When an AI chat panel is active, toggle this class on the WhatsApp
+   widget to prevent visual overlap with chat input. Currently a no-op
+   (no active AI chat widget) — class is defined here so it is not a
+   footgun when toggled programmatically. */
+.ai-chat-hide {
+  /* display: none; — uncomment when AI chat panel is wired up */
+}
+
+/* Respect prefers-reduced-motion for CSS keyframe animations.
+   GSAP is paused globally in App.tsx — this covers CSS-only animations. */
+@media (prefers-reduced-motion: reduce) {
+  .chakra-float,
+  .transit-dot,
+  .wheel-spin {
+    animation: none !important;
+  }
+}
+
+/* N3: scrollbar-none utility — hides scrollbars cross-browser (used in AdminDashboard). */
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* XR14: Safari < 14.1 flex gap fallback (horizontal flex only). */
+@supports not (gap: 1rem) {
+  .flex.gap-1 > * + * { margin-left: 0.25rem; }
+  .flex.gap-2 > * + * { margin-left: 0.5rem; }
+  .flex.gap-3 > * + * { margin-left: 0.75rem; }
+  .flex.gap-4 > * + * { margin-left: 1rem; }
 }

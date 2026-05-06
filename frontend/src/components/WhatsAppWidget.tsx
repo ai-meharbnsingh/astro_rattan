@@ -17,15 +17,19 @@ export default function WhatsAppWidget() {
 
   const handleClick = () => {
     const msg = encodeURIComponent(t('whatsapp.prefill'));
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+    // noopener,noreferrer required for security; fallback to location.href
+    // handles Instagram/FB in-app browsers that block window.open popups.
+    const w = window.open(url, '_blank', 'noopener,noreferrer');
+    if (!w) window.location.href = url;
   };
 
   return (
-    <div className="fixed bottom-20 right-4 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-6 z-50 flex items-end gap-3 ai-chat-hide">
+    <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 sm:right-6 z-30 flex items-end gap-3 ai-chat-hide">
       {showTooltip && (
         <div className="relative bg-card border border-sacred-gold rounded-xl rounded-br-sm px-4 py-3 shadow-lg max-w-[200px] animate-fade-in">
-          <button onClick={() => setShowTooltip(false)} aria-label={t('common.close')} className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-secondary border border-sacred-gold flex items-center justify-center text-foreground hover:text-foreground">
-            <X className="w-3 h-3" />
+          <button onClick={() => setShowTooltip(false)} aria-label={t('common.close')} className="absolute -top-3 -right-3 w-11 h-11 rounded-full bg-secondary border border-sacred-gold flex items-center justify-center text-foreground hover:text-foreground">
+            <X className="w-4 h-4" />
           </button>
           <p className="text-sm text-muted-foreground">{t('whatsapp.tooltip')}</p>
         </div>

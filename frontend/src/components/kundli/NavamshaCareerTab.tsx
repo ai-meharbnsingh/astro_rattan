@@ -119,7 +119,8 @@ export default function NavamshaCareerTab({ kundliId, language }: Props) {
             <Compass className="w-4 h-4" />
             <span>{hi ? 'नवांश (D9) ग्रह स्थिति' : 'Navamsha (D9) Positions'}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '40%' }} />
               <col style={{ width: '60%' }} />
@@ -157,6 +158,7 @@ export default function NavamshaCareerTab({ kundliId, language }: Props) {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

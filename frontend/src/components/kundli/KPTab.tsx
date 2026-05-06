@@ -99,7 +99,8 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
           {t('auto.krishnamurtiPaddhati')}
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '640px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '10%' }} /><col style={{ width: '5%' }} />
             <col style={{ width: '10%' }} /><col style={{ width: '10%' }} />
@@ -139,6 +140,7 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* 2. Charts: Birth + Cuspal */}
@@ -186,7 +188,8 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
           {t('auto.bhavaDetailsPlacidus')}
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '580px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '16%' }} /><col style={{ width: '12%' }} />
             <col style={{ width: '12%' }} /><col style={{ width: '16%' }} />
@@ -223,6 +226,7 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* 4. Significations of Houses */}
@@ -231,7 +235,8 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('auto.significationsOfHous')}
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '6%' }} /><col style={{ width: '26%' }} />
               <col style={{ width: '20%' }} /><col style={{ width: '26%' }} />
@@ -259,6 +264,7 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -268,7 +274,8 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('auto.housesSignifiedByPla')}
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '15%' }} /><col style={{ width: '25%' }} />
               <col style={{ width: '20%' }} /><col style={{ width: '20%' }} />
@@ -293,6 +300,7 @@ export default function KPTab({ kpData, loadingKp, result, language, t }: KPTabP
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

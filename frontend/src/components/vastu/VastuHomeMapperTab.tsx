@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import SafeStorage from '@/lib/storage';
 import { LayoutGrid, Loader2, RotateCcw, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import HomeGrid from './HomeGrid';
@@ -72,16 +73,14 @@ const STORAGE_KEY = 'astro_vastu_room_layout';
 
 function loadSaved(): Record<string, string[]> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = SafeStorage.getItem('local', STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch { /* ignore */ }
   return {};
 }
 
 function saveToDisk(assignments: Record<string, string[]>) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
-  } catch { /* ignore */ }
+  SafeStorage.setItem('local', STORAGE_KEY, JSON.stringify(assignments));
 }
 
 type MapperMode = 'grid' | 'floorplan';
@@ -151,7 +150,7 @@ export default function VastuHomeMapperTab({ data, initialMode = 'grid' }: Props
     setAssignments({});
     setLayoutResult(null);
     setError('');
-    localStorage.removeItem(STORAGE_KEY);
+    SafeStorage.removeItem('local', STORAGE_KEY);
     // Clear floorplan state too
     setFpImageUrl(null);
     setFpWidth(0);

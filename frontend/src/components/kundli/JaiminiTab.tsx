@@ -71,7 +71,8 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
           <Crown className="w-4 h-4" />
           <span>{t('auto.charaKarakas7Variabl')}</span>
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '5%' }} /><col style={{ width: '28%' }} />
             <col style={{ width: '18%' }} /><col style={{ width: '12%' }} />
@@ -98,6 +99,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Special Lagnas */}
@@ -188,7 +190,8 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
             <Clock className="w-4 h-4" />
             <span>{t('auto.charaDashaSignBasedT')}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '520px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '5%' }} /><col style={{ width: '18%' }} />
               <col style={{ width: '12%' }} /><col style={{ width: '15%' }} />
@@ -255,6 +258,7 @@ export default function JaiminiTab({ data, loading }: JaiminiTabProps) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

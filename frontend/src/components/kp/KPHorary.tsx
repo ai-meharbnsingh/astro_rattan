@@ -238,7 +238,8 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                 <div className="bg-sacred-gold-dark text-white px-3 py-1.5 text-[13px] font-semibold">
                   {l('Planet Positions', 'ग्रह स्थिति')}
                 </div>
-                <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                <div className="overflow-x-auto">
+                <table style={{ tableLayout: 'fixed', minWidth: '600px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                   <colgroup>
                     <col style={{ width: '16%' }} /><col style={{ width: '14%' }} />
                     <col style={{ width: '16%' }} /><col style={{ width: '22%' }} />
@@ -271,6 +272,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
 
@@ -280,7 +282,8 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                 <div className="bg-sacred-gold-dark text-white px-3 py-1.5 text-[13px] font-semibold">
                   {l('House Cusps', 'भाव शीर्ष')}
                 </div>
-                <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                <div className="overflow-x-auto">
+                <table style={{ tableLayout: 'fixed', minWidth: '600px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                   <colgroup>
                     <col style={{ width: '8%' }} /><col style={{ width: '14%' }} />
                     <col style={{ width: '16%' }} /><col style={{ width: '22%' }} />
@@ -310,6 +313,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>
@@ -322,7 +326,8 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {l('Significator Analysis', 'कारक विश्लेषण')}
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '15%' }} /><col style={{ width: '35%' }} />
               <col style={{ width: '15%' }} /><col style={{ width: '35%' }} />
@@ -350,6 +355,7 @@ export default function KPHorary({ language, t }: KPHoraryProps) {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

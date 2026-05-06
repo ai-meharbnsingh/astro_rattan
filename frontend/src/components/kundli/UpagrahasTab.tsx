@@ -108,7 +108,8 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
         <div className={ohHeader}>
           <span>{isHi ? 'उपग्रह' : t('section.upagrahasTitle')}</span>
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '600px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '4%' }} />
             <col style={{ width: '16%' }} />
@@ -195,6 +196,7 @@ export default function UpagrahasTab({ upagrahasData, loadingUpagrahas, language
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

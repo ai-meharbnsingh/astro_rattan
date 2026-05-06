@@ -100,7 +100,8 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
             {isHi ? 'कोई गोचर वेध डेटा उपलब्ध नहीं है' : 'No Gochara Vedha data available for this chart'}
           </p>
         ) : (
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '720px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '10%' }} />
               <col style={{ width: '10%' }} />
@@ -189,6 +190,7 @@ export default function GochaVedhaTab({ kundliId, language }: Props) {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

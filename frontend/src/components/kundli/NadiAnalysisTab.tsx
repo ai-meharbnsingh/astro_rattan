@@ -126,7 +126,8 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
             <span>{isHi ? 'नाड़ी योग विश्लेषण' : 'Nadi Yoga Analysis'}</span>
             <span className="ml-auto text-[12px] font-normal opacity-80">{insights.length}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '9%' }} />
               <col style={{ width: '14%' }} />
@@ -188,6 +189,7 @@ export default function NadiAnalysisTab({ kundliId, language }: Props) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -269,7 +269,7 @@ export default function FeedbackPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60dvh]">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-sacred-gold" />
       </div>
     );
@@ -279,7 +279,7 @@ export default function FeedbackPage() {
   const closedCount = history.filter(f => f.status === 'closed').length;
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 max-w-2xl mx-auto">
+    <div className="min-h-[100dvh] pt-24 pb-16 px-4 max-w-2xl mx-auto">
 
       {/* Page header */}
       <div className="flex items-center gap-3 mb-8">

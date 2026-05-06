@@ -6,7 +6,7 @@ import { useTranslation } from '@/lib/i18n';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 // Vastu is WIP — only visible on staging (non-production hosts)
-const isProduction = typeof window !== 'undefined' && window.location.hostname === 'astrorattan.com';
+const isProduction = typeof window !== 'undefined' && (window.location.hostname === 'astrorattan.com' || window.location.hostname === 'www.astrorattan.com');
 
 const serviceLinks: { key: string; href: string; highlight?: boolean; megaMenuKey?: string }[] = [
   { key: 'nav.kundli', href: '/kundli', megaMenuKey: 'kundli' },
@@ -261,6 +261,7 @@ export default function Navigation() {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const megaMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const drawerCloseButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -288,6 +289,41 @@ export default function Navigation() {
     setOpenMegaMenu(null);
     setIsProfileMenuOpen(false);
   }, [location.pathname, location.search]);
+
+  // XR10: Escape key closes mobile drawer (a11y).
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
+  // XR10: Move focus to close button when drawer opens (minimal focus management).
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      // Small delay to allow the drawer to become visible before focusing.
+      const t = setTimeout(() => drawerCloseButtonRef.current?.focus(), 50);
+      return () => clearTimeout(t);
+    }
+  }, [isMobileMenuOpen]);
+
+  // H15: Lock body scroll when mobile drawer is open (iOS-safe fixed-position pattern).
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isMobileMenuOpen]);
 
   return (
     <>
@@ -529,6 +565,7 @@ export default function Navigation() {
 
               {/* Mobile toggle */}
               <button
+                ref={drawerCloseButtonRef}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden min-h-11 min-w-11 p-3 text-foreground ml-1"
                 aria-expanded={isMobileMenuOpen}
@@ -543,9 +580,15 @@ export default function Navigation() {
       </nav>
 
       {/* Mobile Menu */}
-      <div id="mobile-menu" className={`fixed inset-0 z-40 lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+      <div
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
+        className={`fixed inset-0 z-[60] lg:hidden transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}
+      >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-        <div className={`absolute top-20 left-4 right-4 bg-background backdrop-blur-lg border border-sacred-gold rounded-lg p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
+        <div className={`absolute top-full mt-2 left-4 right-4 bg-background backdrop-blur-lg border border-sacred-gold rounded-lg p-6 transition-all duration-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
           <div className="space-y-1">
             {serviceLinks.map((link) => {
               if (link.megaMenuKey && pageMegaMenus[link.megaMenuKey]) {

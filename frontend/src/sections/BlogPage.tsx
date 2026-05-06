@@ -200,7 +200,7 @@ export default function BlogPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[var(--parchment)]">
+    <div className="min-h-[100dvh] bg-[var(--parchment)] pt-24">
       <SEOHead pageKey="blog" jsonLd={[breadcrumbs]} />
       {/* Hero */}
       <div className="relative overflow-hidden bg-gradient-to-b from-sacred-gold/5 to-transparent">

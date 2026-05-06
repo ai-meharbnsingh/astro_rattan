@@ -76,7 +76,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-16 px-4 max-w-5xl mx-auto">
+    <div className="min-h-[100dvh] pt-28 pb-16 px-4 max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <div>
           <Heading as={1} variant={1}>

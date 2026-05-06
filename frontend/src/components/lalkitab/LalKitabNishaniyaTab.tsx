@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import SafeStorage from '@/lib/storage';
 import { 
   BookOpen, 
   Loader2, 
@@ -38,7 +39,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
   // Load confirmed IDs from localStorage
   useEffect(() => {
     if (!kundliId) return;
-    const stored = localStorage.getItem(`${STORAGE_KEY_PREFIX}${kundliId}`);
+    const stored = SafeStorage.getItem('local', `${STORAGE_KEY_PREFIX}${kundliId}`);
     if (stored) {
       try {
         setConfirmedIds(new Set(JSON.parse(stored)));
@@ -51,7 +52,7 @@ export default function LalKitabNishaniyaTab({ kundliId }: Props) {
   // Save confirmed IDs to localStorage
   useEffect(() => {
     if (!kundliId) return;
-    localStorage.setItem(`${STORAGE_KEY_PREFIX}${kundliId}`, JSON.stringify(Array.from(confirmedIds)));
+    SafeStorage.setItem('local', `${STORAGE_KEY_PREFIX}${kundliId}`, JSON.stringify(Array.from(confirmedIds)));
   }, [confirmedIds, kundliId]);
 
   useEffect(() => {

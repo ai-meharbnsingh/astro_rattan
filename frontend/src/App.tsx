@@ -14,11 +14,12 @@ function usePageTracking() {
       sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
       SafeStorage.setItem('session', '_asid', sid);
     }
+    const supportsKeepalive = (() => { try { return 'keepalive' in new Request(''); } catch { return false; } })();
     BrowserCompat.fetchWithRetry('/api/analytics/hit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: location.pathname, session_id: sid, referrer: document.referrer || null }),
-      keepalive: true,
+      ...(supportsKeepalive ? { keepalive: true } : {}),
     }, 1).catch(() => {});
   }, [location.pathname]);
 }
@@ -40,35 +41,40 @@ import { useAuth } from './hooks/useAuth';
 // before a deploy, dynamic imports for renamed chunks get 404s. Reloading fetches
 // the fresh index.html which references the new chunk hashes.
 function lazyWithReload<T extends React.ComponentType<any>>(
+  chunkKey: string,
   importFn: () => Promise<{ default: T }>
 ) {
   return lazy(() =>
     importFn().catch(() => {
-      // Avoid infinite reload loops: only reload once per session per key
-      const key = `_chunk_reload_${importFn.toString().slice(0, 60)}`;
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        window.location.reload();
-      }
+      // Avoid infinite reload loops: only reload once per session per key.
+      // Use explicit chunkKey (not importFn.toString()) — minification mangles
+      // function bodies → non-deterministic key → reload loop across deploys.
+      const key = `_chunk_reload_${chunkKey}`;
+      try {
+        if (!SafeStorage.getItem('session', key)) {
+          SafeStorage.setItem('session', key, '1');
+          window.location.reload();
+        }
+      } catch { window.location.reload(); }
       return new Promise<{ default: T }>(() => {}); // suspend until reload
     })
   );
 }
 
-const Panchang        = lazyWithReload(() => import('./sections/Panchang'));
-const KundliGenerator = lazyWithReload(() => import('./sections/KundliGenerator'));
-const AuthPage        = lazyWithReload(() => import('./sections/AuthPage'));
-const NumerologyTarot = lazyWithReload(() => import('./sections/NumerologyTarot'));
-const LalKitabPage    = lazyWithReload(() => import('./sections/LalKitabPage'));
-const AdminDashboard  = lazyWithReload(() => import('./sections/AdminDashboard'));
-const FeedbackPage    = lazyWithReload(() => import('./sections/FeedbackPage'));
-const Dashboard       = lazyWithReload(() => import('./sections/Dashboard'));
+const Panchang        = lazyWithReload('Panchang',        () => import('./sections/Panchang'));
+const KundliGenerator = lazyWithReload('KundliGenerator', () => import('./sections/KundliGenerator'));
+const AuthPage        = lazyWithReload('AuthPage',        () => import('./sections/AuthPage'));
+const NumerologyTarot = lazyWithReload('NumerologyTarot', () => import('./sections/NumerologyTarot'));
+const LalKitabPage    = lazyWithReload('LalKitabPage',    () => import('./sections/LalKitabPage'));
+const AdminDashboard  = lazyWithReload('AdminDashboard',  () => import('./sections/AdminDashboard'));
+const FeedbackPage    = lazyWithReload('FeedbackPage',    () => import('./sections/FeedbackPage'));
+const Dashboard       = lazyWithReload('Dashboard',       () => import('./sections/Dashboard'));
 // P3.5 — Professional client management dashboard (astrologer role)
-const AstrologerDashboard = lazyWithReload(() => import('./sections/AstrologerDashboard'));
-const ClientProfile   = lazyWithReload(() => import('./sections/ClientProfile'));
-const VastuShastraPage = lazyWithReload(() => import('./sections/VastuShastraPage'));
-const HoroscopePage    = lazyWithReload(() => import('./sections/HoroscopePage'));
-const BlogPage         = lazyWithReload(() => import('./sections/BlogPage'));
+const AstrologerDashboard = lazyWithReload('AstrologerDashboard', () => import('./sections/AstrologerDashboard'));
+const ClientProfile   = lazyWithReload('ClientProfile',   () => import('./sections/ClientProfile'));
+const VastuShastraPage = lazyWithReload('VastuShastraPage', () => import('./sections/VastuShastraPage'));
+const HoroscopePage    = lazyWithReload('HoroscopePage',   () => import('./sections/HoroscopePage'));
+const BlogPage         = lazyWithReload('BlogPage',        () => import('./sections/BlogPage'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -104,7 +110,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
         lang = (typeof window !== 'undefined' && SafeStorage.getItem('local', 'astrorattan-language') === 'hi') ? 'hi' : 'en';
       } catch { lang = 'en'; }
       return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <div className="flex flex-col items-center justify-center min-h-[60dvh] text-center px-4">
           <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
             <span className="text-3xl">⚠️</span>
           </div>
@@ -133,7 +139,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 function NotFound() {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <div className="pt-24 flex flex-col items-center justify-center min-h-[60dvh] text-center px-4">
       <h2 className="text-6xl font-sans text-sacred-gold-dark mb-4">404</h2>
       <p className="text-xl text-gray-600 mb-6">{t('app.notFound')}</p>
       <Link to="/" className="px-6 py-2 border border-sacred-gold text-sacred-gold-dark hover:bg-gray-50 dark hover:text-background transition-all">
@@ -185,7 +191,7 @@ function SmartHome() {
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
+  if (loading) return <div className="flex items-center justify-center min-h-[60dvh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
@@ -193,13 +199,13 @@ function RequireAuth({ children }: { children: ReactNode }) {
 function AppInner() {
   usePageTracking();
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-background text-foreground overflow-x-hidden">
       <div className="relative">
       <Navigation />
 
       <main>
         <ErrorBoundary>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-[60dvh]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600"></div></div>}>
         <Routes>
           <Route path="/" element={<SmartHome />} />
           <Route path="/about" element={<HomePage />} />
@@ -207,12 +213,12 @@ function AppInner() {
           {/* P3.5 — Professional client management dashboard for astrologers */}
           <Route path="/astrologer" element={<RequireAuth><ErrorBoundary><AstrologerDashboard /></ErrorBoundary></RequireAuth>} />
           <Route path="/astrologer/dashboard" element={<RequireAuth><ErrorBoundary><AstrologerDashboard /></ErrorBoundary></RequireAuth>} />
-          <Route path="/client/:clientId" element={<RequireAuth><ClientProfile /></RequireAuth>} />
+          <Route path="/client/:clientId" element={<RequireAuth><ErrorBoundary><ClientProfile /></ErrorBoundary></RequireAuth>} />
           <Route path="/kundli" element={<ErrorBoundary><KundliGenerator /></ErrorBoundary>} />
           <Route path="/panchang" element={<ErrorBoundary><Panchang /></ErrorBoundary>} />
           <Route path="/horoscope" element={<ErrorBoundary><HoroscopePage /></ErrorBoundary>} />
-          <Route path="/login" element={<AuthPage />} />
-          <Route path="/register" element={<AuthPage />} />
+          <Route path="/login" element={<ErrorBoundary><AuthPage /></ErrorBoundary>} />
+          <Route path="/register" element={<ErrorBoundary><AuthPage /></ErrorBoundary>} />
           <Route path="/numerology" element={<RequireAuth><ErrorBoundary><NumerologyTarot /></ErrorBoundary></RequireAuth>} />
           <Route path="/lal-kitab" element={<RequireAuth><ErrorBoundary><LalKitabPage /></ErrorBoundary></RequireAuth>} />
           <Route path="/vastu" element={<RequireAuth><ErrorBoundary><VastuShastraPage /></ErrorBoundary></RequireAuth>} />

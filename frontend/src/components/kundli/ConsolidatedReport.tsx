@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Download, Printer, Loader2, CheckCircle, Shield } from 'lucide-react';
+import SafeStorage from '@/lib/storage';
+import { BrowserCompat } from '@/lib/browserCompat';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { api, formatDate } from '@/lib/api';
@@ -203,25 +205,29 @@ export default function ConsolidatedReport({
     }
   }, [open, result?.id, fetchTransit, fetchD10, fetchYogini, fetchSadesati, fetchKp, fetchVarshphal, fetchUpagrahas, fetchSodashvarga, fetchAspects]);
 
+  const _pdfAnchorRef = useRef<HTMLAnchorElement | null>(null);
+
   const handleDownloadPDF = async () => {
     try {
-      const token = localStorage.getItem('astrorattan_token');
+      const token = SafeStorage.getItem('local', 'astrorattan_token');
       const API_BASE = import.meta.env.VITE_API_URL || '';
-      const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/pdf?lang=${language}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const resp = await BrowserCompat.fetchWithRetry(
+        `${API_BASE}/api/kundli/${result.id}/pdf?lang=${language}`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+        2,
+        20000
+      );
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ detail: resp.statusText }));
         throw new Error(err.detail || 'PDF download failed');
       }
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
+      // Use a detached anchor — avoids StrictMode double-mount DOM leak
       const a = document.createElement('a');
       a.href = url;
       a.download = `kundli-${result.person_name || 'report'}.pdf`;
-      document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (e: any) {
       /* PDF download failed — alert shown to user */
@@ -302,7 +308,7 @@ export default function ConsolidatedReport({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[98vw] sm:max-w-[98vw] max-h-[95vh] w-full bg-card overflow-y-auto p-0 border-border"
+        className="max-w-[98vw] sm:max-w-[98vw] max-h-[95dvh] w-full bg-card overflow-y-auto p-0 border-border"
         showCloseButton={false}
       >
         {/* Print styles */}

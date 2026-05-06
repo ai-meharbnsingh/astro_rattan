@@ -198,7 +198,8 @@ export default function PanchadhaMaitriTab({ kundliId, language }: Props) {
             <span>{hi ? 'पंचधा विश्लेषण' : 'Five-fold Analysis'}</span>
             <span className="ml-auto text-[12px] font-normal opacity-80">{friendships.length}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '16%' }} />
               <col style={{ width: '13%' }} />
@@ -255,6 +256,7 @@ export default function PanchadhaMaitriTab({ kundliId, language }: Props) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       ) : (
         <div className="p-6 text-center text-muted-foreground text-sm italic">

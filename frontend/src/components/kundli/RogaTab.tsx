@@ -216,7 +216,8 @@ export default function RogaTab({ kundliId, language, t }: Props) {
         {data.special_yogas_detected.length === 0 ? (
           <div className="px-4 py-3 text-sm text-emerald-700">{t('auto.noRogaYogas')}</div>
         ) : (
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '20%' }} />
               <col style={{ width: '30%' }} />
@@ -254,6 +255,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
@@ -267,7 +269,8 @@ export default function RogaTab({ kundliId, language, t }: Props) {
         {data.general_tendencies.length === 0 ? (
           <div className="px-4 py-3 text-sm text-muted-foreground">{t('auto.noMajorTendencies')}</div>
         ) : (
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '12%' }} />
               <col style={{ width: '8%' }} />
@@ -300,6 +303,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
@@ -310,7 +314,8 @@ export default function RogaTab({ kundliId, language, t }: Props) {
             <ShieldAlert className="w-4 h-4" />
             <span>{isHi ? 'नौ ग्रह रोग विश्लेषण' : 'Planet Affliction Disease Matrix'}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '14%' }} />
               <col style={{ width: '22%' }} />
@@ -351,6 +356,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -389,7 +395,8 @@ export default function RogaTab({ kundliId, language, t }: Props) {
             <MapPin className="w-4 h-4" />
             <span>{t('auto.bodyPartsAffected')}</span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '320px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '10%' }} />
               <col style={{ width: '35%' }} />
@@ -412,6 +419,7 @@ export default function RogaTab({ kundliId, language, t }: Props) {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

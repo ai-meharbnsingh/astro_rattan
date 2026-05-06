@@ -140,7 +140,7 @@ export default function KundliSummaryModal({
           </div>
         </div>
 
-        <div className="p-4 max-h-[80vh] overflow-y-auto space-y-4">
+        <div className="p-4 max-h-[80dvh] overflow-y-auto space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-[#111] rounded-xl border border-[var(--sacred-gold-hex)]">
             <InfoCell icon={<User className="w-4 h-4 text-[#d4af37]" />} label={t('auth.fullName')} value={result?.person_name || data.name} />
             <InfoCell icon={<Calendar className="w-4 h-4 text-[#d4af37]" />} label={t('kundli.birthDate')} value={result?.birth_date || data.date} />

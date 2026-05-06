@@ -156,7 +156,7 @@ export default function ClientProfile() {
     setEditSaving(false);
   };
 
-  if (loading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
+  if (loading) return <div className="flex items-center justify-center min-h-[60dvh]"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-600" /></div>;
   if (!client) return <div className="text-center py-20 text-foreground">{t('client.notFound')}</div>;
 
   const birthState = {
@@ -166,7 +166,7 @@ export default function ClientProfile() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-4 max-w-4xl mx-auto">
+    <div className="min-h-[100dvh] pt-24 pb-16 px-4 max-w-4xl mx-auto">
       {/* Back — astrologers land on /astrologer CRM; everyone else /dashboard */}
       <button onClick={() => navigate(isAstrologer ? '/astrologer' : '/dashboard')} className="flex items-center gap-1 text-sm text-foreground hover:text-sacred-gold-dark mb-6">
         <ArrowLeft className="w-4 h-4" /> {t('client.backToDashboard')}
@@ -921,7 +921,8 @@ function ClientPaymentsSection({ clientId }: { clientId: string }) {
           <p className="text-sm text-muted-foreground">{l('No payments recorded yet.', 'अभी तक कोई भुगतान दर्ज नहीं।')}</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-sacred-gold/20 bg-card overflow-hidden">
+        <div className="rounded-xl border border-sacred-gold/20 bg-card">
+          <div className="overflow-x-auto">
           <table className="table-sacred w-full">
             <thead className="bg-sacred-gold/5 border-b border-sacred-gold/20">
               <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -948,6 +949,7 @@ function ClientPaymentsSection({ clientId }: { clientId: string }) {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

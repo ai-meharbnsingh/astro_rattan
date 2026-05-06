@@ -64,7 +64,8 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
       <div className={ohHeader}>
         <span>{isHi ? 'भाव स्वामित्व' : 'House Lordships'}</span>
       </div>
-      <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+      <div className="overflow-x-auto">
+      <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
         <colgroup>
           <col style={{ width: '8%' }} />
           <col style={{ width: '16%' }} />
@@ -104,6 +105,7 @@ export default function LordshipsTab({ planets, houses }: LordshipsTabProps) {
           })}
         </tbody>
       </table>
+      </div>
       </div>
     </div>
   );

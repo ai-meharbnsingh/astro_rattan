@@ -21,15 +21,17 @@ export default class LalKitabErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('❌ LalKitab Error Boundary caught:', error.message);
-    console.error('Error Info:', errorInfo);
-    console.log('Component Stack:', errorInfo.componentStack);
+    if (import.meta.env.DEV) {
+      console.error('❌ LalKitab Error Boundary caught:', error.message);
+      console.error('Error Info:', errorInfo);
+      console.log('Component Stack:', errorInfo.componentStack);
 
-    // Log specifically for React Error #31 (bilingual object rendering)
-    if (error.message.includes('with keys')) {
-      console.error('⚠️  REACT ERROR #31 - Bilingual object render attempt detected');
-      console.error('This means somewhere we\'re trying to render {hi: "...", en: "..."} directly');
-      console.error('Stack:', errorInfo.componentStack);
+      // Log specifically for React Error #31 (bilingual object rendering)
+      if (error.message.includes('with keys')) {
+        console.error('⚠️  REACT ERROR #31 - Bilingual object render attempt detected');
+        console.error('This means somewhere we\'re trying to render {hi: "...", en: "..."} directly');
+        console.error('Stack:', errorInfo.componentStack);
+      }
     }
 
     this.setState({ errorInfo });

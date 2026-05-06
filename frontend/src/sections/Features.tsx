@@ -5,6 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { api } from '@/lib/api';
 import { useTranslation } from '@/lib/i18n';
+import SafeStorage from '@/lib/storage';
+import { BrowserCompat } from '@/lib/browserCompat';
 import { AlertTriangle, Calendar, CheckCircle, ChevronDown, ChevronUp, Clock, HelpCircle, Info, Loader2, MapPin, MessageCircle, Moon, Sparkles, Star, Sun, X, XCircle } from 'lucide-react';
 import { Heading } from '@/components/ui/heading';
 import KundliChartSVG from '@/components/KundliChartSVG';
@@ -471,9 +473,9 @@ export default function Features() {
   const selectLocation = (result: { name: string; lat: number; lon: number }) => {
     const shortName = result.name.split(',').slice(0, 2).join(',').trim();
     setLocationLabel(shortName);
-    localStorage.setItem('ar_location_label', shortName);
-    localStorage.setItem('ar_location_lat', String(result.lat));
-    localStorage.setItem('ar_location_lon', String(result.lon));
+    SafeStorage.setItem('local', 'ar_location_label', shortName);
+    SafeStorage.setItem('local', 'ar_location_lat', String(result.lat));
+    SafeStorage.setItem('local', 'ar_location_lon', String(result.lon));
     setLatitude(result.lat);
     setLongitude(result.lon);
     setLocSearchOpen(false);
@@ -580,12 +582,15 @@ export default function Features() {
         const lon = Number(pos.coords.longitude.toFixed(4));
         setLatitude(lat);
         setLongitude(lon);
-        localStorage.setItem('ar_location_lat', String(lat));
-        localStorage.setItem('ar_location_lon', String(lon));
+        SafeStorage.setItem('local', 'ar_location_lat', String(lat));
+        SafeStorage.setItem('local', 'ar_location_lon', String(lon));
         try {
-          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`, {
-            headers: { Accept: 'application/json' },
-          });
+          const r = await BrowserCompat.fetchWithRetry(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
+            { headers: { Accept: 'application/json' } },
+            1,
+            8000
+          );
           if (!r.ok) return;
           const j: any = await r.json();
           const a = j?.address || {};
@@ -596,12 +601,12 @@ export default function Features() {
           if (parts.length > 0) {
             const label = parts.join(', ');
             setLocationLabel(label);
-            localStorage.setItem('ar_location_label', label);
+            SafeStorage.setItem('local', 'ar_location_label', label);
           }
         } catch {
           const fallback = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
           setLocationLabel(fallback);
-          localStorage.setItem('ar_location_label', fallback);
+          SafeStorage.setItem('local', 'ar_location_label', fallback);
         }
       },
       () => {},
@@ -1046,7 +1051,8 @@ export default function Features() {
                     <span>{l('Planetary Positions', 'ग्रह स्थिति')}</span>
                     <span className="text-xs font-normal opacity-80">{l('Lagna', 'लग्न')}: {hi ? (SIGN_HI[currentSky.lagna_sign] || currentSky.lagna_sign) : currentSky.lagna_sign}</span>
                   </div>
-                  <table className="table-sacred w-full text-sm">
+                  <div className="overflow-x-auto">
+                  <table className="table-sacred w-full text-sm" style={{ minWidth: '480px' }}>
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-3 py-2">{l('Planet', 'ग्रह')}</th>
@@ -1102,6 +1108,7 @@ export default function Features() {
                       })}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1175,7 +1182,7 @@ export default function Features() {
                         : 'border border-sacred-gold/35 text-foreground hover:bg-sacred-gold/10'
                     }`}>
                     <span className="block text-base mb-0.5">{q.emoji}</span>
-                    {l(q.en, q.hi)}
+                    <span className="block text-[10px] leading-tight truncate w-full text-center" title={l(q.en, q.hi)}>{l(q.en, q.hi)}</span>
                   </button>
                 ))}
               </div>
@@ -1717,7 +1724,8 @@ export default function Features() {
                   {l('Hora Table', 'होरा तालिका')}
                 </div>
                 <div className="p-2.5 max-h-[400px] overflow-y-auto">
-                  <table className="table-sacred w-full text-sm">
+                  <div className="overflow-x-auto">
+                  <table className="table-sacred w-full text-sm" style={{ minWidth: '480px' }}>
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-2 py-1.5">{l('Hora', 'होरा')}</th>
@@ -1741,6 +1749,7 @@ export default function Features() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             )}
@@ -1752,7 +1761,8 @@ export default function Features() {
                   {l('Choghadiya', 'चौघड़िया')}
                 </div>
                 <div className="p-2.5 max-h-[400px] overflow-y-auto">
-                  <table className="table-sacred w-full text-sm">
+                  <div className="overflow-x-auto">
+                  <table className="table-sacred w-full text-sm" style={{ minWidth: '480px' }}>
                     <thead>
                       <tr className="bg-sacred-gold/10 text-sacred-gold-dark text-xs uppercase tracking-wider">
                         <th className="text-left px-2 py-1.5">{l('Name', 'नाम')}</th>
@@ -1804,6 +1814,7 @@ export default function Features() {
                       })}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </div>
             )}

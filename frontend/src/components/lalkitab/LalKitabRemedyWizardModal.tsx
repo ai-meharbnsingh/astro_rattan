@@ -285,7 +285,7 @@ export default function LalKitabRemedyWizardModal({ kundliId, isHi, open, onClos
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative w-full max-w-4xl bg-card rounded-2xl border-2 border-sacred-gold/40 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-card rounded-2xl border-2 border-sacred-gold/40 shadow-2xl max-h-[90dvh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-card border-b border-sacred-gold/20 px-5 py-3 flex items-center gap-3">
           <Wand2 className="w-5 h-5 text-sacred-gold" />

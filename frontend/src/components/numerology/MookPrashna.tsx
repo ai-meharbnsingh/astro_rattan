@@ -120,7 +120,7 @@ export default function MookPrashna({ mode }: Props) {
           <p className="text-sm font-medium text-foreground text-center">
             {isHi ? '9 अंक लिखें (0 से 9)' : 'Enter 9 numbers (0 to 9)'}
           </p>
-          <div className="grid grid-cols-9 gap-2">
+          <div className="grid grid-cols-9 gap-1 sm:gap-2">
             {digits.map((d, i) => (
               <Input
                 key={i}
@@ -128,7 +128,7 @@ export default function MookPrashna({ mode }: Props) {
                 onChange={(e) => handleChange(i, e.target.value)}
                 maxLength={1}
                 inputMode="numeric"
-                className="text-center text-lg font-bold p-0 h-12 border-sacred-gold/40 focus:border-sacred-gold"
+                className="text-center text-lg font-bold p-0 h-12 min-w-0 w-full border-sacred-gold/40 focus:border-sacred-gold"
                 placeholder="·"
               />
             ))}

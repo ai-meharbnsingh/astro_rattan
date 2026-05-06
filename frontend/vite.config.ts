@@ -4,7 +4,7 @@ import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -12,6 +12,11 @@ export default defineConfig({
     },
   },
   build: {
+    // Explicit transpile target — without this Vite defaults to 'modules' and
+    // esbuild may emit ES2024 syntax (e.g. Promise.withResolvers from React 19)
+    // that breaks Safari 13 / Chrome 79 / Android WebView < 80 (~3–5% of
+    // Indian mobile traffic). es2020 covers Safari 14+, Chrome 80+, FF 78+.
+    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
     rollupOptions: {
       output: {
         manualChunks: (id) => {

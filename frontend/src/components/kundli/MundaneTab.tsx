@@ -636,7 +636,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       />
                     </div>
                   </div>
-                  <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                  <div className="overflow-x-auto">
+              <table style={{ tableLayout: 'fixed', minWidth: '360px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                     <colgroup>
                       <col style={{ width: '30%' }} /><col style={{ width: '30%' }} /><col style={{ width: '20%' }} /><col style={{ width: '20%' }} />
                     </colgroup>
@@ -659,6 +660,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                       ))}
                     </tbody>
                   </table>
+              </div>
                 </div>
               ) : (
                 <DataUnavailable lang={lang} />
@@ -695,7 +697,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                   />
                 </div>
               </div>
-              <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+              <div className="overflow-x-auto">
+              <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                 <colgroup>
                   <col style={{ width: '22%' }} /><col style={{ width: '22%' }} /><col style={{ width: '12%' }} /><col style={{ width: '44%' }} />
                 </colgroup>
@@ -722,6 +725,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           ) : !loading && (
             <DataUnavailable lang={lang} />
@@ -933,7 +937,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           {loadingEclipse ? (
             <LoadingSpinner lang={lang} />
           ) : eclipseData && eclipseData.length > 0 ? (
-            <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <div className="overflow-x-auto">
+            <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
               <colgroup>
                 <col style={{ width: '16%' }} /><col style={{ width: '14%' }} /><col style={{ width: '14%' }} /><col style={{ width: '10%' }} /><col style={{ width: '46%' }} />
               </colgroup>
@@ -962,6 +967,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <DataUnavailable lang={lang} />
           )}
@@ -978,7 +984,8 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
           {loadingIngress ? (
             <LoadingSpinner lang={lang} />
           ) : ingressData && ingressData.length > 0 ? (
-            <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+            <div className="overflow-x-auto">
+            <table style={{ tableLayout: 'fixed', minWidth: '360px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
               <colgroup>
                 <col style={{ width: '28%' }} /><col style={{ width: '22%' }} /><col style={{ width: '50%' }} />
               </colgroup>
@@ -999,6 +1006,7 @@ export default function MundaneTab({ language: languageProp }: MundaneTabProps) 
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <DataUnavailable lang={lang} />
           )}

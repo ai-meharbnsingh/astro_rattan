@@ -1,3 +1,5 @@
+import SafeStorage from './storage';
+
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 /** Map raw/technical error messages to user-friendly text */
@@ -30,7 +32,7 @@ function shouldAttemptRefresh(endpoint: string): boolean {
 }
 
 async function tryRefreshToken(): Promise<boolean> {
-  const refreshToken = localStorage.getItem('astrorattan_refresh_token');
+  const refreshToken = SafeStorage.getItem('local', 'astrorattan_refresh_token');
   if (!refreshToken) return false;
 
   try {
@@ -41,8 +43,8 @@ async function tryRefreshToken(): Promise<boolean> {
     });
     if (!res.ok) return false;
     const data = await res.json();
-    localStorage.setItem('astrorattan_token', data.token);
-    localStorage.setItem('astrorattan_refresh_token', data.refresh_token);
+    SafeStorage.setItem('local', 'astrorattan_token', data.token);
+    SafeStorage.setItem('local', 'astrorattan_refresh_token', data.refresh_token);
     return true;
   } catch {
     return false;
@@ -72,7 +74,7 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 2): P
 }
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const token = localStorage.getItem('astrorattan_token');
+  const token = SafeStorage.getItem('local', 'astrorattan_token');
   const headers = new Headers(options.headers || {});
   if (token) headers.set('Authorization', `Bearer ${token}`);
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
@@ -90,7 +92,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     const refreshed = await refreshPromise;
     if (refreshed) {
       // Retry original request with new token
-      const newToken = localStorage.getItem('astrorattan_token');
+      const newToken = SafeStorage.getItem('local', 'astrorattan_token');
       const retryHeaders = new Headers(options.headers || {});
       if (newToken) retryHeaders.set('Authorization', `Bearer ${newToken}`);
       if (!(options.body instanceof FormData) && !retryHeaders.has('Content-Type')) {
@@ -106,8 +108,8 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
       return ct.includes('application/json') ? retryRes.json() : retryRes.text();
     }
     // Refresh failed — clear stale tokens, throw (don't redirect — let components handle it)
-    localStorage.removeItem('astrorattan_token');
-    localStorage.removeItem('astrorattan_refresh_token');
+    SafeStorage.removeItem('local', 'astrorattan_token');
+    SafeStorage.removeItem('local', 'astrorattan_refresh_token');
     throw new Error(friendlyError('Not authenticated'));
   }
 

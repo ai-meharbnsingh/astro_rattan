@@ -336,8 +336,8 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
             {isHi ? 'आयुर्दाय विरोधाभास निराकरण (अ. 13)' : 'Lifespan Conflict Resolution (Adh. 13)'}
           </h3>
           {/* Three-system comparison table */}
-          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden mb-4">
-            <table className="table-sacred w-full text-sm">
+          <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent mb-4">
+            <table className="table-sacred w-full text-sm" style={{ minWidth: '280px' }}>
               <thead>
                 <tr className="border-b border-sacred-gold/20">
                   <th className="text-left py-1 pr-4 text-muted-foreground font-medium text-xs uppercase tracking-wide">
@@ -434,8 +434,8 @@ export default function LifespanTab({ kundliId, language, t }: Props) {
             </div>
           )}
           {avPindayu.planet_contributions && (avPindayu.planet_contributions as any[]).length > 0 && (
-            <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
-              <table className="table-sacred w-full text-xs">
+            <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
+              <table className="table-sacred w-full text-xs" style={{ minWidth: '320px' }}>
                 <thead>
                   <tr className="border-b border-sacred-gold/20">
                     <th className="text-left py-1 pr-3 text-muted-foreground font-medium">{isHi ? 'ग्रह' : 'Planet'}</th>

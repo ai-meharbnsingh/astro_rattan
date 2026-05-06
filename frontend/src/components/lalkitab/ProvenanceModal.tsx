@@ -136,7 +136,7 @@ export default function ProvenanceModal({ open, onClose, highlight }: Provenance
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-sacred-gold/20 shadow-2xl"
+        className="relative w-full max-w-2xl max-h-[90dvh] overflow-y-auto rounded-2xl bg-white border border-sacred-gold/20 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

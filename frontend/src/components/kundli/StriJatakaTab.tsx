@@ -198,7 +198,8 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
           <Info className="w-4 h-4" />
           <span>{t('auto.seventhHouseAnalysis')}</span>
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '40%' }} />
             <col style={{ width: '60%' }} />
@@ -218,6 +219,7 @@ export default function StriJatakaTab({ kundliId, language, t }: Props) {
             ))}
           </tbody>
         </table>
+        </div>
         {(sa.interpretation_en || sa.interpretation_hi) && (
           <div className="px-3 py-2 border-t border-border">
             <p className="text-xs text-foreground/80 leading-relaxed">

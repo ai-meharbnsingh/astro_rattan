@@ -107,7 +107,8 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
           <Star className="w-4 h-4" />
           <span>{isHi ? 'शुभ संकेतक' : 'Lucky Indicators'}</span>
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '38%' }} />
             <col style={{ width: '62%' }} />
@@ -158,6 +159,7 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Do's and Don'ts */}
@@ -211,7 +213,8 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
               {gemstoneName}
             </span>
           </div>
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '38%' }} />
               <col style={{ width: '62%' }} />
@@ -241,6 +244,7 @@ export default function TransitLuckyTab({ kundliId, language }: Props) {
               )}
             </tbody>
           </table>
+          </div>
           <div className="px-4 py-2 border-t border-border text-[11px] text-muted-foreground italic">
             {isHi ? 'चन्द्र राशि स्वामी के आधार पर चयनित' : 'Selected based on Moon sign ruling planet'}
           </div>

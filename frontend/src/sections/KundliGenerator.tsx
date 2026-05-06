@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
 import { formatDate, api } from '@/lib/api';
+import SafeStorage from '@/lib/storage';
+import { BrowserCompat } from '@/lib/browserCompat';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heading } from '@/components/ui/heading';
@@ -300,7 +302,7 @@ export default function KundliGenerator() {
     return (
       <>
         <SEOHead pageKey="kundli" jsonLd={[breadcrumbs]} />
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-[60dvh]">
           <Loader2 className="w-8 h-8 animate-spin text-sacred-gold" />
         </div>
       </>
@@ -389,12 +391,15 @@ export default function KundliGenerator() {
               className="bg-gradient-to-r from-sacred-gold to-sacred-gold-dark text-white hover:from-sacred-gold/90 hover:to-sacred-gold-dark/90 font-semibold border border-sacred-gold-dark/30 shadow-md"
               onClick={async () => {
                 if (!result?.id) return;
-                const token = localStorage.getItem('astrorattan_token');
+                const token = SafeStorage.getItem('local', 'astrorattan_token');
                 const API_BASE = import.meta.env.VITE_API_URL || '';
                 try {
-                  const resp = await fetch(`${API_BASE}/api/kundli/${result.id}/full-report?lang=${language}`, {
-                    headers: token ? { Authorization: `Bearer ${token}` } : {},
-                  });
+                  const resp = await BrowserCompat.fetchWithRetry(
+                    `${API_BASE}/api/kundli/${result.id}/full-report?lang=${language}`,
+                    { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+                    2,
+                    20000
+                  );
                   if (!resp.ok) {
                     const err = await resp.json().catch(() => ({ detail: resp.statusText }));
                     throw new Error(err.detail || 'PDF download failed');
@@ -456,7 +461,7 @@ export default function KundliGenerator() {
                       key={group.category}
                       onMouseEnter={() => setExpandedCategory(group.category)}
                       onClick={() => setExpandedCategory(isExpanded ? null : group.category)}
-                      className={`min-h-[42px] px-1 py-2 rounded-md text-[11px] md:text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
+                      className={`min-h-[44px] px-1 py-2 rounded-md text-[11px] md:text-xs font-semibold flex items-center justify-center gap-1 transition-all ${
                         isCatActive
                           ? 'bg-sacred-gold-dark text-white shadow-md'
                           : isExpanded
@@ -892,8 +897,8 @@ export default function KundliGenerator() {
 
         {/* JHora-style Fullscreen Overlay */}
         {jhoraOpen && (
-          <div className="fixed inset-0 z-[9999] bg-parchment w-screen h-screen">
-            <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 p-1.5 hover:bg-black rounded text-sacred-gold text-sm font-bold" title={t('common.close')}>
+          <div className="fixed inset-0 z-[9999] bg-parchment w-screen h-[100dvh]">
+            <button onClick={() => setJhoraOpen(false)} className="absolute top-2 right-3 z-10 h-11 w-11 inline-flex items-center justify-center hover:bg-black/20 rounded text-sacred-gold font-bold" title={t('common.close')}>
               <X className="w-5 h-5" />
             </button>
             <JHoraKundliView

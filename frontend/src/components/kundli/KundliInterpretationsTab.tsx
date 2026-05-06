@@ -193,7 +193,8 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
           icon={Sparkles}
           count={lifeRows.length}
         >
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '280px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '15%' }} />
               <col style={{ width: '85%' }} />
@@ -218,6 +219,7 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
               ))}
             </tbody>
           </table>
+          </div>
         </OhSection>
       )}
 
@@ -228,7 +230,8 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
           icon={Star}
           count={pihPlanets.length}
         >
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '320px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '13%' }} />
               <col style={{ width: '44%' }} />
@@ -262,6 +265,7 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
               })}
             </tbody>
           </table>
+          </div>
         </OhSection>
       )}
 
@@ -272,7 +276,8 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
           icon={BookOpen}
           count={dashaPlanets.length}
         >
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '13%' }} />
               <col style={{ width: '39%' }} />
@@ -316,6 +321,7 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
               })}
             </tbody>
           </table>
+          </div>
         </OhSection>
       )}
 
@@ -326,7 +332,8 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
           icon={Gem}
           count={gemEntries.length}
         >
-          <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+          <div className="overflow-x-auto">
+          <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
             <colgroup>
               <col style={{ width: '11%' }} />
               <col style={{ width: '17%' }} />
@@ -362,6 +369,7 @@ export default function KundliInterpretationsTab({ kundliId, language }: Props) 
               })}
             </tbody>
           </table>
+          </div>
         </OhSection>
       )}
     </div>

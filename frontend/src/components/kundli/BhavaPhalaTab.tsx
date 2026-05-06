@@ -68,7 +68,8 @@ function PlacementTable({ rows, isHi, language, t }: { rows: PlanetPlacement[]; 
     );
   }
   return (
-    <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+    <div className="overflow-x-auto">
+    <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
       <colgroup>
         <col style={{ width: '13%' }} />
         <col style={{ width: '5%' }} />
@@ -114,6 +115,7 @@ function PlacementTable({ rows, isHi, language, t }: { rows: PlanetPlacement[]; 
         })}
       </tbody>
     </table>
+    </div>
   );
 }
 
@@ -186,7 +188,8 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
           <Home className="w-4 h-4" />
           <span>{t('auto.houseStatus')}</span>
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '480px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '5%' }} />
             <col style={{ width: '18%' }} />
@@ -240,6 +243,7 @@ export default function BhavaPhalaTab({ kundliId, language, t }: Props) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Sloka footer */}

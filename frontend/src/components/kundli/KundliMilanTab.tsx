@@ -159,7 +159,8 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                 <div className={ohHeader}>
                   <span>{t('milan.koot')} {t('milan.score')}</span>
                 </div>
-                <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+                <div className="overflow-x-auto">
+                <table style={{ tableLayout: 'fixed', minWidth: '400px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
                   <colgroup>
                     <col style={{ width: '28%' }} />
                     <col style={{ width: '14%' }} />
@@ -202,6 +203,7 @@ export default function KundliMilanTab({ savedKundlis, currentKundliId }: Props)
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </div>
 
               {/* Person details */}

@@ -174,7 +174,8 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
         <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
           {t('section.detailedBreakdown')}
         </div>
-        <table style={{ tableLayout: 'fixed', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
+        <div className="overflow-x-auto">
+        <table style={{ tableLayout: 'fixed', minWidth: '680px', width: '100%', borderCollapse: 'collapse' }} className="text-xs">
           <colgroup>
             <col style={{ width: '11%' }} />
             <col style={{ width: '8%' }} />
@@ -303,6 +304,7 @@ export default function ShadbalaTab({ shadbalaData, loadingShadbala, language, t
             })}
           </tbody>
         </table>
+        </div>
         <p className="text-[10px] text-muted-foreground text-right px-3 py-2 italic">
           {hi
             ? <>{'न्यूनतम षड्बल ('}<SlokaHover slokaRef="Phaladeepika Adh. 4" language={language}>{'फलदीपिका अध्याय 4'}</SlokaHover>{') — सूर्य 390, चन्द्र 360, मंगल 300, बुध 420, बृहस्पति 390, शुक्र 330, शनि 300 (रूप)'}</>

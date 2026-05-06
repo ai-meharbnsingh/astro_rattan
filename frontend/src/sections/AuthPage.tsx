@@ -8,6 +8,7 @@ import { Stars, Mail, Lock, User, ChevronRight, Star, ShieldCheck, ArrowLeft, Ph
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from '@/lib/i18n';
 import { api } from '@/lib/api';
+import SafeStorage from '@/lib/storage';
 
 type RegStep = 'email' | 'otp' | 'details';
 type ResetStep = 'email' | 'otp' | 'newpass' | 'done';
@@ -132,8 +133,8 @@ export default function AuthPage() {
           email_token: emailToken,
           phone: registerForm.phone.trim(),
         });
-        localStorage.setItem('astrorattan_token', data.token);
-        if (data.refresh_token) localStorage.setItem('astrorattan_refresh_token', data.refresh_token);
+        SafeStorage.setItem('local', 'astrorattan_token', data.token);
+        if (data.refresh_token) SafeStorage.setItem('local', 'astrorattan_refresh_token', data.refresh_token);
         window.location.href = '/';
       } else {
         await register(registerForm.email, registerForm.password, registerForm.name, emailToken);
@@ -176,7 +177,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-24 px-4 sm:px-8 bg-transparent">
+    <div className="min-h-[80dvh] flex items-center justify-center py-24 px-4 sm:px-8 bg-transparent">
       <div className="w-full max-w-md mx-4 sm:mx-auto">
         <div className="text-center mb-8">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-sacred-gold to-sacred-saffron flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
@@ -259,7 +260,7 @@ export default function AuthPage() {
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className={`w-12 h-14 text-center text-xl font-bold rounded-lg border bg-card text-foreground focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-all duration-200 ${
+                      className={`w-10 sm:w-12 h-12 sm:h-14 text-center text-xl font-bold rounded-lg border bg-card text-foreground focus:border-sacred-gold focus:ring-1 focus:ring-sacred-gold outline-none transition-all duration-200 ${
                         otpPasted ? 'border-green-500 ring-1 ring-green-400 bg-green-50' : 'border-sacred-gold'
                       }`}
                     />
@@ -333,7 +334,7 @@ export default function AuthPage() {
 
         {/* Forgot Password Flow */}
         {showForgotPassword && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-background backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
+          <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center pt-[10vh] sm:pt-0 bg-background backdrop-blur-sm px-4" onClick={() => setShowForgotPassword(false)}>
             <div className="bg-background border border-sacred-gold rounded-2xl p-6 max-w-sm w-full space-y-4" onClick={e => e.stopPropagation()}>
               <Heading as={3} variant={3} className="text-sacred-gold-dark text-center">{t('auth.resetPassword')}</Heading>
               {error && <p className="text-red-700 text-sm text-center">{error}</p>}

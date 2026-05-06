@@ -90,7 +90,7 @@ export default function FreeKundliModal({ data, onClose, language }: FreeKundliM
 
       {/* Modal Card — full viewport width, below header */}
       <div
-        className="relative z-10 overflow-y-auto bg-white rounded-xl shadow-2xl" style={{ width: 'calc(100vw - 8px)', maxHeight: 'calc(100vh - 72px)' }}
+        className="relative z-10 overflow-y-auto bg-white rounded-xl shadow-2xl" style={{ width: 'calc(100vw - 8px)', maxHeight: 'calc(100dvh - 72px)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header / Close + Download */}

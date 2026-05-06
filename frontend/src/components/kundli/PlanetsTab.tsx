@@ -273,7 +273,7 @@ function PanchadhaMaitriSection({ kundliId, language }: { kundliId: string; lang
   };
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+    <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
       <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
         {hi ? 'पंचधा मैत्री' : 'Panchadha Maitri (Compound Relations)'}
       </div>
@@ -690,7 +690,7 @@ export default function PlanetsTab({
         )}
 
         {/* Planet table */}
-        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent overflow-hidden">
+        <div className="overflow-x-auto rounded-xl border border-sacred-gold/20 bg-transparent">
           <div className="bg-sacred-gold-dark text-white px-4 py-2 text-[15px] font-semibold">
             {t('section.detailedPlanetPositions')}
           </div>
