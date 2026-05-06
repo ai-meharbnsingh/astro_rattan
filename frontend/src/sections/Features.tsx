@@ -1039,7 +1039,7 @@ export default function Features() {
                     language={language}
                     showRashiNumbers={true}
                     showHouseNumbers={false}
-                    showAscendantMarker={true}
+                    showAscendantMarker={false}
                   />
                 </div>
               </div>
